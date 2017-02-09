@@ -20,6 +20,9 @@ let el = ( _tagorel, _styles, _parent ) => {
 // ------
 
 let MODE_LINEAR = 0;
+let MODE_SMOOTH = 1;
+let MODE_EXP = 2;
+let MODE_SPRING = 3;
 
 let AutomatonParam = class {
 	constructor( _automaton ) {
@@ -32,9 +35,13 @@ let AutomatonParam = class {
 		}
 		param.nodes = [];
 
-		param.addNode( 0.0, 0.0 );
-		param.addNode( 0.5, 0.75 );
-		param.addNode( param.automaton.length, 1.0 );
+		let ns = param.addNode( 0.0, 0.0 );
+		let ne = param.addNode( param.automaton.length, 0.75 );
+		ne.mode = MODE_SPRING;
+		ne.params.rate = 2000.0;
+		ne.params.damp = 1.0;
+
+		param.render();
 	}
 
 	sortNodes() {
@@ -46,22 +53,50 @@ let AutomatonParam = class {
 	render( _index ) {
 		let param = this;
 
-		if ( _index < 1 || param.nodes.length <= _index ) { return; }
+		for ( let i = 1; i < param.nodes.length; i ++ ) {
+			let start = param.nodes[ i - 1 ].time;
+			let starti = Math.floor( start * param.automaton.resolution );
+			let reset = i === 1 || param.nodes[ i ].mods.reset;
+			let startv = reset ? param.nodes[ i - 1 ].value : param.values[ starti ];
+			let end = param.nodes[ i ].time;
+			let endi = Math.floor( end * param.automaton.resolution );
+			let endv = param.nodes[ i ].value;
 
-		let start = param.nodes[ _index - 1 ].time;
-		let starti = Math.ceil( start * param.automaton.resolution );
-		let startv = param.nodes[ _index - 1 ].value;
-		let end = param.nodes[ _index ].time;
-		let endi = Math.floor( end * param.automaton.resolution );
-		let endv = param.nodes[ _index ].value;
-
-		if ( param.nodes[ _index ].mode === MODE_LINEAR ) {
-			for ( let i = 0; i < endi - starti + 1; i ++ ) {
-				let index = starti + i;
-				let time = index / param.automaton.resolution;
-				let prog = ( time - start ) / ( end - start );
-				let value = startv + ( endv - startv ) * prog;
-				param.values[ index ] = value;
+			if ( param.nodes[ i ].mode === MODE_LINEAR ) {
+				for ( let i = 0; i < endi - starti + 1; i ++ ) {
+					let index = starti + i;
+					let prog = ( index - starti ) / ( endi - starti );
+					let value = startv + ( endv - startv ) * prog;
+					param.values[ index ] = value;
+				}
+			} else if ( param.nodes[ i ].mode === MODE_SMOOTH ) {
+				for ( let i = 0; i < endi - starti + 1; i ++ ) {
+					let index = starti + i;
+					let prog = ( index - starti ) / ( endi - starti );
+					let smooth = prog * prog * ( 3.0 - 2.0 * prog );
+					let value = startv + ( endv - startv ) * smooth;
+					param.values[ index ] = value;
+				}
+			} else if ( param.nodes[ i ].mode === MODE_EXP ) {
+				for ( let i = 0; i < endi - starti + 1; i ++ ) {
+					let index = starti + i;
+					let rtime = ( index - starti ) / param.automaton.resolution;
+					let curve = 1.0 - Math.exp( -param.nodes[ i ].params.factor * rtime );
+					let value = startv + ( endv - startv ) * curve;
+					param.values[ index ] = value;
+				}
+			} else if ( param.nodes[ i ].mode === MODE_SPRING ) {
+				let vel = reset ? 0.0 : ( param.values[ starti ] - param.values[ starti - 1 ] ) * param.automaton.resolution;
+				let pos = startv;
+				let k = param.nodes[ i ].params.rate;
+				let z = param.nodes[ i ].params.damp;
+				let deltaTime = 1.0 / param.automaton.resolution * param.automaton.length;
+				for ( let i = 0; i < endi - starti + 1; i ++ ) {
+					let index = starti + i;
+					vel += ( -k * ( pos - endv ) - 2.0 * vel * Math.sqrt( k ) * z ) * deltaTime;
+					pos += vel * deltaTime;
+					param.values[ index ] = pos;
+				}
 			}
 		}
 	}
@@ -69,17 +104,34 @@ let AutomatonParam = class {
 	addNode( _time, _value ) {
 		let param = this;
 
+		let next = param.nodes.filter( node => _time < node.time )[ 0 ];
+		if ( !next ) {
+			next = {
+				mode: MODE_LINEAR,
+				params: {},
+				mods: {}
+			};
+		}
+
 		let node = {
 			time: _time,
 			value: _value,
-			mode: MODE_LINEAR,
-			mods: []
+			mode: next.mode,
+			params: next.params,
+			mods: next.mods
 		};
 		param.nodes.push( node );
 
 		param.sortNodes();
-		param.render( param.nodes.indexOf( node ) );
-		param.render( param.nodes.indexOf( node ) + 1 );
+		param.render();
+
+		return node;
+	}
+
+	removeNode( _index ) {
+		let param = this;
+
+		return param.nodes.splice( _index, 1 );
 	}
 
 	getValue( _time ) {
@@ -144,7 +196,7 @@ let Inspector = () => {
 			setTimeout( () => {
 				if ( on && id === cid ) {
 					el( inspector.el, {
-						opacity: "0.8"
+						opacity: "0.5"
 					} );
 				}
 			}, delay * 1000.0 );
@@ -238,12 +290,31 @@ let AutomatonGUI = ( _automaton ) => {
 		left: "0",
 		top: HEADER_HEIGHT + "px",
 		width: PARAMLIST_WIDTH + "px",
-		height: "100%",
+		height: "calc( 100% - " + HEADER_HEIGHT + "px )",
 
-		background: "#111"
+		background: "#111",
+
+		overflow: "hidden"
 	}, gui.parent );
 	gui.paramListChildren = [];
 	gui.currentParamIndex = 0;
+
+	gui.paramListInside = el( "div", {
+		position: "absolute",
+		top: "0px",
+		width: "100%"
+	}, gui.paramList );
+	let paramListInsidePos = 0;
+	gui.paramListInside.addEventListener( "wheel", ( _event ) => {
+		paramListInsidePos = Math.min(
+			Math.max(
+				paramListInsidePos + _event.deltaY,
+				0
+			),
+			gui.paramListInside.clientHeight - ( GUI_HEIGHT - HEADER_HEIGHT )
+		);
+		el( gui.paramListInside, { top: -paramListInsidePos + "px" } );
+	} );
 
 	let MODMENU_WIDTH = 200;
 	gui.modMenu = el( "div", {
@@ -267,6 +338,22 @@ let AutomatonGUI = ( _automaton ) => {
 
 		overflow: "hidden"
 	}, gui.parent );
+
+	gui.timelineZero = el( "div", {
+		position: "absolute",
+		width: "100%",
+		height: "1px",
+
+		background: "#666"
+	}, gui.timeline );
+
+	gui.timelineBar = el( "div", {
+		position: "absolute",
+		width: "2px",
+		height: "100%",
+
+		background: "#f82"
+	}, gui.timeline );
 
 	gui.timelineCanvas = el( "canvas", {
 		position: "absolute",
@@ -300,11 +387,12 @@ let AutomatonGUI = ( _automaton ) => {
 			background: "#333",
 
 			cursor: "pointer"
-		}, gui.paramList );
+		}, gui.paramListInside );
 		e.innerText = _name;
 		e.addEventListener( "mousedown", ( _event ) => {
 			if ( _event.which === 1 ) {
 				gui.selectParam( _index );
+				gui.updateTimeline( true );
 			} else {
 				// TODO: context menu
 				// e.g. copy, paste...
@@ -312,14 +400,14 @@ let AutomatonGUI = ( _automaton ) => {
 		} );
 
 		let param = gui.automaton.params[ _name ];
-		gui.inspector.add( e, param.getValue().toFixed( 3 ), 0.5 );
+		gui.inspector.add( e, () => param.getValue().toFixed( 3 ), 0.5 );
 
 		gui.paramListChildren.push( e );
 	};
 
 	gui.clearParamList = () => {
-		while ( gui.paramList.firstChild ) {
-			gui.paramList.removeChild( gui.paramList.firstChild );
+		while ( gui.paramListInside.firstChild ) {
+			gui.paramListInside.removeChild( gui.paramListInside.firstChild );
 		}
 		gui.paramListChildren = [];
 	};
@@ -335,21 +423,30 @@ let AutomatonGUI = ( _automaton ) => {
 
 		gui.selectParam( gui.currentParamIndex );
 	};
-	
 
 	gui.timelineMin = 0.0;
 	gui.timelineMax = 0.0;
 	gui.canvasWidth = 0.0;
 	gui.canvasHeight = 0.0;
 
-	gui.mapTime = _time => gui.canvasWidth * _time / gui.automaton.length;;
+	gui.mapTime = _time => gui.canvasWidth * _time / gui.automaton.length;
 	gui.mapValue = _value => gui.canvasHeight * ( 0.1 + 0.8 * ( ( gui.timelineMax - _value ) / ( gui.timelineMax - gui.timelineMin ) ) );
+	gui.rmapTime = _x => _x / gui.canvasWidth * gui.automaton.length;
+	gui.rmapValue = _y => ( 0.1 - _y / gui.canvasHeight ) / 0.8 * ( gui.timelineMax - gui.timelineMin ) + gui.timelineMax;
 
 	gui.timelineNodeRadius = 5.0;
 
-	gui.addTimelineNode = ( _time, _value ) => {
-		let x = gui.mapTime( _time ) - gui.timelineNodeRadius;
-		let y = gui.mapValue( _value ) - gui.timelineNodeRadius;
+	gui.getCurrentParam = () => {
+		let name = gui.paramListChildren[ gui.currentParamIndex ].innerText;
+		return gui.automaton.params[ name ];
+	}
+
+	gui.addTimelineNode = ( _index ) => {
+		let param = gui.getCurrentParam();
+		let node = param.nodes[ _index ];
+
+		let x = gui.mapTime( node.time ) - gui.timelineNodeRadius;
+		let y = gui.mapValue( node.value ) - gui.timelineNodeRadius;
 		let e = el( "div", {
 			position: "absolute",
 			left: x + "px",
@@ -363,7 +460,21 @@ let AutomatonGUI = ( _automaton ) => {
 
 			cursor: "pointer"
 		}, gui.timelineNodeContainer );
-		gui.inspector.add( e, _value.toFixed( 3 ), 0.5 );
+
+		let lastClick = 0;
+		e.addEventListener( "mousedown", () => {
+			let time = +new Date();
+			if ( time - lastClick < 300 ) {
+				param.removeNode( _index );
+				gui.updateTimeline( true );
+				param.render();
+			} else {
+				gui.grabTimelineNode( _index )
+			}
+			lastClick = time;
+		} );
+
+		gui.inspector.add( e, node.time.toFixed( 3 ) + " : " + node.value.toFixed( 3 ), 0.5 );
 		gui.timelineNodes.push( e );
 	};
 
@@ -374,10 +485,81 @@ let AutomatonGUI = ( _automaton ) => {
 		gui.timelineNodes = [];
 	};
 
-	gui.updateTimelineRange = ( _param ) => {
+	gui.grabbingTimelineNode = -1;
+	gui.grabTimelineNode = ( _index ) => {
+		gui.grabbingTimelineNode = _index;
+	};
+
+	gui.timelineNodeContainer.addEventListener( "dblclick", ( _event ) => {
+		let param = gui.getCurrentParam();
+
+		let rect = gui.timeline.getBoundingClientRect();
+		param.addNode(
+			gui.rmapTime( _event.clientX - rect.left ),
+			gui.rmapValue( _event.clientY - rect.top )
+		);
+		gui.updateTimeline( true );
+	} );
+
+	window.addEventListener( "mousemove", ( _event ) => {
+	 	if ( gui.grabbingTimelineNode !== -1 ) {
+			let param = gui.getCurrentParam();
+			let node = param.nodes[ gui.grabbingTimelineNode ];
+
+			let rect = gui.timeline.getBoundingClientRect();
+			if ( gui.grabbingTimelineNode !== 0 && gui.grabbingTimelineNode !== gui.timelineNodes.length - 1 ) {
+				node.time = gui.rmapTime( _event.clientX - rect.left );
+				node.time = Math.min(
+					Math.max(
+						node.time,
+						param.nodes[ gui.grabbingTimelineNode - 1 ].time + 1.0 / gui.automaton.resolution
+					),
+					param.nodes[ gui.grabbingTimelineNode + 1 ].time - 1.0 / gui.automaton.resolution
+				);
+			}
+			node.value = gui.rmapValue( _event.clientY - rect.top );
+
+			param.render();
+
+			el( gui.timelineNodes[ gui.grabbingTimelineNode ], {
+				left: gui.mapTime( node.time ) - gui.timelineNodeRadius + "px",
+				top: gui.mapValue( node.value ) - gui.timelineNodeRadius + "px"
+			} );
+		}
+	} );
+
+	window.addEventListener( "mouseup", ( _event ) => {
+		if ( gui.grabbingTimelineNode !== -1 ) {
+			let param = gui.getCurrentParam();
+			let node = param.nodes[ gui.grabbingTimelineNode ];
+
+			let rect = gui.timeline.getBoundingClientRect();
+			if ( gui.grabbingTimelineNode !== 0 && gui.grabbingTimelineNode !== gui.timelineNodes.length - 1 ) {
+				node.time = gui.rmapTime( _event.clientX - rect.left );
+				node.time = Math.min(
+					Math.max(
+						node.time,
+						param.nodes[ gui.grabbingTimelineNode - 1 ].time + 1.0 / gui.automaton.resolution
+					),
+					param.nodes[ gui.grabbingTimelineNode + 1 ].time - 1.0 / gui.automaton.resolution
+				);
+			}
+			node.value = gui.rmapValue( _event.clientY - rect.top );
+			
+			param.render();
+
+			// gui.updateTimeline( true );
+
+			gui.grabbingTimelineNode = -1;
+		}
+	} );
+
+	gui.updateTimelineRange = () => {
+		let param = gui.getCurrentParam();
+
 		gui.timelineMin = 0.0;
 		gui.timelineMax = 0.0;
-		_param.nodes.map( node => {
+		param.nodes.map( node => {
 			gui.timelineMin = Math.min( gui.timelineMin, node.value );
 			gui.timelineMax = Math.max( gui.timelineMax, node.value );
 		} );
@@ -404,23 +586,30 @@ let AutomatonGUI = ( _automaton ) => {
 		gui.timelineContext.stroke();
 	};
 
-	gui.updateTimeline = () => {
+	gui.updateTimeline = ( _updateNodes ) => {
 		gui.canvasWidth = window.innerWidth - PARAMLIST_WIDTH - MODMENU_WIDTH;
 		gui.canvasHeight = GUI_HEIGHT - HEADER_HEIGHT;
 		gui.timelineCanvas.width = gui.canvasWidth;
 		gui.timelineCanvas.height = gui.canvasHeight;
 
+		el( gui.timelineBar, {
+			left: ( gui.automaton.time / gui.automaton.length ) * gui.canvasWidth - 1 + "px"
+		} );
+
 		if ( gui.currentParamIndex < 0 || gui.paramListChildren.length <= gui.currentParamIndex ) {
 			return;
 		}
 
-		let paramName = gui.paramListChildren[ gui.currentParamIndex ].innerText;
-		let param = gui.automaton.params[ paramName ];
+		let param = gui.getCurrentParam();
 
-		gui.updateTimelineRange( param );
+		if ( _updateNodes ) {
+			el( gui.timelineZero, {
+				top: gui.mapValue( 0.0 ) - 0.5 + "px"
+			} );
 
-		gui.clearTimelineNodes();
-		param.nodes.map( node => gui.addTimelineNode( node.time, node.value ) );
+			gui.clearTimelineNodes();
+			param.nodes.map( ( node, index ) => gui.addTimelineNode( index ) );
+		}
 
 		gui.updateTimelineCanvas( param );
 	};
@@ -441,6 +630,10 @@ let AutomatonGUI = ( _automaton ) => {
 		} );
 	}
 
+	gui.update = () => {
+		gui.updateTimeline();
+	};
+
 	gui.resize = () => {
 		gui.updateTimeline();
 	};
@@ -450,7 +643,8 @@ let AutomatonGUI = ( _automaton ) => {
 
 	gui.updateParamList();
 	gui.selectParam( 0 );
-	gui.updateTimeline();
+	gui.updateTimelineRange();
+	gui.updateTimeline( true );
 
 	return gui;
 };
@@ -462,7 +656,7 @@ let Automaton = ( _props ) => {
 
 	automaton.time = 0.0;
 	automaton.length = 1.0;
-	automaton.resolution = 100.0;
+	automaton.resolution = 1000.0;
 
 	automaton.params = {};
 	automaton.createParam = ( _name ) => {
@@ -482,6 +676,14 @@ let Automaton = ( _props ) => {
 	automaton.createParam( "a" );
 	automaton.createParam( "s" );
 	automaton.createParam( "d" );
+	automaton.createParam( "c" );
+	automaton.createParam( "b" );
+	automaton.createParam( "no" );
+	automaton.createParam( "wow" );
+	automaton.createParam( "wowo" );
+	automaton.createParam( "wowo0" );
+	automaton.createParam( "wowo1" );
+	automaton.createParam( "wowa" );
 
 	// ------
 
@@ -499,6 +701,8 @@ let Automaton = ( _props ) => {
 
 	automaton.update = ( _time ) => {
 		automaton.time = _time % automaton.length;
+
+		automaton.gui.update();
 	};
 
 	automaton.auto = ( _name, _props ) => {

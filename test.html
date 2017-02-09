@@ -13,4 +13,10 @@
 let automaton = Automaton( {
   gui: true
 } );
+
+let update = () => {
+  automaton.update( +new Date() * 0.0001 );
+  requestAnimationFrame( update );
+};
+update();
 </script>
