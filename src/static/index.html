@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+
+<meta charset="UTF-8">
+<title></title>
+
+<body>
+  <div id="container">
+  </div>
+</body>
+
+<script src="bundle.js"></script>
+<script>
+let automaton = Automaton( {
+  gui: true
+} );
+
+automaton.auto( "wow" );
+automaton.auto( "wow" );
+automaton.auto( "pya" );
+
+let update = () => {
+  automaton.update( +new Date() * 0.0001 );
+  requestAnimationFrame( update );
+};
+update();
+</script>

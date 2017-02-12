@@ -1,17 +1,23 @@
 {
-  "name": "glcat.js",
+  "name": "automaton",
   "version": "1.0.0",
-  "description": "WebGL Library",
-  "main": "dist/glcat.js",
+  "description": "",
+  "main": "gulpfile.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "node ./build.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "FMS_Cat",
+  "author": "",
   "license": "MIT",
   "devDependencies": {
-    "babel-core": "^6.7.4",
     "babel-preset-es2015": "^6.6.0",
-    "uglify-js": "^2.6.2"
-  }
+    "babelify": "^7.2.0",
+    "browser-sync": "^2.11.2",
+    "browserify": "^13.0.0",
+    "gulp": "^3.9.1",
+    "gulp-changed": "^1.3.2",
+    "gulp-rename": "^1.2.2",
+    "vinyl-source-stream": "^1.1.0",
+    "watchify": "^3.7.0"
+  },
+  "dependencies": {}
 }

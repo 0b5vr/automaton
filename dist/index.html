@@ -8,11 +8,15 @@
   </div>
 </body>
 
-<script src="dist/automaton.js"></script>
+<script src="bundle.js"></script>
 <script>
 let automaton = Automaton( {
   gui: true
 } );
+
+automaton.auto( "wow" );
+automaton.auto( "wow" );
+automaton.auto( "pya" );
 
 let update = () => {
   automaton.update( +new Date() * 0.0001 );
