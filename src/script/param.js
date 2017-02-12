@@ -1,5 +1,13 @@
 import Interpolator from "./interpolator";
 
+let cloneObj = ( _obj ) => {
+	let obj = {};
+	for ( let key in _obj ) {
+		obj[ key ] = _obj[ key ];
+	}
+	return obj;
+}
+
 let AutomatonParam = class {
 	constructor( _automaton ) {
 		let param = this;
@@ -35,7 +43,7 @@ let AutomatonParam = class {
 			let endt = param.nodes[ i ].time;
 			let endi = Math.floor( endt * param.automaton.resolution );
 
-			let reset = i === 1 || param.nodes[ i ].mods.reset;
+			let reset = i === 1 || param.nodes[ i ].mods[ Interpolator.MOD_RESET ].active;
 			let deltaTime = 1.0 / param.automaton.resolution * param.automaton.length;
 
 			let iparam = {
@@ -44,7 +52,8 @@ let AutomatonParam = class {
 				end: param.nodes[ i ].value,
 				deltaTime: deltaTime,
 				length: endi - starti + 1,
-				vel: 2 < param.values.length ? ( param.values[ param.values.length - 1 ] - param.values[ param.values.length - 2 ] ) / deltaTime : 0.0
+				vel: ( !reset && 2 < param.values.length ) ? ( param.values[ param.values.length - 1 ] - param.values[ param.values.length - 2 ] ) / deltaTime : 0.0,
+				mods: param.nodes[ i ].mods
 			};
 			for ( let key in param.nodes[ i ].params ) {
 				iparam[ key ] = param.nodes[ i ].params[ key ];
@@ -65,7 +74,25 @@ let AutomatonParam = class {
 			next = {
 				mode: Interpolator.MODE_LINEAR,
 				params: {},
-				mods: {}
+				mods: [
+					{ // reset
+						active: false
+					},
+					{ // sin
+						active: false,
+						freq: 10.0,
+						amp: 0.1,
+						phase: 0.0
+					},
+					{ // noise
+						active: false,
+						freq: 1.0,
+						amp: 0.2,
+						recursion: 6.0,
+						reso: 8.0,
+						seed: 1.0
+					}
+				]
 			};
 		}
 
@@ -73,8 +100,8 @@ let AutomatonParam = class {
 			time: _time,
 			value: _value,
 			mode: next.mode,
-			params: next.params,
-			mods: next.mods
+			params: cloneObj( next.params ),
+			mods: next.mods.map( _obj => cloneObj( _obj ) )
 		};
 		param.nodes.push( node );
 
@@ -152,6 +179,19 @@ let AutomatonParam = class {
 
 		for ( let key in _params ) {
 			param.nodes[ _index ].params[ key ] = _params[ key ];
+		}
+
+		param.render();
+	}
+
+	setModParams( _index, _mod, _params ) {
+		let param = this;
+
+		if ( _index < 0 || param.nodes.length <= _index ) { return; }
+		if ( _mod < 0 || Interpolator.MODS <= _mod ) { return; }
+
+		for ( let key in _params ) {
+			param.nodes[ _index ].mods[ _mod ][ key ] = _params[ key ];
 		}
 
 		param.render();

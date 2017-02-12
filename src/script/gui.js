@@ -50,7 +50,7 @@ let Inspector = () => {
 		padding: "2px",
 		pointerEvents: "none",
 
-		font: "500 10px sans-serif",
+		font: "300 12px Helvetica Neue, sans-serif",
 
 		background: "#000",
 		color: "#fff",
@@ -81,7 +81,7 @@ let Inspector = () => {
 			setTimeout( () => {
 				if ( on && id === cid ) {
 					el( inspector.el, {
-						opacity: "0.5"
+						opacity: "0.8"
 					} );
 				}
 			}, delay * 1000.0 );
@@ -157,7 +157,9 @@ let AutomatonGUI = ( _automaton ) => {
 		background: "#222",
 		color: "#ddd",
 
-		userSelect: "none"
+		userSelect: "none",
+
+		fontFamily: "Helvetica Neue, sans-serif"
 	}, document.body );
 
 	let HEADER_HEIGHT = 30;
@@ -268,7 +270,7 @@ let AutomatonGUI = ( _automaton ) => {
 			width: "calc( 100% - 4px - 16px )",
 			height: "20px",
 
-			font: "500 14px sans-serif",
+			fontSize: "14px",
 
 			background: "#333",
 
@@ -326,7 +328,7 @@ let AutomatonGUI = ( _automaton ) => {
 	gui.selectTimelineNode = ( _index ) => {
 		gui.selectedTimelineNode = _index;
 
-		gui.updateModMenu();
+		gui.resetModMenu();
 	};
 
 	gui.grabbingTimelineNode = -1;
@@ -381,6 +383,8 @@ let AutomatonGUI = ( _automaton ) => {
 			let rect = gui.timeline.getBoundingClientRect();
 			param.setTime( gui.grabbingTimelineNode, gui.rmapTime( _event.clientX - rect.left ) );
 			param.setValue( gui.grabbingTimelineNode, gui.rmapValue( _event.clientY - rect.top ) );
+
+			gui.updateModMenu();
 		}
 	} );
 
@@ -421,8 +425,10 @@ let AutomatonGUI = ( _automaton ) => {
 			gui.timelineContext.lineTo( i, y );
 		}
 
-		gui.timelineContext.strokeStyle = "#ddd";
+		gui.timelineContext.strokeStyle = colors.accent;
 		gui.timelineContext.lineWidth = 2;
+		gui.timelineContext.lineCap = "round";
+		gui.timelineContext.lineJoin = "round";
 		gui.timelineContext.stroke();
 
 		// ------
@@ -445,16 +451,19 @@ let AutomatonGUI = ( _automaton ) => {
 
 			if ( gui.selectedTimelineNode === index ) {
 				gui.timelineContext.beginPath();
-				gui.timelineContext.arc( x, y, gui.timelineNodeRadius - 1, 0, Math.PI * 2.0, false );
-				gui.timelineContext.fillStyle = "#000";
-				gui.timelineContext.strokeStyle = colors.accent;
+				gui.timelineContext.arc( x, y, gui.timelineNodeRadius, 0, Math.PI * 2.0, false );
+				gui.timelineContext.fillStyle = colors.accent;
+				gui.timelineContext.strokeStyle = "#222";
 				gui.timelineContext.lineWidth = 4;
 				gui.timelineContext.stroke();
 				gui.timelineContext.fill();
 			} else {
 				gui.timelineContext.beginPath();
-				gui.timelineContext.arc( x, y, gui.timelineNodeRadius, 0, Math.PI * 2.0, false );
-				gui.timelineContext.fillStyle = colors.accent;
+				gui.timelineContext.arc( x, y, gui.timelineNodeRadius - 1, 0, Math.PI * 2.0, false );
+				gui.timelineContext.fillStyle = "#222";
+				gui.timelineContext.strokeStyle = colors.accent;
+				gui.timelineContext.lineWidth = 4;
+				gui.timelineContext.stroke();
 				gui.timelineContext.fill();
 			}
 		} );
@@ -474,19 +483,17 @@ let AutomatonGUI = ( _automaton ) => {
 		gui.updateTimelineCanvas( param );
 	};
 
-	gui.clearModMenu = () => {
-		while ( gui.modMenuInside.firstChild ) {
-			gui.modMenuInside.removeChild( gui.modMenuInside.firstChild );
-		}
-	};
-
-	gui.updateModMenu = () => {
+	gui.paramBoxListeners = [];
+	gui.resetModMenu = () => {
 		let param = gui.currentParam;
 		if ( !param ) {
 			return;
 		}
 
-		gui.clearModMenu();
+		while ( gui.modMenuInside.firstChild ) {
+			gui.modMenuInside.removeChild( gui.modMenuInside.firstChild );
+		}
+		gui.paramBoxListeners = [];
 
 		let node = param.nodes[ gui.selectedTimelineNode ];
 		if ( !node ) {
@@ -499,7 +506,7 @@ let AutomatonGUI = ( _automaton ) => {
 			el( "div", {
 				width: "170px",
 				height: "1px",
-				margin: "0 15px 10px 15px",
+				margin: "0 15px 5px 15px",
 
 				background: "#666"
 			}, gui.modMenuInside );
@@ -508,7 +515,7 @@ let AutomatonGUI = ( _automaton ) => {
 		// ------
 
 		let modesContainer = el( "div", {
-			margin: "10px",
+			margin: "10px 10px 0 10px",
 			width: "180px"
 		}, gui.modMenuInside );
 
@@ -522,53 +529,45 @@ let AutomatonGUI = ( _automaton ) => {
 				margin: "2px",
 
 				userSelect: "none",
-				cursor: "pointer",
-
-				background: i === selectedMode ? "#666" : "#444"
+				cursor: "pointer"
 			}, modesContainer );
 			modeEls.push( e );
-			e.src = [
-				images.linear,
-				images.smooth,
-				images.exp,
-				images.spring,
-				images.gravity
-			][ i ];
+			e.src = images.modes[ i ][ i === selectedMode ? 1 : 0 ];
 			e.addEventListener( "mousedown", ( _event ) => {
 				param.setMode( gui.selectedTimelineNode, i );
-				gui.updateModMenu();
+				gui.resetModMenu();
 			} );
+			gui.inspector.add( e, Interpolator.modeNames[ i ], 0.5 );
 		}
 
 		// ------
 
-		let genParamBox = ( _name, _value, _func ) => {
+		let genParamBox = ( _name, _funcGet, _funcSet, _parent ) => {
 			let func = ( _value ) => {
 				let v = parseFloat( _value );
 				v = isNaN( v ) ? 0.0 : v;
 				valueText.innerText = v.toFixed( 3 );
 				valueBox.value = v;
-				if ( typeof _func === "function" ) {
-					let r = _func( v );
-					if ( typeof r === "number" ) {
-						valueText.innerText = r.toFixed( 3 );
-						valueBox.value = r;
-					}
+				if ( typeof _funcSet === "function" ) {
+					_funcSet( v );
+					v = _funcGet();
+					valueText.innerText = v.toFixed( 3 );
+					valueBox.value = v;
 				}
 			}
 
 			let parent = el( "div", {
 				position: "relative",
-				margin: "0 10px 10px 10px",
-				width: "180px",
-				height: "20px",
+				margin: "0 10px 5px 10px",
+				width: "calc( 100% - 20px )",
+				height: "14px",
 
 				fontSize: "12px"
-			}, gui.modMenuInside );
+			}, _parent );
 
 			let name = el( "div", {
 				position: "absolute",
-				left: "10px",
+				left: "20px",
 				top: "0",
 				width: "50px",
 				height: "100%"
@@ -577,9 +576,9 @@ let AutomatonGUI = ( _automaton ) => {
 
 			let value = el( "div", {
 				position: "absolute",
-				left: "90px",
+				right: "10px",
 				top: "0",
-				width: "80px",
+				width: "60px",
 				height: "100%"
 			}, parent );
 
@@ -666,7 +665,12 @@ let AutomatonGUI = ( _automaton ) => {
 				el( valueBox, { display: "none" } );
 			} );
 
-			func( _value );
+			func( _funcGet() );
+			gui.paramBoxListeners.push( () => {
+				let v = _funcGet();
+				valueText.innerText = v.toFixed( 3 );
+				valueBox.value = v;
+			} );
 
 			return param;
 		};
@@ -675,24 +679,77 @@ let AutomatonGUI = ( _automaton ) => {
 
 		sep();
 
-		genParamBox( "time", node.time, ( value ) => {
+		genParamBox( "time", () => { return node.time }, ( value ) => {
 			return param.setTime( gui.selectedTimelineNode, value );
-		} );
+		}, gui.modMenuInside );
 
-		genParamBox( "value", node.value, ( value ) => {
+		genParamBox( "value", () => { return node.value }, ( value ) => {
 			return param.setValue( gui.selectedTimelineNode, value );
-		} );
+		}, gui.modMenuInside );
 
 		sep();
 		
 		for ( let p in node.params ) {
-			genParamBox( p, node.params[ p ], ( value ) => {
+			genParamBox( p, () => { return node.params[ p ] }, ( value ) => {
 				let obj = {};
 				obj[ p ] = value;
 				param.setParams( gui.selectedTimelineNode, obj );
-			} );
+			}, gui.modMenuInside );
 		}
-	}
+
+		sep();
+
+		for ( let m = 0; m < Interpolator.MODS; m ++ ) {
+			let parent = el( "div", {
+				position: "relative",
+				margin: "0 10px 20px 10px",
+				width: "calc( 100% - 20px )",
+				minHeight: "24px"
+			}, gui.modMenuInside );
+
+			let icon = el( "img", {
+				position: "absolute",
+				width: "24px",
+				height: "24px",
+
+				left: "10px",
+
+				userSelect: "none",
+				cursor: "pointer"
+			}, parent );
+			icon.src = images.mods[ m ][ node.mods[ m ].active ? 1 : 0 ];
+			icon.addEventListener( "mousedown", ( _event ) => {
+				param.setModParams( gui.selectedTimelineNode, m, {
+					active: !node.mods[ m ].active
+				} );
+				gui.resetModMenu();
+			} );
+			gui.inspector.add( icon, Interpolator.modNames[ m ], 0.5 );
+
+			if ( node.mods[ m ].active ) {
+				let params = el( "div", {
+					position: "relative",
+					left: "20px",
+					width: "170px"
+				}, parent );
+
+				for ( let p in node.mods[ m ] ) {
+					if ( p === "active" ) { continue; }
+					genParamBox( p, () => { return node.mods[ m ][ p ] }, ( value ) => {
+						let obj = {};
+						obj[ p ] = value;
+						param.setModParams( gui.selectedTimelineNode, m, obj );
+					}, params );
+				}
+			}
+		}
+	};
+
+	gui.updateModMenu = () => {
+		gui.paramBoxListeners.map( ( func ) => {
+			func();
+		} );
+	};
 
 	gui.selectParam = ( _index ) => {
 		if ( _index < 0 || gui.paramListChildren.length <= _index ) {

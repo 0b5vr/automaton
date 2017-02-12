@@ -11,7 +11,8 @@
 <script src="bundle.js"></script>
 <script>
 let automaton = Automaton( {
-  gui: true
+  gui: true,
+  length: 10.0
 } );
 
 automaton.auto( "wow" );
@@ -19,7 +20,7 @@ automaton.auto( "wow" );
 automaton.auto( "pya" );
 
 let update = () => {
-  automaton.update( +new Date() * 0.0001 );
+  automaton.update( +new Date() * 0.001 );
   requestAnimationFrame( update );
 };
 update();

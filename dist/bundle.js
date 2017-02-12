@@ -83,7 +83,7 @@ var Inspector = function Inspector() {
 		padding: "2px",
 		pointerEvents: "none",
 
-		font: "500 10px sans-serif",
+		font: "300 12px Helvetica Neue, sans-serif",
 
 		background: "#000",
 		color: "#fff",
@@ -116,7 +116,7 @@ var Inspector = function Inspector() {
 			setTimeout(function () {
 				if (on && id === cid) {
 					el(inspector.el, {
-						opacity: "0.5"
+						opacity: "0.8"
 					});
 				}
 			}, delay * 1000.0);
@@ -194,7 +194,9 @@ var AutomatonGUI = function AutomatonGUI(_automaton) {
 		background: "#222",
 		color: "#ddd",
 
-		userSelect: "none"
+		userSelect: "none",
+
+		fontFamily: "Helvetica Neue, sans-serif"
 	}, document.body);
 
 	var HEADER_HEIGHT = 30;
@@ -292,7 +294,7 @@ var AutomatonGUI = function AutomatonGUI(_automaton) {
 			width: "calc( 100% - 4px - 16px )",
 			height: "20px",
 
-			font: "500 14px sans-serif",
+			fontSize: "14px",
 
 			background: "#333",
 
@@ -360,7 +362,7 @@ var AutomatonGUI = function AutomatonGUI(_automaton) {
 	gui.selectTimelineNode = function (_index) {
 		gui.selectedTimelineNode = _index;
 
-		gui.updateModMenu();
+		gui.resetModMenu();
 	};
 
 	gui.grabbingTimelineNode = -1;
@@ -414,6 +416,8 @@ var AutomatonGUI = function AutomatonGUI(_automaton) {
 			var rect = gui.timeline.getBoundingClientRect();
 			param.setTime(gui.grabbingTimelineNode, gui.rmapTime(_event.clientX - rect.left));
 			param.setValue(gui.grabbingTimelineNode, gui.rmapValue(_event.clientY - rect.top));
+
+			gui.updateModMenu();
 		}
 	});
 
@@ -456,8 +460,10 @@ var AutomatonGUI = function AutomatonGUI(_automaton) {
 			gui.timelineContext.lineTo(i, y);
 		}
 
-		gui.timelineContext.strokeStyle = "#ddd";
+		gui.timelineContext.strokeStyle = colors.accent;
 		gui.timelineContext.lineWidth = 2;
+		gui.timelineContext.lineCap = "round";
+		gui.timelineContext.lineJoin = "round";
 		gui.timelineContext.stroke();
 
 		// ------
@@ -480,16 +486,19 @@ var AutomatonGUI = function AutomatonGUI(_automaton) {
 
 			if (gui.selectedTimelineNode === index) {
 				gui.timelineContext.beginPath();
-				gui.timelineContext.arc(x, y, gui.timelineNodeRadius - 1, 0, Math.PI * 2.0, false);
-				gui.timelineContext.fillStyle = "#000";
-				gui.timelineContext.strokeStyle = colors.accent;
+				gui.timelineContext.arc(x, y, gui.timelineNodeRadius, 0, Math.PI * 2.0, false);
+				gui.timelineContext.fillStyle = colors.accent;
+				gui.timelineContext.strokeStyle = "#222";
 				gui.timelineContext.lineWidth = 4;
 				gui.timelineContext.stroke();
 				gui.timelineContext.fill();
 			} else {
 				gui.timelineContext.beginPath();
-				gui.timelineContext.arc(x, y, gui.timelineNodeRadius, 0, Math.PI * 2.0, false);
-				gui.timelineContext.fillStyle = colors.accent;
+				gui.timelineContext.arc(x, y, gui.timelineNodeRadius - 1, 0, Math.PI * 2.0, false);
+				gui.timelineContext.fillStyle = "#222";
+				gui.timelineContext.strokeStyle = colors.accent;
+				gui.timelineContext.lineWidth = 4;
+				gui.timelineContext.stroke();
 				gui.timelineContext.fill();
 			}
 		});
@@ -509,19 +518,17 @@ var AutomatonGUI = function AutomatonGUI(_automaton) {
 		gui.updateTimelineCanvas(param);
 	};
 
-	gui.clearModMenu = function () {
-		while (gui.modMenuInside.firstChild) {
-			gui.modMenuInside.removeChild(gui.modMenuInside.firstChild);
-		}
-	};
-
-	gui.updateModMenu = function () {
+	gui.paramBoxListeners = [];
+	gui.resetModMenu = function () {
 		var param = gui.currentParam;
 		if (!param) {
 			return;
 		}
 
-		gui.clearModMenu();
+		while (gui.modMenuInside.firstChild) {
+			gui.modMenuInside.removeChild(gui.modMenuInside.firstChild);
+		}
+		gui.paramBoxListeners = [];
 
 		var node = param.nodes[gui.selectedTimelineNode];
 		if (!node) {
@@ -534,7 +541,7 @@ var AutomatonGUI = function AutomatonGUI(_automaton) {
 			el("div", {
 				width: "170px",
 				height: "1px",
-				margin: "0 15px 10px 15px",
+				margin: "0 15px 5px 15px",
 
 				background: "#666"
 			}, gui.modMenuInside);
@@ -543,7 +550,7 @@ var AutomatonGUI = function AutomatonGUI(_automaton) {
 		// ------
 
 		var modesContainer = el("div", {
-			margin: "10px",
+			margin: "10px 10px 0 10px",
 			width: "180px"
 		}, gui.modMenuInside);
 
@@ -558,16 +565,15 @@ var AutomatonGUI = function AutomatonGUI(_automaton) {
 				margin: "2px",
 
 				userSelect: "none",
-				cursor: "pointer",
-
-				background: i === selectedMode ? "#666" : "#444"
+				cursor: "pointer"
 			}, modesContainer);
 			modeEls.push(e);
-			e.src = [images.linear, images.smooth, images.exp, images.spring, images.gravity][i];
+			e.src = images.modes[i][i === selectedMode ? 1 : 0];
 			e.addEventListener("mousedown", function (_event) {
 				param.setMode(gui.selectedTimelineNode, i);
-				gui.updateModMenu();
+				gui.resetModMenu();
 			});
+			gui.inspector.add(e, _interpolator2.default.modeNames[i], 0.5);
 		};
 
 		for (var i = 0; i < _interpolator2.default.MODES; i++) {
@@ -576,33 +582,32 @@ var AutomatonGUI = function AutomatonGUI(_automaton) {
 
 		// ------
 
-		var genParamBox = function genParamBox(_name, _value, _func) {
+		var genParamBox = function genParamBox(_name, _funcGet, _funcSet, _parent) {
 			var func = function func(_value) {
 				var v = parseFloat(_value);
 				v = isNaN(v) ? 0.0 : v;
 				valueText.innerText = v.toFixed(3);
 				valueBox.value = v;
-				if (typeof _func === "function") {
-					var r = _func(v);
-					if (typeof r === "number") {
-						valueText.innerText = r.toFixed(3);
-						valueBox.value = r;
-					}
+				if (typeof _funcSet === "function") {
+					_funcSet(v);
+					v = _funcGet();
+					valueText.innerText = v.toFixed(3);
+					valueBox.value = v;
 				}
 			};
 
 			var parent = el("div", {
 				position: "relative",
-				margin: "0 10px 10px 10px",
-				width: "180px",
-				height: "20px",
+				margin: "0 10px 5px 10px",
+				width: "calc( 100% - 20px )",
+				height: "14px",
 
 				fontSize: "12px"
-			}, gui.modMenuInside);
+			}, _parent);
 
 			var name = el("div", {
 				position: "absolute",
-				left: "10px",
+				left: "20px",
 				top: "0",
 				width: "50px",
 				height: "100%"
@@ -611,9 +616,9 @@ var AutomatonGUI = function AutomatonGUI(_automaton) {
 
 			var value = el("div", {
 				position: "absolute",
-				left: "90px",
+				right: "10px",
 				top: "0",
-				width: "80px",
+				width: "60px",
 				height: "100%"
 			}, parent);
 
@@ -704,7 +709,12 @@ var AutomatonGUI = function AutomatonGUI(_automaton) {
 				el(valueBox, { display: "none" });
 			});
 
-			func(_value);
+			func(_funcGet());
+			gui.paramBoxListeners.push(function () {
+				var v = _funcGet();
+				valueText.innerText = v.toFixed(3);
+				valueBox.value = v;
+			});
 
 			return param;
 		};
@@ -713,27 +723,100 @@ var AutomatonGUI = function AutomatonGUI(_automaton) {
 
 		sep();
 
-		genParamBox("time", node.time, function (value) {
+		genParamBox("time", function () {
+			return node.time;
+		}, function (value) {
 			return param.setTime(gui.selectedTimelineNode, value);
-		});
+		}, gui.modMenuInside);
 
-		genParamBox("value", node.value, function (value) {
+		genParamBox("value", function () {
+			return node.value;
+		}, function (value) {
 			return param.setValue(gui.selectedTimelineNode, value);
-		});
+		}, gui.modMenuInside);
 
 		sep();
 
 		var _loop2 = function _loop2(p) {
-			genParamBox(p, node.params[p], function (value) {
+			genParamBox(p, function () {
+				return node.params[p];
+			}, function (value) {
 				var obj = {};
 				obj[p] = value;
 				param.setParams(gui.selectedTimelineNode, obj);
-			});
+			}, gui.modMenuInside);
 		};
 
 		for (var p in node.params) {
 			_loop2(p);
 		}
+
+		sep();
+
+		var _loop3 = function _loop3(m) {
+			var parent = el("div", {
+				position: "relative",
+				margin: "0 10px 20px 10px",
+				width: "calc( 100% - 20px )",
+				minHeight: "24px"
+			}, gui.modMenuInside);
+
+			var icon = el("img", {
+				position: "absolute",
+				width: "24px",
+				height: "24px",
+
+				left: "10px",
+
+				userSelect: "none",
+				cursor: "pointer"
+			}, parent);
+			icon.src = images.mods[m][node.mods[m].active ? 1 : 0];
+			icon.addEventListener("mousedown", function (_event) {
+				param.setModParams(gui.selectedTimelineNode, m, {
+					active: !node.mods[m].active
+				});
+				gui.resetModMenu();
+			});
+			gui.inspector.add(icon, _interpolator2.default.modNames[m], 0.5);
+
+			if (node.mods[m].active) {
+				var params = el("div", {
+					position: "relative",
+					left: "20px",
+					width: "170px"
+				}, parent);
+
+				var _loop4 = function _loop4(_p) {
+					if (_p === "active") {
+						return "continue";
+					}
+					genParamBox(_p, function () {
+						return node.mods[m][_p];
+					}, function (value) {
+						var obj = {};
+						obj[_p] = value;
+						param.setModParams(gui.selectedTimelineNode, m, obj);
+					}, params);
+				};
+
+				for (var _p in node.mods[m]) {
+					var _ret5 = _loop4(_p);
+
+					if (_ret5 === "continue") continue;
+				}
+			}
+		};
+
+		for (var m = 0; m < _interpolator2.default.MODS; m++) {
+			_loop3(m);
+		}
+	};
+
+	gui.updateModMenu = function () {
+		gui.paramBoxListeners.map(function (func) {
+			func();
+		});
 	};
 
 	gui.selectParam = function (_index) {
@@ -825,80 +908,109 @@ var genImages = function genImages() {
     return canvas.toDataURL();
   };
 
-  images.linear = genImage(function () {
-    context.beginPath();
-    context.moveTo(s / 8.0, s / 8.0 * 7.0);
-    var arr = _interpolator2.default.generate({
-      mode: _interpolator2.default.MODE_LINEAR
-    });
-    for (var i = 1; i < arr.length; i++) {
-      context.lineTo(s / 8.0 + s / 4.0 * 3.0 * i / arr.length, s / 8.0 * 7.0 - s / 4.0 * 3.0 * arr[i]);
+  images.modes = [];
+
+  var _loop = function _loop(i) {
+    images.modes[i] = [];
+
+    var _loop5 = function _loop5(_j3) {
+      images.modes[i][_j3] = genImage(function () {
+        context.beginPath();
+        context.moveTo(s / 8.0, s / 8.0 * 7.0);
+        var arr = _interpolator2.default.generate({
+          mode: i
+        });
+        for (var _i = 1; _i < arr.length; _i++) {
+          context.lineTo(s / 8.0 + s / 4.0 * 3.0 * _i / arr.length, s / 8.0 * 7.0 - s / 4.0 * 3.0 * arr[_i]);
+        }
+
+        context.strokeStyle = _j3 ? colors.accent : "#888";
+        context.lineWidth = s / 12.0;
+        context.stroke();
+      });
+    };
+
+    for (var _j3 = 0; _j3 < 2; _j3++) {
+      _loop5(_j3);
     }
+  };
 
-    context.strokeStyle = colors.accent;
-    context.lineWidth = s / 16.0;
-    context.stroke();
-  });
+  for (var i = 0; i < _interpolator2.default.MODES; i++) {
+    _loop(i);
+  }
 
-  images.smooth = genImage(function () {
-    context.beginPath();
-    context.moveTo(s / 8.0, s / 8.0 * 7.0);
-    var arr = _interpolator2.default.generate({
-      mode: _interpolator2.default.MODE_SMOOTH
+  images.mods = [];
+
+  images.mods[_interpolator2.default.MOD_RESET] = [];
+
+  var _loop2 = function _loop2(j) {
+    images.mods[_interpolator2.default.MOD_RESET][j] = genImage(function () {
+      context.beginPath();
+      context.arc(s / 2.0, s / 2.0, s / 3.0, -Math.PI / 4.0, Math.PI / 4.0 * 5.0, false);
+      context.moveTo(s / 2.0, s / 2.0);
+      context.lineTo(s / 2.0, s / 8.0);
+
+      context.strokeStyle = j ? colors.accent : "#888";
+      context.lineWidth = s / 12.0;
+      context.stroke();
     });
-    for (var i = 1; i < arr.length; i++) {
-      context.lineTo(s / 8.0 + s / 4.0 * 3.0 * i / arr.length, s / 8.0 * 7.0 - s / 4.0 * 3.0 * arr[i]);
-    }
+  };
 
-    context.strokeStyle = colors.accent;
-    context.lineWidth = s / 16.0;
-    context.stroke();
-  });
+  for (var j = 0; j < 2; j++) {
+    _loop2(j);
+  }
 
-  images.exp = genImage(function () {
-    context.beginPath();
-    context.moveTo(s / 8.0, s / 8.0 * 7.0);
-    var arr = _interpolator2.default.generate({
-      mode: _interpolator2.default.MODE_EXP
+  images.mods[_interpolator2.default.MOD_SIN] = [];
+
+  var _loop3 = function _loop3(_j) {
+    images.mods[_interpolator2.default.MOD_SIN][_j] = genImage(function () {
+      context.beginPath();
+      context.moveTo(s / 8.0, s / 2.0);
+      var arr = _interpolator2.default.generate({
+        mode: _interpolator2.default.MODE_LINEAR,
+        start: 0.5,
+        end: 0.5,
+        mods: [null, { active: true }, null]
+      });
+      for (var _i2 = 1; _i2 < arr.length; _i2++) {
+        context.lineTo(s / 8.0 + s / 4.0 * 3.0 * _i2 / arr.length, s / 8.0 * 7.0 - s / 4.0 * 3.0 * arr[_i2]);
+      }
+
+      context.strokeStyle = _j ? colors.accent : "#888";
+      context.lineWidth = s / 12.0;
+      context.stroke();
     });
-    for (var i = 1; i < arr.length; i++) {
-      context.lineTo(s / 8.0 + s / 4.0 * 3.0 * i / arr.length, s / 8.0 * 7.0 - s / 4.0 * 3.0 * arr[i]);
-    }
+  };
 
-    context.strokeStyle = colors.accent;
-    context.lineWidth = s / 16.0;
-    context.stroke();
-  });
+  for (var _j = 0; _j < 2; _j++) {
+    _loop3(_j);
+  }
 
-  images.spring = genImage(function () {
-    context.beginPath();
-    context.moveTo(s / 8.0, s / 8.0 * 7.0);
-    var arr = _interpolator2.default.generate({
-      mode: _interpolator2.default.MODE_SPRING
+  images.mods[_interpolator2.default.MOD_NOISE] = [];
+
+  var _loop4 = function _loop4(_j2) {
+    images.mods[_interpolator2.default.MOD_NOISE][_j2] = genImage(function () {
+      context.beginPath();
+      context.moveTo(s / 8.0, s / 2.0);
+      var arr = _interpolator2.default.generate({
+        mode: _interpolator2.default.MODE_LINEAR,
+        start: 0.5,
+        end: 0.5,
+        mods: [null, null, { active: true }]
+      });
+      for (var _i3 = 1; _i3 < arr.length; _i3++) {
+        context.lineTo(s / 8.0 + s / 4.0 * 3.0 * _i3 / arr.length, s / 8.0 * 7.0 - s / 4.0 * 3.0 * arr[_i3]);
+      }
+
+      context.strokeStyle = _j2 ? colors.accent : "#888";
+      context.lineWidth = s / 12.0;
+      context.stroke();
     });
-    for (var i = 1; i < arr.length; i++) {
-      context.lineTo(s / 8.0 + s / 4.0 * 3.0 * i / arr.length, s / 8.0 * 7.0 - s / 4.0 * 3.0 * arr[i]);
-    }
+  };
 
-    context.strokeStyle = colors.accent;
-    context.lineWidth = s / 16.0;
-    context.stroke();
-  });
-
-  images.gravity = genImage(function () {
-    context.beginPath();
-    context.moveTo(s / 8.0, s / 8.0 * 7.0);
-    var arr = _interpolator2.default.generate({
-      mode: _interpolator2.default.MODE_GRAVITY
-    });
-    for (var i = 1; i < arr.length; i++) {
-      context.lineTo(s / 8.0 + s / 4.0 * 3.0 * i / arr.length, s / 8.0 * 7.0 - s / 4.0 * 3.0 * arr[i]);
-    }
-
-    context.strokeStyle = colors.accent;
-    context.lineWidth = s / 16.0;
-    context.stroke();
-  });
+  for (var _j2 = 0; _j2 < 2; _j2++) {
+    _loop4(_j2);
+  }
 
   return images;
 };
@@ -914,6 +1026,14 @@ Object.defineProperty(exports, "__esModule", {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
+var _noise = require("./noise");
+
+var _noise2 = _interopRequireDefault(_noise);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// ------
+
 var def = function def(_a, _b) {
   return typeof _a === "number" ? _a : _b;
 };
@@ -924,12 +1044,22 @@ var Interpolator = {};
 
 // ------
 
-Interpolator.MODE_LINEAR = 0;
-Interpolator.MODE_SMOOTH = 1;
-Interpolator.MODE_EXP = 2;
-Interpolator.MODE_SPRING = 3;
-Interpolator.MODE_GRAVITY = 4;
-Interpolator.MODES = 5;
+Interpolator.MODE_HOLD = 0;
+Interpolator.MODE_LINEAR = 1;
+Interpolator.MODE_SMOOTH = 2;
+Interpolator.MODE_EXP = 3;
+Interpolator.MODE_SPRING = 4;
+Interpolator.MODE_GRAVITY = 5;
+Interpolator.MODES = 6;
+
+Interpolator.modeNames = ["Hold", "Linear", "Smoothstep", "Exp. Smooth", "Critically Damped Spring", "Gravity and Bounce"];
+
+Interpolator.MOD_RESET = 0;
+Interpolator.MOD_SIN = 1;
+Interpolator.MOD_NOISE = 2;
+Interpolator.MODS = 3;
+
+Interpolator.modNames = ["Reset", "Sine Curve", "Perlin Noise"];
 
 // ------
 
@@ -942,35 +1072,45 @@ Interpolator.generate = function (_params) {
   var length = def(params.length, 32);
   var deltaTime = def(params.deltaTime, 0.01);
 
+  var mods = _typeof(params.mods) === "object" ? params.mods : [];
+  for (var i = 0; i < Interpolator.MODS; i++) {
+    mods[i] = mods[i] ? mods[i] : { active: false };
+  }
+
   var arr = [start];
 
-  if (mode === Interpolator.MODE_LINEAR) {
-    for (var i = 1; i < length; i++) {
-      var prog = i / (length - 1);
-      arr[i] = start + (end - start) * prog;
+  if (mode === Interpolator.MODE_HOLD) {
+    for (var _i = 1; _i < length; _i++) {
+      arr[_i] = start;
+    }
+    arr[length - 1] = end;
+  } else if (mode === Interpolator.MODE_LINEAR) {
+    for (var _i2 = 1; _i2 < length; _i2++) {
+      var prog = _i2 / (length - 1);
+      arr[_i2] = start + (end - start) * prog;
     }
   } else if (mode === Interpolator.MODE_SMOOTH) {
-    for (var _i = 1; _i < length; _i++) {
-      var _prog = _i / (length - 1);
+    for (var _i3 = 1; _i3 < length; _i3++) {
+      var _prog = _i3 / (length - 1);
       var smooth = _prog * _prog * (3.0 - 2.0 * _prog);
-      arr[_i] = start + (end - start) * smooth;
+      arr[_i3] = start + (end - start) * smooth;
     }
   } else if (mode === Interpolator.MODE_EXP) {
     var factor = def(params.factor, 10.0);
-    for (var _i2 = 1; _i2 < length; _i2++) {
-      var time = _i2 * deltaTime;
+    for (var _i4 = 1; _i4 < length; _i4++) {
+      var time = _i4 * deltaTime;
       var curve = 1.0 - Math.exp(-factor * time);
-      arr[_i2] = start + (end - start) * curve;
+      arr[_i4] = start + (end - start) * curve;
     }
   } else if (mode === Interpolator.MODE_SPRING) {
     var rate = def(params.rate, 500.0);
     var damp = def(params.damp, 1.0);
     var vel = def(params.vel, 0.0);
     var pos = start;
-    for (var _i3 = 1; _i3 < length; _i3++) {
+    for (var _i5 = 1; _i5 < length; _i5++) {
       vel += (-rate * (pos - end) - 2.0 * vel * Math.sqrt(rate) * damp) * deltaTime;
       pos += vel * deltaTime;
-      arr[_i3] = pos;
+      arr[_i5] = pos;
     }
   } else if (mode === Interpolator.MODE_GRAVITY) {
     var gravity = def(params.gravity, 70.0);
@@ -978,14 +1118,40 @@ Interpolator.generate = function (_params) {
     var _vel = def(params.vel, 0.0);
     var sig = Math.sign(end - start);
     var _pos = start;
-    for (var _i4 = 1; _i4 < length; _i4++) {
+    for (var _i6 = 1; _i6 < length; _i6++) {
       _vel += gravity * sig * deltaTime;
       _pos += _vel * deltaTime;
       if (sig !== Math.sign(end - _pos)) {
         _pos = end + (end - _pos) * bounce;
         _vel *= -bounce;
       }
-      arr[_i4] = _pos;
+      arr[_i6] = _pos;
+    }
+  }
+
+  if (mods[Interpolator.MOD_SIN].active) {
+    var freq = def(mods[Interpolator.MOD_SIN].freq, 2.0);
+    var amp = def(mods[Interpolator.MOD_SIN].amp, 0.5);
+    var phase = def(mods[Interpolator.MOD_SIN].phase, 0.0);
+    for (var _i7 = 0; _i7 < length; _i7++) {
+      arr[_i7] += Math.sin(phase * Math.PI * 2.0) * amp;
+      phase = (phase + 1.0 / (length - 1) * freq) % 1.0;
+    }
+  }
+
+  if (mods[Interpolator.MOD_NOISE].active) {
+    var _amp = def(mods[Interpolator.MOD_NOISE].amp, 1.0);
+
+    var noise = (0, _noise2.default)({
+      length: length,
+      recursion: def(mods[Interpolator.MOD_NOISE].recursion, 3.0),
+      freq: def(mods[Interpolator.MOD_NOISE].freq, 1.0) * (length - 1) / length,
+      reso: def(mods[Interpolator.MOD_NOISE].reso, 4.0),
+      seed: def(mods[Interpolator.MOD_NOISE].seed, 175.0)
+    });
+
+    for (var _i8 = 0; _i8 < length; _i8++) {
+      arr[_i8] += noise[_i8] * _amp;
     }
   }
 
@@ -996,7 +1162,7 @@ Interpolator.generate = function (_params) {
 
 exports.default = Interpolator;
 
-},{}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/script/main.js":[function(require,module,exports){
+},{"./noise":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/script/noise.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/script/main.js":[function(require,module,exports){
 "use strict";
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
@@ -1080,7 +1246,66 @@ if (typeof module !== "undefined") {
 	module.exports = Automaton;
 }
 
-},{"./gui":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/script/gui.js","./param":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/script/param.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/script/param.js":[function(require,module,exports){
+},{"./gui":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/script/gui.js","./param":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/script/param.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/script/noise.js":[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
+var _xorshift = require("./xorshift");
+
+var _xorshift2 = _interopRequireDefault(_xorshift);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var int = function int(_a, _b, _k) {
+  var smooth = _k * _k * (3.0 - 2.0 * _k);
+  return _a + (_b - _a) * smooth;
+};
+
+var genNoise = function genNoise(_params) {
+  var params = (typeof _params === "undefined" ? "undefined" : _typeof(_params)) === "object" ? _params : {
+    length: 32,
+    recursion: 6,
+    freq: 1.0,
+    reso: 4,
+    seed: 0
+  };
+  params.length = parseInt(params.length);
+  params.recursion = parseInt(params.recursion);
+  params.reso = parseInt(params.reso);
+  params.seed = parseInt(params.seed);
+
+  var table = [0];
+  (0, _xorshift2.default)(params.seed);
+  for (var i = 1; i < params.reso; i++) {
+    table[i] = (0, _xorshift2.default)() * 2.0 - 1.0;
+  }
+  table.push(table[0]);
+
+  var arr = [];
+  for (var _i = 0; _i < params.length; _i++) {
+    arr[_i] = 0.0;
+    var prog = _i / params.length;
+    for (var j = 0; j < params.recursion; j++) {
+      var index = prog * params.freq * params.reso * Math.pow(2.0, j) % params.reso;
+      var indexi = Math.floor(index);
+      var indexf = index % 1.0;
+      var amp = Math.pow(2.0, -j - 1.0);
+
+      arr[_i] += amp * int(table[indexi], table[indexi + 1], indexf);
+    }
+  }
+
+  return arr;
+};
+
+exports.default = genNoise;
+
+},{"./xorshift":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/script/xorshift.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/script/param.js":[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1096,6 +1321,14 @@ var _interpolator2 = _interopRequireDefault(_interpolator);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var cloneObj = function cloneObj(_obj) {
+	var obj = {};
+	for (var key in _obj) {
+		obj[key] = _obj[key];
+	}
+	return obj;
+};
 
 var AutomatonParam = function () {
 	function AutomatonParam(_automaton) {
@@ -1139,7 +1372,7 @@ var AutomatonParam = function () {
 				var endt = param.nodes[i].time;
 				var endi = Math.floor(endt * param.automaton.resolution);
 
-				var reset = i === 1 || param.nodes[i].mods.reset;
+				var reset = i === 1 || param.nodes[i].mods[_interpolator2.default.MOD_RESET].active;
 				var deltaTime = 1.0 / param.automaton.resolution * param.automaton.length;
 
 				var iparam = {
@@ -1148,7 +1381,8 @@ var AutomatonParam = function () {
 					end: param.nodes[i].value,
 					deltaTime: deltaTime,
 					length: endi - starti + 1,
-					vel: 2 < param.values.length ? (param.values[param.values.length - 1] - param.values[param.values.length - 2]) / deltaTime : 0.0
+					vel: !reset && 2 < param.values.length ? (param.values[param.values.length - 1] - param.values[param.values.length - 2]) / deltaTime : 0.0,
+					mods: param.nodes[i].mods
 				};
 				for (var key in param.nodes[i].params) {
 					iparam[key] = param.nodes[i].params[key];
@@ -1172,7 +1406,21 @@ var AutomatonParam = function () {
 				next = {
 					mode: _interpolator2.default.MODE_LINEAR,
 					params: {},
-					mods: {}
+					mods: [{ // reset
+						active: false
+					}, { // sin
+						active: false,
+						freq: 10.0,
+						amp: 0.1,
+						phase: 0.0
+					}, { // noise
+						active: false,
+						freq: 1.0,
+						amp: 0.2,
+						recursion: 6.0,
+						reso: 8.0,
+						seed: 1.0
+					}]
 				};
 			}
 
@@ -1180,8 +1428,10 @@ var AutomatonParam = function () {
 				time: _time,
 				value: _value,
 				mode: next.mode,
-				params: next.params,
-				mods: next.mods
+				params: cloneObj(next.params),
+				mods: next.mods.map(function (_obj) {
+					return cloneObj(_obj);
+				})
 			};
 			param.nodes.push(node);
 
@@ -1270,6 +1520,24 @@ var AutomatonParam = function () {
 			param.render();
 		}
 	}, {
+		key: "setModParams",
+		value: function setModParams(_index, _mod, _params) {
+			var param = this;
+
+			if (_index < 0 || param.nodes.length <= _index) {
+				return;
+			}
+			if (_mod < 0 || _interpolator2.default.MODS <= _mod) {
+				return;
+			}
+
+			for (var key in _params) {
+				param.nodes[_index].mods[_mod][key] = _params[key];
+			}
+
+			param.render();
+		}
+	}, {
 		key: "removeNode",
 		value: function removeNode(_index) {
 			var param = this;
@@ -1310,4 +1578,21 @@ var AutomatonParam = function () {
 
 exports.default = AutomatonParam;
 
-},{"./interpolator":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/script/interpolator.js"}]},{},["/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/script/main.js"]);
+},{"./interpolator":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/script/interpolator.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/script/xorshift.js":[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var seed = void 0;
+var xorshift = function xorshift(_seed) {
+  seed = _seed || seed || 1;
+  seed = seed ^ seed << 13;
+  seed = seed ^ seed >>> 17;
+  seed = seed ^ seed << 5;
+  return seed / Math.pow(2, 32) + 0.5;
+};
+
+exports.default = xorshift;
+
+},{}]},{},["/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/script/main.js"]);

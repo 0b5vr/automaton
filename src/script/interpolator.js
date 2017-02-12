@@ -1,3 +1,7 @@
+import genNoise from "./noise";
+
+// ------
+
 let def = ( _a, _b ) => {
   return typeof _a === "number" ? _a : _b;
 };
@@ -8,12 +12,33 @@ let Interpolator = {};
 
 // ------
 
-Interpolator.MODE_LINEAR = 0;
-Interpolator.MODE_SMOOTH = 1;
-Interpolator.MODE_EXP = 2;
-Interpolator.MODE_SPRING = 3;
-Interpolator.MODE_GRAVITY = 4;
-Interpolator.MODES = 5;
+Interpolator.MODE_HOLD = 0;
+Interpolator.MODE_LINEAR = 1;
+Interpolator.MODE_SMOOTH = 2;
+Interpolator.MODE_EXP = 3;
+Interpolator.MODE_SPRING = 4;
+Interpolator.MODE_GRAVITY = 5;
+Interpolator.MODES = 6;
+
+Interpolator.modeNames = [
+  "Hold",
+  "Linear",
+  "Smoothstep",
+  "Exp. Smooth",
+  "Critically Damped Spring",
+  "Gravity and Bounce"
+];
+
+Interpolator.MOD_RESET = 0;
+Interpolator.MOD_SIN = 1;
+Interpolator.MOD_NOISE = 2;
+Interpolator.MODS = 3;
+
+Interpolator.modNames = [
+  "Reset",
+  "Sine Curve",
+  "Perlin Noise"
+];
 
 // ------
 
@@ -25,10 +50,20 @@ Interpolator.generate = ( _params ) => {
   let end = def( params.end, 1.0 );
   let length = def( params.length, 32 );
   let deltaTime = def( params.deltaTime, 0.01 );
+  
+  let mods = typeof params.mods === "object" ? params.mods : [];
+  for ( let i = 0; i < Interpolator.MODS; i ++ ) {
+    mods[ i ] = mods[ i ] ? mods[ i ] : { active: false };
+  }
 
   let arr = [ start ];
 
-  if ( mode === Interpolator.MODE_LINEAR ) {
+  if ( mode === Interpolator.MODE_HOLD ) {
+    for ( let i = 1; i < length; i ++ ) {
+      arr[ i ] = start;
+    }
+    arr[ length - 1 ] = end;
+  } else if ( mode === Interpolator.MODE_LINEAR ) {
     for ( let i = 1; i < length; i ++ ) {
       let prog = i / ( length - 1 );
       arr[ i ] = start + ( end - start ) * prog;
@@ -70,6 +105,32 @@ Interpolator.generate = ( _params ) => {
         vel *= -bounce;
       }
       arr[ i ] = pos;
+    }
+  }
+
+  if ( mods[ Interpolator.MOD_SIN ].active ) {
+    let freq = def( mods[ Interpolator.MOD_SIN ].freq, 2.0 );
+    let amp = def( mods[ Interpolator.MOD_SIN ].amp, 0.5 );
+    let phase = def( mods[ Interpolator.MOD_SIN ].phase, 0.0 );
+    for ( let i = 0; i < length; i ++ ) {
+      arr[ i ] += Math.sin( phase * Math.PI * 2.0 ) * amp;
+      phase = ( phase + 1.0 / ( length - 1 ) * freq ) % 1.0;
+    }
+  }
+
+  if ( mods[ Interpolator.MOD_NOISE ].active ) {
+    let amp = def( mods[ Interpolator.MOD_NOISE ].amp, 1.0 );
+
+    let noise = genNoise( {
+      length: length,
+      recursion: def( mods[ Interpolator.MOD_NOISE ].recursion, 3.0 ),
+      freq: def( mods[ Interpolator.MOD_NOISE ].freq, 1.0 ) * ( length - 1 ) / length,
+      reso: def( mods[ Interpolator.MOD_NOISE ].reso, 4.0 ),
+      seed: def( mods[ Interpolator.MOD_NOISE ].seed, 175.0 )
+    } );
+
+    for ( let i = 0; i < length; i ++ ) {
+      arr[ i ] += noise[ i ] * amp;
     }
   }
 
