@@ -39,9 +39,6 @@ let Inspector = () => {
 	let inspector = {};
 	let text = "";
 
-  colors = genColors();
-  images = genImages();
-
 	let mouseX = 0;
 	let mouseY = 0;
 
@@ -55,7 +52,7 @@ let Inspector = () => {
 		background: "#000",
 		color: "#fff",
 		opacity: "0.0"
-	}, document.body );
+	} );
 
 	window.addEventListener( "mousemove", ( _event ) => {
 		mouseX = _event.clientX;
@@ -146,6 +143,13 @@ let AutomatonGUI = ( _automaton ) => {
 
 	// ------
 
+	colors = genColors();
+  images = genImages();
+
+	gui.inspector = Inspector();
+
+	// ------
+
 	let GUI_HEIGHT = 240;
 	gui.parent = el( "div", {
 		position: "fixed",
@@ -162,6 +166,8 @@ let AutomatonGUI = ( _automaton ) => {
 		fontFamily: "Helvetica Neue, sans-serif"
 	}, document.body );
 
+	// ------
+
 	let HEADER_HEIGHT = 30;
 	gui.header = el( "div", {
 		position: "absolute",
@@ -172,6 +178,34 @@ let AutomatonGUI = ( _automaton ) => {
 
 		background: "#444"
 	}, gui.parent );
+
+	let addHeaderButton = ( image, inspector, func ) => {
+		let e = el( "img", {
+			width: "24px",
+			height: "24px",
+			margin: "3px",
+
+			cursor: "pointer"
+		}, gui.header );
+
+		e.src = image;
+		gui.inspector.add( e, inspector, 0.5 );
+		e.addEventListener( "click", ( _event ) => {
+			if ( _event.which === 1 ) {
+				func();
+			}
+		} );
+	};
+
+	addHeaderButton( images.config, "Config", () => {
+		gui.config();
+	} );
+
+	addHeaderButton( images.save, "Save", () => {
+		gui.save();
+	} );
+
+	// ------
 
 	let PARAMLIST_WIDTH = 120;
 	gui.paramList = el( "div", {
@@ -223,7 +257,8 @@ let AutomatonGUI = ( _automaton ) => {
 	gui.modMenuInside = el( "div", {
 		position: "absolute",
 		top: "0px",
-		width: "100%"
+		width: "calc( 100% - 20px )",
+		padding: "20px 10px"
 	}, gui.modMenu );
 	let modMenuInsidePos = 0;
 	gui.modMenuInside.addEventListener( "wheel", ( _event ) => {
@@ -258,8 +293,242 @@ let AutomatonGUI = ( _automaton ) => {
 	gui.timelineContext = gui.timelineCanvas.getContext( "2d" );
 
 	// ------
+	
+	gui.dialogContainer = el( "div", {
+		position: "absolute",
+		display: "none",
+		width: "100%",
+		height: "100%"
+	}, gui.parent );
 
-	gui.inspector = Inspector();
+	gui.dialogBackground = el( "div", {
+		position: "absolute",
+		width: "100%",
+		height: "100%",
+		
+		background: "#000",
+		opacity: 0.5
+	}, gui.dialogContainer );
+
+	gui.dialog = el( "div", {
+		position: "absolute",
+
+		background: "#333"
+	}, gui.dialogContainer );
+
+	gui.dialogContent = el( "div", {
+		position: "absolute",
+		top: "16px",
+		width: "100%",
+		height: "24px",
+
+		textAlign: "center",
+		whiteSpace: "pre-wrap"
+	}, gui.dialog );
+
+	gui.dialogButtonContainer = el( "div", {
+		position: "absolute",
+		bottom: "16px",
+		width: "100%",
+		height: "24px",
+
+		textAlign: "center"
+	}, gui.dialog );
+
+	gui.addDialogButton = ( _text, _func ) => {
+		let e = el( "div", {
+			display: "inline-block",
+			width: "60px",
+			height: "16px",
+			padding: "4px",
+			margin: "0 5px",
+
+			textAlign: "center",
+			background: "#555",
+
+			cursor: "pointer"
+		}, gui.dialogButtonContainer );
+		e.innerText = _text;
+
+		e.addEventListener( "click", ( _event ) => {
+			if ( _event.which === 1 ) {
+				_func();
+			}
+		} );
+	};
+
+	gui.showDialog = ( w, h ) => {
+		el( gui.dialogContainer, { display: "block" } );
+		el( gui.dialog, {
+			left: "calc( 50% - " + w / 2 + "px )",
+			top: "calc( 50% - " + h / 2 + "px )",
+			height: "",
+			width: w + "px",
+			height: h + "px"
+		} );
+	};
+
+	gui.hideDialog = () => {
+		el( gui.dialogContainer, { display: "none" } );
+
+		while ( gui.dialogContent.firstChild ) {
+			gui.dialogContent.removeChild( gui.dialogContent.firstChild );
+		}
+
+		while ( gui.dialogButtonContainer.firstChild ) {
+			gui.dialogButtonContainer.removeChild( gui.dialogButtonContainer.firstChild );
+		}
+	};
+	window.addEventListener( "keydown", ( _event ) => {
+		if ( _event. which === 27 ) {
+			gui.hideDialog();
+		}
+	} );
+
+	// ------
+
+	gui.configLength = ( _len ) => {
+		gui.automaton.length = _len;
+
+		for ( let paramName in gui.automaton.params ) {
+			let param = gui.automaton.params[ paramName ];
+
+			for ( let iNode = param.nodes.length - 1; 0 < iNode; iNode -- ) {
+				let node = param.nodes[ iNode ];
+				if ( _len < node.time ) {
+					param.nodes.splice( iNode, 1 );
+				}
+			}
+
+			let lastNode = param.nodes[ param.nodes.length - 1 ];
+			if ( lastNode.time !== _len ) {
+				param.addNode( _len, 0.0 );
+			}
+		}
+	};
+
+	gui.configConfirm = ( _len ) => {
+		let divMessage = el( "div", {}, gui.dialogContent );
+		divMessage.innerText = "Shortening length may cause loss of node data.\nContinue?";
+
+		gui.addDialogButton( "Shorten", () => {
+			gui.configLength( _len );
+			gui.hideDialog();
+		} );
+		gui.addDialogButton( "Cancel", () => {
+			gui.hideDialog();
+		} );
+		gui.showDialog( 400, 100 );
+	};
+
+	gui.config = () => {
+		let inp = ( _name, _value ) => {
+			let parent = el( "div", {
+				position: "relative",
+				width: "200px",
+				height: "20px",
+				margin: "0 20px 10px 20px"
+			}, gui.dialogContent );
+
+			let label = el( "div", {
+				position: "absolute",
+				left: "0"
+			}, parent );
+			label.innerText = _name;
+
+			let input = el( "input", {
+				position: "absolute",
+				right: "0",
+				padding: "4px",
+				width: "60px",
+				border: "none",
+
+				background: "#666",
+				color: "#fff"
+			}, parent );
+			input.value = _value;
+			input.addEventListener( "keydown", ( event ) => {
+				if ( event.which === 13 ) {
+					event.preventDefault();
+					okFunc();
+				}
+			} );
+
+			return {
+				parent: parent,
+				label: label,
+				input: input
+			};
+		};
+
+		let okFunc = () => {
+			gui.hideDialog();
+
+			let l = parseFloat( inpLen.input.value );
+			if ( !isNaN( l ) ) {
+				if ( l < gui.automaton.length ) {
+					gui.configConfirm( l );
+				} else {
+					gui.configLength( l );
+				}
+			}
+
+			let r = parseInt( inpReso.input.value );
+			if ( !isNaN( r ) ) {
+				gui.automaton.resolution = r;
+			}
+
+			gui.automaton.renderAll();
+		};
+
+		let inpLen = inp( "Length", gui.automaton.length );
+		let inpReso = inp( "Resolution", gui.automaton.resolution );
+
+		gui.addDialogButton( "OK", okFunc );
+		gui.addDialogButton( "Cancel", () => {
+			gui.hideDialog();
+		} );
+		gui.showDialog( 240, 120 );
+	};
+
+	// ------
+
+	gui.save = () => {
+		let obj = {
+			length: gui.automaton.length,
+			resolution: gui.automaton.resolution,
+		};
+
+		obj.params = {};
+		for ( let name in gui.automaton.params ) {
+			let param = gui.automaton.params[ name ];
+			obj.params[ name ] = param.nodes;
+		}
+
+		// ------
+
+		let divMessage = el( "div", {}, gui.dialogContent );
+		divMessage.innerText = "Copy the JSON below";
+
+		let inputJSON = el( "input", {
+			margin: "10px",
+			padding: "4px",
+			width: "100px",
+			border: "none",
+
+			background: "#666",
+			color: "#fff"
+		}, gui.dialogContent );
+		inputJSON.value = JSON.stringify( obj );
+		inputJSON.readOnly = true;
+
+		gui.addDialogButton( "OK", () => {
+			gui.hideDialog();
+		} );
+		gui.showDialog( 200, 120 );
+
+		inputJSON.select();
+	};
 
 	// ------
 
@@ -337,42 +606,42 @@ let AutomatonGUI = ( _automaton ) => {
 		gui.selectTimelineNode( _index );
 	};
 
+	let lastClick = 0;
 	gui.timelineCanvas.addEventListener( "mousedown", ( _event ) => {
 		let param = gui.currentParam;
+		if ( !param ) { return; }
 
 		let rect = gui.timeline.getBoundingClientRect();
 		
-		param.nodes.map( ( node, index ) => {
-			let x = gui.mapTime( node.time );
-			let y = gui.mapValue( node.value );
-			if ( dist( x, y, _event.clientX - rect.left, _event.clientY - rect.top ) < gui.timelineNodeRadius ) {
-				gui.grabTimelineNode( index );
-			}
-		} );
-	} );
+		let now = +new Date();
+		if ( now - lastClick < 500 ) {
+			let removed = false;
+			param.nodes.map( ( node, index ) => {
+				let x = gui.mapTime( node.time );
+				let y = gui.mapValue( node.value );
+				if ( dist( x, y, _event.clientX - rect.left, _event.clientY - rect.top ) < gui.timelineNodeRadius ) {
+					param.removeNode( index );
+					gui.selectTimelineNode( -1 );
+					removed = true;
+				}
+			} );
+			if ( removed ) { return; }
 
-	gui.timelineCanvas.addEventListener( "dblclick", ( _event ) => {
-		let param = gui.currentParam;
-
-		let rect = gui.timeline.getBoundingClientRect();
-
-		let removed = false;
-		param.nodes.map( ( node, index ) => {
-			let x = gui.mapTime( node.time );
-			let y = gui.mapValue( node.value );
-			if ( dist( x, y, _event.clientX - rect.left, _event.clientY - rect.top ) < gui.timelineNodeRadius ) {
-				param.removeNode( index );
-				gui.selectTimelineNode( -1 );
-				removed = true;
-			}
-		} );
-		if ( removed ) { return; }
-
-		let node = param.addNode(
-			gui.rmapTime( _event.clientX - rect.left ),
-			gui.rmapValue( _event.clientY - rect.top )
-		);
-		gui.selectTimelineNode( param.nodes.indexOf( node ) );
+			let node = param.addNode(
+				gui.rmapTime( _event.clientX - rect.left ),
+				gui.rmapValue( _event.clientY - rect.top )
+			);
+			gui.grabTimelineNode( param.nodes.indexOf( node ) );
+		} else {
+			param.nodes.map( ( node, index ) => {
+				let x = gui.mapTime( node.time );
+				let y = gui.mapValue( node.value );
+				if ( dist( x, y, _event.clientX - rect.left, _event.clientY - rect.top ) < gui.timelineNodeRadius ) {
+					gui.grabTimelineNode( index );
+				}
+			} );
+		}
+		lastClick = now;
 	} );
 
 	window.addEventListener( "mousemove", ( _event ) => {
@@ -506,39 +775,11 @@ let AutomatonGUI = ( _automaton ) => {
 			el( "div", {
 				width: "170px",
 				height: "1px",
-				margin: "0 15px 5px 15px",
+				margin: "0 5px 5px 5px",
 
 				background: "#666"
 			}, gui.modMenuInside );
 		};
-
-		// ------
-
-		let modesContainer = el( "div", {
-			margin: "10px 10px 0 10px",
-			width: "180px"
-		}, gui.modMenuInside );
-
-		let selectedMode = node.mode;
-		let modeEls = [];
-		for ( let i = 0; i < Interpolator.MODES; i ++ ) {
-			let e = el( "img", {
-				width: "32px",
-				height: "32px",
-
-				margin: "2px",
-
-				userSelect: "none",
-				cursor: "pointer"
-			}, modesContainer );
-			modeEls.push( e );
-			e.src = images.modes[ i ][ i === selectedMode ? 1 : 0 ];
-			e.addEventListener( "mousedown", ( _event ) => {
-				param.setMode( gui.selectedTimelineNode, i );
-				gui.resetModMenu();
-			} );
-			gui.inspector.add( e, Interpolator.modeNames[ i ], 0.5 );
-		}
 
 		// ------
 
@@ -558,8 +799,8 @@ let AutomatonGUI = ( _automaton ) => {
 
 			let parent = el( "div", {
 				position: "relative",
-				margin: "0 10px 5px 10px",
-				width: "calc( 100% - 20px )",
+				margin: "0 0 5px 0",
+				width: "100%",
 				height: "14px",
 
 				fontSize: "12px"
@@ -591,14 +832,12 @@ let AutomatonGUI = ( _automaton ) => {
 
 				textAlign: "center",
 
-				userSelect: "none",
 				cursor: "pointer"
 			}, value );
 			let lastClick = 0;
 			valueText.addEventListener( "mousedown", ( event ) => {
 				let now = +new Date();
 				if ( now - lastClick < 500 ) {
-				console.log( lastClick );
 					el( valueBox, { display: "block" } );
 					setTimeout( () => valueBox.focus(), 10 );
 				} else {
@@ -677,8 +916,6 @@ let AutomatonGUI = ( _automaton ) => {
 
 		// ------
 
-		sep();
-
 		genParamBox( "time", () => { return node.time }, ( value ) => {
 			return param.setTime( gui.selectedTimelineNode, value );
 		}, gui.modMenuInside );
@@ -688,7 +925,36 @@ let AutomatonGUI = ( _automaton ) => {
 		}, gui.modMenuInside );
 
 		sep();
-		
+
+		// ------
+
+		let modesContainer = el( "div", {
+			margin: "5px 5px 0 5px",
+			width: "180px"
+		}, gui.modMenuInside );
+
+		let selectedMode = node.mode;
+		let modeEls = [];
+		for ( let i = 0; i < Interpolator.MODES; i ++ ) {
+			let e = el( "img", {
+				width: "30px",
+				height: "30px",
+
+				margin: "2px",
+
+				cursor: "pointer",
+
+				filter: i === selectedMode ? "" : "grayscale( 90% )"
+			}, modesContainer );
+			modeEls.push( e );
+			e.src = images.modes[ i ];
+			e.addEventListener( "mousedown", ( _event ) => {
+				param.setMode( gui.selectedTimelineNode, i );
+				gui.resetModMenu();
+			} );
+			gui.inspector.add( e, Interpolator.modeNames[ i ], 0.5 );
+		}
+
 		for ( let p in node.params ) {
 			genParamBox( p, () => { return node.params[ p ] }, ( value ) => {
 				let obj = {};
@@ -702,8 +968,8 @@ let AutomatonGUI = ( _automaton ) => {
 		for ( let m = 0; m < Interpolator.MODS; m ++ ) {
 			let parent = el( "div", {
 				position: "relative",
-				margin: "0 10px 20px 10px",
-				width: "calc( 100% - 20px )",
+				margin: "10px 0 20px 0",
+				width: "100%",
 				minHeight: "24px"
 			}, gui.modMenuInside );
 
@@ -714,27 +980,25 @@ let AutomatonGUI = ( _automaton ) => {
 
 				left: "10px",
 
-				userSelect: "none",
-				cursor: "pointer"
+				cursor: "pointer",
+
+				filter: node.mods[ m ] ? "" : "grayscale( 90% )"
 			}, parent );
-			icon.src = images.mods[ m ][ node.mods[ m ].active ? 1 : 0 ];
+			icon.src = images.mods[ m ];
 			icon.addEventListener( "mousedown", ( _event ) => {
-				param.setModParams( gui.selectedTimelineNode, m, {
-					active: !node.mods[ m ].active
-				} );
+				param.activeModParams( gui.selectedTimelineNode, m, !node.mods[ m ] );
 				gui.resetModMenu();
 			} );
 			gui.inspector.add( icon, Interpolator.modNames[ m ], 0.5 );
 
-			if ( node.mods[ m ].active ) {
+			if ( node.mods[ m ] ) {
 				let params = el( "div", {
 					position: "relative",
-					left: "20px",
-					width: "170px"
+					left: "30px",
+					width: "calc( 100% - 30px )"
 				}, parent );
 
 				for ( let p in node.mods[ m ] ) {
-					if ( p === "active" ) { continue; }
 					genParamBox( p, () => { return node.mods[ m ][ p ] }, ( value ) => {
 						let obj = {};
 						obj[ p ] = value;
@@ -774,6 +1038,12 @@ let AutomatonGUI = ( _automaton ) => {
 
 		gui.selectTimelineNode( -1 );
 	}
+
+	// ------
+
+	el( gui.inspector.el, {}, document.body );
+
+	// ------
 
 	gui.update = () => {
 		gui.updateTimeline();

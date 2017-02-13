@@ -36,6 +36,8 @@ var _interpolator2 = _interopRequireDefault(_interpolator);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 // ------
 
 var colors = void 0;
@@ -72,9 +74,6 @@ var Inspector = function Inspector() {
 	var inspector = {};
 	var text = "";
 
-	colors = (0, _colors2.default)();
-	images = (0, _images2.default)();
-
 	var mouseX = 0;
 	var mouseY = 0;
 
@@ -88,7 +87,7 @@ var Inspector = function Inspector() {
 		background: "#000",
 		color: "#fff",
 		opacity: "0.0"
-	}, document.body);
+	});
 
 	window.addEventListener("mousemove", function (_event) {
 		mouseX = _event.clientX;
@@ -183,6 +182,13 @@ var AutomatonGUI = function AutomatonGUI(_automaton) {
 
 	// ------
 
+	colors = (0, _colors2.default)();
+	images = (0, _images2.default)();
+
+	gui.inspector = Inspector();
+
+	// ------
+
 	var GUI_HEIGHT = 240;
 	gui.parent = el("div", {
 		position: "fixed",
@@ -199,6 +205,8 @@ var AutomatonGUI = function AutomatonGUI(_automaton) {
 		fontFamily: "Helvetica Neue, sans-serif"
 	}, document.body);
 
+	// ------
+
 	var HEADER_HEIGHT = 30;
 	gui.header = el("div", {
 		position: "absolute",
@@ -209,6 +217,34 @@ var AutomatonGUI = function AutomatonGUI(_automaton) {
 
 		background: "#444"
 	}, gui.parent);
+
+	var addHeaderButton = function addHeaderButton(image, inspector, func) {
+		var e = el("img", {
+			width: "24px",
+			height: "24px",
+			margin: "3px",
+
+			cursor: "pointer"
+		}, gui.header);
+
+		e.src = image;
+		gui.inspector.add(e, inspector, 0.5);
+		e.addEventListener("click", function (_event) {
+			if (_event.which === 1) {
+				func();
+			}
+		});
+	};
+
+	addHeaderButton(images.config, "Config", function () {
+		gui.config();
+	});
+
+	addHeaderButton(images.save, "Save", function () {
+		gui.save();
+	});
+
+	// ------
 
 	var PARAMLIST_WIDTH = 120;
 	gui.paramList = el("div", {
@@ -254,7 +290,8 @@ var AutomatonGUI = function AutomatonGUI(_automaton) {
 	gui.modMenuInside = el("div", {
 		position: "absolute",
 		top: "0px",
-		width: "100%"
+		width: "calc( 100% - 20px )",
+		padding: "20px 10px"
 	}, gui.modMenu);
 	var modMenuInsidePos = 0;
 	gui.modMenuInside.addEventListener("wheel", function (_event) {
@@ -283,7 +320,240 @@ var AutomatonGUI = function AutomatonGUI(_automaton) {
 
 	// ------
 
-	gui.inspector = Inspector();
+	gui.dialogContainer = el("div", {
+		position: "absolute",
+		display: "none",
+		width: "100%",
+		height: "100%"
+	}, gui.parent);
+
+	gui.dialogBackground = el("div", {
+		position: "absolute",
+		width: "100%",
+		height: "100%",
+
+		background: "#000",
+		opacity: 0.5
+	}, gui.dialogContainer);
+
+	gui.dialog = el("div", {
+		position: "absolute",
+
+		background: "#333"
+	}, gui.dialogContainer);
+
+	gui.dialogContent = el("div", {
+		position: "absolute",
+		top: "16px",
+		width: "100%",
+		height: "24px",
+
+		textAlign: "center",
+		whiteSpace: "pre-wrap"
+	}, gui.dialog);
+
+	gui.dialogButtonContainer = el("div", {
+		position: "absolute",
+		bottom: "16px",
+		width: "100%",
+		height: "24px",
+
+		textAlign: "center"
+	}, gui.dialog);
+
+	gui.addDialogButton = function (_text, _func) {
+		var e = el("div", {
+			display: "inline-block",
+			width: "60px",
+			height: "16px",
+			padding: "4px",
+			margin: "0 5px",
+
+			textAlign: "center",
+			background: "#555",
+
+			cursor: "pointer"
+		}, gui.dialogButtonContainer);
+		e.innerText = _text;
+
+		e.addEventListener("click", function (_event) {
+			if (_event.which === 1) {
+				_func();
+			}
+		});
+	};
+
+	gui.showDialog = function (w, h) {
+		el(gui.dialogContainer, { display: "block" });
+		el(gui.dialog, _defineProperty({
+			left: "calc( 50% - " + w / 2 + "px )",
+			top: "calc( 50% - " + h / 2 + "px )",
+			height: "",
+			width: w + "px"
+		}, "height", h + "px"));
+	};
+
+	gui.hideDialog = function () {
+		el(gui.dialogContainer, { display: "none" });
+
+		while (gui.dialogContent.firstChild) {
+			gui.dialogContent.removeChild(gui.dialogContent.firstChild);
+		}
+
+		while (gui.dialogButtonContainer.firstChild) {
+			gui.dialogButtonContainer.removeChild(gui.dialogButtonContainer.firstChild);
+		}
+	};
+	window.addEventListener("keydown", function (_event) {
+		if (_event.which === 27) {
+			gui.hideDialog();
+		}
+	});
+
+	// ------
+
+	gui.configLength = function (_len) {
+		gui.automaton.length = _len;
+
+		for (var paramName in gui.automaton.params) {
+			var param = gui.automaton.params[paramName];
+
+			for (var iNode = param.nodes.length - 1; 0 < iNode; iNode--) {
+				var node = param.nodes[iNode];
+				if (_len < node.time) {
+					param.nodes.splice(iNode, 1);
+				}
+			}
+
+			var lastNode = param.nodes[param.nodes.length - 1];
+			if (lastNode.time !== _len) {
+				param.addNode(_len, 0.0);
+			}
+		}
+	};
+
+	gui.configConfirm = function (_len) {
+		var divMessage = el("div", {}, gui.dialogContent);
+		divMessage.innerText = "Shortening length may cause loss of node data.\nContinue?";
+
+		gui.addDialogButton("Shorten", function () {
+			gui.configLength(_len);
+			gui.hideDialog();
+		});
+		gui.addDialogButton("Cancel", function () {
+			gui.hideDialog();
+		});
+		gui.showDialog(400, 100);
+	};
+
+	gui.config = function () {
+		var inp = function inp(_name, _value) {
+			var parent = el("div", {
+				position: "relative",
+				width: "200px",
+				height: "20px",
+				margin: "0 20px 10px 20px"
+			}, gui.dialogContent);
+
+			var label = el("div", {
+				position: "absolute",
+				left: "0"
+			}, parent);
+			label.innerText = _name;
+
+			var input = el("input", {
+				position: "absolute",
+				right: "0",
+				padding: "4px",
+				width: "60px",
+				border: "none",
+
+				background: "#666",
+				color: "#fff"
+			}, parent);
+			input.value = _value;
+			input.addEventListener("keydown", function (event) {
+				if (event.which === 13) {
+					event.preventDefault();
+					okFunc();
+				}
+			});
+
+			return {
+				parent: parent,
+				label: label,
+				input: input
+			};
+		};
+
+		var okFunc = function okFunc() {
+			gui.hideDialog();
+
+			var l = parseFloat(inpLen.input.value);
+			if (!isNaN(l)) {
+				if (l < gui.automaton.length) {
+					gui.configConfirm(l);
+				} else {
+					gui.configLength(l);
+				}
+			}
+
+			var r = parseInt(inpReso.input.value);
+			if (!isNaN(r)) {
+				gui.automaton.resolution = r;
+			}
+
+			gui.automaton.renderAll();
+		};
+
+		var inpLen = inp("Length", gui.automaton.length);
+		var inpReso = inp("Resolution", gui.automaton.resolution);
+
+		gui.addDialogButton("OK", okFunc);
+		gui.addDialogButton("Cancel", function () {
+			gui.hideDialog();
+		});
+		gui.showDialog(240, 120);
+	};
+
+	// ------
+
+	gui.save = function () {
+		var obj = {
+			length: gui.automaton.length,
+			resolution: gui.automaton.resolution
+		};
+
+		obj.params = {};
+		for (var name in gui.automaton.params) {
+			var param = gui.automaton.params[name];
+			obj.params[name] = param.nodes;
+		}
+
+		// ------
+
+		var divMessage = el("div", {}, gui.dialogContent);
+		divMessage.innerText = "Copy the JSON below";
+
+		var inputJSON = el("input", {
+			margin: "10px",
+			padding: "4px",
+			width: "100px",
+			border: "none",
+
+			background: "#666",
+			color: "#fff"
+		}, gui.dialogContent);
+		inputJSON.value = JSON.stringify(obj);
+		inputJSON.readOnly = true;
+
+		gui.addDialogButton("OK", function () {
+			gui.hideDialog();
+		});
+		gui.showDialog(200, 120);
+
+		inputJSON.select();
+	};
 
 	// ------
 
@@ -371,41 +641,43 @@ var AutomatonGUI = function AutomatonGUI(_automaton) {
 		gui.selectTimelineNode(_index);
 	};
 
+	var lastClick = 0;
 	gui.timelineCanvas.addEventListener("mousedown", function (_event) {
 		var param = gui.currentParam;
-
-		var rect = gui.timeline.getBoundingClientRect();
-
-		param.nodes.map(function (node, index) {
-			var x = gui.mapTime(node.time);
-			var y = gui.mapValue(node.value);
-			if (dist(x, y, _event.clientX - rect.left, _event.clientY - rect.top) < gui.timelineNodeRadius) {
-				gui.grabTimelineNode(index);
-			}
-		});
-	});
-
-	gui.timelineCanvas.addEventListener("dblclick", function (_event) {
-		var param = gui.currentParam;
-
-		var rect = gui.timeline.getBoundingClientRect();
-
-		var removed = false;
-		param.nodes.map(function (node, index) {
-			var x = gui.mapTime(node.time);
-			var y = gui.mapValue(node.value);
-			if (dist(x, y, _event.clientX - rect.left, _event.clientY - rect.top) < gui.timelineNodeRadius) {
-				param.removeNode(index);
-				gui.selectTimelineNode(-1);
-				removed = true;
-			}
-		});
-		if (removed) {
+		if (!param) {
 			return;
 		}
 
-		var node = param.addNode(gui.rmapTime(_event.clientX - rect.left), gui.rmapValue(_event.clientY - rect.top));
-		gui.selectTimelineNode(param.nodes.indexOf(node));
+		var rect = gui.timeline.getBoundingClientRect();
+
+		var now = +new Date();
+		if (now - lastClick < 500) {
+			var removed = false;
+			param.nodes.map(function (node, index) {
+				var x = gui.mapTime(node.time);
+				var y = gui.mapValue(node.value);
+				if (dist(x, y, _event.clientX - rect.left, _event.clientY - rect.top) < gui.timelineNodeRadius) {
+					param.removeNode(index);
+					gui.selectTimelineNode(-1);
+					removed = true;
+				}
+			});
+			if (removed) {
+				return;
+			}
+
+			var node = param.addNode(gui.rmapTime(_event.clientX - rect.left), gui.rmapValue(_event.clientY - rect.top));
+			gui.grabTimelineNode(param.nodes.indexOf(node));
+		} else {
+			param.nodes.map(function (node, index) {
+				var x = gui.mapTime(node.time);
+				var y = gui.mapValue(node.value);
+				if (dist(x, y, _event.clientX - rect.left, _event.clientY - rect.top) < gui.timelineNodeRadius) {
+					gui.grabTimelineNode(index);
+				}
+			});
+		}
+		lastClick = now;
 	});
 
 	window.addEventListener("mousemove", function (_event) {
@@ -541,44 +813,11 @@ var AutomatonGUI = function AutomatonGUI(_automaton) {
 			el("div", {
 				width: "170px",
 				height: "1px",
-				margin: "0 15px 5px 15px",
+				margin: "0 5px 5px 5px",
 
 				background: "#666"
 			}, gui.modMenuInside);
 		};
-
-		// ------
-
-		var modesContainer = el("div", {
-			margin: "10px 10px 0 10px",
-			width: "180px"
-		}, gui.modMenuInside);
-
-		var selectedMode = node.mode;
-		var modeEls = [];
-
-		var _loop = function _loop(i) {
-			var e = el("img", {
-				width: "32px",
-				height: "32px",
-
-				margin: "2px",
-
-				userSelect: "none",
-				cursor: "pointer"
-			}, modesContainer);
-			modeEls.push(e);
-			e.src = images.modes[i][i === selectedMode ? 1 : 0];
-			e.addEventListener("mousedown", function (_event) {
-				param.setMode(gui.selectedTimelineNode, i);
-				gui.resetModMenu();
-			});
-			gui.inspector.add(e, _interpolator2.default.modeNames[i], 0.5);
-		};
-
-		for (var i = 0; i < _interpolator2.default.MODES; i++) {
-			_loop(i);
-		}
 
 		// ------
 
@@ -598,8 +837,8 @@ var AutomatonGUI = function AutomatonGUI(_automaton) {
 
 			var parent = el("div", {
 				position: "relative",
-				margin: "0 10px 5px 10px",
-				width: "calc( 100% - 20px )",
+				margin: "0 0 5px 0",
+				width: "100%",
 				height: "14px",
 
 				fontSize: "12px"
@@ -631,14 +870,12 @@ var AutomatonGUI = function AutomatonGUI(_automaton) {
 
 				textAlign: "center",
 
-				userSelect: "none",
 				cursor: "pointer"
 			}, value);
 			var lastClick = 0;
 			valueText.addEventListener("mousedown", function (event) {
 				var now = +new Date();
 				if (now - lastClick < 500) {
-					console.log(lastClick);
 					el(valueBox, { display: "block" });
 					setTimeout(function () {
 						return valueBox.focus();
@@ -656,7 +893,7 @@ var AutomatonGUI = function AutomatonGUI(_automaton) {
 							if (event.shiftKey) {
 								var c = Math.abs(d);
 								var ds = Math.sign(d);
-								for (var _i = 0; _i < c; _i++) {
+								for (var i = 0; i < c; i++) {
 									var va = Math.abs(v);
 									var vs = Math.sign(v + 1E-4 * ds);
 									var l = Math.floor(Math.log10(va + 1E-4 * ds * vs)) - 1 - (event.altKey ? 1 : 0);
@@ -721,8 +958,6 @@ var AutomatonGUI = function AutomatonGUI(_automaton) {
 
 		// ------
 
-		sep();
-
 		genParamBox("time", function () {
 			return node.time;
 		}, function (value) {
@@ -736,6 +971,40 @@ var AutomatonGUI = function AutomatonGUI(_automaton) {
 		}, gui.modMenuInside);
 
 		sep();
+
+		// ------
+
+		var modesContainer = el("div", {
+			margin: "5px 5px 0 5px",
+			width: "180px"
+		}, gui.modMenuInside);
+
+		var selectedMode = node.mode;
+		var modeEls = [];
+
+		var _loop = function _loop(i) {
+			var e = el("img", {
+				width: "30px",
+				height: "30px",
+
+				margin: "2px",
+
+				cursor: "pointer",
+
+				filter: i === selectedMode ? "" : "grayscale( 90% )"
+			}, modesContainer);
+			modeEls.push(e);
+			e.src = images.modes[i];
+			e.addEventListener("mousedown", function (_event) {
+				param.setMode(gui.selectedTimelineNode, i);
+				gui.resetModMenu();
+			});
+			gui.inspector.add(e, _interpolator2.default.modeNames[i], 0.5);
+		};
+
+		for (var i = 0; i < _interpolator2.default.MODES; i++) {
+			_loop(i);
+		}
 
 		var _loop2 = function _loop2(p) {
 			genParamBox(p, function () {
@@ -756,8 +1025,8 @@ var AutomatonGUI = function AutomatonGUI(_automaton) {
 		var _loop3 = function _loop3(m) {
 			var parent = el("div", {
 				position: "relative",
-				margin: "0 10px 20px 10px",
-				width: "calc( 100% - 20px )",
+				margin: "10px 0 20px 0",
+				width: "100%",
 				minHeight: "24px"
 			}, gui.modMenuInside);
 
@@ -768,29 +1037,25 @@ var AutomatonGUI = function AutomatonGUI(_automaton) {
 
 				left: "10px",
 
-				userSelect: "none",
-				cursor: "pointer"
+				cursor: "pointer",
+
+				filter: node.mods[m] ? "" : "grayscale( 90% )"
 			}, parent);
-			icon.src = images.mods[m][node.mods[m].active ? 1 : 0];
+			icon.src = images.mods[m];
 			icon.addEventListener("mousedown", function (_event) {
-				param.setModParams(gui.selectedTimelineNode, m, {
-					active: !node.mods[m].active
-				});
+				param.activeModParams(gui.selectedTimelineNode, m, !node.mods[m]);
 				gui.resetModMenu();
 			});
 			gui.inspector.add(icon, _interpolator2.default.modNames[m], 0.5);
 
-			if (node.mods[m].active) {
+			if (node.mods[m]) {
 				var params = el("div", {
 					position: "relative",
-					left: "20px",
-					width: "170px"
+					left: "30px",
+					width: "calc( 100% - 30px )"
 				}, parent);
 
 				var _loop4 = function _loop4(_p) {
-					if (_p === "active") {
-						return "continue";
-					}
 					genParamBox(_p, function () {
 						return node.mods[m][_p];
 					}, function (value) {
@@ -801,9 +1066,7 @@ var AutomatonGUI = function AutomatonGUI(_automaton) {
 				};
 
 				for (var _p in node.mods[m]) {
-					var _ret5 = _loop4(_p);
-
-					if (_ret5 === "continue") continue;
+					_loop4(_p);
 				}
 			}
 		};
@@ -842,6 +1105,12 @@ var AutomatonGUI = function AutomatonGUI(_automaton) {
 
 		gui.selectTimelineNode(-1);
 	};
+
+	// ------
+
+	el(gui.inspector.el, {}, document.body);
+
+	// ------
 
 	gui.update = function () {
 		gui.updateTimeline();
@@ -908,109 +1177,166 @@ var genImages = function genImages() {
     return canvas.toDataURL();
   };
 
+  // ------
+
   images.modes = [];
 
   var _loop = function _loop(i) {
-    images.modes[i] = [];
-
-    var _loop5 = function _loop5(_j3) {
-      images.modes[i][_j3] = genImage(function () {
-        context.beginPath();
-        context.moveTo(s / 8.0, s / 8.0 * 7.0);
-        var arr = _interpolator2.default.generate({
-          mode: i
-        });
-        for (var _i = 1; _i < arr.length; _i++) {
-          context.lineTo(s / 8.0 + s / 4.0 * 3.0 * _i / arr.length, s / 8.0 * 7.0 - s / 4.0 * 3.0 * arr[_i]);
-        }
-
-        context.strokeStyle = _j3 ? colors.accent : "#888";
-        context.lineWidth = s / 12.0;
-        context.stroke();
+    images.modes[i] = genImage(function () {
+      context.beginPath();
+      context.moveTo(s / 8.0, s / 8.0 * 7.0);
+      var arr = _interpolator2.default.generate({
+        mode: i
       });
-    };
+      for (var _i4 = 1; _i4 < arr.length; _i4++) {
+        context.lineTo(s / 8.0 + s / 4.0 * 3.0 * _i4 / arr.length, s / 8.0 * 7.0 - s / 4.0 * 3.0 * arr[_i4]);
+      }
 
-    for (var _j3 = 0; _j3 < 2; _j3++) {
-      _loop5(_j3);
-    }
+      context.strokeStyle = colors.accent;
+      context.lineWidth = s / 12.0;
+      context.stroke();
+    });
   };
 
   for (var i = 0; i < _interpolator2.default.MODES; i++) {
     _loop(i);
   }
 
+  // ------
+
   images.mods = [];
 
-  images.mods[_interpolator2.default.MOD_RESET] = [];
+  images.mods[_interpolator2.default.MOD_RESET] = genImage(function () {
+    context.beginPath();
+    context.arc(s / 2.0, s / 2.0, s / 3.0, -Math.PI / 4.0, Math.PI / 4.0 * 5.0, false);
+    context.moveTo(s / 2.0, s / 2.0);
+    context.lineTo(s / 2.0, s / 8.0);
 
-  var _loop2 = function _loop2(j) {
-    images.mods[_interpolator2.default.MOD_RESET][j] = genImage(function () {
-      context.beginPath();
-      context.arc(s / 2.0, s / 2.0, s / 3.0, -Math.PI / 4.0, Math.PI / 4.0 * 5.0, false);
-      context.moveTo(s / 2.0, s / 2.0);
-      context.lineTo(s / 2.0, s / 8.0);
+    context.strokeStyle = colors.accent;
+    context.lineWidth = s / 12.0;
+    context.stroke();
+  });
 
-      context.strokeStyle = j ? colors.accent : "#888";
-      context.lineWidth = s / 12.0;
-      context.stroke();
+  images.mods[_interpolator2.default.MOD_SIN] = genImage(function () {
+    context.beginPath();
+    context.moveTo(s / 8.0, s / 2.0);
+    var arr = _interpolator2.default.generate({
+      mode: _interpolator2.default.MODE_LINEAR,
+      start: 0.5,
+      end: 0.5,
+      mods: [null, { active: true }, null]
     });
-  };
+    for (var _i = 1; _i < arr.length; _i++) {
+      context.lineTo(s / 8.0 + s / 4.0 * 3.0 * _i / arr.length, s / 8.0 * 7.0 - s / 4.0 * 3.0 * arr[_i]);
+    }
 
-  for (var j = 0; j < 2; j++) {
-    _loop2(j);
-  }
+    context.strokeStyle = colors.accent;
+    context.lineWidth = s / 12.0;
+    context.stroke();
+  });
 
-  images.mods[_interpolator2.default.MOD_SIN] = [];
+  images.mods[_interpolator2.default.MOD_NOISE] = genImage(function () {
+    context.beginPath();
+    context.moveTo(s / 8.0, s / 2.0);
+    var arr = _interpolator2.default.generate({
+      mode: _interpolator2.default.MODE_LINEAR,
+      start: 0.5,
+      end: 0.5,
+      mods: [null, null, { active: true }]
+    });
+    for (var _i2 = 1; _i2 < arr.length; _i2++) {
+      context.lineTo(s / 8.0 + s / 4.0 * 3.0 * _i2 / arr.length, s / 8.0 * 7.0 - s / 4.0 * 3.0 * arr[_i2]);
+    }
 
-  var _loop3 = function _loop3(_j) {
-    images.mods[_interpolator2.default.MOD_SIN][_j] = genImage(function () {
-      context.beginPath();
-      context.moveTo(s / 8.0, s / 2.0);
-      var arr = _interpolator2.default.generate({
-        mode: _interpolator2.default.MODE_LINEAR,
-        start: 0.5,
-        end: 0.5,
-        mods: [null, { active: true }, null]
-      });
-      for (var _i2 = 1; _i2 < arr.length; _i2++) {
-        context.lineTo(s / 8.0 + s / 4.0 * 3.0 * _i2 / arr.length, s / 8.0 * 7.0 - s / 4.0 * 3.0 * arr[_i2]);
+    context.strokeStyle = colors.accent;
+    context.lineWidth = s / 12.0;
+    context.stroke();
+  });
+
+  // ------
+
+  images.save = genImage(function () {
+    context.beginPath();
+    context.moveTo(s / 8.0, s / 8.0);
+    context.lineTo(s / 8.0, s / 8.0 * 7.0);
+    context.lineTo(s / 8.0 * 7.0, s / 8.0 * 7.0);
+    context.lineTo(s / 8.0 * 7.0, s / 4.0);
+    context.lineTo(s / 4.0 * 3.0, s / 8.0);
+    context.closePath();
+
+    context.moveTo(s / 4.0, s / 2.0);
+    context.lineTo(s / 4.0 * 3.0, s / 2.0);
+    context.lineTo(s / 4.0 * 3.0, s / 6.0 * 5.0);
+    context.lineTo(s / 4.0, s / 6.0 * 5.0);
+    context.closePath();
+
+    context.moveTo(s / 4.0, s / 6.0);
+    context.lineTo(s / 3.0 * 2.0, s / 6.0);
+    context.lineTo(s / 3.0 * 2.0, s / 8.0 * 3.0);
+    context.lineTo(s / 4.0, s / 8.0 * 3.0);
+    context.closePath();
+
+    context.moveTo(s / 2.0, s / 5.0);
+    context.lineTo(s / 8.0 * 5.0, s / 5.0);
+    context.lineTo(s / 8.0 * 5.0, s / 3.0);
+    context.lineTo(s / 2.0, s / 3.0);
+    context.closePath();
+
+    context.fillStyle = colors.accent;
+    context.fill();
+  });
+
+  images.config = genImage(function () {
+    context.beginPath();
+    var c = s / 2.0;
+    for (var _i3 = 0; _i3 < 24; _i3++) {
+      var r = (_i3 & 2) === 0 ? s * 0.42 : s * 0.30;
+      var t = Math.PI * (_i3 - 0.5) / 12.0;
+
+      if (_i3 === 0) {
+        context.moveTo(c + Math.cos(t) * r, c + Math.sin(t) * r);
+      } else {
+        context.lineTo(c + Math.cos(t) * r, c + Math.sin(t) * r);
       }
+    }
+    context.closePath();
 
-      context.strokeStyle = _j ? colors.accent : "#888";
-      context.lineWidth = s / 12.0;
-      context.stroke();
-    });
-  };
+    context.arc(c, c, s * 0.15, 0.0, Math.PI * 2.0, true);
 
-  for (var _j = 0; _j < 2; _j++) {
-    _loop3(_j);
-  }
+    context.fillStyle = colors.accent;
+    context.fill();
+  });
 
-  images.mods[_interpolator2.default.MOD_NOISE] = [];
+  images.save = genImage(function () {
+    context.beginPath();
+    context.moveTo(s / 8.0, s / 8.0);
+    context.lineTo(s / 8.0, s / 8.0 * 7.0);
+    context.lineTo(s / 8.0 * 7.0, s / 8.0 * 7.0);
+    context.lineTo(s / 8.0 * 7.0, s / 4.0);
+    context.lineTo(s / 4.0 * 3.0, s / 8.0);
+    context.closePath();
 
-  var _loop4 = function _loop4(_j2) {
-    images.mods[_interpolator2.default.MOD_NOISE][_j2] = genImage(function () {
-      context.beginPath();
-      context.moveTo(s / 8.0, s / 2.0);
-      var arr = _interpolator2.default.generate({
-        mode: _interpolator2.default.MODE_LINEAR,
-        start: 0.5,
-        end: 0.5,
-        mods: [null, null, { active: true }]
-      });
-      for (var _i3 = 1; _i3 < arr.length; _i3++) {
-        context.lineTo(s / 8.0 + s / 4.0 * 3.0 * _i3 / arr.length, s / 8.0 * 7.0 - s / 4.0 * 3.0 * arr[_i3]);
-      }
+    context.moveTo(s / 4.0, s / 2.0);
+    context.lineTo(s / 4.0 * 3.0, s / 2.0);
+    context.lineTo(s / 4.0 * 3.0, s / 6.0 * 5.0);
+    context.lineTo(s / 4.0, s / 6.0 * 5.0);
+    context.closePath();
 
-      context.strokeStyle = _j2 ? colors.accent : "#888";
-      context.lineWidth = s / 12.0;
-      context.stroke();
-    });
-  };
+    context.moveTo(s / 4.0, s / 6.0);
+    context.lineTo(s / 3.0 * 2.0, s / 6.0);
+    context.lineTo(s / 3.0 * 2.0, s / 8.0 * 3.0);
+    context.lineTo(s / 4.0, s / 8.0 * 3.0);
+    context.closePath();
 
-  for (var _j2 = 0; _j2 < 2; _j2++) {
-    _loop4(_j2);
-  }
+    context.moveTo(s / 2.0, s / 5.0);
+    context.lineTo(s / 8.0 * 5.0, s / 5.0);
+    context.lineTo(s / 8.0 * 5.0, s / 3.0);
+    context.lineTo(s / 2.0, s / 3.0);
+    context.closePath();
+
+    context.fillStyle = colors.accent;
+    context.fill();
+  });
 
   return images;
 };
@@ -1031,6 +1357,14 @@ var _noise = require("./noise");
 var _noise2 = _interopRequireDefault(_noise);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var cloneObj = function cloneObj(_obj) {
+  var obj = {};
+  for (var key in _obj) {
+    obj[key] = _obj[key];
+  }
+  return obj;
+};
 
 // ------
 
@@ -1072,9 +1406,9 @@ Interpolator.generate = function (_params) {
   var length = def(params.length, 32);
   var deltaTime = def(params.deltaTime, 0.01);
 
-  var mods = _typeof(params.mods) === "object" ? params.mods : [];
+  var mods = _typeof(params.mods) === "object" ? cloneObj(params.mods) : [];
   for (var i = 0; i < Interpolator.MODS; i++) {
-    mods[i] = mods[i] ? mods[i] : { active: false };
+    mods[i] = mods[i] ? mods[i] : false;
   }
 
   var arr = [start];
@@ -1129,7 +1463,7 @@ Interpolator.generate = function (_params) {
     }
   }
 
-  if (mods[Interpolator.MOD_SIN].active) {
+  if (mods[Interpolator.MOD_SIN]) {
     var freq = def(mods[Interpolator.MOD_SIN].freq, 2.0);
     var amp = def(mods[Interpolator.MOD_SIN].amp, 0.5);
     var phase = def(mods[Interpolator.MOD_SIN].phase, 0.0);
@@ -1139,7 +1473,7 @@ Interpolator.generate = function (_params) {
     }
   }
 
-  if (mods[Interpolator.MOD_NOISE].active) {
+  if (mods[Interpolator.MOD_NOISE]) {
     var _amp = def(mods[Interpolator.MOD_NOISE].amp, 1.0);
 
     var noise = (0, _noise2.default)({
@@ -1180,13 +1514,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 // ------
 
 var Automaton = function Automaton(_props) {
-	var props = (typeof _props === "undefined" ? "undefined" : _typeof(_props)) === "object" ? _props : {};
-
 	var automaton = {};
 
+	var props = (typeof _props === "undefined" ? "undefined" : _typeof(_props)) === "object" ? _props : {};
+	var data = props.data ? JSON.parse(props.data) : {};
+
 	automaton.time = 0.0;
-	automaton.length = typeof props.length === "number" ? props.length : 1.0;
-	automaton.resolution = typeof props.resolution === "number" ? props.resolution : 1000.0;
+	automaton.length = typeof data.length === "number" ? data.length : 1.0;
+	automaton.resolution = typeof data.resolution === "number" ? data.resolution : 1000.0;
 
 	// ------
 
@@ -1223,6 +1558,12 @@ var Automaton = function Automaton(_props) {
 
 	// ------
 
+	automaton.renderAll = function () {
+		for (var name in automaton.params) {
+			automaton.params[name].render();
+		}
+	};
+
 	automaton.update = function (_time) {
 		automaton.time = _time % automaton.length;
 
@@ -1233,7 +1574,10 @@ var Automaton = function Automaton(_props) {
 
 	automaton.auto = function (_name) {
 		if (!automaton.params[_name]) {
-			automaton.createParam(_name);
+			var param = automaton.createParam(_name);
+			if (data.params && data.params[_name]) {
+				param.load(data.params[_name]);
+			}
 		}
 
 		return automaton.params[_name].getValue();
@@ -1314,6 +1658,8 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
 var _interpolator = require("./interpolator");
 
 var _interpolator2 = _interopRequireDefault(_interpolator);
@@ -1323,6 +1669,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var cloneObj = function cloneObj(_obj) {
+	if ((typeof _obj === "undefined" ? "undefined" : _typeof(_obj)) !== "object") {
+		return _obj;
+	}
 	var obj = {};
 	for (var key in _obj) {
 		obj[key] = _obj[key];
@@ -1338,18 +1687,30 @@ var AutomatonParam = function () {
 		param.automaton = _automaton;
 
 		param.values = [];
-		for (var i = 0; i < param.automaton.resolution + 1; i++) {
+		var arrayLength = Math.ceil(param.automaton.resolution * param.automaton.length) + 1;
+		for (var i = 0; i < arrayLength; i++) {
 			param.values[i] = 0.0;
 		}
 		param.nodes = [];
 
-		param.addNode(0.0, 0.0);
-		param.addNode(param.automaton.length, 1.0);
+		if (false) {} else {
+			param.addNode(0.0, 0.0);
+			param.addNode(param.automaton.length, 1.0);
+		}
 
 		param.render();
 	}
 
 	_createClass(AutomatonParam, [{
+		key: "load",
+		value: function load(_data) {
+			var param = this;
+
+			param.nodes = _data;
+
+			param.render();
+		}
+	}, {
 		key: "sortNodes",
 		value: function sortNodes() {
 			var param = this;
@@ -1372,8 +1733,9 @@ var AutomatonParam = function () {
 				var endt = param.nodes[i].time;
 				var endi = Math.floor(endt * param.automaton.resolution);
 
-				var reset = i === 1 || param.nodes[i].mods[_interpolator2.default.MOD_RESET].active;
-				var deltaTime = 1.0 / param.automaton.resolution * param.automaton.length;
+				var reset = i === 1 || param.nodes[i].mods[_interpolator2.default.MOD_RESET];
+				var resetVel = param.nodes[i].mods[_interpolator2.default.MOD_RESET] ? param.nodes[i].mods[_interpolator2.default.MOD_RESET].velocity : 0.0;
+				var deltaTime = 1.0 / param.automaton.resolution;
 
 				var iparam = {
 					mode: param.nodes[i].mode,
@@ -1381,7 +1743,7 @@ var AutomatonParam = function () {
 					end: param.nodes[i].value,
 					deltaTime: deltaTime,
 					length: endi - starti + 1,
-					vel: !reset && 2 < param.values.length ? (param.values[param.values.length - 1] - param.values[param.values.length - 2]) / deltaTime : 0.0,
+					vel: !reset && 2 < param.values.length ? (param.values[param.values.length - 1] - param.values[param.values.length - 2]) / deltaTime : resetVel,
 					mods: param.nodes[i].mods
 				};
 				for (var key in param.nodes[i].params) {
@@ -1406,22 +1768,11 @@ var AutomatonParam = function () {
 				next = {
 					mode: _interpolator2.default.MODE_LINEAR,
 					params: {},
-					mods: [{ // reset
-						active: false
-					}, { // sin
-						active: false,
-						freq: 10.0,
-						amp: 0.1,
-						phase: 0.0
-					}, { // noise
-						active: false,
-						freq: 1.0,
-						amp: 0.2,
-						recursion: 6.0,
-						reso: 8.0,
-						seed: 1.0
-					}]
+					mods: []
 				};
+				for (var i = 0; i < _interpolator2.default.MODS; i++) {
+					next.mods[i] = false;
+				}
 			}
 
 			var node = {
@@ -1482,7 +1833,9 @@ var AutomatonParam = function () {
 
 			var node = param.nodes[_index];
 			node.mode = _mode;
-			if (_mode === _interpolator2.default.MODE_LINEAR) {
+			if (_mode === _interpolator2.default.MODE_HOLD) {
+				node.params = {};
+			} else if (_mode === _interpolator2.default.MODE_LINEAR) {
 				node.params = {};
 			} else if (_mode === _interpolator2.default.MODE_SMOOTH) {
 				node.params = {};
@@ -1518,6 +1871,46 @@ var AutomatonParam = function () {
 			}
 
 			param.render();
+		}
+	}, {
+		key: "activeModParams",
+		value: function activeModParams(_index, _mod, _active) {
+			var param = this;
+
+			if (_index < 0 || param.nodes.length <= _index) {
+				return;
+			}
+			if (_mod < 0 || _interpolator2.default.MODS <= _mod) {
+				return;
+			}
+
+			if (_active) {
+				param.nodes[_index].mods[_mod] = {};
+
+				var params = void 0;
+				if (_mod === _interpolator2.default.MOD_RESET) {
+					params = {
+						velocity: 0.0
+					};
+				} else if (_mod === _interpolator2.default.MOD_SIN) {
+					params = {
+						freq: 5.0,
+						amp: 0.1,
+						phase: 0.0
+					};
+				} else if (_mod === _interpolator2.default.MOD_NOISE) {
+					params = {
+						freq: 1.0,
+						amp: 0.2,
+						reso: 8.0,
+						recursion: 4.0,
+						seed: 1.0
+					};
+				}
+				param.setModParams(_index, _mod, params);
+			} else {
+				param.nodes[_index].mods[_mod] = false;
+			}
 		}
 	}, {
 		key: "setModParams",

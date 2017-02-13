@@ -1,5 +1,13 @@
 import genNoise from "./noise";
 
+let cloneObj = ( _obj ) => {
+	let obj = {};
+	for ( let key in _obj ) {
+		obj[ key ] = _obj[ key ];
+	}
+	return obj;
+}
+
 // ------
 
 let def = ( _a, _b ) => {
@@ -51,9 +59,9 @@ Interpolator.generate = ( _params ) => {
   let length = def( params.length, 32 );
   let deltaTime = def( params.deltaTime, 0.01 );
   
-  let mods = typeof params.mods === "object" ? params.mods : [];
+  let mods = typeof params.mods === "object" ? cloneObj( params.mods ) : [];
   for ( let i = 0; i < Interpolator.MODS; i ++ ) {
-    mods[ i ] = mods[ i ] ? mods[ i ] : { active: false };
+    mods[ i ] = mods[ i ] ? mods[ i ] : false;
   }
 
   let arr = [ start ];
@@ -108,7 +116,7 @@ Interpolator.generate = ( _params ) => {
     }
   }
 
-  if ( mods[ Interpolator.MOD_SIN ].active ) {
+  if ( mods[ Interpolator.MOD_SIN ] ) {
     let freq = def( mods[ Interpolator.MOD_SIN ].freq, 2.0 );
     let amp = def( mods[ Interpolator.MOD_SIN ].amp, 0.5 );
     let phase = def( mods[ Interpolator.MOD_SIN ].phase, 0.0 );
@@ -118,7 +126,7 @@ Interpolator.generate = ( _params ) => {
     }
   }
 
-  if ( mods[ Interpolator.MOD_NOISE ].active ) {
+  if ( mods[ Interpolator.MOD_NOISE ] ) {
     let amp = def( mods[ Interpolator.MOD_NOISE ].amp, 1.0 );
 
     let noise = genNoise( {

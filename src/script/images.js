@@ -24,93 +24,171 @@ let genImages = () => {
     return canvas.toDataURL();
   };
 
-  images.modes = [];
-  for ( let i = 0; i < Interpolator.MODES; i ++ ) {
-    images.modes[ i ] = [];
-    for ( let j = 0; j < 2; j ++ ) {
-      images.modes[ i ][ j ] = genImage( () => {
-        context.beginPath();
-        context.moveTo( s / 8.0, s / 8.0 * 7.0 );
-        let arr = Interpolator.generate( {
-          mode: i
-        } );
-        for ( let i = 1; i < arr.length; i ++ ) {
-          context.lineTo(
-            s / 8.0 + s / 4.0 * 3.0 * i / arr.length,
-            s / 8.0 * 7.0 - s / 4.0 * 3.0 * arr[ i ]
-          );
-        }
+  // ------
 
-        context.strokeStyle = j ? colors.accent : "#888";
-        context.lineWidth = s / 12.0;
-        context.stroke();
+  images.modes = [];
+
+  for ( let i = 0; i < Interpolator.MODES; i ++ ) {
+    images.modes[ i ] = genImage( () => {
+      context.beginPath();
+      context.moveTo( s / 8.0, s / 8.0 * 7.0 );
+      let arr = Interpolator.generate( {
+        mode: i
       } );
-    }
+      for ( let i = 1; i < arr.length; i ++ ) {
+        context.lineTo(
+          s / 8.0 + s / 4.0 * 3.0 * i / arr.length,
+          s / 8.0 * 7.0 - s / 4.0 * 3.0 * arr[ i ]
+        );
+      }
+
+      context.strokeStyle = colors.accent;
+      context.lineWidth = s / 12.0;
+      context.stroke();
+    } );
   }
+
+  // ------
 
   images.mods = [];
 
-  images.mods[ Interpolator.MOD_RESET ] = [];
-  for ( let j = 0; j < 2; j ++ ) {
-    images.mods[ Interpolator.MOD_RESET ][ j ] = genImage( () => {
-      context.beginPath();
-      context.arc( s / 2.0, s / 2.0, s / 3.0, -Math.PI / 4.0, Math.PI / 4.0 * 5.0, false );
-      context.moveTo( s / 2.0, s / 2.0 );
-      context.lineTo( s / 2.0, s / 8.0 );
+  images.mods[ Interpolator.MOD_RESET ] = genImage( () => {
+    context.beginPath();
+    context.arc( s / 2.0, s / 2.0, s / 3.0, -Math.PI / 4.0, Math.PI / 4.0 * 5.0, false );
+    context.moveTo( s / 2.0, s / 2.0 );
+    context.lineTo( s / 2.0, s / 8.0 );
 
-      context.strokeStyle = j ? colors.accent : "#888";
-      context.lineWidth = s / 12.0;
-      context.stroke();
+    context.strokeStyle = colors.accent;
+    context.lineWidth = s / 12.0;
+    context.stroke();
+  } );
+
+  images.mods[ Interpolator.MOD_SIN ] = genImage( () => {
+    context.beginPath();
+    context.moveTo( s / 8.0, s / 2.0 );
+    let arr = Interpolator.generate( {
+      mode: Interpolator.MODE_LINEAR,
+      start: 0.5,
+      end: 0.5,
+      mods: [ null, { active: true }, null ]
     } );
-  }
+    for ( let i = 1; i < arr.length; i ++ ) {
+      context.lineTo(
+        s / 8.0 + s / 4.0 * 3.0 * i / arr.length,
+        s / 8.0 * 7.0 - s / 4.0 * 3.0 * arr[ i ]
+      );
+    }
 
-  images.mods[ Interpolator.MOD_SIN ] = [];
-  for ( let j = 0; j < 2; j ++ ) {
-    images.mods[ Interpolator.MOD_SIN ][ j ] = genImage( () => {
-      context.beginPath();
-      context.moveTo( s / 8.0, s / 2.0 );
-      let arr = Interpolator.generate( {
-        mode: Interpolator.MODE_LINEAR,
-        start: 0.5,
-        end: 0.5,
-        mods: [ null, { active: true }, null ]
-      } );
-      for ( let i = 1; i < arr.length; i ++ ) {
-        context.lineTo(
-          s / 8.0 + s / 4.0 * 3.0 * i / arr.length,
-          s / 8.0 * 7.0 - s / 4.0 * 3.0 * arr[ i ]
-        );
+    context.strokeStyle = colors.accent;
+    context.lineWidth = s / 12.0;
+    context.stroke();
+  } );
+
+  images.mods[ Interpolator.MOD_NOISE ] = genImage( () => {
+    context.beginPath();
+    context.moveTo( s / 8.0, s / 2.0 );
+    let arr = Interpolator.generate( {
+      mode: Interpolator.MODE_LINEAR,
+      start: 0.5,
+      end: 0.5,
+      mods: [ null, null, { active: true } ]
+    } );
+    for ( let i = 1; i < arr.length; i ++ ) {
+      context.lineTo(
+        s / 8.0 + s / 4.0 * 3.0 * i / arr.length,
+        s / 8.0 * 7.0 - s / 4.0 * 3.0 * arr[ i ]
+      );
+    }
+
+    context.strokeStyle = colors.accent;
+    context.lineWidth = s / 12.0;
+    context.stroke();
+  } );
+
+  // ------
+
+  images.save = genImage( () => {
+    context.beginPath();
+    context.moveTo( s / 8.0, s / 8.0 );
+    context.lineTo( s / 8.0, s / 8.0 * 7.0 );
+    context.lineTo( s / 8.0 * 7.0, s / 8.0 * 7.0 );
+    context.lineTo( s / 8.0 * 7.0, s / 4.0 );
+    context.lineTo( s / 4.0 * 3.0, s / 8.0 );
+    context.closePath();
+
+    context.moveTo( s / 4.0, s / 2.0 );
+    context.lineTo( s / 4.0 * 3.0, s / 2.0 );
+    context.lineTo( s / 4.0 * 3.0, s / 6.0 * 5.0 );
+    context.lineTo( s / 4.0, s / 6.0 * 5.0 );
+    context.closePath();
+
+    context.moveTo( s / 4.0, s / 6.0 );
+    context.lineTo( s / 3.0 * 2.0, s / 6.0 );
+    context.lineTo( s / 3.0 * 2.0, s / 8.0 * 3.0 );
+    context.lineTo( s / 4.0, s / 8.0 * 3.0 );
+    context.closePath();
+
+    context.moveTo( s / 2.0, s / 5.0 );
+    context.lineTo( s / 8.0 * 5.0, s / 5.0 );
+    context.lineTo( s / 8.0 * 5.0, s / 3.0 );
+    context.lineTo( s / 2.0, s / 3.0 );
+    context.closePath();
+
+    context.fillStyle = colors.accent;
+    context.fill();
+  } );
+
+  images.config = genImage( () => {
+    context.beginPath();
+    let c = s / 2.0;
+    for ( let i = 0; i < 24; i ++ ) {
+      let r = ( i & 2 ) === 0 ? s * 0.42 : s * 0.30;
+      let t = Math.PI * ( i - 0.5 ) / 12.0;
+
+      if ( i === 0 ) {
+        context.moveTo( c + Math.cos( t ) * r, c + Math.sin( t ) * r );
+      } else {
+        context.lineTo( c + Math.cos( t ) * r, c + Math.sin( t ) * r );
       }
+    }
+    context.closePath();
 
-      context.strokeStyle = j ? colors.accent : "#888";
-      context.lineWidth = s / 12.0;
-      context.stroke();
-    } );
-  }
+    context.arc( c, c, s * 0.15, 0.0, Math.PI * 2.0, true );
 
-  images.mods[ Interpolator.MOD_NOISE ] = [];
-  for ( let j = 0; j < 2; j ++ ) {
-    images.mods[ Interpolator.MOD_NOISE ][ j ] = genImage( () => {
-      context.beginPath();
-      context.moveTo( s / 8.0, s / 2.0 );
-      let arr = Interpolator.generate( {
-        mode: Interpolator.MODE_LINEAR,
-        start: 0.5,
-        end: 0.5,
-        mods: [ null, null, { active: true } ]
-      } );
-      for ( let i = 1; i < arr.length; i ++ ) {
-        context.lineTo(
-          s / 8.0 + s / 4.0 * 3.0 * i / arr.length,
-          s / 8.0 * 7.0 - s / 4.0 * 3.0 * arr[ i ]
-        );
-      }
+    context.fillStyle = colors.accent;
+    context.fill();
+  } );
 
-      context.strokeStyle = j ? colors.accent : "#888";
-      context.lineWidth = s / 12.0;
-      context.stroke();
-    } );
-  }
+  images.save = genImage( () => {
+    context.beginPath();
+    context.moveTo( s / 8.0, s / 8.0 );
+    context.lineTo( s / 8.0, s / 8.0 * 7.0 );
+    context.lineTo( s / 8.0 * 7.0, s / 8.0 * 7.0 );
+    context.lineTo( s / 8.0 * 7.0, s / 4.0 );
+    context.lineTo( s / 4.0 * 3.0, s / 8.0 );
+    context.closePath();
+
+    context.moveTo( s / 4.0, s / 2.0 );
+    context.lineTo( s / 4.0 * 3.0, s / 2.0 );
+    context.lineTo( s / 4.0 * 3.0, s / 6.0 * 5.0 );
+    context.lineTo( s / 4.0, s / 6.0 * 5.0 );
+    context.closePath();
+
+    context.moveTo( s / 4.0, s / 6.0 );
+    context.lineTo( s / 3.0 * 2.0, s / 6.0 );
+    context.lineTo( s / 3.0 * 2.0, s / 8.0 * 3.0 );
+    context.lineTo( s / 4.0, s / 8.0 * 3.0 );
+    context.closePath();
+
+    context.moveTo( s / 2.0, s / 5.0 );
+    context.lineTo( s / 8.0 * 5.0, s / 5.0 );
+    context.lineTo( s / 8.0 * 5.0, s / 3.0 );
+    context.lineTo( s / 2.0, s / 3.0 );
+    context.closePath();
+
+    context.fillStyle = colors.accent;
+    context.fill();
+  } );
 
   return images;
 };

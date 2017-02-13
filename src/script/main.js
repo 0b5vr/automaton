@@ -4,13 +4,14 @@ import AutomatonGUI from "./gui";
 // ------
 
 let Automaton = ( _props ) => {
-	let props = typeof _props === "object" ? _props : {};
-
 	let automaton = {};
 
+	let props = typeof _props === "object" ? _props : {};
+	let data = props.data ? JSON.parse( props.data ) : {};
+
 	automaton.time = 0.0;
-	automaton.length = typeof props.length === "number" ? props.length : 1.0;
-	automaton.resolution = typeof props.resolution === "number" ? props.resolution : 1000.0;
+	automaton.length = typeof data.length === "number" ? data.length : 1.0;
+	automaton.resolution = typeof data.resolution === "number" ? data.resolution : 1000.0;
 
 	// ------
 
@@ -43,6 +44,12 @@ let Automaton = ( _props ) => {
 
 	// ------
 
+	automaton.renderAll = () => {
+		for ( let name in automaton.params ) {
+			automaton.params[ name ].render();
+		}
+	};
+
 	automaton.update = ( _time ) => {
 		automaton.time = _time % automaton.length;
 
@@ -53,7 +60,10 @@ let Automaton = ( _props ) => {
 
 	automaton.auto = ( _name ) => {
 		if ( !automaton.params[ _name ] ) {
-			automaton.createParam( _name );
+			let param = automaton.createParam( _name );
+			if ( data.params && data.params[ _name ] ) {
+				param.load( data.params[ _name ] );
+			}
 		}
 
 		return automaton.params[ _name ].getValue();

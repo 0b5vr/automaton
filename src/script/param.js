@@ -1,6 +1,7 @@
 import Interpolator from "./interpolator";
 
 let cloneObj = ( _obj ) => {
+	if ( typeof _obj !== "object" ) { return _obj; }
 	let obj = {};
 	for ( let key in _obj ) {
 		obj[ key ] = _obj[ key ];
@@ -14,13 +15,25 @@ let AutomatonParam = class {
 		param.automaton = _automaton;
 
 		param.values = [];
-		for ( let i = 0; i < param.automaton.resolution + 1; i ++ ) {
+		let arrayLength = Math.ceil( param.automaton.resolution * param.automaton.length ) + 1;
+		for ( let i = 0; i < arrayLength; i ++ ) {
 			param.values[ i ] = 0.0;
 		}
 		param.nodes = [];
 
-		param.addNode( 0.0, 0.0 );
-		param.addNode( param.automaton.length, 1.0 );
+		if ( false ) {
+		} else {
+			param.addNode( 0.0, 0.0 );
+			param.addNode( param.automaton.length, 1.0 );
+		}
+
+		param.render();
+	}
+
+	load( _data ) {
+		let param = this;
+
+		param.nodes = _data;
 
 		param.render();
 	}
@@ -43,8 +56,9 @@ let AutomatonParam = class {
 			let endt = param.nodes[ i ].time;
 			let endi = Math.floor( endt * param.automaton.resolution );
 
-			let reset = i === 1 || param.nodes[ i ].mods[ Interpolator.MOD_RESET ].active;
-			let deltaTime = 1.0 / param.automaton.resolution * param.automaton.length;
+			let reset = i === 1 || param.nodes[ i ].mods[ Interpolator.MOD_RESET ];
+			let resetVel = param.nodes[ i ].mods[ Interpolator.MOD_RESET ] ? param.nodes[ i ].mods[ Interpolator.MOD_RESET ].velocity : 0.0;
+			let deltaTime = 1.0 / param.automaton.resolution;
 
 			let iparam = {
 				mode: param.nodes[ i ].mode,
@@ -52,7 +66,7 @@ let AutomatonParam = class {
 				end: param.nodes[ i ].value,
 				deltaTime: deltaTime,
 				length: endi - starti + 1,
-				vel: ( !reset && 2 < param.values.length ) ? ( param.values[ param.values.length - 1 ] - param.values[ param.values.length - 2 ] ) / deltaTime : 0.0,
+				vel: ( !reset && 2 < param.values.length ) ? ( param.values[ param.values.length - 1 ] - param.values[ param.values.length - 2 ] ) / deltaTime : resetVel,
 				mods: param.nodes[ i ].mods
 			};
 			for ( let key in param.nodes[ i ].params ) {
@@ -74,26 +88,11 @@ let AutomatonParam = class {
 			next = {
 				mode: Interpolator.MODE_LINEAR,
 				params: {},
-				mods: [
-					{ // reset
-						active: false
-					},
-					{ // sin
-						active: false,
-						freq: 10.0,
-						amp: 0.1,
-						phase: 0.0
-					},
-					{ // noise
-						active: false,
-						freq: 1.0,
-						amp: 0.2,
-						recursion: 6.0,
-						reso: 8.0,
-						seed: 1.0
-					}
-				]
+				mods: []
 			};
+			for ( let i = 0; i < Interpolator.MODS; i ++ ) {
+				next.mods[ i ] = false;
+			}
 		}
 
 		let node = {
@@ -149,7 +148,9 @@ let AutomatonParam = class {
 
 		let node = param.nodes[ _index ];
 		node.mode = _mode;
-		if ( _mode === Interpolator.MODE_LINEAR ) {
+		if ( _mode === Interpolator.MODE_HOLD ) {
+			node.params = {};
+		} else if ( _mode === Interpolator.MODE_LINEAR ) {
 			node.params = {};
 		} else if ( _mode === Interpolator.MODE_SMOOTH ) {
 			node.params = {};
@@ -182,6 +183,41 @@ let AutomatonParam = class {
 		}
 
 		param.render();
+	}
+
+	activeModParams( _index, _mod, _active ) {
+		let param = this;
+
+		if ( _index < 0 || param.nodes.length <= _index ) { return; }
+		if ( _mod < 0 || Interpolator.MODS <= _mod ) { return; }
+
+		if ( _active ) {
+			param.nodes[ _index ].mods[ _mod ] = {};
+
+			let params;
+			if ( _mod === Interpolator.MOD_RESET ) {
+				params = {
+					velocity: 0.0
+				};
+			} else if ( _mod === Interpolator.MOD_SIN ) {
+				params = {
+					freq: 5.0,
+					amp: 0.1,
+					phase: 0.0
+				};
+			} else if ( _mod === Interpolator.MOD_NOISE ) {
+				params = {
+					freq: 1.0,
+					amp: 0.2,
+					reso: 8.0,
+					recursion: 4.0,
+					seed: 1.0
+				};
+			}
+			param.setModParams( _index, _mod, params );
+		} else {
+			param.nodes[ _index ].mods[ _mod ] = false;
+		}
 	}
 
 	setModParams( _index, _mod, _params ) {
