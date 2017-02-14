@@ -213,6 +213,10 @@ let AutomatonParam = class {
 					recursion: 4.0,
 					seed: 1.0
 				};
+			} else if ( _mod === Interpolator.MOD_LOFI ) {
+				params = {
+					freq: 10.0
+				};
 			}
 			param.setModParams( _index, _mod, params );
 		} else {

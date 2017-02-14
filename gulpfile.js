@@ -8,6 +8,7 @@ const browserify = require( 'browserify' );
 const watchify = require( 'watchify' );
 const babelify = require( 'babelify' );
 const source = require( 'vinyl-source-stream' );
+const uglify = require( 'gulp-uglify' );
 
 const browserSync = require( 'browser-sync' );
 
@@ -43,8 +44,13 @@ gulp.task( 'script-build', () => {
     console.error( _error );
     this.emit( 'end' );
   } )
-  .pipe( source( 'bundle.js' ) )
+  .pipe( source( 'automaton.js' ) )
   .pipe( gulp.dest( './dist' ) );
+
+  gulp.src( './dist/automaton.js' )
+  .pipe( uglify() )
+  .pipe( rename( 'automaton.min.js' ) )
+  .pipe( gulp.dest( './dist' ) )
 } );
 
 gulp.task( 'script-watch', () => {
@@ -57,7 +63,7 @@ gulp.task( 'script-watch', () => {
       console.error( _error );
       this.emit( 'end' );
     } )
-    .pipe( source( 'bundle.js' ) )
+    .pipe( source( 'automaton.js' ) )
     .pipe( gulp.dest( './dist' ) );
   } );
 

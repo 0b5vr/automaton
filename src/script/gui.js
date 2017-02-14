@@ -188,7 +188,7 @@ let AutomatonGUI = ( _automaton ) => {
 		letterSpacing: "8px",
 		color: "#ddd"
 	}, gui.header );
-	gui.headerTitle.innerHTML = "AUT<span style=\"color:"+colors.accent+"\">O</span>MAT<span style=\"color:"+colors.accent+"\">O</span>R";
+	gui.headerTitle.innerHTML = "AUT<span style=\"color:"+colors.accent+"\">O</span>MAT<span style=\"color:"+colors.accent+"\">O</span>N";
 
 	gui.headerButtonContainer = el( "div", {
 		position: "absolute",

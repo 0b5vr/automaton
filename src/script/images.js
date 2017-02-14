@@ -70,7 +70,7 @@ let genImages = () => {
       mode: Interpolator.MODE_LINEAR,
       start: 0.5,
       end: 0.5,
-      mods: [ null, { active: true }, null ]
+      mods: [ false, {} ]
     } );
     for ( let i = 1; i < arr.length; i ++ ) {
       context.lineTo(
@@ -91,7 +91,28 @@ let genImages = () => {
       mode: Interpolator.MODE_LINEAR,
       start: 0.5,
       end: 0.5,
-      mods: [ null, null, { active: true } ]
+      mods: [ false, false, {} ]
+    } );
+    for ( let i = 1; i < arr.length; i ++ ) {
+      context.lineTo(
+        s / 8.0 + s / 4.0 * 3.0 * i / arr.length,
+        s / 8.0 * 7.0 - s / 4.0 * 3.0 * arr[ i ]
+      );
+    }
+
+    context.strokeStyle = colors.accent;
+    context.lineWidth = s / 12.0;
+    context.stroke();
+  } );
+
+  images.mods[ Interpolator.MOD_LOFI ] = genImage( () => {
+    context.beginPath();
+    context.moveTo( s / 8.0, s / 8.0 * 7.0 );
+    let arr = Interpolator.generate( {
+      mode: Interpolator.MODE_LINEAR,
+      start: 0.0,
+      end: 1.0,
+      mods: [ false, false, false, {} ]
     } );
     for ( let i = 1; i < arr.length; i ++ ) {
       context.lineTo(

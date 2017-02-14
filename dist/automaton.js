@@ -227,7 +227,7 @@ var AutomatonGUI = function AutomatonGUI(_automaton) {
 		letterSpacing: "8px",
 		color: "#ddd"
 	}, gui.header);
-	gui.headerTitle.innerHTML = "AUT<span style=\"color:" + colors.accent + "\">O</span>MAT<span style=\"color:" + colors.accent + "\">O</span>R";
+	gui.headerTitle.innerHTML = "AUT<span style=\"color:" + colors.accent + "\">O</span>MAT<span style=\"color:" + colors.accent + "\">O</span>N";
 
 	gui.headerButtonContainer = el("div", {
 		position: "absolute",
@@ -1432,8 +1432,8 @@ var genImages = function genImages() {
       var arr = _interpolator2.default.generate({
         mode: i
       });
-      for (var _i4 = 1; _i4 < arr.length; _i4++) {
-        context.lineTo(s / 8.0 + s / 4.0 * 3.0 * _i4 / arr.length, s / 8.0 * 7.0 - s / 4.0 * 3.0 * arr[_i4]);
+      for (var _i5 = 1; _i5 < arr.length; _i5++) {
+        context.lineTo(s / 8.0 + s / 4.0 * 3.0 * _i5 / arr.length, s / 8.0 * 7.0 - s / 4.0 * 3.0 * arr[_i5]);
       }
 
       context.strokeStyle = colors.accent;
@@ -1468,7 +1468,7 @@ var genImages = function genImages() {
       mode: _interpolator2.default.MODE_LINEAR,
       start: 0.5,
       end: 0.5,
-      mods: [null, { active: true }, null]
+      mods: [false, {}]
     });
     for (var _i = 1; _i < arr.length; _i++) {
       context.lineTo(s / 8.0 + s / 4.0 * 3.0 * _i / arr.length, s / 8.0 * 7.0 - s / 4.0 * 3.0 * arr[_i]);
@@ -1486,10 +1486,28 @@ var genImages = function genImages() {
       mode: _interpolator2.default.MODE_LINEAR,
       start: 0.5,
       end: 0.5,
-      mods: [null, null, { active: true }]
+      mods: [false, false, {}]
     });
     for (var _i2 = 1; _i2 < arr.length; _i2++) {
       context.lineTo(s / 8.0 + s / 4.0 * 3.0 * _i2 / arr.length, s / 8.0 * 7.0 - s / 4.0 * 3.0 * arr[_i2]);
+    }
+
+    context.strokeStyle = colors.accent;
+    context.lineWidth = s / 12.0;
+    context.stroke();
+  });
+
+  images.mods[_interpolator2.default.MOD_LOFI] = genImage(function () {
+    context.beginPath();
+    context.moveTo(s / 8.0, s / 8.0 * 7.0);
+    var arr = _interpolator2.default.generate({
+      mode: _interpolator2.default.MODE_LINEAR,
+      start: 0.0,
+      end: 1.0,
+      mods: [false, false, false, {}]
+    });
+    for (var _i3 = 1; _i3 < arr.length; _i3++) {
+      context.lineTo(s / 8.0 + s / 4.0 * 3.0 * _i3 / arr.length, s / 8.0 * 7.0 - s / 4.0 * 3.0 * arr[_i3]);
     }
 
     context.strokeStyle = colors.accent;
@@ -1566,11 +1584,11 @@ var genImages = function genImages() {
   images.config = genImage(function () {
     context.beginPath();
     var c = s / 2.0;
-    for (var _i3 = 0; _i3 < 24; _i3++) {
-      var r = (_i3 & 2) === 0 ? s * 0.42 : s * 0.30;
-      var t = Math.PI * (_i3 - 0.5) / 12.0;
+    for (var _i4 = 0; _i4 < 24; _i4++) {
+      var r = (_i4 & 2) === 0 ? s * 0.42 : s * 0.30;
+      var t = Math.PI * (_i4 - 0.5) / 12.0;
 
-      if (_i3 === 0) {
+      if (_i4 === 0) {
         context.moveTo(c + Math.cos(t) * r, c + Math.sin(t) * r);
       } else {
         context.lineTo(c + Math.cos(t) * r, c + Math.sin(t) * r);
@@ -1668,7 +1686,8 @@ Interpolator.modeNames = ["Hold", "Linear", "Smoothstep", "Exp. Smooth", "Critic
 Interpolator.MOD_RESET = 0;
 Interpolator.MOD_SIN = 1;
 Interpolator.MOD_NOISE = 2;
-Interpolator.MODS = 3;
+Interpolator.MOD_LOFI = 3;
+Interpolator.MODS = 4;
 
 Interpolator.modNames = ["Reset", "Sine Curve", "Perlin Noise"];
 
@@ -1763,6 +1782,14 @@ Interpolator.generate = function (_params) {
 
     for (var _i8 = 0; _i8 < length; _i8++) {
       arr[_i8] += noise[_i8] * _amp;
+    }
+  }
+
+  if (mods[Interpolator.MOD_LOFI]) {
+    var t = (length - 1) / def(mods[Interpolator.MOD_LOFI].freq, 4.0);
+
+    for (var _i9 = 0; _i9 < length; _i9++) {
+      arr[_i9] = arr[Math.ceil(Math.floor(_i9 / t) * t)];
     }
   }
 
@@ -2182,6 +2209,10 @@ var AutomatonParam = function () {
 						reso: 8.0,
 						recursion: 4.0,
 						seed: 1.0
+					};
+				} else if (_mod === _interpolator2.default.MOD_LOFI) {
+					params = {
+						freq: 10.0
 					};
 				}
 				param.setModParams(_index, _mod, params);

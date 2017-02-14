@@ -40,7 +40,8 @@ Interpolator.modeNames = [
 Interpolator.MOD_RESET = 0;
 Interpolator.MOD_SIN = 1;
 Interpolator.MOD_NOISE = 2;
-Interpolator.MODS = 3;
+Interpolator.MOD_LOFI = 3;
+Interpolator.MODS = 4;
 
 Interpolator.modNames = [
   "Reset",
@@ -139,6 +140,14 @@ Interpolator.generate = ( _params ) => {
 
     for ( let i = 0; i < length; i ++ ) {
       arr[ i ] += noise[ i ] * amp;
+    }
+  }
+
+  if ( mods[ Interpolator.MOD_LOFI ] ) {
+    let t = ( length - 1 ) / def( mods[ Interpolator.MOD_LOFI ].freq, 4.0 );
+
+    for ( let i = 0; i < length; i ++ ) {
+      arr[ i ] = arr[ Math.ceil( Math.floor( i / t ) * t ) ];
     }
   }
 
