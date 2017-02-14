@@ -138,6 +138,39 @@ let genImages = () => {
     context.fill();
   } );
 
+  images.beatsnap = genImage( () => {
+    context.beginPath();
+    
+    context.moveTo( s / 8.0, s / 4.0 * 3.0 );
+    context.lineTo( s / 8.0, s / 8.0 * 7.0 );
+    context.lineTo( s / 8.0 * 3.0, s / 8.0 * 7.0 );
+    context.lineTo( s / 8.0 * 3.0, s / 4.0 * 3.0 );
+    context.closePath();
+
+    context.moveTo( s / 8.0 * 5.0, s / 4.0 * 3.0 );
+    context.lineTo( s / 8.0 * 5.0, s / 8.0 * 7.0 );
+    context.lineTo( s / 8.0 * 7.0, s / 8.0 * 7.0 );
+    context.lineTo( s / 8.0 * 7.0, s / 4.0 * 3.0 );
+    context.closePath();
+
+    context.fillStyle = colors.accent;
+    context.fill();
+
+    context.beginPath();
+    context.moveTo( s / 8.0, s / 16.0 * 11.0 );
+    context.lineTo( s / 8.0, s / 2.0 );
+    context.arc( s / 2.0, s / 2.0, s / 8.0 * 3.0, Math.PI, 0.0, false );
+    context.lineTo( s / 8.0 * 7.0, s / 16.0 * 11.0 );
+    context.lineTo( s / 8.0 * 5.0, s / 16.0 * 11.0 );
+    context.lineTo( s / 8.0 * 5.0, s / 2.0 );
+    context.arc( s / 2.0, s / 2.0, s / 8.0, 0.0, Math.PI, true );
+    context.lineTo( s / 8.0 * 3.0, s / 16.0 * 11.0 );
+    context.closePath();
+
+    context.fillStyle = colors.accent;
+    context.fill();
+  } );
+
   images.config = genImage( () => {
     context.beginPath();
     let c = s / 2.0;

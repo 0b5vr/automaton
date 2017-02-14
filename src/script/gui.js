@@ -47,7 +47,7 @@ let Inspector = () => {
 		padding: "2px",
 		pointerEvents: "none",
 
-		font: "300 12px Helvetica Neue, sans-serif",
+		font: "200 12px Helvetica Neue, sans-serif",
 
 		background: "#000",
 		color: "#fff",
@@ -163,7 +163,7 @@ let AutomatonGUI = ( _automaton ) => {
 
 		userSelect: "none",
 
-		fontFamily: "Helvetica Neue, sans-serif"
+		font: "300 14px Helvetica Neue, sans-serif"
 	}, document.body );
 
 	// ------
@@ -179,6 +179,22 @@ let AutomatonGUI = ( _automaton ) => {
 		background: "#444"
 	}, gui.parent );
 
+	gui.headerTitle = el( "div", {
+		position: "absolute",
+		left: "6px",
+		top: "0px",
+
+		font: "500 24px Century Gothic, sans-serif",
+		letterSpacing: "8px",
+		color: "#ddd"
+	}, gui.header );
+	gui.headerTitle.innerHTML = "AUT<span style=\"color:"+colors.accent+"\">O</span>MAT<span style=\"color:"+colors.accent+"\">O</span>R";
+
+	gui.headerButtonContainer = el( "div", {
+		position: "absolute",
+		right: "4px",
+	}, gui.header );
+
 	let addHeaderButton = ( image, inspector, func ) => {
 		let e = el( "img", {
 			width: "24px",
@@ -186,7 +202,7 @@ let AutomatonGUI = ( _automaton ) => {
 			margin: "3px",
 
 			cursor: "pointer"
-		}, gui.header );
+		}, gui.headerButtonContainer );
 
 		e.src = image;
 		gui.inspector.add( e, inspector, 0.5 );
@@ -196,6 +212,10 @@ let AutomatonGUI = ( _automaton ) => {
 			}
 		} );
 	};
+
+	addHeaderButton( images.beatsnap, "BeatSnap", () => {
+		gui.beatSnapDialog();
+	} );
 
 	addHeaderButton( images.config, "Config", () => {
 		gui.config();
@@ -230,10 +250,11 @@ let AutomatonGUI = ( _automaton ) => {
 		width: "100%"
 	}, gui.paramList );
 	let paramListInsidePos = 0;
-	gui.paramListInside.addEventListener( "wheel", ( _event ) => {
+	gui.paramListInside.addEventListener( "wheel", ( event ) => {
+		event.preventDefault();
 		paramListInsidePos = Math.max(
 			Math.min(
-				paramListInsidePos + _event.deltaY,
+				paramListInsidePos + event.deltaY,
 				gui.paramListInside.clientHeight - ( GUI_HEIGHT - HEADER_HEIGHT )
 			),
 			0
@@ -261,10 +282,11 @@ let AutomatonGUI = ( _automaton ) => {
 		padding: "20px 10px"
 	}, gui.modMenu );
 	let modMenuInsidePos = 0;
-	gui.modMenuInside.addEventListener( "wheel", ( _event ) => {
+	gui.modMenuInside.addEventListener( "wheel", ( event ) => {
+		event.preventDefault();
 		modMenuInsidePos = Math.max(
 			Math.min(
-				modMenuInsidePos + _event.deltaY,
+				modMenuInsidePos + event.deltaY,
 				gui.modMenuInside.clientHeight - ( GUI_HEIGHT - HEADER_HEIGHT )
 			),
 			0
@@ -387,6 +409,88 @@ let AutomatonGUI = ( _automaton ) => {
 
 	// ------
 
+	gui.beatSnap = false;
+	gui.beatSnapOffset = 0.0;
+	gui.beatSnapBpm = 140.0;
+	gui.beatSnapDialog = () => {
+		let inp = ( _name, _value ) => {
+			let parent = el( "div", {
+				position: "relative",
+				width: "160px",
+				height: "20px",
+				margin: "0 20px 10px 20px"
+			}, gui.dialogContent );
+
+			let label = el( "div", {
+				position: "absolute",
+				left: "0",
+				top: "3px"
+			}, parent );
+			label.innerText = _name;
+
+			let input = el( "input", {
+				position: "absolute",
+				right: "0",
+				padding: "4px",
+				width: "60px",
+				border: "none",
+
+				background: "#666",
+				color: "#fff",
+
+				textAlign: "center"
+			}, parent );
+			if ( typeof _value === "number" ) {
+				input.value = _value;
+				input.addEventListener( "keydown", ( event ) => {
+					if ( event.which === 13 ) {
+						event.preventDefault();
+						okFunc();
+					}
+				} );
+			} else {
+				el( input, { top: "3px" } );
+				input.type = "checkbox";
+				input.checked = _value;
+			}
+
+			return {
+				parent: parent,
+				label: label,
+				input: input
+			};
+		};
+
+		let okFunc = () => {
+			gui.hideDialog();
+
+			gui.beatSnap = inpSnap.input.checked;
+
+			let b = parseFloat( inpBpm.input.value );
+			if ( !isNaN( b ) ) {
+				gui.beatSnapBpm = b;
+			}
+
+			let o = parseFloat( inpOffset.input.value );
+			if ( !isNaN( o ) ) {
+				gui.beatSnapOffset = o;
+			}
+		};
+
+		
+		let inpSnap = inp( "BeatSnap", gui.beatSnap );
+		let inpBpm = inp( "BPM", gui.beatSnapBpm );
+		let inpOffset = inp( "Offset", gui.beatSnapOffset );
+
+		gui.addDialogButton( "OK", okFunc );
+		gui.addDialogButton( "Cancel", () => {
+			gui.hideDialog();
+		} );
+		gui.showDialog( 200, 150 );
+	};
+
+	// ------
+
 	gui.configLength = ( _len ) => {
 		gui.automaton.length = _len;
 
@@ -425,14 +529,15 @@ let AutomatonGUI = ( _automaton ) => {
 		let inp = ( _name, _value ) => {
 			let parent = el( "div", {
 				position: "relative",
-				width: "200px",
+				width: "160px",
 				height: "20px",
 				margin: "0 20px 10px 20px"
 			}, gui.dialogContent );
 
 			let label = el( "div", {
 				position: "absolute",
-				left: "0"
+				left: "0",
+				top: "3px"
 			}, parent );
 			label.innerText = _name;
 
@@ -444,7 +549,9 @@ let AutomatonGUI = ( _automaton ) => {
 				border: "none",
 
 				background: "#666",
-				color: "#fff"
+				color: "#fff",
+
+				textAlign: "center"
 			}, parent );
 			input.value = _value;
 			input.addEventListener( "keydown", ( event ) => {
@@ -488,7 +595,7 @@ let AutomatonGUI = ( _automaton ) => {
 		gui.addDialogButton( "Cancel", () => {
 			gui.hideDialog();
 		} );
-		gui.showDialog( 240, 120 );
+		gui.showDialog( 200, 120 );
 	};
 
 	// ------
@@ -581,17 +688,20 @@ let AutomatonGUI = ( _automaton ) => {
 		gui.selectParam( gui.currentParamIndex );
 	};
 
-	gui.timelineMin = 0.0;
-	gui.timelineMax = 0.0;
+	gui.timelineMinV = 0.0;
+	gui.timelineMaxV = 1.0;
+	gui.timelineMinT = 0.0;
+	gui.timelineMaxT = 1.0;
 	gui.canvasWidth = 0.0;
 	gui.canvasHeight = 0.0;
 
-	gui.mapTime = _time => gui.canvasWidth * _time / gui.automaton.length;
-	gui.mapValue = _value => gui.canvasHeight * ( 0.1 + 0.8 * ( ( gui.timelineMax - _value ) / ( gui.timelineMax - gui.timelineMin ) ) );
-	gui.rmapTime = _x => _x / gui.canvasWidth * gui.automaton.length;
-	gui.rmapValue = _y => ( 0.1 - _y / gui.canvasHeight ) / 0.8 * ( gui.timelineMax - gui.timelineMin ) + gui.timelineMax;
+	gui.mapTime = _time => gui.canvasWidth * ( _time - gui.timelineMinT ) / ( gui.timelineMaxT - gui.timelineMinT );
+	gui.mapValue = _value => gui.canvasHeight * ( gui.timelineMaxV - _value ) / ( gui.timelineMaxV - gui.timelineMinV );
+	gui.rmapTime = _x => gui.timelineMinT + _x / gui.canvasWidth * ( gui.timelineMaxT - gui.timelineMinT );
+	gui.rmapValue = _y => ( -_y / gui.canvasHeight ) * ( gui.timelineMaxV - gui.timelineMinV ) + gui.timelineMaxV;
 
-	gui.timelineNodeRadius = 5.0;
+	gui.timelineNodeRadius = 4.0;
+	gui.timelineNodeRadiusGrab = 8.0;
 
 	gui.selectedTimelineNode = -1;
 	gui.selectTimelineNode = ( _index ) => {
@@ -619,7 +729,7 @@ let AutomatonGUI = ( _automaton ) => {
 			param.nodes.map( ( node, index ) => {
 				let x = gui.mapTime( node.time );
 				let y = gui.mapValue( node.value );
-				if ( dist( x, y, _event.clientX - rect.left, _event.clientY - rect.top ) < gui.timelineNodeRadius ) {
+				if ( dist( x, y, _event.clientX - rect.left, _event.clientY - rect.top ) < gui.timelineNodeRadiusGrab ) {
 					param.removeNode( index );
 					gui.selectTimelineNode( -1 );
 					removed = true;
@@ -636,7 +746,7 @@ let AutomatonGUI = ( _automaton ) => {
 			param.nodes.map( ( node, index ) => {
 				let x = gui.mapTime( node.time );
 				let y = gui.mapValue( node.value );
-				if ( dist( x, y, _event.clientX - rect.left, _event.clientY - rect.top ) < gui.timelineNodeRadius ) {
+				if ( dist( x, y, _event.clientX - rect.left, _event.clientY - rect.top ) < gui.timelineNodeRadiusGrab ) {
 					gui.grabTimelineNode( index );
 				}
 			} );
@@ -650,7 +760,21 @@ let AutomatonGUI = ( _automaton ) => {
 			let node = param.nodes[ gui.grabbingTimelineNode ];
 
 			let rect = gui.timeline.getBoundingClientRect();
-			param.setTime( gui.grabbingTimelineNode, gui.rmapTime( _event.clientX - rect.left ) );
+
+			let x = _event.clientX - rect.left;
+			let t = gui.rmapTime( x );
+			if ( gui.beatSnap ) {
+				let deltaBeat = 60.0 / gui.beatSnapBpm;
+				let delta = gui.timelineMaxT - gui.timelineMinT;
+				let logDelta = Math.log( delta / deltaBeat ) / Math.log( 4.0 );
+				let scale = Math.pow( 4.0, Math.floor( logDelta - 0.5 ) ) * deltaBeat;
+				let nearest = Math.round( t / scale ) * scale + gui.beatSnapOffset;
+				if ( Math.abs( x - gui.mapTime( nearest ) ) < gui.timelineNodeRadiusGrab ) {	
+					t = nearest;
+				}
+			}
+
+			param.setTime( gui.grabbingTimelineNode, t );
 			param.setValue( gui.grabbingTimelineNode, gui.rmapValue( _event.clientY - rect.top ) );
 
 			gui.updateModMenu();
@@ -663,38 +787,160 @@ let AutomatonGUI = ( _automaton ) => {
 		}
 	} );
 
-	gui.updateTimelineRange = () => {
+	gui.timelineCanvas.addEventListener( "wheel", ( event ) => {
+		event.preventDefault();
+
+		let rect = gui.timeline.getBoundingClientRect();
+
+		if ( event.shiftKey ) {
+			let cursorT = gui.rmapTime( event.clientX - rect.left );
+
+			gui.timelineMinT += ( cursorT - gui.timelineMinT ) * 0.005 * event.deltaY;
+			gui.timelineMaxT -= ( gui.timelineMaxT - cursorT ) * 0.005 * event.deltaY;
+
+			let el = gui.timelineMinT < 0.0;
+			let er = gui.automaton.length < gui.timelineMaxT;
+			if ( el ) {
+				if ( er ) {
+					gui.timelineMinT = 0.0;
+					gui.timelineMaxT = gui.automaton.length;
+				} else {
+					gui.timelineMaxT += 0.0 - gui.timelineMinT;
+					gui.timelineMinT += 0.0 - gui.timelineMinT;
+				}
+			} else if ( er ) {
+				gui.timelineMinT += gui.automaton.length - gui.timelineMaxT;
+				gui.timelineMaxT += gui.automaton.length - gui.timelineMaxT;
+			}
+		} else if ( event.altKey ) {
+			let cursorV = gui.rmapValue( event.clientY - rect.top );
+
+			gui.timelineMinV += ( cursorV - gui.timelineMinV ) * 0.005 * event.deltaY;
+			gui.timelineMaxV -= ( gui.timelineMaxV - cursorV ) * 0.005 * event.deltaY;
+		} else {
+			let deltaT = gui.timelineMaxT - gui.timelineMinT;
+			let deltaV = gui.timelineMaxV - gui.timelineMinV;
+
+			gui.timelineMinT += event.deltaX * deltaT / gui.canvasWidth;
+			gui.timelineMaxT += event.deltaX * deltaT / gui.canvasWidth;
+			if ( gui.timelineMinT < 0.0 ) {
+				gui.timelineMaxT += 0.0 - gui.timelineMinT;
+				gui.timelineMinT += 0.0 - gui.timelineMinT;
+			}
+			if ( gui.automaton.length < gui.timelineMaxT ) {
+				gui.timelineMinT += gui.automaton.length - gui.timelineMaxT;
+				gui.timelineMaxT += gui.automaton.length - gui.timelineMaxT;
+			}
+
+			gui.timelineMinV -= event.deltaY * deltaV / gui.canvasHeight;
+			gui.timelineMaxV -= event.deltaY * deltaV / gui.canvasHeight;
+		}
+	} );
+
+	gui.resetTimelineRange = () => {
 		let param = gui.currentParam;
 		if ( !param ) { return; }
 
-		gui.timelineMin = 0.0;
-		gui.timelineMax = 0.0;
+		gui.timelineMinV = 0.0;
+		gui.timelineMaxV = 0.0;
 		param.nodes.map( node => {
-			gui.timelineMin = Math.min( gui.timelineMin, node.value );
-			gui.timelineMax = Math.max( gui.timelineMax, node.value );
+			gui.timelineMinV = Math.min( gui.timelineMinV, node.value );
+			gui.timelineMaxV = Math.max( gui.timelineMaxV, node.value );
 		} );
 
-		if ( gui.timelineMin === gui.timelineMax ) {
-			gui.timelineMin -= 0.5;
-			gui.timelineMax += 0.5;
+		if ( gui.timelineMinV === gui.timelineMaxV ) {
+			gui.timelineMinV -= 0.5;
+			gui.timelineMaxV += 0.5;
 		}
 	};
 
 	gui.updateTimelineCanvas = ( param ) => {
 		gui.timelineContext.clearRect( 0, 0, gui.canvasWidth, gui.canvasHeight );
 
-		// -----
+		// ------
+
+		{
+			let delta = gui.timelineMaxV - gui.timelineMinV;
+			let logDelta = Math.log10( delta );
+			let scale = Math.pow( 10.0, Math.floor( logDelta ) - 1.0 );
+			let intrv = logDelta - Math.floor( logDelta );
+			let a = Math.floor( gui.timelineMinV / scale );
+			let begin = a * scale;
+			let accent10 = a - Math.floor( a / 10 ) * 10;
+			let accent100 = a - Math.floor( a / 100 ) * 100;
+
+			for ( let v = begin; v < gui.timelineMaxV; v += scale ) {
+				gui.timelineContext.globalAlpha = (
+					accent100 === 0 ? 0.4 :
+					accent10 === 0 ? 0.4 - intrv * 0.3 :
+					0.1 - intrv * 0.1
+				);
+				gui.timelineContext.fillStyle = "#fff";
+				gui.timelineContext.fillRect( 0, gui.mapValue( v ) - 0.5, gui.canvasWidth, 1 );
+				accent10 = ( accent10 + 1 ) % 10;
+				accent100 = ( accent100 + 1 ) % 100;
+			}
+
+			gui.timelineContext.globalAlpha = 1.0;
+		}
+
+		{
+			let delta = gui.timelineMaxT - gui.timelineMinT;
+			let logDelta = Math.log10( delta );
+			let scale = Math.pow( 10.0, Math.floor( logDelta ) - 1.0 );
+			let intrv = logDelta - Math.floor( logDelta );
+			let a = Math.floor( gui.timelineMinT / scale );
+			let begin = a * scale;
+			let accent10 = a - Math.floor( a / 10 ) * 10;
+			let accent100 = a - Math.floor( a / 100 ) * 100;
+
+			for ( let v = begin; v < gui.timelineMaxT; v += scale ) {
+				gui.timelineContext.globalAlpha = (
+					accent100 === 0 ? 0.4 :
+					accent10 === 0 ? 0.4 - intrv * 0.3 :
+					0.1 - intrv * 0.1
+				);
+				gui.timelineContext.fillStyle = "#fff";
+				gui.timelineContext.fillRect( gui.mapTime( v ) - 0.5, 0, 1, gui.canvasHeight );
+				accent10 = ( accent10 + 1 ) % 10;
+				accent100 = ( accent100 + 1 ) % 100;
+			}
+
+			gui.timelineContext.globalAlpha = 1.0;
+		}
+
+		// ------
+
+		if ( gui.beatSnap ) {
+			let deltaBeat = 60.0 / gui.beatSnapBpm;
+			let delta = gui.timelineMaxT - gui.timelineMinT;
+			let logDelta = Math.log( delta / deltaBeat ) / Math.log( 4.0 );
+			let scale = Math.pow( 4.0, Math.floor( logDelta - 0.5 ) ) * deltaBeat;
+			let begin = Math.floor( ( gui.timelineMinT ) / scale ) * scale + ( gui.beatSnapOffset % scale );
+			
+			gui.timelineContext.font = "400 10px Helvetica Neue, sans-serif";
+			for ( let v = begin; v < gui.timelineMaxT; v += scale ) {
+				gui.timelineContext.globalAlpha = 0.6;
+				gui.timelineContext.fillStyle = colors.accent;
+				gui.timelineContext.fillRect( gui.mapTime( v ) - 0.5, 0, 1, gui.canvasHeight );
+				gui.timelineContext.fillText( ( ( v - gui.beatSnapOffset ) / deltaBeat ).toFixed( 2 ), gui.mapTime( v ) + 2.0, gui.canvasHeight - 2.0 );
+			}
+
+			gui.timelineContext.globalAlpha = 1.0;
+		}
+
+		// ------
 
 		gui.timelineContext.beginPath();
-		gui.timelineContext.moveTo( 0, gui.mapValue( param.getValue( 0.0 ) ) );
+		gui.timelineContext.moveTo( 0, gui.mapValue( param.getValue( gui.rmapTime( 0.0 ) ) ) );
 
 		for ( let i = 1; i < gui.timelineCanvas.width; i ++ ) {
-			let t = ( i / gui.timelineCanvas.width ) * gui.automaton.length;
+			let t = gui.rmapTime( i );
 			let y = gui.mapValue( param.getValue( t ) );
 			gui.timelineContext.lineTo( i, y );
 		}
 
-		gui.timelineContext.strokeStyle = colors.accent;
+		gui.timelineContext.strokeStyle = "#ddd";
 		gui.timelineContext.lineWidth = 2;
 		gui.timelineContext.lineCap = "round";
 		gui.timelineContext.lineJoin = "round";
@@ -705,7 +951,7 @@ let AutomatonGUI = ( _automaton ) => {
 		let barX = gui.mapTime( gui.automaton.time );
 		let barY = gui.mapValue( gui.currentParam.getValue( gui.automaton.time ) );
 
-		gui.timelineContext.fillStyle = colors.bar;
+		gui.timelineContext.fillStyle = colors.accent;
 		gui.timelineContext.fillRect( barX - 1, 0, 2, gui.canvasHeight );
 
 		gui.timelineContext.beginPath();
@@ -718,17 +964,28 @@ let AutomatonGUI = ( _automaton ) => {
 			let x = gui.mapTime( node.time );
 			let y = gui.mapValue( node.value );
 
-			if ( gui.selectedTimelineNode === index ) {
-				gui.timelineContext.beginPath();
+			gui.timelineContext.beginPath();
+			if ( y < -gui.timelineNodeRadius ) {
+				gui.timelineContext.moveTo( x, 5.0 );
+				gui.timelineContext.lineTo( x - gui.timelineNodeRadius, 5.0 + 1.7 * gui.timelineNodeRadius );
+				gui.timelineContext.lineTo( x + gui.timelineNodeRadius, 5.0 + 1.7 * gui.timelineNodeRadius );
+				gui.timelineContext.closePath();
+			} else if ( gui.canvasHeight + gui.timelineNodeRadius < y ) {
+				gui.timelineContext.moveTo( x, gui.canvasHeight - 5.0 );
+				gui.timelineContext.lineTo( x - gui.timelineNodeRadius, gui.canvasHeight - 5.0 - 1.7 * gui.timelineNodeRadius );
+				gui.timelineContext.lineTo( x + gui.timelineNodeRadius, gui.canvasHeight - 5.0 - 1.7 * gui.timelineNodeRadius );
+				gui.timelineContext.closePath();
+			} else {
 				gui.timelineContext.arc( x, y, gui.timelineNodeRadius, 0, Math.PI * 2.0, false );
+			}
+
+			if ( gui.selectedTimelineNode === index ) {
 				gui.timelineContext.fillStyle = colors.accent;
-				gui.timelineContext.strokeStyle = "#222";
+				gui.timelineContext.strokeStyle = colors.accent;
 				gui.timelineContext.lineWidth = 4;
 				gui.timelineContext.stroke();
 				gui.timelineContext.fill();
 			} else {
-				gui.timelineContext.beginPath();
-				gui.timelineContext.arc( x, y, gui.timelineNodeRadius - 1, 0, Math.PI * 2.0, false );
 				gui.timelineContext.fillStyle = "#222";
 				gui.timelineContext.strokeStyle = colors.accent;
 				gui.timelineContext.lineWidth = 4;
@@ -1034,8 +1291,6 @@ let AutomatonGUI = ( _automaton ) => {
 			background: "#555"
 		} );
 
-		gui.updateTimelineRange();
-
 		gui.selectTimelineNode( -1 );
 	}
 
@@ -1062,8 +1317,6 @@ let AutomatonGUI = ( _automaton ) => {
 
 	gui.updateParamList();
 	gui.selectParam( 0 );
-	gui.updateTimelineRange();
-	gui.updateTimeline();
 
 	return gui;
 };

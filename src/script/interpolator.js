@@ -132,7 +132,7 @@ Interpolator.generate = ( _params ) => {
     let noise = genNoise( {
       length: length,
       recursion: def( mods[ Interpolator.MOD_NOISE ].recursion, 3.0 ),
-      freq: def( mods[ Interpolator.MOD_NOISE ].freq, 1.0 ) * ( length - 1 ) / length,
+      freq: def( mods[ Interpolator.MOD_NOISE ].freq, 1.0 ) * length / ( length - 1 ),
       reso: def( mods[ Interpolator.MOD_NOISE ].reso, 4.0 ),
       seed: def( mods[ Interpolator.MOD_NOISE ].seed, 175.0 )
     } );
