@@ -1,4 +1,4 @@
-(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/script/colors.js":[function(require,module,exports){
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.Automaton = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/script/colors.js":[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -252,7 +252,7 @@ var AutomatonGUI = function AutomatonGUI(_automaton) {
 		});
 	};
 
-	addHeaderButton(images.beatsnap, "BeatSnap", function () {
+	addHeaderButton(images.beatsnap, "Beat Snap", function () {
 		gui.beatSnapDialog();
 	});
 
@@ -625,16 +625,7 @@ var AutomatonGUI = function AutomatonGUI(_automaton) {
 	// ------
 
 	gui.save = function () {
-		var obj = {
-			length: gui.automaton.length,
-			resolution: gui.automaton.resolution
-		};
-
-		obj.params = {};
-		for (var name in gui.automaton.params) {
-			var param = gui.automaton.params[name];
-			obj.params[name] = param.nodes;
-		}
+		var obj = gui.automaton.save();
 
 		// ------
 
@@ -1373,6 +1364,38 @@ var AutomatonGUI = function AutomatonGUI(_automaton) {
 
 	// ------
 
+	gui.getState = function () {
+		var obj = {
+			beatSnap: gui.beatSnap,
+			beatSnapBpm: gui.beatSnapBpm,
+			beatSnapOffset: gui.beatSnapOffset,
+
+			timelineMinT: gui.timelineMinT,
+			timelineMaxT: gui.timelineMaxT,
+			timelineMinV: gui.timelineMinV,
+			timelineMaxV: gui.timelineMaxV
+		};
+
+		return obj;
+	};
+
+	gui.setState = function (_obj) {
+		var def = function def(a, b) {
+			return typeof a !== "undefined" ? a : b;
+		};
+
+		gui.beatSnap = def(_obj.beatSnap, false);
+		gui.beatSnapBpm = def(_obj.beatSnapBpm, 140.0);
+		gui.beatSnapOffset = def(_obj.beatSnapOffset, 0.0);
+
+		gui.timelineMinT = def(_obj.timelineMinT, 0.0);
+		gui.timelineMaxT = def(_obj.timelineMaxT, 1.0);
+		gui.timelineMinV = def(_obj.timelineMinV, 0.0);
+		gui.timelineMaxV = def(_obj.timelineMaxV, 1.0);
+	};
+
+	// ------
+
 	gui.updateParamList();
 	gui.selectParam(0);
 
@@ -1805,9 +1828,9 @@ exports.default = Interpolator;
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
-var _param = require("./param");
+var _param3 = require("./param");
 
-var _param2 = _interopRequireDefault(_param);
+var _param4 = _interopRequireDefault(_param3);
 
 var _gui = require("./gui");
 
@@ -1831,7 +1854,7 @@ var Automaton = function Automaton(_props) {
 
 	automaton.params = {};
 	automaton.createParam = function (_name) {
-		var param = new _param2.default(automaton);
+		var param = new _param4.default(automaton);
 		automaton.params[_name] = param;
 
 		return param;
@@ -1854,17 +1877,27 @@ var Automaton = function Automaton(_props) {
 		return sum;
 	};
 
+	if (data.params) {
+		for (var name in data.params) {
+			var param = automaton.createParam(name);
+			param.load(data.params[name]);
+		}
+	}
+
 	// ------
 
 	if (props.gui) {
 		automaton.gui = (0, _gui2.default)(automaton);
+		if (data.gui) {
+			automaton.gui.setState(data.gui);
+		}
 	}
 
 	// ------
 
 	automaton.renderAll = function () {
-		for (var name in automaton.params) {
-			automaton.params[name].render();
+		for (var _name2 in automaton.params) {
+			automaton.params[_name2].render();
 		}
 	};
 
@@ -1878,21 +1911,39 @@ var Automaton = function Automaton(_props) {
 
 	automaton.auto = function (_name) {
 		if (!automaton.params[_name]) {
-			var param = automaton.createParam(_name);
-			if (data.params && data.params[_name]) {
-				param.load(data.params[_name]);
-			}
+			var _param = automaton.createParam(_name);
 		}
 
 		return automaton.params[_name].getValue();
 	};
+
+	// ------
+
+	automaton.save = function () {
+		var obj = {
+			length: automaton.length,
+			resolution: automaton.resolution
+		};
+
+		obj.params = {};
+		for (var _name3 in automaton.params) {
+			var _param2 = automaton.params[_name3];
+			obj.params[_name3] = _param2.nodes;
+		}
+
+		if (automaton.gui) {
+			obj.gui = automaton.gui.getState();
+		}
+
+		return obj;
+	};
+
+	// -----
+
 	return automaton;
 };
 
-window.Automaton = Automaton;
-if (typeof module !== "undefined") {
-	module.exports = Automaton;
-}
+module.exports = Automaton;
 
 },{"./gui":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/script/gui.js","./param":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/script/param.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/script/noise.js":[function(require,module,exports){
 "use strict";
@@ -2296,4 +2347,5 @@ var xorshift = function xorshift(_seed) {
 
 exports.default = xorshift;
 
-},{}]},{},["/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/script/main.js"]);
+},{}]},{},["/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/script/main.js"])("/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/script/main.js")
+});

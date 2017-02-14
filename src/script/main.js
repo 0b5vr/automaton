@@ -36,10 +36,20 @@ let Automaton = ( _props ) => {
 		return sum;
 	};
 
+	if ( data.params ) {
+		for ( let name in data.params ) {
+			let param = automaton.createParam( name );
+			param.load( data.params[ name ] );
+		}
+	}
+
 	// ------
 
 	if ( props.gui ) {
 		automaton.gui = AutomatonGUI( automaton );
+		if ( data.gui ) {
+			automaton.gui.setState( data.gui );
+		}
 	}
 
 	// ------
@@ -61,17 +71,35 @@ let Automaton = ( _props ) => {
 	automaton.auto = ( _name ) => {
 		if ( !automaton.params[ _name ] ) {
 			let param = automaton.createParam( _name );
-			if ( data.params && data.params[ _name ] ) {
-				param.load( data.params[ _name ] );
-			}
 		}
 
 		return automaton.params[ _name ].getValue();
 	};
+
+	// ------
+
+	automaton.save = () => {
+		let obj = {
+			length: automaton.length,
+			resolution: automaton.resolution,
+		};
+
+		obj.params = {};
+		for ( let name in automaton.params ) {
+			let param = automaton.params[ name ];
+			obj.params[ name ] = param.nodes;
+		}
+
+		if ( automaton.gui ) {
+			obj.gui = automaton.gui.getState();
+		}
+
+		return obj;
+	};
+
+	// -----
+
 	return automaton;
 };
 
-window.Automaton = Automaton;
-if ( typeof module !== "undefined" ) {
-	module.exports = Automaton;
-}
+module.exports = Automaton;

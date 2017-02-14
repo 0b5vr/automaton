@@ -26,11 +26,11 @@ gulp.task( 'static-watch', () => {
 
 // ------
 
-let brwsrfy = browserify( {
+let brwsrfy = browserify( './src/script/main.js', {
   cache: {},
   packageCache: {},
   fullPaths: true,
-  entries: [ './src/script/main.js' ],
+  standalone: 'Automaton',
   transform: [
     [ babelify, {
       presets: 'es2015'

@@ -213,7 +213,7 @@ let AutomatonGUI = ( _automaton ) => {
 		} );
 	};
 
-	addHeaderButton( images.beatsnap, "BeatSnap", () => {
+	addHeaderButton( images.beatsnap, "Beat Snap", () => {
 		gui.beatSnapDialog();
 	} );
 
@@ -601,16 +601,7 @@ let AutomatonGUI = ( _automaton ) => {
 	// ------
 
 	gui.save = () => {
-		let obj = {
-			length: gui.automaton.length,
-			resolution: gui.automaton.resolution,
-		};
-
-		obj.params = {};
-		for ( let name in gui.automaton.params ) {
-			let param = gui.automaton.params[ name ];
-			obj.params[ name ] = param.nodes;
-		}
+		let obj = gui.automaton.save();
 
 		// ------
 
@@ -1312,6 +1303,36 @@ let AutomatonGUI = ( _automaton ) => {
 		gui.updateTimeline();
 	};
 	window.addEventListener( "resize", gui.resize );
+
+	// ------
+
+	gui.getState = () => {
+		let obj = {
+			beatSnap: gui.beatSnap,
+			beatSnapBpm: gui.beatSnapBpm,
+			beatSnapOffset: gui.beatSnapOffset,
+
+			timelineMinT: gui.timelineMinT,
+			timelineMaxT: gui.timelineMaxT,
+			timelineMinV: gui.timelineMinV,
+			timelineMaxV: gui.timelineMaxV
+		};
+
+		return obj;
+	};
+
+	gui.setState = ( _obj ) => {
+		let def = ( a, b ) => typeof a !== "undefined" ? a : b;
+
+		gui.beatSnap = def( _obj.beatSnap, false );
+		gui.beatSnapBpm = def( _obj.beatSnapBpm, 140.0 );
+		gui.beatSnapOffset = def( _obj.beatSnapOffset, 0.0 );
+
+		gui.timelineMinT = def( _obj.timelineMinT, 0.0 );
+		gui.timelineMaxT = def( _obj.timelineMaxT, 1.0 );
+		gui.timelineMinV = def( _obj.timelineMinV, 0.0 );
+		gui.timelineMaxV = def( _obj.timelineMaxV, 1.0 );
+	};
 
 	// ------
 
