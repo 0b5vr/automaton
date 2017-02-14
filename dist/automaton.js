@@ -794,7 +794,7 @@ var AutomatonGUI = function AutomatonGUI(_automaton) {
 				var delta = gui.timelineMaxT - gui.timelineMinT;
 				var logDelta = Math.log(delta / deltaBeat) / Math.log(4.0);
 				var scale = Math.pow(4.0, Math.floor(logDelta - 0.5)) * deltaBeat;
-				var nearest = Math.round(t / scale) * scale + gui.beatSnapOffset;
+				var nearest = Math.round((t - gui.beatSnapOffset) / scale) * scale + gui.beatSnapOffset;
 				if (Math.abs(x - gui.mapTime(nearest)) < gui.timelineNodeRadiusGrab) {
 					t = nearest;
 				}

@@ -759,7 +759,7 @@ let AutomatonGUI = ( _automaton ) => {
 				let delta = gui.timelineMaxT - gui.timelineMinT;
 				let logDelta = Math.log( delta / deltaBeat ) / Math.log( 4.0 );
 				let scale = Math.pow( 4.0, Math.floor( logDelta - 0.5 ) ) * deltaBeat;
-				let nearest = Math.round( t / scale ) * scale + gui.beatSnapOffset;
+				let nearest = Math.round( ( t - gui.beatSnapOffset ) / scale ) * scale + gui.beatSnapOffset;
 				if ( Math.abs( x - gui.mapTime( nearest ) ) < gui.timelineNodeRadiusGrab ) {	
 					t = nearest;
 				}
