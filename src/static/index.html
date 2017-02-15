@@ -10,10 +10,13 @@
 
 <script src="automaton.js"></script>
 <script>
-console.log( Automaton );
+let time = 0.0;
+let deltaTime = 1.0 / 60.0;
+
 let automaton = Automaton( {
   gui: true,
-  data: '{"length":1,"resolution":1000,"params":{"wow":[{"time":0,"value":0,"mode":1,"params":{},"mods":[false,false,false]},{"time":0.36923076923076925,"value":0.7976190476190477,"mode":5,"params":{"gravity":210.95,"bounce":0.55},"mods":[false,false,false]},{"time":0.6115384615384616,"value":0.3035714285714286,"mode":2,"params":{},"mods":[false,false,false]},{"time":1,"value":0.7142857142857143,"mode":4,"params":{"rate":9300,"damp":0.2},"mods":[false,false,false]}],"pya":[{"time":0,"value":0,"mode":1,"params":{},"mods":[false,false,false]},{"time":0.36538461538461536,"value":0.7380952380952381,"mode":1,"params":{},"mods":[false,false,{"freq":1,"amp":0.58,"reso":8,"recursion":4,"seed":456}]},{"time":0.6759002770083102,"value":0.1011024963392444,"mode":5,"params":{"gravity":270,"bounce":0.47},"mods":[false,false,false]},{"time":1,"value":0.664834658463285,"mode":4,"params":{"rate":9310.064,"damp":0.211},"mods":[false,false,false]}]},"gui":{"beatSnap":true,"beatSnapBpm":170,"beatSnapOffset":0,"timelineMinT":0,"timelineMaxT":1,"timelineMinV":-0.21779816020438944,"timelineMaxV":1.1869594826533247}}'
+  data: '{"length":1,"resolution":1000,"params":{"wow":[{"time":0,"value":0,"mode":1,"params":{},"mods":[false,false,false]},{"time":0.36923076923076925,"value":0.7976190476190477,"mode":5,"params":{"gravity":210.95,"bounce":0.55},"mods":[false,false,false]},{"time":0.6115384615384616,"value":0.3035714285714286,"mode":2,"params":{},"mods":[false,false,false]},{"time":1,"value":0.7142857142857143,"mode":4,"params":{"rate":9300,"damp":0.2},"mods":[false,false,false]}],"pya":[{"time":0,"value":0,"mode":1,"params":{},"mods":[false,false,false]},{"time":0.36538461538461536,"value":0.7380952380952381,"mode":1,"params":{},"mods":[false,false,{"freq":1,"amp":0.58,"reso":8,"recursion":4,"seed":456}]},{"time":0.6759002770083102,"value":0.1011024963392444,"mode":5,"params":{"gravity":270,"bounce":0.47},"mods":[false,false,false]},{"time":1,"value":0.664834658463285,"mode":4,"params":{"rate":9310.064,"damp":0.211},"mods":[false,false,false]}]},"gui":{"beatSnap":true,"beatSnapBpm":170,"beatSnapOffset":0,"timelineMinT":0,"timelineMaxT":1,"timelineMinV":-0.21779816020438944,"timelineMaxV":1.1869594826533247}}',
+  onseek: ( t ) => { time = t; return t; }
 } );
 
 automaton.auto( "wow" );
@@ -21,7 +24,8 @@ automaton.auto( "wow" );
 automaton.auto( "pya" );
 
 let update = () => {
-  automaton.update( +new Date() * 0.001 );
+  time += 1.0 * deltaTime;
+  automaton.update( time );
   requestAnimationFrame( update );
 };
 update();

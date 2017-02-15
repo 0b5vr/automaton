@@ -46,7 +46,8 @@ Interpolator.MODS = 4;
 Interpolator.modNames = [
   "Reset",
   "Sine Curve",
-  "Perlin Noise"
+  "Perlin Noise",
+  "Lo-Fi"
 ];
 
 // ------

@@ -671,7 +671,6 @@ var AutomatonGUI = function AutomatonGUI(_automaton) {
 		e.addEventListener("mousedown", function (_event) {
 			if (_event.which === 1) {
 				gui.selectParam(_index);
-				gui.updateTimeline(true);
 			} else {
 				// TODO: context menu
 				// e.g. copy, paste...
@@ -741,14 +740,19 @@ var AutomatonGUI = function AutomatonGUI(_automaton) {
 		gui.selectTimelineNode(_index);
 	};
 
+	gui.canvasDragging = false;
+	gui.canvasSeeking = false;
+	gui.canvasMouseX = 0;
+	gui.canvasMouseY = 0;
+
 	var lastClick = 0;
-	gui.timelineCanvas.addEventListener("mousedown", function (_event) {
+	gui.timelineCanvas.addEventListener("mousedown", function (event) {
+		gui.canvasDragging = true;
+
 		var param = gui.currentParam;
 		if (!param) {
 			return;
 		}
-
-		var rect = gui.timeline.getBoundingClientRect();
 
 		var now = +new Date();
 		if (now - lastClick < 500) {
@@ -756,38 +760,56 @@ var AutomatonGUI = function AutomatonGUI(_automaton) {
 			param.nodes.map(function (node, index) {
 				var x = gui.mapTime(node.time);
 				var y = gui.mapValue(node.value);
-				if (dist(x, y, _event.clientX - rect.left, _event.clientY - rect.top) < gui.timelineNodeRadiusGrab) {
+				if (dist(x, y, gui.canvasMouseX, gui.canvasMouseY) < gui.timelineNodeRadiusGrab) {
 					param.removeNode(index);
 					gui.selectTimelineNode(-1);
 					removed = true;
 				}
 			});
-			if (removed) {
-				return;
+
+			// ------
+
+			if (!removed) {
+				var node = param.addNode(gui.rmapTime(gui.canvasMouseX), gui.rmapValue(gui.canvasMouseY));
+				gui.grabTimelineNode(param.nodes.indexOf(node));
 			}
 
-			var node = param.addNode(gui.rmapTime(_event.clientX - rect.left), gui.rmapValue(_event.clientY - rect.top));
-			gui.grabTimelineNode(param.nodes.indexOf(node));
+			// ------
 		} else {
-			param.nodes.map(function (node, index) {
-				var x = gui.mapTime(node.time);
-				var y = gui.mapValue(node.value);
-				if (dist(x, y, _event.clientX - rect.left, _event.clientY - rect.top) < gui.timelineNodeRadiusGrab) {
-					gui.grabTimelineNode(index);
+				var grabbed = false;
+				param.nodes.map(function (node, index) {
+					var x = gui.mapTime(node.time);
+					var y = gui.mapValue(node.value);
+					if (dist(x, y, gui.canvasMouseX, gui.canvasMouseY) < gui.timelineNodeRadiusGrab) {
+						gui.grabTimelineNode(index);
+						grabbed = true;
+					}
+				});
+
+				// ------
+
+				if (!grabbed) {
+					if (event.altKey) {
+						gui.canvasSeeking = true;
+					}
 				}
-			});
-		}
+			}
+
+		// ------
+
 		lastClick = now;
 	});
 
-	window.addEventListener("mousemove", function (_event) {
+	window.addEventListener("mousemove", function (event) {
+		var rect = gui.timeline.getBoundingClientRect();
+		gui.canvasMouseX = event.clientX - rect.left;
+		gui.canvasMouseY = event.clientY - rect.top;
+
 		if (gui.grabbingTimelineNode !== -1) {
 			var param = gui.currentParam;
 			var node = param.nodes[gui.grabbingTimelineNode];
 
-			var rect = gui.timeline.getBoundingClientRect();
-
-			var x = _event.clientX - rect.left;
+			var x = gui.canvasMouseX;
 			var t = gui.rmapTime(x);
 			if (gui.beatSnap) {
 				var deltaBeat = 60.0 / gui.beatSnapBpm;
@@ -801,13 +823,16 @@ var AutomatonGUI = function AutomatonGUI(_automaton) {
 			}
 
 			param.setTime(gui.grabbingTimelineNode, t);
-			param.setValue(gui.grabbingTimelineNode, gui.rmapValue(_event.clientY - rect.top));
+			param.setValue(gui.grabbingTimelineNode, gui.rmapValue(gui.canvasMouseY));
 
 			gui.updateModMenu();
 		}
 	});
 
 	window.addEventListener("mouseup", function (_event) {
+		gui.canvasDragging = false;
+		gui.canvasSeeking = false;
+
 		if (gui.grabbingTimelineNode !== -1) {
 			gui.grabbingTimelineNode = -1;
 		}
@@ -816,13 +841,11 @@ var AutomatonGUI = function AutomatonGUI(_automaton) {
 	gui.timelineCanvas.addEventListener("wheel", function (event) {
 		event.preventDefault();
 
-		var rect = gui.timeline.getBoundingClientRect();
-
 		if (event.shiftKey) {
-			var cursorT = gui.rmapTime(event.clientX - rect.left);
+			var cursorT = gui.rmapTime(gui.canvasMouseX);
 
-			gui.timelineMinT += (cursorT - gui.timelineMinT) * 0.005 * event.deltaY;
-			gui.timelineMaxT -= (gui.timelineMaxT - cursorT) * 0.005 * event.deltaY;
+			gui.timelineMinT -= (cursorT - gui.timelineMinT) * 0.005 * event.deltaY;
+			gui.timelineMaxT += (gui.timelineMaxT - cursorT) * 0.005 * event.deltaY;
 
 			var _el3 = gui.timelineMinT < 0.0;
 			var er = gui.automaton.length < gui.timelineMaxT;
@@ -839,10 +862,10 @@ var AutomatonGUI = function AutomatonGUI(_automaton) {
 				gui.timelineMaxT += gui.automaton.length - gui.timelineMaxT;
 			}
 		} else if (event.altKey) {
-			var cursorV = gui.rmapValue(event.clientY - rect.top);
+			var cursorV = gui.rmapValue(gui.canvasMouseY);
 
-			gui.timelineMinV += (cursorV - gui.timelineMinV) * 0.005 * event.deltaY;
-			gui.timelineMaxV -= (gui.timelineMaxV - cursorV) * 0.005 * event.deltaY;
+			gui.timelineMinV -= (cursorV - gui.timelineMinV) * 0.005 * event.deltaY;
+			gui.timelineMaxV += (gui.timelineMaxV - cursorV) * 0.005 * event.deltaY;
 		} else {
 			var deltaT = gui.timelineMaxT - gui.timelineMinT;
 			var deltaV = gui.timelineMaxV - gui.timelineMinV;
@@ -1021,6 +1044,30 @@ var AutomatonGUI = function AutomatonGUI(_automaton) {
 		gui.timelineCanvas.width = gui.canvasWidth;
 		gui.timelineCanvas.height = gui.canvasHeight;
 
+		if (gui.canvasDragging) {
+			var deltaT = gui.timelineMaxT - gui.timelineMinT;
+
+			var x = gui.canvasMouseX;
+			if (x < 0.0) {
+				var d = deltaT * x / gui.canvasWidth;
+				gui.timelineMinT += d;
+				gui.timelineMaxT += d;
+			} else if (gui.canvasWidth < x) {
+				var _d = deltaT * (x - gui.canvasWidth) / gui.canvasWidth;
+				gui.timelineMinT += _d;
+				gui.timelineMaxT += _d;
+			}
+
+			if (gui.timelineMinT < 0.0) {
+				gui.timelineMaxT += 0.0 - gui.timelineMinT;
+				gui.timelineMinT += 0.0 - gui.timelineMinT;
+			}
+			if (gui.automaton.length < gui.timelineMaxT) {
+				gui.timelineMinT += gui.automaton.length - gui.timelineMaxT;
+				gui.timelineMaxT += gui.automaton.length - gui.timelineMaxT;
+			}
+		}
+
 		var param = gui.currentParam;
 		if (!param) {
 			return;
@@ -1117,7 +1164,8 @@ var AutomatonGUI = function AutomatonGUI(_automaton) {
 				if (now - lastClick < 500) {
 					el(valueBox, { display: "block" });
 					setTimeout(function () {
-						return valueBox.focus();
+						valueBox.focus();
+						valueBox.select();
 					}, 10);
 				} else {
 					(function () {
@@ -1350,6 +1398,11 @@ var AutomatonGUI = function AutomatonGUI(_automaton) {
 	// ------
 
 	gui.update = function () {
+		if (gui.canvasSeeking) {
+			var t = gui.rmapTime(gui.canvasMouseX);
+			gui.automaton.seek(t);
+		}
+
 		gui.updateTimeline();
 
 		if (gui.paramListChildren.length !== gui.automaton.countParams()) {
@@ -1357,9 +1410,7 @@ var AutomatonGUI = function AutomatonGUI(_automaton) {
 		}
 	};
 
-	gui.resize = function () {
-		gui.updateTimeline();
-	};
+	gui.resize = function () {};
 	window.addEventListener("resize", gui.resize);
 
 	// ------
@@ -1712,7 +1763,7 @@ Interpolator.MOD_NOISE = 2;
 Interpolator.MOD_LOFI = 3;
 Interpolator.MODS = 4;
 
-Interpolator.modNames = ["Reset", "Sine Curve", "Perlin Noise"];
+Interpolator.modNames = ["Reset", "Sine Curve", "Perlin Noise", "Lo-Fi"];
 
 // ------
 
@@ -1883,6 +1934,14 @@ var Automaton = function Automaton(_props) {
 			param.load(data.params[name]);
 		}
 	}
+
+	// ------
+
+	automaton.seek = function (_time) {
+		var time = _time - Math.floor(_time / automaton.length) * automaton.length;
+		var ret = typeof props.onseek === "function" ? props.onseek(time) : null;
+		automaton.time = typeof ret === "number" ? ret % automaton.length : automaton.time;
+	};
 
 	// ------
 

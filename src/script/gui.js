@@ -647,7 +647,6 @@ let AutomatonGUI = ( _automaton ) => {
 		e.addEventListener( "mousedown", ( _event ) => {
 			if ( _event.which === 1 ) {
 				gui.selectParam( _index );
-				gui.updateTimeline( true );
 			} else {
 				// TODO: context menu
 				// e.g. copy, paste...
@@ -707,52 +706,79 @@ let AutomatonGUI = ( _automaton ) => {
 		gui.selectTimelineNode( _index );
 	};
 
+	gui.canvasDragging = false;
+	gui.canvasSeeking = false;
+	gui.canvasMouseX = 0;
+	gui.canvasMouseY = 0;
+
 	let lastClick = 0;
-	gui.timelineCanvas.addEventListener( "mousedown", ( _event ) => {
+	gui.timelineCanvas.addEventListener( "mousedown", ( event ) => {
+		gui.canvasDragging = true;
+
 		let param = gui.currentParam;
 		if ( !param ) { return; }
 
-		let rect = gui.timeline.getBoundingClientRect();
-		
 		let now = +new Date();
 		if ( now - lastClick < 500 ) {
 			let removed = false;
 			param.nodes.map( ( node, index ) => {
 				let x = gui.mapTime( node.time );
 				let y = gui.mapValue( node.value );
-				if ( dist( x, y, _event.clientX - rect.left, _event.clientY - rect.top ) < gui.timelineNodeRadiusGrab ) {
+				if ( dist( x, y, gui.canvasMouseX, gui.canvasMouseY ) < gui.timelineNodeRadiusGrab ) {
 					param.removeNode( index );
 					gui.selectTimelineNode( -1 );
 					removed = true;
 				}
 			} );
-			if ( removed ) { return; }
 
-			let node = param.addNode(
-				gui.rmapTime( _event.clientX - rect.left ),
-				gui.rmapValue( _event.clientY - rect.top )
-			);
-			gui.grabTimelineNode( param.nodes.indexOf( node ) );
+			// ------
+
+			if ( !removed ) {
+				let node = param.addNode(
+					gui.rmapTime( gui.canvasMouseX ),
+					gui.rmapValue( gui.canvasMouseY )
+				);
+				gui.grabTimelineNode( param.nodes.indexOf( node ) );
+			}
+
+			// ------
+
 		} else {
+			let grabbed = false;
 			param.nodes.map( ( node, index ) => {
 				let x = gui.mapTime( node.time );
 				let y = gui.mapValue( node.value );
-				if ( dist( x, y, _event.clientX - rect.left, _event.clientY - rect.top ) < gui.timelineNodeRadiusGrab ) {
+				if ( dist( x, y, gui.canvasMouseX, gui.canvasMouseY ) < gui.timelineNodeRadiusGrab ) {
 					gui.grabTimelineNode( index );
+					grabbed = true;
 				}
 			} );
+
+			// ------
+
+			if ( !grabbed ) {
+				if ( event.altKey ) {
+					gui.canvasSeeking = true;
+				}
+			}
 		}
+
+		// ------
+
 		lastClick = now;
 	} );
 
-	window.addEventListener( "mousemove", ( _event ) => {
+	window.addEventListener( "mousemove", ( event ) => {
+		let rect = gui.timeline.getBoundingClientRect();
+		gui.canvasMouseX = event.clientX - rect.left;
+		gui.canvasMouseY = event.clientY - rect.top;
+		
 	 	if ( gui.grabbingTimelineNode !== -1 ) {
 			let param = gui.currentParam;
 			let node = param.nodes[ gui.grabbingTimelineNode ];
 
-			let rect = gui.timeline.getBoundingClientRect();
 
-			let x = _event.clientX - rect.left;
+			let x = gui.canvasMouseX;
 			let t = gui.rmapTime( x );
 			if ( gui.beatSnap ) {
 				let deltaBeat = 60.0 / gui.beatSnapBpm;
@@ -766,13 +792,16 @@ let AutomatonGUI = ( _automaton ) => {
 			}
 
 			param.setTime( gui.grabbingTimelineNode, t );
-			param.setValue( gui.grabbingTimelineNode, gui.rmapValue( _event.clientY - rect.top ) );
+			param.setValue( gui.grabbingTimelineNode, gui.rmapValue( gui.canvasMouseY ) );
 
 			gui.updateModMenu();
 		}
 	} );
 
 	window.addEventListener( "mouseup", ( _event ) => {
+		gui.canvasDragging = false;
+		gui.canvasSeeking = false;
+
 	 	if ( gui.grabbingTimelineNode !== -1 ) {
 			gui.grabbingTimelineNode = -1;
 		}
@@ -781,13 +810,11 @@ let AutomatonGUI = ( _automaton ) => {
 	gui.timelineCanvas.addEventListener( "wheel", ( event ) => {
 		event.preventDefault();
 
-		let rect = gui.timeline.getBoundingClientRect();
-
 		if ( event.shiftKey ) {
-			let cursorT = gui.rmapTime( event.clientX - rect.left );
+			let cursorT = gui.rmapTime( gui.canvasMouseX );
 
-			gui.timelineMinT += ( cursorT - gui.timelineMinT ) * 0.005 * event.deltaY;
-			gui.timelineMaxT -= ( gui.timelineMaxT - cursorT ) * 0.005 * event.deltaY;
+			gui.timelineMinT -= ( cursorT - gui.timelineMinT ) * 0.005 * event.deltaY;
+			gui.timelineMaxT += ( gui.timelineMaxT - cursorT ) * 0.005 * event.deltaY;
 
 			let el = gui.timelineMinT < 0.0;
 			let er = gui.automaton.length < gui.timelineMaxT;
@@ -804,10 +831,10 @@ let AutomatonGUI = ( _automaton ) => {
 				gui.timelineMaxT += gui.automaton.length - gui.timelineMaxT;
 			}
 		} else if ( event.altKey ) {
-			let cursorV = gui.rmapValue( event.clientY - rect.top );
+			let cursorV = gui.rmapValue( gui.canvasMouseY );
 
-			gui.timelineMinV += ( cursorV - gui.timelineMinV ) * 0.005 * event.deltaY;
-			gui.timelineMaxV -= ( gui.timelineMaxV - cursorV ) * 0.005 * event.deltaY;
+			gui.timelineMinV -= ( cursorV - gui.timelineMinV ) * 0.005 * event.deltaY;
+			gui.timelineMaxV += ( gui.timelineMaxV - cursorV ) * 0.005 * event.deltaY;
 		} else {
 			let deltaT = gui.timelineMaxT - gui.timelineMinT;
 			let deltaV = gui.timelineMaxV - gui.timelineMinV;
@@ -992,6 +1019,30 @@ let AutomatonGUI = ( _automaton ) => {
 		gui.timelineCanvas.width = gui.canvasWidth;
 		gui.timelineCanvas.height = gui.canvasHeight;
 
+		if ( gui.canvasDragging ) {
+			let deltaT = gui.timelineMaxT - gui.timelineMinT;
+
+			let x = gui.canvasMouseX;
+			if ( x < 0.0 ) {
+				let d = deltaT * x / gui.canvasWidth;
+				gui.timelineMinT += d;
+				gui.timelineMaxT += d;
+			} else if ( gui.canvasWidth < x ) {
+				let d = deltaT * ( x - gui.canvasWidth ) / gui.canvasWidth;
+				gui.timelineMinT += d;
+				gui.timelineMaxT += d;
+			}
+			
+			if ( gui.timelineMinT < 0.0 ) {
+				gui.timelineMaxT += 0.0 - gui.timelineMinT;
+				gui.timelineMinT += 0.0 - gui.timelineMinT;
+			}
+			if ( gui.automaton.length < gui.timelineMaxT ) {
+				gui.timelineMinT += gui.automaton.length - gui.timelineMaxT;
+				gui.timelineMaxT += gui.automaton.length - gui.timelineMaxT;
+			}
+		}
+
 		let param = gui.currentParam;
 		if ( !param ) {
 			return;
@@ -1087,7 +1138,10 @@ let AutomatonGUI = ( _automaton ) => {
 				let now = +new Date();
 				if ( now - lastClick < 500 ) {
 					el( valueBox, { display: "block" } );
-					setTimeout( () => valueBox.focus(), 10 );
+					setTimeout( () => {
+						valueBox.focus();
+						valueBox.select();
+					}, 10 );
 				} else {
 					let lastY = event.clientY;
 
@@ -1292,6 +1346,11 @@ let AutomatonGUI = ( _automaton ) => {
 	// ------
 
 	gui.update = () => {
+		if ( gui.canvasSeeking ) {
+			let t = gui.rmapTime( gui.canvasMouseX );
+			gui.automaton.seek( t );
+		}
+
 		gui.updateTimeline();
 
 		if ( gui.paramListChildren.length !== gui.automaton.countParams() ) {
@@ -1300,7 +1359,6 @@ let AutomatonGUI = ( _automaton ) => {
 	};
 
 	gui.resize = () => {
-		gui.updateTimeline();
 	};
 	window.addEventListener( "resize", gui.resize );
 
