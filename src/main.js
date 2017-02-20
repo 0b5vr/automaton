@@ -54,7 +54,7 @@ let Automaton = ( _props ) => {
 	// ------
 
 	if ( props.gui ) {
-		automaton.gui = AutomatonGUI( automaton );
+		automaton.gui = AutomatonGUI( automaton, props.gui );
 		if ( data.gui ) {
 			automaton.gui.setState( data.gui );
 		}
@@ -82,6 +82,13 @@ let Automaton = ( _props ) => {
 		}
 
 		return automaton.params[ _name ].getValue();
+	};
+
+	// ------
+
+	automaton.bye = () => {
+		automaton.gui.bye();
+		automaton = null;
 	};
 
 	// ------

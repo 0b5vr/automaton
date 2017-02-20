@@ -72,6 +72,16 @@ var el = function el(_tagorel, _styles, _parent) {
 
 var Inspector = function Inspector() {
 	var inspector = {};
+
+	inspector.byeListeners = [];
+	inspector.bye = function () {
+		inspector.byeListeners.map(function (func) {
+			return func();
+		});
+	};
+
+	// ------
+
 	var text = "";
 
 	var mouseX = 0;
@@ -89,10 +99,16 @@ var Inspector = function Inspector() {
 		opacity: "0.0"
 	});
 
-	window.addEventListener("mousemove", function (_event) {
-		mouseX = _event.clientX;
-		mouseY = _event.clientY;
-	});
+	{
+		var func = function func(_event) {
+			mouseX = _event.clientX;
+			mouseY = _event.clientY;
+		};
+		window.addEventListener("mousemove", func);
+		inspector.byeListeners.push(function () {
+			return window.removeEventListener("mousemove", func);
+		});
+	}
 
 	inspector.add = function (_el, _text, _delay) {
 		var on = false;
@@ -175,10 +191,21 @@ var Inspector = function Inspector() {
 
 // ------
 
-var AutomatonGUI = function AutomatonGUI(_automaton) {
+var AutomatonGUI = function AutomatonGUI(_automaton, _parent) {
 	var gui = {};
 
 	gui.automaton = _automaton;
+
+	// ------
+
+	gui.byeListeners = [];
+	gui.bye = function () {
+		gui.byeListeners.map(function (func) {
+			return func();
+		});
+		_parent.removeChild(gui.parent);
+		gui = null;
+	};
 
 	// ------
 
@@ -203,7 +230,7 @@ var AutomatonGUI = function AutomatonGUI(_automaton) {
 		userSelect: "none",
 
 		font: "300 14px Helvetica Neue, sans-serif"
-	}, document.body);
+	}, _parent);
 
 	// ------
 
@@ -426,11 +453,17 @@ var AutomatonGUI = function AutomatonGUI(_automaton) {
 			gui.dialogButtonContainer.removeChild(gui.dialogButtonContainer.firstChild);
 		}
 	};
-	window.addEventListener("keydown", function (_event) {
-		if (_event.which === 27) {
-			gui.hideDialog();
-		}
-	});
+	{
+		var func = function func(_event) {
+			if (_event.which === 27) {
+				gui.hideDialog();
+			}
+		};
+		window.addEventListener("keydown", func);
+		gui.byeListeners.push(function () {
+			return window.removeEventListener("keydown", func);
+		});
+	}
 
 	// ------
 
@@ -776,67 +809,79 @@ var AutomatonGUI = function AutomatonGUI(_automaton) {
 
 			// ------
 		} else {
-				var grabbed = false;
-				param.nodes.map(function (node, index) {
-					var x = gui.mapTime(node.time);
-					var y = gui.mapValue(node.value);
-					if (dist(x, y, gui.canvasMouseX, gui.canvasMouseY) < gui.timelineNodeRadiusGrab) {
-						gui.grabTimelineNode(index);
-						grabbed = true;
-					}
-				});
+			var grabbed = false;
+			param.nodes.map(function (node, index) {
+				var x = gui.mapTime(node.time);
+				var y = gui.mapValue(node.value);
+				if (dist(x, y, gui.canvasMouseX, gui.canvasMouseY) < gui.timelineNodeRadiusGrab) {
+					gui.grabTimelineNode(index);
+					grabbed = true;
+				}
+			});
 
-				// ------
+			// ------
 
-				if (!grabbed) {
-					if (event.altKey) {
-						gui.canvasSeeking = true;
-					}
+			if (!grabbed) {
+				if (event.altKey) {
+					gui.canvasSeeking = true;
 				}
 			}
+		}
 
 		// ------
 
 		lastClick = now;
 	});
 
-	window.addEventListener("mousemove", function (event) {
-		var rect = gui.timeline.getBoundingClientRect();
-		gui.canvasMouseX = event.clientX - rect.left;
-		gui.canvasMouseY = event.clientY - rect.top;
+	{
+		var _func2 = function _func2(event) {
+			var rect = gui.timeline.getBoundingClientRect();
+			gui.canvasMouseX = event.clientX - rect.left;
+			gui.canvasMouseY = event.clientY - rect.top;
 
-		if (gui.grabbingTimelineNode !== -1) {
-			var param = gui.currentParam;
-			var node = param.nodes[gui.grabbingTimelineNode];
+			if (gui.grabbingTimelineNode !== -1) {
+				var param = gui.currentParam;
+				var node = param.nodes[gui.grabbingTimelineNode];
 
-			var x = gui.canvasMouseX;
-			var t = gui.rmapTime(x);
-			if (gui.beatSnap) {
-				var deltaBeat = 60.0 / gui.beatSnapBpm;
-				var delta = gui.timelineMaxT - gui.timelineMinT;
-				var logDelta = Math.log(delta / deltaBeat) / Math.log(4.0);
-				var scale = Math.pow(4.0, Math.floor(logDelta - 0.5)) * deltaBeat;
-				var nearest = Math.round((t - gui.beatSnapOffset) / scale) * scale + gui.beatSnapOffset;
-				if (Math.abs(x - gui.mapTime(nearest)) < gui.timelineNodeRadiusGrab) {
-					t = nearest;
+				var x = gui.canvasMouseX;
+				var t = gui.rmapTime(x);
+				if (gui.beatSnap) {
+					var deltaBeat = 60.0 / gui.beatSnapBpm;
+					var delta = gui.timelineMaxT - gui.timelineMinT;
+					var logDelta = Math.log(delta / deltaBeat) / Math.log(4.0);
+					var scale = Math.pow(4.0, Math.floor(logDelta - 0.5)) * deltaBeat;
+					var nearest = Math.round((t - gui.beatSnapOffset) / scale) * scale + gui.beatSnapOffset;
+					if (Math.abs(x - gui.mapTime(nearest)) < gui.timelineNodeRadiusGrab) {
+						t = nearest;
+					}
 				}
+
+				param.setTime(gui.grabbingTimelineNode, t);
+				param.setValue(gui.grabbingTimelineNode, gui.rmapValue(gui.canvasMouseY));
+
+				gui.updateModMenu();
 			}
+		};
+		window.addEventListener("mousemove", _func2);
+		gui.byeListeners.push(function () {
+			return window.removeEventListener("mousemove", _func2);
+		});
+	}
 
-			param.setTime(gui.grabbingTimelineNode, t);
-			param.setValue(gui.grabbingTimelineNode, gui.rmapValue(gui.canvasMouseY));
+	{
+		var _func3 = function _func3(_event) {
+			gui.canvasDragging = false;
+			gui.canvasSeeking = false;
 
-			gui.updateModMenu();
-		}
-	});
-
-	window.addEventListener("mouseup", function (_event) {
-		gui.canvasDragging = false;
-		gui.canvasSeeking = false;
-
-		if (gui.grabbingTimelineNode !== -1) {
-			gui.grabbingTimelineNode = -1;
-		}
-	});
+			if (gui.grabbingTimelineNode !== -1) {
+				gui.grabbingTimelineNode = -1;
+			}
+		};
+		window.addEventListener("mouseup", _func3);
+		gui.byeListeners.push(function () {
+			return window.removeEventListener("mouseup", _func3);
+		});
+	}
 
 	gui.timelineCanvas.addEventListener("wheel", function (event) {
 		event.preventDefault();
@@ -1039,8 +1084,9 @@ var AutomatonGUI = function AutomatonGUI(_automaton) {
 	};
 
 	gui.updateTimeline = function () {
-		gui.canvasWidth = window.innerWidth - PARAMLIST_WIDTH - MODMENU_WIDTH;
-		gui.canvasHeight = GUI_HEIGHT - HEADER_HEIGHT;
+		var rect = gui.timeline.getBoundingClientRect();
+		gui.canvasWidth = rect.width;
+		gui.canvasHeight = rect.height;
 		gui.timelineCanvas.width = gui.canvasWidth;
 		gui.timelineCanvas.height = gui.canvasHeight;
 
@@ -1168,40 +1214,38 @@ var AutomatonGUI = function AutomatonGUI(_automaton) {
 						valueBox.select();
 					}, 10);
 				} else {
-					(function () {
-						var lastY = event.clientY;
+					var lastY = event.clientY;
 
-						var moveFunc = function moveFunc(event) {
-							var v = parseFloat(valueText.innerText);
-							var y = event.clientY;
-							var d = lastY - y;
-							lastY = y;
+					var moveFunc = function moveFunc(event) {
+						var v = parseFloat(valueText.innerText);
+						var y = event.clientY;
+						var d = lastY - y;
+						lastY = y;
 
-							if (event.shiftKey) {
-								var c = Math.abs(d);
-								var ds = Math.sign(d);
-								for (var i = 0; i < c; i++) {
-									var va = Math.abs(v);
-									var vs = Math.sign(v + 1E-4 * ds);
-									var l = Math.floor(Math.log10(va + 1E-4 * ds * vs)) - 1 - (event.altKey ? 1 : 0);
-									var r = Math.max(0.001, Math.pow(10.0, l)) * ds;
-									v = parseFloat((v + r).toFixed(3));
-								}
-								func(v);
-							} else {
-								var _r = event.altKey ? 0.001 : 0.01;
-								func((v + d * _r).toFixed(3));
+						if (event.shiftKey) {
+							var c = Math.abs(d);
+							var ds = Math.sign(d);
+							for (var i = 0; i < c; i++) {
+								var va = Math.abs(v);
+								var vs = Math.sign(v + 1E-4 * ds);
+								var l = Math.floor(Math.log10(va + 1E-4 * ds * vs)) - 1 - (event.altKey ? 1 : 0);
+								var r = Math.max(0.001, Math.pow(10.0, l)) * ds;
+								v = parseFloat((v + r).toFixed(3));
 							}
-						};
+							func(v);
+						} else {
+							var _r = event.altKey ? 0.001 : 0.01;
+							func((v + d * _r).toFixed(3));
+						}
+					};
 
-						var upFunc = function upFunc(event) {
-							window.removeEventListener("mousemove", moveFunc);
-							window.removeEventListener("mouseup", upFunc);
-						};
+					var upFunc = function upFunc(event) {
+						window.removeEventListener("mousemove", moveFunc);
+						window.removeEventListener("mouseup", upFunc);
+					};
 
-						window.addEventListener("mousemove", moveFunc);
-						window.addEventListener("mouseup", upFunc);
-					})();
+					window.addEventListener("mousemove", moveFunc);
+					window.addEventListener("mouseup", upFunc);
 				}
 				lastClick = now;
 			});
@@ -1342,18 +1386,18 @@ var AutomatonGUI = function AutomatonGUI(_automaton) {
 					width: "calc( 100% - 30px )"
 				}, parent);
 
-				var _loop4 = function _loop4(_p) {
-					genParamBox(_p, function () {
-						return node.mods[m][_p];
+				var _loop4 = function _loop4(p) {
+					genParamBox(p, function () {
+						return node.mods[m][p];
 					}, function (value) {
 						var obj = {};
-						obj[_p] = value;
+						obj[p] = value;
 						param.setModParams(gui.selectedTimelineNode, m, obj);
 					}, params);
 				};
 
-				for (var _p in node.mods[m]) {
-					_loop4(_p);
+				for (var p in node.mods[m]) {
+					_loop4(p);
 				}
 			}
 		};
@@ -1393,7 +1437,7 @@ var AutomatonGUI = function AutomatonGUI(_automaton) {
 
 	// ------
 
-	el(gui.inspector.el, {}, document.body);
+	el(gui.inspector.el, {}, gui.parent);
 
 	// ------
 
@@ -1409,9 +1453,6 @@ var AutomatonGUI = function AutomatonGUI(_automaton) {
 			gui.updateParamList();
 		}
 	};
-
-	gui.resize = function () {};
-	window.addEventListener("resize", gui.resize);
 
 	// ------
 
@@ -1506,8 +1547,8 @@ var genImages = function genImages() {
       var arr = _interpolator2.default.generate({
         mode: i
       });
-      for (var _i5 = 1; _i5 < arr.length; _i5++) {
-        context.lineTo(s / 8.0 + s / 4.0 * 3.0 * _i5 / arr.length, s / 8.0 * 7.0 - s / 4.0 * 3.0 * arr[_i5]);
+      for (var _i = 1; _i < arr.length; _i++) {
+        context.lineTo(s / 8.0 + s / 4.0 * 3.0 * _i / arr.length, s / 8.0 * 7.0 - s / 4.0 * 3.0 * arr[_i]);
       }
 
       context.strokeStyle = colors.accent;
@@ -1544,8 +1585,8 @@ var genImages = function genImages() {
       end: 0.5,
       mods: [false, {}]
     });
-    for (var _i = 1; _i < arr.length; _i++) {
-      context.lineTo(s / 8.0 + s / 4.0 * 3.0 * _i / arr.length, s / 8.0 * 7.0 - s / 4.0 * 3.0 * arr[_i]);
+    for (var i = 1; i < arr.length; i++) {
+      context.lineTo(s / 8.0 + s / 4.0 * 3.0 * i / arr.length, s / 8.0 * 7.0 - s / 4.0 * 3.0 * arr[i]);
     }
 
     context.strokeStyle = colors.accent;
@@ -1562,8 +1603,8 @@ var genImages = function genImages() {
       end: 0.5,
       mods: [false, false, {}]
     });
-    for (var _i2 = 1; _i2 < arr.length; _i2++) {
-      context.lineTo(s / 8.0 + s / 4.0 * 3.0 * _i2 / arr.length, s / 8.0 * 7.0 - s / 4.0 * 3.0 * arr[_i2]);
+    for (var i = 1; i < arr.length; i++) {
+      context.lineTo(s / 8.0 + s / 4.0 * 3.0 * i / arr.length, s / 8.0 * 7.0 - s / 4.0 * 3.0 * arr[i]);
     }
 
     context.strokeStyle = colors.accent;
@@ -1580,8 +1621,8 @@ var genImages = function genImages() {
       end: 1.0,
       mods: [false, false, false, {}]
     });
-    for (var _i3 = 1; _i3 < arr.length; _i3++) {
-      context.lineTo(s / 8.0 + s / 4.0 * 3.0 * _i3 / arr.length, s / 8.0 * 7.0 - s / 4.0 * 3.0 * arr[_i3]);
+    for (var i = 1; i < arr.length; i++) {
+      context.lineTo(s / 8.0 + s / 4.0 * 3.0 * i / arr.length, s / 8.0 * 7.0 - s / 4.0 * 3.0 * arr[i]);
     }
 
     context.strokeStyle = colors.accent;
@@ -1658,11 +1699,11 @@ var genImages = function genImages() {
   images.config = genImage(function () {
     context.beginPath();
     var c = s / 2.0;
-    for (var _i4 = 0; _i4 < 24; _i4++) {
-      var r = (_i4 & 2) === 0 ? s * 0.42 : s * 0.30;
-      var t = Math.PI * (_i4 - 0.5) / 12.0;
+    for (var i = 0; i < 24; i++) {
+      var r = (i & 2) === 0 ? s * 0.42 : s * 0.30;
+      var t = Math.PI * (i - 0.5) / 12.0;
 
-      if (_i4 === 0) {
+      if (i === 0) {
         context.moveTo(c + Math.cos(t) * r, c + Math.sin(t) * r);
       } else {
         context.lineTo(c + Math.cos(t) * r, c + Math.sin(t) * r);
@@ -1719,7 +1760,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var _noise = require("./noise");
 
@@ -1877,7 +1918,7 @@ exports.default = Interpolator;
 },{"./noise":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/noise.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/main.js":[function(require,module,exports){
 "use strict";
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var _param3 = require("./param");
 
@@ -1946,7 +1987,7 @@ var Automaton = function Automaton(_props) {
 	// ------
 
 	if (props.gui) {
-		automaton.gui = (0, _gui2.default)(automaton);
+		automaton.gui = (0, _gui2.default)(automaton, props.gui);
 		if (data.gui) {
 			automaton.gui.setState(data.gui);
 		}
@@ -1974,6 +2015,13 @@ var Automaton = function Automaton(_props) {
 		}
 
 		return automaton.params[_name].getValue();
+	};
+
+	// ------
+
+	automaton.bye = function () {
+		automaton.gui.bye();
+		automaton = null;
 	};
 
 	// ------
@@ -2011,7 +2059,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var _xorshift = require("./xorshift");
 
@@ -2072,7 +2120,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var _interpolator = require("./interpolator");
 

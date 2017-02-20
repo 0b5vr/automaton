@@ -5,30 +5,178 @@
 
 <body>
   <div id="container">
+    <canvas id="canvas"></canvas><br />
+    <div id="text">
+<h1>Automaton Playground!</h1>
+Hi there! This is Automaton playground.
+You can code anything (not dangerous) on editor and tweak parameters on Automaton GUI.
+
+GitHub (Download): <a href="https://github.com/fms-cat/automaton">https://github.com/fms-cat/automaton</a>
+
+<h1>What is Automaton?</h1>
+Automaton is animation tool with Timeline GUI for art coding.
+I hope it helps your creative coding!
+Automaton is under development so some features will be added / changed in future.
+
+I defined the function named <code>auto</code> like <code>let auto = automaton.auto</code> .
+You can use <code>auto</code> as numeric parameter which is tweakable on Automaton GUI.
+When you use <code>auto</code> like <code>auto( "rectX" )</code>, new parameter named "rectX" created on Automaton, and it appears on GUI.
+Then, you can tweak the parameter using timeline on GUI.
+
+Be careful that you cannot use Automaton parameter outside the update loop.
+It will create the new parameter on Automaton, but not updated.
+If you want to define tweakable parameters outside the update loop, you need to assign the parameter inside the update loop via <code>auto</code>.
+
+<h1>How to use GUI</h1>
+The Automaton GUI has a lot of feature!
+
+First, choose the parameter you want to tweak by left menu.
+Then the GUI will be show parameter animation curve on timeline.
+
+When you doubleclicked inside the timeline, new "node" will be created.
+The animation curve will transform to pass through nodes.
+You can grab and move around the node by clicking and dragging.
+And you doubleclicked the node, the node will be removed.
+
+You can scroll around the timeline using mouse wheel.
+Shift-Scroll lets the timeline horizontal zoom.
+Alt-Scroll lets the timeline vertical zoom.
+
+Shape of animation curve can be changed by menu on the right side.
+You can use various curve such as Linear, ExpSmooth, Spring, etc...
+Or, you can apply some "mods" to the curve such as SineCurve, PerlinNoise, Lo-Fi, etc...
+Let's try various!
+
+<h1>Other Features</h1>
+I'll explain about icons above timeline.
+
+First, you click magnet icon, you can configure BeatSnap.
+BeatSnap lets nodes snaps to beat.
+It is very useful to making audio-syncing animations.
+
+Next, you click cog icon, it will show global setting.
+You can change the length and resolution.
+Less resolution, less memory consumption and less curve generating time, but also it will make the curve rough.
+
+Finally, you click save icon, it will show (very long) JSON contains all of Automaton parameters.
+You can load this JSON by adding parameter named <code>data</code> when you instantiate Automaton.
+</div>
+
+    <div id="editor">// Press Ctrl+S (Cmd+S on MacOS) to run script
+// The script will be run under eval(). be calm, safety first.
+
+var time = 0.0;
+
+var automaton = Automaton( {
+  gui: document.body,
+  onseek: ( t ) => { time = t; return t; },
+  data: `
+{"length":5,"resolution":1000,"params":{"rectX":[{"time":0,"value":0,"mode":1,"params":{},"mods":[false,false,false,false]},{"time":5,"value":100,"mode":1,"params":{},"mods":[false,false,false,false]}],"rectY":[{"time":0,"value":0,"mode":1,"params":{},"mods":[false,false,false,false]},{"time":5,"value":100,"mode":1,"params":{},"mods":[false,false,false,false]}]},"gui":{"beatSnap":false,"beatSnapBpm":140,"beatSnapOffset":0,"timelineMinT":-8.881784197001252e-16,"timelineMaxT":5,"timelineMinV":-22.976197759847903,"timelineMaxV":120.93820175153597}}
+  `
+} );
+var auto = automaton.auto;
+
+var width = canvas.width = 300;
+var height = canvas.height = 300;
+
+var context = canvas.getContext( "2d" );
+
+var stop = false;
+function update() {
+  if ( stop ) { return; }
+  time += 1.0 / 60.0;
+  
+  automaton.update( time );
+
+  context.fillStyle = "#fff";
+  context.fillRect( 0, 0, width, height );
+  
+  context.fillStyle = "#f00";
+  context.fillRect( auto( "rectX" ), auto( "rectY" ), 100, 100 );
+  
+  requestAnimationFrame( update );
+}
+update();
+
+playground.unload = function() {
+  stop = true;
+  automaton.bye();
+}</div>
   </div>
 </body>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.6/ace.js"></script>
 <script src="../dist/automaton.js"></script>
 <script>
 
-let time = 0.0;
-let deltaTime = 1.0 / 60.0;
+let editor = ace.edit( "editor" );
+editor.setTheme( "ace/theme/monokai" );
+editor.getSession().setMode( "ace/mode/javascript" );
+editor.getSession().setTabSize( 2 );
+editor.getSession().setUseSoftTabs( true );
 
-let automaton = Automaton( {
-  gui: true,
-  onseek: ( t ) => { time = t; return t; },  
-  data: '{"length":1,"resolution":1000,"params":{"wow":[{"time":0,"value":0,"mode":1,"params":{},"mods":[false,false,false]},{"time":0.36923076923076925,"value":0.7976190476190477,"mode":5,"params":{"gravity":210.95,"bounce":0.55},"mods":[false,false,false]},{"time":0.6115384615384616,"value":0.3035714285714286,"mode":2,"params":{},"mods":[false,false,false]},{"time":1,"value":0.7142857142857143,"mode":4,"params":{"rate":9300,"damp":0.2},"mods":[false,false,false]}],"pya":[{"time":0,"value":0,"mode":1,"params":{},"mods":[false,false,false]},{"time":0.36538461538461536,"value":0.7380952380952381,"mode":1,"params":{},"mods":[false,false,{"freq":1,"amp":0.58,"reso":8,"recursion":4,"seed":456}]},{"time":0.6759002770083102,"value":0.1011024963392444,"mode":5,"params":{"gravity":270,"bounce":0.47},"mods":[false,false,false]},{"time":1,"value":0.664834658463285,"mode":4,"params":{"rate":9310.064,"damp":0.211},"mods":[false,false,false]}]},"gui":{"beatSnap":true,"beatSnapBpm":170,"beatSnapOffset":0,"timelineMinT":0,"timelineMaxT":1,"timelineMinV":-0.21779816020438944,"timelineMaxV":1.1869594826533247}}'
+let playground = {};
+
+let run = () => {
+  let source = editor.getValue();
+  if ( typeof playground.unload === "function" ) { playground.unload(); }
+  try {
+    let func = eval( source );
+  } catch ( exception ) {
+    console.error( exception );
+    alert( "An error occured! See browser console (Ctrl+Shift+J in chrome)." );
+  }
+};
+run();
+
+editor.commands.addCommand( {
+  name: "run",
+  bindKey: { win: "Ctrl-S",  mac: "Command-S" },
+  exec: () => run()
 } );
 
-automaton.auto( "wow" );
-automaton.auto( "wow" );
-automaton.auto( "pya" );
-
-let update = () => {
-  time += 1.0 * deltaTime;
-  automaton.update( time );
-  requestAnimationFrame( update );
-};
-update();
-
 </script>
+
+<style>
+body {
+  background: #222;
+  color: #ddd;
+  font: 500 16px/1.2 "Helvetica Neue", "ヒラギノ角ゴ ProN", sans-serif;
+}
+
+#canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+#text {
+  white-space: pre-wrap;
+  width: 60%;
+
+  padding-top: 250px;
+  padding-bottom: 250px;
+}
+
+#editor {
+  position: fixed;
+  width: 320px;
+  height: calc( 100% - 240px );
+  right: 0;
+  top: 0;
+}
+
+a {
+  color: #f8a;
+}
+
+h1 {
+  margin-bottom: 0;
+}
+
+code {
+  padding: 4px;
+  background: #444;
+  border-radius: 4px;
+}
+</style>
