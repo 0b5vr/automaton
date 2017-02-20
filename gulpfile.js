@@ -2,7 +2,6 @@ const fs = require( 'fs' );
 
 const gulp = require( 'gulp' );
 const rename = require( 'gulp-rename' );
-const changed = require( 'gulp-changed' );
 
 const browserify = require( 'browserify' );
 const watchify = require( 'watchify' );
@@ -14,19 +13,7 @@ const browserSync = require( 'browser-sync' );
 
 // ------
 
-gulp.task( 'static-build', () => {
-  gulp.src( [ './src/static/**/*' ] )
-  .pipe( changed( './dist' ) )
-  .pipe( gulp.dest( './dist' ) );
-} );
-
-gulp.task( 'static-watch', () => {
-  gulp.watch( './src/static/**', [ 'static-build' ] );
-} );
-
-// ------
-
-let brwsrfy = browserify( './src/script/main.js', {
+let brwsrfy = browserify( './src/main.js', {
   cache: {},
   packageCache: {},
   fullPaths: true,
@@ -76,7 +63,8 @@ gulp.task( 'script-watch', () => {
 
 gulp.task( 'browser-init', () => {
   browserSync.init( {
-    server: './dist'
+    server: '.',
+    startPath: './play/index.html'
   } );
 } );
 
@@ -85,7 +73,7 @@ gulp.task( 'browser-reload', () => {
 } );
 
 gulp.task( 'browser-watch', () => {
-  gulp.watch( [ './dist/**', '!./dist/**/*.css' ], [ 'browser-reload' ] );
+  gulp.watch( [ './dist/**' ], [ 'browser-reload' ] );
 } );
 
 // ------
@@ -111,12 +99,10 @@ gulp.task( 'clean', () => {
 // ------
 
 gulp.task( 'watch', [
-  'static-watch',
   'script-watch'
 ] );
 
 gulp.task( 'build', [
-  'static-build',
   'script-build'
 ] );
 

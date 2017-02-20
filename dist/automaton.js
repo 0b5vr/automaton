@@ -1,4 +1,4 @@
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.Automaton = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/script/colors.js":[function(require,module,exports){
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.Automaton = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/colors.js":[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -15,7 +15,7 @@ var genColors = function genColors() {
 
 exports.default = genColors;
 
-},{}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/script/gui.js":[function(require,module,exports){
+},{}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/gui.js":[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1455,7 +1455,7 @@ var AutomatonGUI = function AutomatonGUI(_automaton) {
 
 exports.default = AutomatonGUI;
 
-},{"./colors":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/script/colors.js","./images":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/script/images.js","./interpolator":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/script/interpolator.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/script/images.js":[function(require,module,exports){
+},{"./colors":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/colors.js","./images":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/images.js","./interpolator":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/interpolator.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/images.js":[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1712,7 +1712,7 @@ var genImages = function genImages() {
 
 exports.default = genImages;
 
-},{"./colors":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/script/colors.js","./interpolator":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/script/interpolator.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/script/interpolator.js":[function(require,module,exports){
+},{"./colors":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/colors.js","./interpolator":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/interpolator.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/interpolator.js":[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1874,7 +1874,7 @@ Interpolator.generate = function (_params) {
 
 exports.default = Interpolator;
 
-},{"./noise":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/script/noise.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/script/main.js":[function(require,module,exports){
+},{"./noise":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/noise.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/main.js":[function(require,module,exports){
 "use strict";
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
@@ -2004,7 +2004,7 @@ var Automaton = function Automaton(_props) {
 
 module.exports = Automaton;
 
-},{"./gui":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/script/gui.js","./param":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/script/param.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/script/noise.js":[function(require,module,exports){
+},{"./gui":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/gui.js","./param":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/param.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/noise.js":[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2063,7 +2063,7 @@ var genNoise = function genNoise(_params) {
 
 exports.default = genNoise;
 
-},{"./xorshift":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/script/xorshift.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/script/param.js":[function(require,module,exports){
+},{"./xorshift":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/xorshift.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/param.js":[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2389,7 +2389,7 @@ var AutomatonParam = function () {
 
 exports.default = AutomatonParam;
 
-},{"./interpolator":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/script/interpolator.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/script/xorshift.js":[function(require,module,exports){
+},{"./interpolator":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/interpolator.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/xorshift.js":[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2406,5 +2406,5 @@ var xorshift = function xorshift(_seed) {
 
 exports.default = xorshift;
 
-},{}]},{},["/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/script/main.js"])("/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/script/main.js")
+},{}]},{},["/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/main.js"])("/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/main.js")
 });
