@@ -10,6 +10,8 @@ made for [Shift](https://GitHub.com/fms-cat/shift), my WebGL demo
 
 ## Playground!
 
+![](playground.gif)
+
 You can try Automaton experience here!
 [https://fms-cat.github.io/automaton](https://fms-cat.github.io/automaton)
 
