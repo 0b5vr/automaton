@@ -844,8 +844,8 @@ let AutomatonGUI = ( _automaton, _parent ) => {
 		if ( event.shiftKey ) {
 			let cursorT = gui.rmapTime( gui.canvasMouseX );
 
-			gui.timelineMinT -= ( cursorT - gui.timelineMinT ) * 0.005 * event.deltaY;
-			gui.timelineMaxT += ( gui.timelineMaxT - cursorT ) * 0.005 * event.deltaY;
+			gui.timelineMinT -= ( cursorT - gui.timelineMinT ) * 0.005 * event.deltaX;
+			gui.timelineMaxT += ( gui.timelineMaxT - cursorT ) * 0.005 * event.deltaX;
 
 			let el = gui.timelineMinT < 0.0;
 			let er = gui.automaton.length < gui.timelineMaxT;
