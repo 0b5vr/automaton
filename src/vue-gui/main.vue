@@ -404,6 +404,7 @@ export default {
             };
             this.$nextTick( () => {
               this.$refs.dialogSaveJSON.value = JSON.stringify( this.automaton.save() );
+              this.$refs.dialogSaveJSON.select();
             } );
           }
         }

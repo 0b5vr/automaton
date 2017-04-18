@@ -1,5 +1,6 @@
 import Vue from "vue";
 import GUI from "./vue-gui/main.vue";
+import compat from "./compat";
 
 import AutomatonParam from "./param";
 
@@ -9,11 +10,11 @@ let Automaton = ( _props ) => {
 	let automaton = {};
 
 	let props = typeof _props === "object" ? _props : {};
-	let data = props.data ? JSON.parse( props.data ) : {};
+	let data = compat( props.data );
 
 	automaton.time = 0.0;
-	automaton.length = typeof data.length === "number" ? data.length : 1.0;
-	automaton.resolution = typeof data.resolution === "number" ? data.resolution : 1000.0;
+	automaton.length = data.length;
+	automaton.resolution = data.resolution;
 
 	// ------
 
@@ -62,11 +63,9 @@ let Automaton = ( _props ) => {
 		return sum;
 	};
 
-	if ( data.params ) {
-		for ( let name in data.params ) {
-			let param = automaton.createParam( name );
-			param.load( data.params[ name ] );
-		}
+	for ( let name in data.params ) {
+		let param = automaton.createParam( name );
+		param.load( data.params[ name ] );
 	}
 
 	automaton.setLength( automaton.length );
@@ -136,7 +135,7 @@ let Automaton = ( _props ) => {
 
 	automaton.save = () => {
 		let obj = {
-			version: 20170418,
+			rev: 20170418,
 			length: automaton.length,
 			resolution: automaton.resolution,
 		};

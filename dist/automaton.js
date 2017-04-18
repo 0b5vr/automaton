@@ -7394,6 +7394,44 @@ exports.insert = function (css) {
   }
 }
 
+},{}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/compat.js":[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var defObj = function defObj() {
+  return {
+    length: 1.0,
+    resolution: 1000.0,
+    params: []
+  };
+};
+
+var compat = function compat(json) {
+  if (!json) {
+    return defObj();
+  }
+
+  var data = JSON.parse(json);
+  var rev = data.rev;
+
+  if (rev === 20170418) {
+    return data;
+  } else {
+    if (data.gui) {
+      // The "Shift" revision of automaton, has uncompatible gui params
+      delete data.gui;
+      return data;
+    } else {
+      console.log("Loaded data is invalid or not compatible with this revision");
+      return defObj();
+    }
+  }
+};
+
+exports.default = compat;
+
 },{}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/images.js":[function(require,module,exports){
 "use strict";
 
@@ -7856,6 +7894,10 @@ var _main = require("./vue-gui/main.vue");
 
 var _main2 = _interopRequireDefault(_main);
 
+var _compat = require("./compat");
+
+var _compat2 = _interopRequireDefault(_compat);
+
 var _param3 = require("./param");
 
 var _param4 = _interopRequireDefault(_param3);
@@ -7868,11 +7910,11 @@ var Automaton = function Automaton(_props) {
 	var automaton = {};
 
 	var props = (typeof _props === "undefined" ? "undefined" : _typeof(_props)) === "object" ? _props : {};
-	var data = props.data ? JSON.parse(props.data) : {};
+	var data = (0, _compat2.default)(props.data);
 
 	automaton.time = 0.0;
-	automaton.length = typeof data.length === "number" ? data.length : 1.0;
-	automaton.resolution = typeof data.resolution === "number" ? data.resolution : 1000.0;
+	automaton.length = data.length;
+	automaton.resolution = data.resolution;
 
 	// ------
 
@@ -7927,11 +7969,9 @@ var Automaton = function Automaton(_props) {
 		return sum;
 	};
 
-	if (data.params) {
-		for (var name in data.params) {
-			var param = automaton.createParam(name);
-			param.load(data.params[name]);
-		}
+	for (var name in data.params) {
+		var param = automaton.createParam(name);
+		param.load(data.params[name]);
 	}
 
 	automaton.setLength(automaton.length);
@@ -7998,7 +8038,7 @@ var Automaton = function Automaton(_props) {
 
 	automaton.save = function () {
 		var obj = {
-			version: 20170418,
+			rev: 20170418,
 			length: automaton.length,
 			resolution: automaton.resolution
 		};
@@ -8023,7 +8063,7 @@ var Automaton = function Automaton(_props) {
 
 module.exports = Automaton;
 
-},{"./param":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/param.js","./vue-gui/main.vue":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/vue-gui/main.vue","vue":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/vue/dist/vue.runtime.common.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/noise.js":[function(require,module,exports){
+},{"./compat":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/compat.js","./param":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/param.js","./vue-gui/main.vue":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/vue-gui/main.vue","vue":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/vue/dist/vue.runtime.common.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/noise.js":[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8458,7 +8498,7 @@ var AutomatonParam = function () {
 exports.default = AutomatonParam;
 
 },{"./interpolator":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/interpolator.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/vue-gui/main.vue":[function(require,module,exports){
-var __vueify_style_dispose__ = require("vueify/lib/insert-css").insert("/* line 763, stdin */\n.parent {\n  position: absolute;\n  left: 0;\n  top: 0;\n  width: 100%;\n  height: 100%;\n  background: #222;\n  color: #ddd;\n  user-select: none;\n  font: 300 14px \"Helvetica Neue\", sans-serif; }\n  /* line 778, stdin */\n  .parent .header {\n    position: absolute;\n    left: 0;\n    top: 0;\n    width: 100%;\n    height: 30px;\n    background: #444; }\n    /* line 787, stdin */\n    .parent .header .headerTitle {\n      position: absolute;\n      left: 6px;\n      top: 0;\n      height: 30px;\n      font: 500 24px \"Century Gothic\", sans-serif;\n      letter-spacing: 8px;\n      color: #ddd; }\n    /* line 799, stdin */\n    .parent .header .headerButtonContainer {\n      position: absolute;\n      right: 4px; }\n      /* line 803, stdin */\n      .parent .header .headerButtonContainer .headerButton {\n        width: 24px;\n        height: 24px;\n        margin: 3px;\n        cursor: pointer; }\n  /* line 814, stdin */\n  .parent .paramList {\n    position: absolute;\n    left: 0;\n    top: 30px;\n    width: 120px;\n    height: calc( 100% - 30px);\n    background: #111;\n    overflow: hidden; }\n    /* line 825, stdin */\n    .parent .paramList .paramListInside {\n      position: absolute;\n      top: 0px;\n      width: 100%; }\n      /* line 830, stdin */\n      .parent .paramList .paramListInside .param {\n        margin: 2px;\n        padding: 2px 8px;\n        width: calc( 100% - 4px - 16px);\n        height: 20px;\n        font-size: 14px;\n        background: #333;\n        cursor: pointer; }\n        /* line 842, stdin */\n        .parent .paramList .paramListInside .param.selected {\n          background: #555;\n          color: #fff; }\n  /* line 851, stdin */\n  .parent .modMenu {\n    position: absolute;\n    right: 0;\n    top: 30px;\n    width: 200px;\n    height: calc( 100% - 30px);\n    background: #333;\n    overflow: hidden; }\n    /* line 862, stdin */\n    .parent .modMenu .modMenuInside {\n      position: absolute;\n      top: 0px;\n      width: calc( 100% - 20px);\n      padding: 20px 10px; }\n    /* line 869, stdin */\n    .parent .modMenu .sep {\n      width: calc( 100% - 10px);\n      height: 1px;\n      margin: 10px 5px 15px 5px;\n      background: #666; }\n    /* line 877, stdin */\n    .parent .modMenu .modeButtonContainer {\n      width: calc( 100% - 10px);\n      margin: -5px 5px 0 5px; }\n      /* line 881, stdin */\n      .parent .modMenu .modeButtonContainer .modeButton {\n        width: 30px;\n        height: 30px;\n        margin: 2px;\n        cursor: pointer; }\n        /* line 888, stdin */\n        .parent .modMenu .modeButtonContainer .modeButton:not(.active) {\n          filter: grayscale(90%); }\n    /* line 894, stdin */\n    .parent .modMenu .modsContainer {\n      width: 100%;\n      position: relative;\n      margin: 0 0 20px 0;\n      min-height: 24px; }\n      /* line 900, stdin */\n      .parent .modMenu .modsContainer .modIcon {\n        position: absolute;\n        left: 10px;\n        width: 24px;\n        height: 24px;\n        cursor: pointer; }\n        /* line 908, stdin */\n        .parent .modMenu .modsContainer .modIcon:not(.active) {\n          filter: grayscale(90%); }\n      /* line 913, stdin */\n      .parent .modMenu .modsContainer .modParams {\n        position: relative;\n        left: 30px;\n        width: calc( 100% - 30px); }\n  /* line 921, stdin */\n  .parent .timelineContainer {\n    position: absolute;\n    left: 120px;\n    top: 30px;\n    width: calc( 100% - 320px);\n    height: calc( 100% - 30px);\n    overflow: hidden; }\n    /* line 930, stdin */\n    .parent .timelineContainer .timeline {\n      position: absolute;\n      width: 100%;\n      height: 100%;\n      background: #222; }\n      /* line 937, stdin */\n      .parent .timelineContainer .timeline .timelineSvg {\n        stroke-linecap: round;\n        stroke-linejoin: round;\n        font: 400 10px \"Helvetica Neue\", sans-serif; }\n        /* line 943, stdin */\n        .parent .timelineContainer .timeline .timelineSvg .timelineGrid {\n          stroke: #fff;\n          stroke-width: 1; }\n        /* line 948, stdin */\n        .parent .timelineContainer .timeline .timelineSvg .timelineGridText {\n          fill: #fff; }\n        /* line 952, stdin */\n        .parent .timelineContainer .timeline .timelineSvg .timelineSnap {\n          stroke: #2af;\n          stroke-width: 1;\n          opacity: 0.6; }\n        /* line 958, stdin */\n        .parent .timelineContainer .timeline .timelineSvg .timelineSnapText {\n          fill: #2af;\n          opacity: 0.6; }\n        /* line 963, stdin */\n        .parent .timelineContainer .timeline .timelineSvg .timelinePath {\n          fill: none;\n          stroke: #fff;\n          stroke-width: 2; }\n        /* line 969, stdin */\n        .parent .timelineContainer .timeline .timelineSvg .timelineNode {\n          fill: #000;\n          stroke: #2af;\n          stroke-width: 2;\n          cursor: pointer; }\n          /* line 976, stdin */\n          .parent .timelineContainer .timeline .timelineSvg .timelineNode.active {\n            fill: #2af; }\n        /* line 981, stdin */\n        .parent .timelineContainer .timeline .timelineSvg .timelineTimeLine {\n          stroke: #2af;\n          stroke-width: 2; }\n        /* line 986, stdin */\n        .parent .timelineContainer .timeline .timelineSvg .timelineValueLine {\n          stroke: #2af;\n          stroke-width: 1; }\n        /* line 991, stdin */\n        .parent .timelineContainer .timeline .timelineSvg .timelineTimeText {\n          fill: #2af; }\n        /* line 995, stdin */\n        .parent .timelineContainer .timeline .timelineSvg .timelineValueText {\n          fill: #2af; }\n        /* line 999, stdin */\n        .parent .timelineContainer .timeline .timelineSvg .timelineTimePoint {\n          fill: #2af; }\n  /* line 1006, stdin */\n  .parent .dialogContainer {\n    position: absolute;\n    width: 100%;\n    height: 100%;\n    text-align: center; }\n    /* line 1013, stdin */\n    .parent .dialogContainer .dialogBackground {\n      position: absolute;\n      width: 100%;\n      height: 100%;\n      background: #000;\n      opacity: 0.5; }\n    /* line 1022, stdin */\n    .parent .dialogContainer .dialog {\n      display: inline-block;\n      position: relative;\n      top: 50px;\n      padding: 10px;\n      background: #333; }\n      /* line 1030, stdin */\n      .parent .dialogContainer .dialog .dialogContent {\n        display: inline-block;\n        width: calc( 100% - 60px); }\n        /* line 1034, stdin */\n        .parent .dialogContainer .dialog .dialogContent * {\n          margin-bottom: 4px; }\n        /* line 1038, stdin */\n        .parent .dialogContainer .dialog .dialogContent .dialogName {\n          display: inline-block;\n          width: 70px;\n          padding-left: 10px;\n          text-align: left; }\n        /* line 1046, stdin */\n        .parent .dialogContainer .dialog .dialogContent .dialogCheck {\n          width: 50px; }\n        /* line 1050, stdin */\n        .parent .dialogContainer .dialog .dialogContent .dialogBox {\n          width: 50px;\n          padding: 2px;\n          background: #666;\n          color: #fff;\n          border: none;\n          text-align: center; }\n          /* line 1060, stdin */\n          .parent .dialogContainer .dialog .dialogContent .dialogBox.save {\n            width: 120px; }\n      /* line 1066, stdin */\n      .parent .dialogContainer .dialog .dialogButtonContainer {\n        width: 100%;\n        height: 24px;\n        margin-top: 5px;\n        text-align: center; }\n        /* line 1073, stdin */\n        .parent .dialogContainer .dialog .dialogButtonContainer .dialogButton {\n          display: inline-block;\n          width: 60px;\n          height: 16px;\n          padding: 4px;\n          margin: 0 5px;\n          text-align: center;\n          background: #555;\n          cursor: pointer; }")
+var __vueify_style_dispose__ = require("vueify/lib/insert-css").insert("/* line 764, stdin */\n.parent {\n  position: absolute;\n  left: 0;\n  top: 0;\n  width: 100%;\n  height: 100%;\n  background: #222;\n  color: #ddd;\n  user-select: none;\n  font: 300 14px \"Helvetica Neue\", sans-serif; }\n  /* line 779, stdin */\n  .parent .header {\n    position: absolute;\n    left: 0;\n    top: 0;\n    width: 100%;\n    height: 30px;\n    background: #444; }\n    /* line 788, stdin */\n    .parent .header .headerTitle {\n      position: absolute;\n      left: 6px;\n      top: 0;\n      height: 30px;\n      font: 500 24px \"Century Gothic\", sans-serif;\n      letter-spacing: 8px;\n      color: #ddd; }\n    /* line 800, stdin */\n    .parent .header .headerButtonContainer {\n      position: absolute;\n      right: 4px; }\n      /* line 804, stdin */\n      .parent .header .headerButtonContainer .headerButton {\n        width: 24px;\n        height: 24px;\n        margin: 3px;\n        cursor: pointer; }\n  /* line 815, stdin */\n  .parent .paramList {\n    position: absolute;\n    left: 0;\n    top: 30px;\n    width: 120px;\n    height: calc( 100% - 30px);\n    background: #111;\n    overflow: hidden; }\n    /* line 826, stdin */\n    .parent .paramList .paramListInside {\n      position: absolute;\n      top: 0px;\n      width: 100%; }\n      /* line 831, stdin */\n      .parent .paramList .paramListInside .param {\n        margin: 2px;\n        padding: 2px 8px;\n        width: calc( 100% - 4px - 16px);\n        height: 20px;\n        font-size: 14px;\n        background: #333;\n        cursor: pointer; }\n        /* line 843, stdin */\n        .parent .paramList .paramListInside .param.selected {\n          background: #555;\n          color: #fff; }\n  /* line 852, stdin */\n  .parent .modMenu {\n    position: absolute;\n    right: 0;\n    top: 30px;\n    width: 200px;\n    height: calc( 100% - 30px);\n    background: #333;\n    overflow: hidden; }\n    /* line 863, stdin */\n    .parent .modMenu .modMenuInside {\n      position: absolute;\n      top: 0px;\n      width: calc( 100% - 20px);\n      padding: 20px 10px; }\n    /* line 870, stdin */\n    .parent .modMenu .sep {\n      width: calc( 100% - 10px);\n      height: 1px;\n      margin: 10px 5px 15px 5px;\n      background: #666; }\n    /* line 878, stdin */\n    .parent .modMenu .modeButtonContainer {\n      width: calc( 100% - 10px);\n      margin: -5px 5px 0 5px; }\n      /* line 882, stdin */\n      .parent .modMenu .modeButtonContainer .modeButton {\n        width: 30px;\n        height: 30px;\n        margin: 2px;\n        cursor: pointer; }\n        /* line 889, stdin */\n        .parent .modMenu .modeButtonContainer .modeButton:not(.active) {\n          filter: grayscale(90%); }\n    /* line 895, stdin */\n    .parent .modMenu .modsContainer {\n      width: 100%;\n      position: relative;\n      margin: 0 0 20px 0;\n      min-height: 24px; }\n      /* line 901, stdin */\n      .parent .modMenu .modsContainer .modIcon {\n        position: absolute;\n        left: 10px;\n        width: 24px;\n        height: 24px;\n        cursor: pointer; }\n        /* line 909, stdin */\n        .parent .modMenu .modsContainer .modIcon:not(.active) {\n          filter: grayscale(90%); }\n      /* line 914, stdin */\n      .parent .modMenu .modsContainer .modParams {\n        position: relative;\n        left: 30px;\n        width: calc( 100% - 30px); }\n  /* line 922, stdin */\n  .parent .timelineContainer {\n    position: absolute;\n    left: 120px;\n    top: 30px;\n    width: calc( 100% - 320px);\n    height: calc( 100% - 30px);\n    overflow: hidden; }\n    /* line 931, stdin */\n    .parent .timelineContainer .timeline {\n      position: absolute;\n      width: 100%;\n      height: 100%;\n      background: #222; }\n      /* line 938, stdin */\n      .parent .timelineContainer .timeline .timelineSvg {\n        stroke-linecap: round;\n        stroke-linejoin: round;\n        font: 400 10px \"Helvetica Neue\", sans-serif; }\n        /* line 944, stdin */\n        .parent .timelineContainer .timeline .timelineSvg .timelineGrid {\n          stroke: #fff;\n          stroke-width: 1; }\n        /* line 949, stdin */\n        .parent .timelineContainer .timeline .timelineSvg .timelineGridText {\n          fill: #fff; }\n        /* line 953, stdin */\n        .parent .timelineContainer .timeline .timelineSvg .timelineSnap {\n          stroke: #2af;\n          stroke-width: 1;\n          opacity: 0.6; }\n        /* line 959, stdin */\n        .parent .timelineContainer .timeline .timelineSvg .timelineSnapText {\n          fill: #2af;\n          opacity: 0.6; }\n        /* line 964, stdin */\n        .parent .timelineContainer .timeline .timelineSvg .timelinePath {\n          fill: none;\n          stroke: #fff;\n          stroke-width: 2; }\n        /* line 970, stdin */\n        .parent .timelineContainer .timeline .timelineSvg .timelineNode {\n          fill: #000;\n          stroke: #2af;\n          stroke-width: 2;\n          cursor: pointer; }\n          /* line 977, stdin */\n          .parent .timelineContainer .timeline .timelineSvg .timelineNode.active {\n            fill: #2af; }\n        /* line 982, stdin */\n        .parent .timelineContainer .timeline .timelineSvg .timelineTimeLine {\n          stroke: #2af;\n          stroke-width: 2; }\n        /* line 987, stdin */\n        .parent .timelineContainer .timeline .timelineSvg .timelineValueLine {\n          stroke: #2af;\n          stroke-width: 1; }\n        /* line 992, stdin */\n        .parent .timelineContainer .timeline .timelineSvg .timelineTimeText {\n          fill: #2af; }\n        /* line 996, stdin */\n        .parent .timelineContainer .timeline .timelineSvg .timelineValueText {\n          fill: #2af; }\n        /* line 1000, stdin */\n        .parent .timelineContainer .timeline .timelineSvg .timelineTimePoint {\n          fill: #2af; }\n  /* line 1007, stdin */\n  .parent .dialogContainer {\n    position: absolute;\n    width: 100%;\n    height: 100%;\n    text-align: center; }\n    /* line 1014, stdin */\n    .parent .dialogContainer .dialogBackground {\n      position: absolute;\n      width: 100%;\n      height: 100%;\n      background: #000;\n      opacity: 0.5; }\n    /* line 1023, stdin */\n    .parent .dialogContainer .dialog {\n      display: inline-block;\n      position: relative;\n      top: 50px;\n      padding: 10px;\n      background: #333; }\n      /* line 1031, stdin */\n      .parent .dialogContainer .dialog .dialogContent {\n        display: inline-block;\n        width: calc( 100% - 60px); }\n        /* line 1035, stdin */\n        .parent .dialogContainer .dialog .dialogContent * {\n          margin-bottom: 4px; }\n        /* line 1039, stdin */\n        .parent .dialogContainer .dialog .dialogContent .dialogName {\n          display: inline-block;\n          width: 70px;\n          padding-left: 10px;\n          text-align: left; }\n        /* line 1047, stdin */\n        .parent .dialogContainer .dialog .dialogContent .dialogCheck {\n          width: 50px; }\n        /* line 1051, stdin */\n        .parent .dialogContainer .dialog .dialogContent .dialogBox {\n          width: 50px;\n          padding: 2px;\n          background: #666;\n          color: #fff;\n          border: none;\n          text-align: center; }\n          /* line 1061, stdin */\n          .parent .dialogContainer .dialog .dialogContent .dialogBox.save {\n            width: 120px; }\n      /* line 1067, stdin */\n      .parent .dialogContainer .dialog .dialogButtonContainer {\n        width: 100%;\n        height: 24px;\n        margin-top: 5px;\n        text-align: center; }\n        /* line 1074, stdin */\n        .parent .dialogContainer .dialog .dialogButtonContainer .dialogButton {\n          display: inline-block;\n          width: 60px;\n          height: 16px;\n          padding: 4px;\n          margin: 0 5px;\n          text-align: center;\n          background: #555;\n          cursor: pointer; }")
 ;(function(){
 "use strict";
 
@@ -8578,6 +8618,7 @@ exports.default = {
           };
           _this2.$nextTick(function () {
             _this2.$refs.dialogSaveJSON.value = (0, _stringify2.default)(_this2.automaton.save());
+            _this2.$refs.dialogSaveJSON.select();
           });
         }
       }],
@@ -8925,7 +8966,7 @@ if (module.hot) {(function () {  var hotAPI = require("vue-hot-reload-api")
   if (!module.hot.data) {
     hotAPI.createRecord("data-v-3e83ac13", __vue__options__)
   } else {
-    hotAPI.rerender("data-v-3e83ac13", __vue__options__)
+    hotAPI.reload("data-v-3e83ac13", __vue__options__)
   }
 })()}
 },{"../images":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/images.js","../interpolator":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/interpolator.js","../vue-parambox/main.vue":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/vue-parambox/main.vue","babel-runtime/core-js/json/stringify":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/babel-runtime/core-js/json/stringify.js","babel-runtime/core-js/math/log10":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/babel-runtime/core-js/math/log10.js","vue":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/vue/dist/vue.runtime.common.js","vue-hot-reload-api":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/vue-hot-reload-api/index.js","vueify/lib/insert-css":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/vueify/lib/insert-css.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/vue-parambox/main.vue":[function(require,module,exports){
