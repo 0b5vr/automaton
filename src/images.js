@@ -1,12 +1,7 @@
 import Interpolator from "./interpolator";
-import genColors from "./colors";
-
-let colors;
 
 let genImages = () => {
   let images = {};
-
-  colors = genColors();
 
   let canvas = document.createElement( "canvas" );
   let s = canvas.width = canvas.height = 128;
@@ -42,7 +37,7 @@ let genImages = () => {
         );
       }
 
-      context.strokeStyle = colors.accent;
+      context.strokeStyle = "#2af";
       context.lineWidth = s / 12.0;
       context.stroke();
     } );
@@ -58,7 +53,7 @@ let genImages = () => {
     context.moveTo( s / 2.0, s / 2.0 );
     context.lineTo( s / 2.0, s / 8.0 );
 
-    context.strokeStyle = colors.accent;
+    context.strokeStyle = "#2af";
     context.lineWidth = s / 12.0;
     context.stroke();
   } );
@@ -79,7 +74,7 @@ let genImages = () => {
       );
     }
 
-    context.strokeStyle = colors.accent;
+    context.strokeStyle = "#2af";
     context.lineWidth = s / 12.0;
     context.stroke();
   } );
@@ -100,7 +95,7 @@ let genImages = () => {
       );
     }
 
-    context.strokeStyle = colors.accent;
+    context.strokeStyle = "#2af";
     context.lineWidth = s / 12.0;
     context.stroke();
   } );
@@ -121,7 +116,7 @@ let genImages = () => {
       );
     }
 
-    context.strokeStyle = colors.accent;
+    context.strokeStyle = "#2af";
     context.lineWidth = s / 12.0;
     context.stroke();
   } );
@@ -155,7 +150,45 @@ let genImages = () => {
     context.lineTo( s / 2.0, s / 3.0 );
     context.closePath();
 
-    context.fillStyle = colors.accent;
+    context.fillStyle = "#2af";
+    context.fill();
+  } );
+
+  images.undo = genImage( () => {
+    context.beginPath();
+    
+    context.moveTo( s / 8.0 * 7.0, s / 16.0 * 13.0 );
+    context.lineTo( s / 8.0 * 7.0, s / 8.0 * 3.0 );
+    context.lineTo( s / 4.0 * 3.0, s / 4.0 );
+    context.lineTo( s / 8.0 * 3.0, s / 4.0 );
+    context.lineTo( s / 8.0 * 3.0, s / 8.0 );
+    context.lineTo( s / 8.0, s / 8.0 * 3.0 );
+    context.lineTo( s / 8.0 * 3.0, s / 8.0 * 5.0 );
+    context.lineTo( s / 8.0 * 3.0, s / 2.0 );
+    context.lineTo( s / 8.0 * 5.0, s / 2.0 );
+    context.lineTo( s / 8.0 * 5.0, s / 16.0 * 13.0 );
+    context.closePath();
+
+    context.fillStyle = "#2af";
+    context.fill();
+  } );
+
+  images.redo = genImage( () => {
+    context.beginPath();
+    
+    context.moveTo( s / 8.0, s / 16.0 * 13.0 );
+    context.lineTo( s / 8.0, s / 8.0 * 3.0 );
+    context.lineTo( s / 4.0, s / 4.0 );
+    context.lineTo( s / 8.0 * 5.0, s / 4.0 );
+    context.lineTo( s / 8.0 * 5.0, s / 8.0 );
+    context.lineTo( s / 8.0 * 7.0, s / 8.0 * 3.0 );
+    context.lineTo( s / 8.0 * 5.0, s / 8.0 * 5.0 );
+    context.lineTo( s / 8.0 * 5.0, s / 2.0 );
+    context.lineTo( s / 8.0 * 3.0, s / 2.0 );
+    context.lineTo( s / 8.0 * 3.0, s / 16.0 * 13.0 );
+    context.closePath();
+
+    context.fillStyle = "#2af";
     context.fill();
   } );
 
@@ -174,7 +207,7 @@ let genImages = () => {
     context.lineTo( s / 8.0 * 7.0, s / 4.0 * 3.0 );
     context.closePath();
 
-    context.fillStyle = colors.accent;
+    context.fillStyle = "#2af";
     context.fill();
 
     context.beginPath();
@@ -188,7 +221,7 @@ let genImages = () => {
     context.lineTo( s / 8.0 * 3.0, s / 16.0 * 11.0 );
     context.closePath();
 
-    context.fillStyle = colors.accent;
+    context.fillStyle = "#2af";
     context.fill();
   } );
 
@@ -209,7 +242,7 @@ let genImages = () => {
 
     context.arc( c, c, s * 0.15, 0.0, Math.PI * 2.0, true );
 
-    context.fillStyle = colors.accent;
+    context.fillStyle = "#2af";
     context.fill();
   } );
 
@@ -240,7 +273,7 @@ let genImages = () => {
     context.lineTo( s / 2.0, s / 3.0 );
     context.closePath();
 
-    context.fillStyle = colors.accent;
+    context.fillStyle = "#2af";
     context.fill();
   } );
 

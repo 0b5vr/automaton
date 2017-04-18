@@ -173,6 +173,16 @@ let AutomatonParam = class {
 		param.render();
 	}
 
+	setParam( _index, _key, _value ) {
+		let param = this;
+
+		if ( _index < 0 || param.nodes.length <= _index ) { return; }
+
+		param.nodes[ _index ].params[ _key ] = _value;
+
+		param.render();
+	}
+
 	setParams( _index, _params ) {
 		let param = this;
 
@@ -221,7 +231,28 @@ let AutomatonParam = class {
 			param.setModParams( _index, _mod, params );
 		} else {
 			param.nodes[ _index ].mods[ _mod ] = false;
+			param.render();
 		}
+	}
+
+	toggleMod( _index, _mod ) {
+		let param = this;
+
+		if ( _index < 0 || param.nodes.length <= _index ) { return; }
+		if ( _mod < 0 || Interpolator.MODS <= _mod ) { return; }
+
+		param.activeModParams( _index, _mod, !( param.nodes[ _index ].mods[ _mod ] ) );	
+	}
+
+	setModParam( _index, _mod, _key, _value ) {
+		let param = this;
+
+		if ( _index < 0 || param.nodes.length <= _index ) { return; }
+		if ( _mod < 0 || Interpolator.MODS <= _mod ) { return; }
+
+		param.nodes[ _index ].mods[ _mod ][ _key ] = _value;
+
+		param.render();
 	}
 
 	setModParams( _index, _mod, _params ) {
@@ -253,16 +284,21 @@ let AutomatonParam = class {
 		let param = this;
 
 		let time = typeof _time === "number" ? _time : param.automaton.time;
-		time = time % param.automaton.length;
 
-		let index = time * param.automaton.resolution;
-		let indexi = Math.floor( index );
-		let indexf = index % 1.0;
+		if ( time <= 0.0 ) {
+			return param.values[ 0 ];
+		} else if ( param.automaton.length <= time ) {
+			return param.values[ param.values.length - 1 ];
+		} else {
+			let index = time * param.automaton.resolution;
+			let indexi = Math.floor( index );
+			let indexf = index % 1.0;
 
-		let pv = param.values[ indexi ];
-		let fv = param.values[ indexi + 1 ];
+			let pv = param.values[ indexi ];
+			let fv = param.values[ indexi + 1 ];
 
-		return pv + ( fv - pv ) * indexf;
+			return pv + ( fv - pv ) * indexf;
+		}
 	}
 };
 

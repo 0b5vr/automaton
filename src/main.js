@@ -1,5 +1,7 @@
+import Vue from "vue";
+import GUI from "./vue-gui/main.vue";
+
 import AutomatonParam from "./param";
-import AutomatonGUI from "./gui";
 
 // ------
 
@@ -12,6 +14,30 @@ let Automaton = ( _props ) => {
 	automaton.time = 0.0;
 	automaton.length = typeof data.length === "number" ? data.length : 1.0;
 	automaton.resolution = typeof data.resolution === "number" ? data.resolution : 1000.0;
+
+	// ------
+
+	automaton.setLength = ( _len ) => {
+		if ( isNaN( _len ) ) { return; }
+
+		for ( let paramName in automaton.params ) {
+			let param = automaton.params[ paramName ];
+
+			for ( let iNode = param.nodes.length - 1; 0 < iNode; iNode -- ) {
+				let node = param.nodes[ iNode ];
+				if ( _len < node.time ) {
+					param.nodes.splice( iNode, 1 );
+				}
+			}
+
+			let lastNode = param.nodes[ param.nodes.length - 1 ];
+			if ( lastNode.time !== _len ) {
+				param.addNode( _len, 0.0 );
+			}
+		}
+
+		automaton.length = _len;
+	};
 
 	// ------
 
@@ -43,6 +69,8 @@ let Automaton = ( _props ) => {
 		}
 	}
 
+	automaton.setLength( automaton.length );
+
 	// ------
 
 	automaton.seek = ( _time ) => {
@@ -54,10 +82,28 @@ let Automaton = ( _props ) => {
 	// ------
 
 	if ( props.gui ) {
-		automaton.gui = AutomatonGUI( automaton, props.gui );
-		if ( data.gui ) {
-			automaton.gui.setState( data.gui );
-		}
+		let el = document.createElement( "div" );
+		props.gui.appendChild( el );
+		automaton.vue = new Vue( {
+			el: el,
+			data: {
+				automaton: automaton
+			},
+			render: function( createElement ) {
+				return createElement(
+					GUI,
+					{ props: { automaton: this.automaton } }
+				);
+			}
+		} );
+
+		automaton.guiParams = typeof data.gui === "object" ? data.gui : {
+			snap: {
+				enable: false,
+				bpm: 120,
+				offset: 0
+			}
+		};
 	}
 
 	// ------
@@ -70,10 +116,6 @@ let Automaton = ( _props ) => {
 
 	automaton.update = ( _time ) => {
 		automaton.time = _time % automaton.length;
-
-		if ( automaton.gui ) {
-			automaton.gui.update();
-		}
 	};
 
 	automaton.auto = ( _name ) => {
@@ -87,7 +129,6 @@ let Automaton = ( _props ) => {
 	// ------
 
 	automaton.bye = () => {
-		automaton.gui.bye();
 		automaton = null;
 	};
 
@@ -95,6 +136,7 @@ let Automaton = ( _props ) => {
 
 	automaton.save = () => {
 		let obj = {
+			version: 20170418,
 			length: automaton.length,
 			resolution: automaton.resolution,
 		};
@@ -105,8 +147,8 @@ let Automaton = ( _props ) => {
 			obj.params[ name ] = param.nodes;
 		}
 
-		if ( automaton.gui ) {
-			obj.gui = automaton.gui.getState();
+		if ( automaton.guiParams ) {
+			obj.gui = automaton.guiParams;
 		}
 
 		return obj;

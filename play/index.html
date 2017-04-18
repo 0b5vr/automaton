@@ -5,7 +5,11 @@
 
 <body>
   <div id="container">
-    <canvas id="canvas"></canvas><br />
+    <div id="divAutomatonContainer">
+    </div>
+    
+    <canvas id="canvas"></canvas>
+
     <div id="text">
 <h1>Automaton Playground!</h1>
 Hi there! This is Automaton playground.
@@ -60,7 +64,7 @@ Less resolution, less memory consumption and less curve generating time, but als
 
 Finally, you click save icon, it will show (very long) JSON contains all of Automaton parameters.
 You can load this JSON by adding parameter named <code>data</code> when you instantiate Automaton.
-</div>
+    </div>
 
     <div id="editor">// Press Ctrl+S (Cmd+S on MacOS) to run script
 // The script will be run under eval(). be calm, safety first.
@@ -68,10 +72,10 @@ You can load this JSON by adding parameter named <code>data</code> when you inst
 var time = 0.0;
 
 var automaton = Automaton( {
-  gui: document.body,
+  gui: divAutomatonContainer,
   onseek: ( t ) => { time = t; return t; },
   data: `
-{"length":5,"resolution":1000,"params":{"rectX":[{"time":0,"value":0,"mode":1,"params":{},"mods":[false,false,false,false]},{"time":5,"value":100,"mode":1,"params":{},"mods":[false,false,false,false]}],"rectY":[{"time":0,"value":0,"mode":1,"params":{},"mods":[false,false,false,false]},{"time":5,"value":100,"mode":1,"params":{},"mods":[false,false,false,false]}]},"gui":{"beatSnap":false,"beatSnapBpm":140,"beatSnapOffset":0,"timelineMinT":-8.881784197001252e-16,"timelineMaxT":5,"timelineMinV":-22.976197759847903,"timelineMaxV":120.93820175153597}}
+{"length":5,"resolution":1000,"params":{"rectX":[{"time":0,"value":0,"mode":1,"params":{},"mods":[false,false,false,false]},{"time":5,"value":100,"mode":1,"params":{},"mods":[false,false,false,false]}],"rectY":[{"time":0,"value":0,"mode":1,"params":{},"mods":[false,false,false,false]},{"time":5,"value":100,"mode":1,"params":{},"mods":[false,false,false,false]}]},"gui":{"snap":{"enable":false,"bpm":140,"offset":0}}}
   `
 } );
 var auto = automaton.auto;
@@ -142,6 +146,14 @@ body {
   background: #222;
   color: #ddd;
   font: 500 16px/1.2 "Helvetica Neue", "ヒラギノ角ゴ ProN", sans-serif;
+}
+
+#divAutomatonContainer {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 240px;
 }
 
 #canvas {
