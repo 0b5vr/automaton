@@ -340,6 +340,8 @@ let mods = new Array( Interpolator.MODS ).fill( 0 ).map( ( _, i ) => {
 export default {
   mounted() {
     this.$nextTick( () => {
+      this.selectedParam = Object.keys( this.automaton.params )[ 0 ];
+      this.selectedNode = 0;
       this.onResize();
     } );
     window.addEventListener( "resize", this.onResize );
@@ -420,9 +422,9 @@ export default {
       modMenuWheelPos: 0,
 
       tlTimeMin: 0.0,
-      tlTimeMax: 5.0,
+      tlTimeMax: 1.0,
       tlValueMin: 0.0,
-      tlValueMax: 100.0,
+      tlValueMax: 1.0,
       tlWidth: 0,
       tlHeight: 0,
       tlPath: "",
@@ -467,8 +469,10 @@ export default {
 
       this.tlTimeMax = Math.min( this.tlTimeMax, this.automaton.length );
 
-      this.updateGrid();
-      this.updatePath();
+      this.$nextTick( () => {
+        this.updateGrid();
+        this.updatePath();
+      } );
     },
 
     wheelParamList( event ) {
@@ -693,6 +697,15 @@ export default {
       if ( !this.validSelectedParam() ) { return; }
       if ( this.nodeInRange( index ) ) {
         this.selectedNode = index;
+        this.$nextTick( () => {
+          this.modMenuWheelPos = Math.max(
+            Math.min(
+              this.modMenuWheelPos,
+              this.$refs.modMenuInside.clientHeight - ( this.$refs.parent.clientHeight - this.$refs.header.clientHeight )
+            ),
+            0
+          );
+        } );
       }
     },
     grabNode( index, event ) {
