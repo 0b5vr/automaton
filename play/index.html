@@ -70,10 +70,12 @@ You can load this JSON by adding parameter named <code>data</code> when you inst
 // The script will be run under eval(). be calm, safety first.
 
 var time = 0.0;
+var rate = 1.0;
 
 var automaton = Automaton( {
   gui: divAutomatonContainer,
-  onseek: ( t ) => { time = t; return t; },
+  onseek: ( t ) => { time = t; },
+  onshift: ( r ) => { rate = r; },
   data: `
 {"rev":20170418,"length":5,"resolution":1000,"params":{"rectX":[{"time":0,"value":20,"mode":1,"params":{},"mods":[false,false,false,false]},{"time":0.9306930693069309,"value":140.47619047619045,"mode":1,"params":{},"mods":[false,false,false,false]},{"time":2.198019801980198,"value":18.0952380952381,"mode":4,"params":{"rate":100,"damp":1},"mods":[false,false,false,false]},{"time":3.3663366336633667,"value":75.23809523809524,"mode":5,"params":{"gravity":1000,"bounce":0.5},"mods":[false,false,false,false]},{"time":5,"value":20,"mode":2,"params":{},"mods":[false,{"freq":5,"amp":10,"phase":0},false,false]}],"rectY":[{"time":0,"value":0,"mode":1,"params":{},"mods":[false,false,false,false]},{"time":5,"value":100,"mode":1,"params":{},"mods":[false,false,false,false]}]},"gui":{"snap":{"enable":false,"bpm":"120","offset":"0"}}}
   `
@@ -88,7 +90,7 @@ var context = canvas.getContext( "2d" );
 var stop = false;
 function update() {
   if ( stop ) { return; }
-  time += 1.0 / 60.0;
+  time += 1.0 / 60.0 * rate;
   
   automaton.update( time );
 

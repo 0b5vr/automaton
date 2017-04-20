@@ -73,9 +73,16 @@ let Automaton = ( _props ) => {
 	// ------
 
 	automaton.seek = ( _time ) => {
-		let time = _time - Math.floor( _time / automaton.length ) * automaton.length;
-		let ret = ( typeof props.onseek === "function" ) ? props.onseek( time ) : null;
-		automaton.time = ( typeof ret === "number" ) ? ret % automaton.length : automaton.time;
+		if ( typeof props.onseek === "function" ) {
+			let time = _time - Math.floor( _time / automaton.length ) * automaton.length;
+			props.onseek( time );
+		}
+	};
+
+	automaton.shift = ( _rate ) => {
+		if ( typeof props.onshift === "function" ) {
+			props.onshift( _rate );
+		}
 	};
 
 	// ------

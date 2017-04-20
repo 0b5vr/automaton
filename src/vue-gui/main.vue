@@ -96,6 +96,7 @@
         v-bind:width="tlWidth"
         v-bind:height="tlHeight"
         v-bind:viewBox="tlViewBox"
+        v-on:mousedown.alt.prevent="seek"
         v-on:dblclick="addNode"
       >
         <line class="timelineGrid"
@@ -654,6 +655,29 @@ export default {
     v2y( v ) {
       let u = 1.0 - ( v - this.tlValueMin ) / ( this.tlValueMax - this.tlValueMin );
       return u * this.tlHeight;
+    },
+
+    seek( event ) {
+      this.automaton.seek( this.x2t( event.offsetX ) );
+      this.automaton.shift( 0.0 );
+
+      let moveFunc = ( event ) => {
+        event.preventDefault();
+
+        this.automaton.seek( this.x2t( event.offsetX ) );
+      };
+
+      let upFunc = ( event ) => {
+        event.preventDefault();
+
+        this.automaton.shift( 1.0 );
+        
+        window.removeEventListener( "mousemove", moveFunc );
+        window.removeEventListener( "mouseup", upFunc );
+      };
+
+      window.addEventListener( "mousemove", moveFunc );
+      window.addEventListener( "mouseup", upFunc );
     },
 
     addNode( event ) {
