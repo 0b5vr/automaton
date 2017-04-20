@@ -4,7 +4,9 @@ module.exports = { "default": require("core-js/library/fn/json/stringify"), __es
 module.exports = { "default": require("core-js/library/fn/math/log10"), __esModule: true };
 },{"core-js/library/fn/math/log10":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/fn/math/log10.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/babel-runtime/core-js/math/sign.js":[function(require,module,exports){
 module.exports = { "default": require("core-js/library/fn/math/sign"), __esModule: true };
-},{"core-js/library/fn/math/sign":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/fn/math/sign.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/fn/json/stringify.js":[function(require,module,exports){
+},{"core-js/library/fn/math/sign":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/fn/math/sign.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/babel-runtime/core-js/object/keys.js":[function(require,module,exports){
+module.exports = { "default": require("core-js/library/fn/object/keys"), __esModule: true };
+},{"core-js/library/fn/object/keys":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/fn/object/keys.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/fn/json/stringify.js":[function(require,module,exports){
 var core  = require('../../modules/_core')
   , $JSON = core.JSON || (core.JSON = {stringify: JSON.stringify});
 module.exports = function stringify(it){ // eslint-disable-line no-unused-vars
@@ -16,7 +18,10 @@ module.exports = require('../../modules/_core').Math.log10;
 },{"../../modules/_core":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_core.js","../../modules/es6.math.log10":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/es6.math.log10.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/fn/math/sign.js":[function(require,module,exports){
 require('../../modules/es6.math.sign');
 module.exports = require('../../modules/_core').Math.sign;
-},{"../../modules/_core":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_core.js","../../modules/es6.math.sign":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/es6.math.sign.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_a-function.js":[function(require,module,exports){
+},{"../../modules/_core":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_core.js","../../modules/es6.math.sign":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/es6.math.sign.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/fn/object/keys.js":[function(require,module,exports){
+require('../../modules/es6.object.keys');
+module.exports = require('../../modules/_core').Object.keys;
+},{"../../modules/_core":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_core.js","../../modules/es6.object.keys":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/es6.object.keys.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_a-function.js":[function(require,module,exports){
 module.exports = function(it){
   if(typeof it != 'function')throw TypeError(it + ' is not a function!');
   return it;
@@ -27,7 +32,35 @@ module.exports = function(it){
   if(!isObject(it))throw TypeError(it + ' is not an object!');
   return it;
 };
-},{"./_is-object":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_is-object.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_core.js":[function(require,module,exports){
+},{"./_is-object":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_is-object.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_array-includes.js":[function(require,module,exports){
+// false -> Array#indexOf
+// true  -> Array#includes
+var toIObject = require('./_to-iobject')
+  , toLength  = require('./_to-length')
+  , toIndex   = require('./_to-index');
+module.exports = function(IS_INCLUDES){
+  return function($this, el, fromIndex){
+    var O      = toIObject($this)
+      , length = toLength(O.length)
+      , index  = toIndex(fromIndex, length)
+      , value;
+    // Array#includes uses SameValueZero equality algorithm
+    if(IS_INCLUDES && el != el)while(length > index){
+      value = O[index++];
+      if(value != value)return true;
+    // Array#toIndex ignores holes, Array#includes - not
+    } else for(;length > index; index++)if(IS_INCLUDES || index in O){
+      if(O[index] === el)return IS_INCLUDES || index || 0;
+    } return !IS_INCLUDES && -1;
+  };
+};
+},{"./_to-index":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_to-index.js","./_to-iobject":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_to-iobject.js","./_to-length":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_to-length.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_cof.js":[function(require,module,exports){
+var toString = {}.toString;
+
+module.exports = function(it){
+  return toString.call(it).slice(8, -1);
+};
+},{}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_core.js":[function(require,module,exports){
 var core = module.exports = {version: '2.4.0'};
 if(typeof __e == 'number')__e = core; // eslint-disable-line no-undef
 },{}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_ctx.js":[function(require,module,exports){
@@ -51,7 +84,13 @@ module.exports = function(fn, that, length){
     return fn.apply(that, arguments);
   };
 };
-},{"./_a-function":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_a-function.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_descriptors.js":[function(require,module,exports){
+},{"./_a-function":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_a-function.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_defined.js":[function(require,module,exports){
+// 7.2.1 RequireObjectCoercible(argument)
+module.exports = function(it){
+  if(it == undefined)throw TypeError("Can't call method on  " + it);
+  return it;
+};
+},{}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_descriptors.js":[function(require,module,exports){
 // Thank's IE8 for his funny defineProperty
 module.exports = !require('./_fails')(function(){
   return Object.defineProperty({}, 'a', {get: function(){ return 7; }}).a != 7;
@@ -64,7 +103,12 @@ var isObject = require('./_is-object')
 module.exports = function(it){
   return is ? document.createElement(it) : {};
 };
-},{"./_global":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_global.js","./_is-object":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_is-object.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_export.js":[function(require,module,exports){
+},{"./_global":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_global.js","./_is-object":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_is-object.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_enum-bug-keys.js":[function(require,module,exports){
+// IE 8- don't enum bug keys
+module.exports = (
+  'constructor,hasOwnProperty,isPrototypeOf,propertyIsEnumerable,toLocaleString,toString,valueOf'
+).split(',');
+},{}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_export.js":[function(require,module,exports){
 var global    = require('./_global')
   , core      = require('./_core')
   , ctx       = require('./_ctx')
@@ -139,6 +183,11 @@ module.exports = function(exec){
 var global = module.exports = typeof window != 'undefined' && window.Math == Math
   ? window : typeof self != 'undefined' && self.Math == Math ? self : Function('return this')();
 if(typeof __g == 'number')__g = global; // eslint-disable-line no-undef
+},{}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_has.js":[function(require,module,exports){
+var hasOwnProperty = {}.hasOwnProperty;
+module.exports = function(it, key){
+  return hasOwnProperty.call(it, key);
+};
 },{}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_hide.js":[function(require,module,exports){
 var dP         = require('./_object-dp')
   , createDesc = require('./_property-desc');
@@ -152,7 +201,13 @@ module.exports = require('./_descriptors') ? function(object, key, value){
 module.exports = !require('./_descriptors') && !require('./_fails')(function(){
   return Object.defineProperty(require('./_dom-create')('div'), 'a', {get: function(){ return 7; }}).a != 7;
 });
-},{"./_descriptors":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_descriptors.js","./_dom-create":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_dom-create.js","./_fails":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_fails.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_is-object.js":[function(require,module,exports){
+},{"./_descriptors":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_descriptors.js","./_dom-create":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_dom-create.js","./_fails":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_fails.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_iobject.js":[function(require,module,exports){
+// fallback for non-array-like ES3 and non-enumerable old V8 strings
+var cof = require('./_cof');
+module.exports = Object('z').propertyIsEnumerable(0) ? Object : function(it){
+  return cof(it) == 'String' ? it.split('') : Object(it);
+};
+},{"./_cof":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_cof.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_is-object.js":[function(require,module,exports){
 module.exports = function(it){
   return typeof it === 'object' ? it !== null : typeof it === 'function';
 };
@@ -178,7 +233,44 @@ exports.f = require('./_descriptors') ? Object.defineProperty : function defineP
   if('value' in Attributes)O[P] = Attributes.value;
   return O;
 };
-},{"./_an-object":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_an-object.js","./_descriptors":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_descriptors.js","./_ie8-dom-define":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_ie8-dom-define.js","./_to-primitive":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_to-primitive.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_property-desc.js":[function(require,module,exports){
+},{"./_an-object":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_an-object.js","./_descriptors":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_descriptors.js","./_ie8-dom-define":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_ie8-dom-define.js","./_to-primitive":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_to-primitive.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_object-keys-internal.js":[function(require,module,exports){
+var has          = require('./_has')
+  , toIObject    = require('./_to-iobject')
+  , arrayIndexOf = require('./_array-includes')(false)
+  , IE_PROTO     = require('./_shared-key')('IE_PROTO');
+
+module.exports = function(object, names){
+  var O      = toIObject(object)
+    , i      = 0
+    , result = []
+    , key;
+  for(key in O)if(key != IE_PROTO)has(O, key) && result.push(key);
+  // Don't enum bug & hidden keys
+  while(names.length > i)if(has(O, key = names[i++])){
+    ~arrayIndexOf(result, key) || result.push(key);
+  }
+  return result;
+};
+},{"./_array-includes":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_array-includes.js","./_has":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_has.js","./_shared-key":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_shared-key.js","./_to-iobject":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_to-iobject.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_object-keys.js":[function(require,module,exports){
+// 19.1.2.14 / 15.2.3.14 Object.keys(O)
+var $keys       = require('./_object-keys-internal')
+  , enumBugKeys = require('./_enum-bug-keys');
+
+module.exports = Object.keys || function keys(O){
+  return $keys(O, enumBugKeys);
+};
+},{"./_enum-bug-keys":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_enum-bug-keys.js","./_object-keys-internal":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_object-keys-internal.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_object-sap.js":[function(require,module,exports){
+// most Object methods by ES6 should accept primitives
+var $export = require('./_export')
+  , core    = require('./_core')
+  , fails   = require('./_fails');
+module.exports = function(KEY, exec){
+  var fn  = (core.Object || {})[KEY] || Object[KEY]
+    , exp = {};
+  exp[KEY] = exec(fn);
+  $export($export.S + $export.F * fails(function(){ fn(1); }), 'Object', exp);
+};
+},{"./_core":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_core.js","./_export":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_export.js","./_fails":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_fails.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_property-desc.js":[function(require,module,exports){
 module.exports = function(bitmap, value){
   return {
     enumerable  : !(bitmap & 1),
@@ -187,7 +279,55 @@ module.exports = function(bitmap, value){
     value       : value
   };
 };
-},{}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_to-primitive.js":[function(require,module,exports){
+},{}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_shared-key.js":[function(require,module,exports){
+var shared = require('./_shared')('keys')
+  , uid    = require('./_uid');
+module.exports = function(key){
+  return shared[key] || (shared[key] = uid(key));
+};
+},{"./_shared":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_shared.js","./_uid":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_uid.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_shared.js":[function(require,module,exports){
+var global = require('./_global')
+  , SHARED = '__core-js_shared__'
+  , store  = global[SHARED] || (global[SHARED] = {});
+module.exports = function(key){
+  return store[key] || (store[key] = {});
+};
+},{"./_global":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_global.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_to-index.js":[function(require,module,exports){
+var toInteger = require('./_to-integer')
+  , max       = Math.max
+  , min       = Math.min;
+module.exports = function(index, length){
+  index = toInteger(index);
+  return index < 0 ? max(index + length, 0) : min(index, length);
+};
+},{"./_to-integer":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_to-integer.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_to-integer.js":[function(require,module,exports){
+// 7.1.4 ToInteger
+var ceil  = Math.ceil
+  , floor = Math.floor;
+module.exports = function(it){
+  return isNaN(it = +it) ? 0 : (it > 0 ? floor : ceil)(it);
+};
+},{}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_to-iobject.js":[function(require,module,exports){
+// to indexed object, toObject with fallback for non-array-like ES3 strings
+var IObject = require('./_iobject')
+  , defined = require('./_defined');
+module.exports = function(it){
+  return IObject(defined(it));
+};
+},{"./_defined":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_defined.js","./_iobject":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_iobject.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_to-length.js":[function(require,module,exports){
+// 7.1.15 ToLength
+var toInteger = require('./_to-integer')
+  , min       = Math.min;
+module.exports = function(it){
+  return it > 0 ? min(toInteger(it), 0x1fffffffffffff) : 0; // pow(2, 53) - 1 == 9007199254740991
+};
+},{"./_to-integer":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_to-integer.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_to-object.js":[function(require,module,exports){
+// 7.1.13 ToObject(argument)
+var defined = require('./_defined');
+module.exports = function(it){
+  return Object(defined(it));
+};
+},{"./_defined":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_defined.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_to-primitive.js":[function(require,module,exports){
 // 7.1.1 ToPrimitive(input [, PreferredType])
 var isObject = require('./_is-object');
 // instead of the ES6 spec version, we didn't implement @@toPrimitive case
@@ -200,7 +340,13 @@ module.exports = function(it, S){
   if(!S && typeof (fn = it.toString) == 'function' && !isObject(val = fn.call(it)))return val;
   throw TypeError("Can't convert object to primitive value");
 };
-},{"./_is-object":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_is-object.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/es6.math.log10.js":[function(require,module,exports){
+},{"./_is-object":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_is-object.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_uid.js":[function(require,module,exports){
+var id = 0
+  , px = Math.random();
+module.exports = function(key){
+  return 'Symbol('.concat(key === undefined ? '' : key, ')_', (++id + px).toString(36));
+};
+},{}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/es6.math.log10.js":[function(require,module,exports){
 // 20.2.2.21 Math.log10(x)
 var $export = require('./_export');
 
@@ -214,7 +360,17 @@ $export($export.S, 'Math', {
 var $export = require('./_export');
 
 $export($export.S, 'Math', {sign: require('./_math-sign')});
-},{"./_export":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_export.js","./_math-sign":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_math-sign.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/process/browser.js":[function(require,module,exports){
+},{"./_export":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_export.js","./_math-sign":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_math-sign.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/es6.object.keys.js":[function(require,module,exports){
+// 19.1.2.14 Object.keys(O)
+var toObject = require('./_to-object')
+  , $keys    = require('./_object-keys');
+
+require('./_object-sap')('keys', function(){
+  return function keys(it){
+    return $keys(toObject(it));
+  };
+});
+},{"./_object-keys":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_object-keys.js","./_object-sap":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_object-sap.js","./_to-object":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/core-js/library/modules/_to-object.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/process/browser.js":[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -7979,9 +8135,16 @@ var Automaton = function Automaton(_props) {
 	// ------
 
 	automaton.seek = function (_time) {
-		var time = _time - Math.floor(_time / automaton.length) * automaton.length;
-		var ret = typeof props.onseek === "function" ? props.onseek(time) : null;
-		automaton.time = typeof ret === "number" ? ret % automaton.length : automaton.time;
+		if (typeof props.onseek === "function") {
+			var time = _time - Math.floor(_time / automaton.length) * automaton.length;
+			props.onseek(time);
+		}
+	};
+
+	automaton.shift = function (_rate) {
+		if (typeof props.onshift === "function") {
+			props.onshift(_rate);
+		}
 	};
 
 	// ------
@@ -8498,7 +8661,7 @@ var AutomatonParam = function () {
 exports.default = AutomatonParam;
 
 },{"./interpolator":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/interpolator.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/vue-gui/main.vue":[function(require,module,exports){
-var __vueify_style_dispose__ = require("vueify/lib/insert-css").insert("/* line 764, stdin */\n.parent {\n  position: absolute;\n  left: 0;\n  top: 0;\n  width: 100%;\n  height: 100%;\n  background: #222;\n  color: #ddd;\n  user-select: none;\n  font: 300 14px \"Helvetica Neue\", sans-serif; }\n  /* line 779, stdin */\n  .parent .header {\n    position: absolute;\n    left: 0;\n    top: 0;\n    width: 100%;\n    height: 30px;\n    background: #444; }\n    /* line 788, stdin */\n    .parent .header .headerTitle {\n      position: absolute;\n      left: 6px;\n      top: 0;\n      height: 30px;\n      font: 500 24px \"Century Gothic\", sans-serif;\n      letter-spacing: 8px;\n      color: #ddd; }\n    /* line 800, stdin */\n    .parent .header .headerButtonContainer {\n      position: absolute;\n      right: 4px; }\n      /* line 804, stdin */\n      .parent .header .headerButtonContainer .headerButton {\n        width: 24px;\n        height: 24px;\n        margin: 3px;\n        cursor: pointer; }\n  /* line 815, stdin */\n  .parent .paramList {\n    position: absolute;\n    left: 0;\n    top: 30px;\n    width: 120px;\n    height: calc( 100% - 30px);\n    background: #111;\n    overflow: hidden; }\n    /* line 826, stdin */\n    .parent .paramList .paramListInside {\n      position: absolute;\n      top: 0px;\n      width: 100%; }\n      /* line 831, stdin */\n      .parent .paramList .paramListInside .param {\n        margin: 2px;\n        padding: 2px 8px;\n        width: calc( 100% - 4px - 16px);\n        height: 20px;\n        font-size: 14px;\n        background: #333;\n        cursor: pointer; }\n        /* line 843, stdin */\n        .parent .paramList .paramListInside .param.selected {\n          background: #555;\n          color: #fff; }\n  /* line 852, stdin */\n  .parent .modMenu {\n    position: absolute;\n    right: 0;\n    top: 30px;\n    width: 200px;\n    height: calc( 100% - 30px);\n    background: #333;\n    overflow: hidden; }\n    /* line 863, stdin */\n    .parent .modMenu .modMenuInside {\n      position: absolute;\n      top: 0px;\n      width: calc( 100% - 20px);\n      padding: 20px 10px; }\n    /* line 870, stdin */\n    .parent .modMenu .sep {\n      width: calc( 100% - 10px);\n      height: 1px;\n      margin: 10px 5px 15px 5px;\n      background: #666; }\n    /* line 878, stdin */\n    .parent .modMenu .modeButtonContainer {\n      width: calc( 100% - 10px);\n      margin: -5px 5px 0 5px; }\n      /* line 882, stdin */\n      .parent .modMenu .modeButtonContainer .modeButton {\n        width: 30px;\n        height: 30px;\n        margin: 2px;\n        cursor: pointer; }\n        /* line 889, stdin */\n        .parent .modMenu .modeButtonContainer .modeButton:not(.active) {\n          filter: grayscale(90%); }\n    /* line 895, stdin */\n    .parent .modMenu .modsContainer {\n      width: 100%;\n      position: relative;\n      margin: 0 0 20px 0;\n      min-height: 24px; }\n      /* line 901, stdin */\n      .parent .modMenu .modsContainer .modIcon {\n        position: absolute;\n        left: 10px;\n        width: 24px;\n        height: 24px;\n        cursor: pointer; }\n        /* line 909, stdin */\n        .parent .modMenu .modsContainer .modIcon:not(.active) {\n          filter: grayscale(90%); }\n      /* line 914, stdin */\n      .parent .modMenu .modsContainer .modParams {\n        position: relative;\n        left: 30px;\n        width: calc( 100% - 30px); }\n  /* line 922, stdin */\n  .parent .timelineContainer {\n    position: absolute;\n    left: 120px;\n    top: 30px;\n    width: calc( 100% - 320px);\n    height: calc( 100% - 30px);\n    overflow: hidden; }\n    /* line 931, stdin */\n    .parent .timelineContainer .timeline {\n      position: absolute;\n      width: 100%;\n      height: 100%;\n      background: #222; }\n      /* line 938, stdin */\n      .parent .timelineContainer .timeline .timelineSvg {\n        stroke-linecap: round;\n        stroke-linejoin: round;\n        font: 400 10px \"Helvetica Neue\", sans-serif; }\n        /* line 944, stdin */\n        .parent .timelineContainer .timeline .timelineSvg .timelineGrid {\n          stroke: #fff;\n          stroke-width: 1; }\n        /* line 949, stdin */\n        .parent .timelineContainer .timeline .timelineSvg .timelineGridText {\n          fill: #fff; }\n        /* line 953, stdin */\n        .parent .timelineContainer .timeline .timelineSvg .timelineSnap {\n          stroke: #2af;\n          stroke-width: 1;\n          opacity: 0.6; }\n        /* line 959, stdin */\n        .parent .timelineContainer .timeline .timelineSvg .timelineSnapText {\n          fill: #2af;\n          opacity: 0.6; }\n        /* line 964, stdin */\n        .parent .timelineContainer .timeline .timelineSvg .timelinePath {\n          fill: none;\n          stroke: #fff;\n          stroke-width: 2; }\n        /* line 970, stdin */\n        .parent .timelineContainer .timeline .timelineSvg .timelineNode {\n          fill: #000;\n          stroke: #2af;\n          stroke-width: 2;\n          cursor: pointer; }\n          /* line 977, stdin */\n          .parent .timelineContainer .timeline .timelineSvg .timelineNode.active {\n            fill: #2af; }\n        /* line 982, stdin */\n        .parent .timelineContainer .timeline .timelineSvg .timelineTimeLine {\n          stroke: #2af;\n          stroke-width: 2; }\n        /* line 987, stdin */\n        .parent .timelineContainer .timeline .timelineSvg .timelineValueLine {\n          stroke: #2af;\n          stroke-width: 1; }\n        /* line 992, stdin */\n        .parent .timelineContainer .timeline .timelineSvg .timelineTimeText {\n          fill: #2af; }\n        /* line 996, stdin */\n        .parent .timelineContainer .timeline .timelineSvg .timelineValueText {\n          fill: #2af; }\n        /* line 1000, stdin */\n        .parent .timelineContainer .timeline .timelineSvg .timelineTimePoint {\n          fill: #2af; }\n  /* line 1007, stdin */\n  .parent .dialogContainer {\n    position: absolute;\n    width: 100%;\n    height: 100%;\n    text-align: center; }\n    /* line 1014, stdin */\n    .parent .dialogContainer .dialogBackground {\n      position: absolute;\n      width: 100%;\n      height: 100%;\n      background: #000;\n      opacity: 0.5; }\n    /* line 1023, stdin */\n    .parent .dialogContainer .dialog {\n      display: inline-block;\n      position: relative;\n      top: 50px;\n      padding: 10px;\n      background: #333; }\n      /* line 1031, stdin */\n      .parent .dialogContainer .dialog .dialogContent {\n        display: inline-block;\n        width: calc( 100% - 60px); }\n        /* line 1035, stdin */\n        .parent .dialogContainer .dialog .dialogContent * {\n          margin-bottom: 4px; }\n        /* line 1039, stdin */\n        .parent .dialogContainer .dialog .dialogContent .dialogName {\n          display: inline-block;\n          width: 70px;\n          padding-left: 10px;\n          text-align: left; }\n        /* line 1047, stdin */\n        .parent .dialogContainer .dialog .dialogContent .dialogCheck {\n          width: 50px; }\n        /* line 1051, stdin */\n        .parent .dialogContainer .dialog .dialogContent .dialogBox {\n          width: 50px;\n          padding: 2px;\n          background: #666;\n          color: #fff;\n          border: none;\n          text-align: center; }\n          /* line 1061, stdin */\n          .parent .dialogContainer .dialog .dialogContent .dialogBox.save {\n            width: 120px; }\n      /* line 1067, stdin */\n      .parent .dialogContainer .dialog .dialogButtonContainer {\n        width: 100%;\n        height: 24px;\n        margin-top: 5px;\n        text-align: center; }\n        /* line 1074, stdin */\n        .parent .dialogContainer .dialog .dialogButtonContainer .dialogButton {\n          display: inline-block;\n          width: 60px;\n          height: 16px;\n          padding: 4px;\n          margin: 0 5px;\n          text-align: center;\n          background: #555;\n          cursor: pointer; }")
+var __vueify_style_dispose__ = require("vueify/lib/insert-css").insert("/* line 801, stdin */\n.parent {\n  position: absolute;\n  left: 0;\n  top: 0;\n  width: 100%;\n  height: 100%;\n  background: #222;\n  color: #ddd;\n  user-select: none;\n  font: 300 14px \"Helvetica Neue\", sans-serif; }\n  /* line 816, stdin */\n  .parent .header {\n    position: absolute;\n    left: 0;\n    top: 0;\n    width: 100%;\n    height: 30px;\n    background: #444; }\n    /* line 825, stdin */\n    .parent .header .headerTitle {\n      position: absolute;\n      left: 6px;\n      top: 0;\n      height: 30px;\n      font: 500 24px \"Century Gothic\", sans-serif;\n      letter-spacing: 8px;\n      color: #ddd; }\n    /* line 837, stdin */\n    .parent .header .headerButtonContainer {\n      position: absolute;\n      right: 4px; }\n      /* line 841, stdin */\n      .parent .header .headerButtonContainer .headerButton {\n        width: 24px;\n        height: 24px;\n        margin: 3px;\n        cursor: pointer; }\n  /* line 852, stdin */\n  .parent .paramList {\n    position: absolute;\n    left: 0;\n    top: 30px;\n    width: 120px;\n    height: calc( 100% - 30px);\n    background: #111;\n    overflow: hidden; }\n    /* line 863, stdin */\n    .parent .paramList .paramListInside {\n      position: absolute;\n      top: 0px;\n      width: 100%; }\n      /* line 868, stdin */\n      .parent .paramList .paramListInside .param {\n        margin: 2px;\n        padding: 2px 8px;\n        width: calc( 100% - 4px - 16px);\n        height: 20px;\n        font-size: 14px;\n        background: #333;\n        cursor: pointer; }\n        /* line 880, stdin */\n        .parent .paramList .paramListInside .param.selected {\n          background: #555;\n          color: #fff; }\n  /* line 889, stdin */\n  .parent .modMenu {\n    position: absolute;\n    right: 0;\n    top: 30px;\n    width: 200px;\n    height: calc( 100% - 30px);\n    background: #333;\n    overflow: hidden; }\n    /* line 900, stdin */\n    .parent .modMenu .modMenuInside {\n      position: absolute;\n      top: 0px;\n      width: calc( 100% - 20px);\n      padding: 20px 10px; }\n    /* line 907, stdin */\n    .parent .modMenu .sep {\n      width: calc( 100% - 10px);\n      height: 1px;\n      margin: 10px 5px 15px 5px;\n      background: #666; }\n    /* line 915, stdin */\n    .parent .modMenu .modeButtonContainer {\n      width: calc( 100% - 10px);\n      margin: -5px 5px 0 5px; }\n      /* line 919, stdin */\n      .parent .modMenu .modeButtonContainer .modeButton {\n        width: 30px;\n        height: 30px;\n        margin: 2px;\n        cursor: pointer; }\n        /* line 926, stdin */\n        .parent .modMenu .modeButtonContainer .modeButton:not(.active) {\n          filter: grayscale(90%); }\n    /* line 932, stdin */\n    .parent .modMenu .modsContainer {\n      width: 100%;\n      position: relative;\n      margin: 0 0 20px 0;\n      min-height: 24px; }\n      /* line 938, stdin */\n      .parent .modMenu .modsContainer .modIcon {\n        position: absolute;\n        left: 10px;\n        width: 24px;\n        height: 24px;\n        cursor: pointer; }\n        /* line 946, stdin */\n        .parent .modMenu .modsContainer .modIcon:not(.active) {\n          filter: grayscale(90%); }\n      /* line 951, stdin */\n      .parent .modMenu .modsContainer .modParams {\n        position: relative;\n        left: 30px;\n        width: calc( 100% - 30px); }\n  /* line 959, stdin */\n  .parent .timelineContainer {\n    position: absolute;\n    left: 120px;\n    top: 30px;\n    width: calc( 100% - 320px);\n    height: calc( 100% - 30px);\n    overflow: hidden; }\n    /* line 968, stdin */\n    .parent .timelineContainer .timeline {\n      position: absolute;\n      width: 100%;\n      height: 100%;\n      background: #222; }\n      /* line 975, stdin */\n      .parent .timelineContainer .timeline .timelineSvg {\n        stroke-linecap: round;\n        stroke-linejoin: round;\n        font: 400 10px \"Helvetica Neue\", sans-serif; }\n        /* line 981, stdin */\n        .parent .timelineContainer .timeline .timelineSvg .timelineGrid {\n          stroke: #fff;\n          stroke-width: 1; }\n        /* line 986, stdin */\n        .parent .timelineContainer .timeline .timelineSvg .timelineGridText {\n          fill: #fff; }\n        /* line 990, stdin */\n        .parent .timelineContainer .timeline .timelineSvg .timelineSnap {\n          stroke: #2af;\n          stroke-width: 1;\n          opacity: 0.6; }\n        /* line 996, stdin */\n        .parent .timelineContainer .timeline .timelineSvg .timelineSnapText {\n          fill: #2af;\n          opacity: 0.6; }\n        /* line 1001, stdin */\n        .parent .timelineContainer .timeline .timelineSvg .timelinePath {\n          fill: none;\n          stroke: #fff;\n          stroke-width: 2; }\n        /* line 1007, stdin */\n        .parent .timelineContainer .timeline .timelineSvg .timelineNode {\n          fill: #000;\n          stroke: #2af;\n          stroke-width: 2;\n          cursor: pointer; }\n          /* line 1014, stdin */\n          .parent .timelineContainer .timeline .timelineSvg .timelineNode.active {\n            fill: #2af; }\n        /* line 1019, stdin */\n        .parent .timelineContainer .timeline .timelineSvg .timelineTimeLine {\n          stroke: #2af;\n          stroke-width: 2; }\n        /* line 1024, stdin */\n        .parent .timelineContainer .timeline .timelineSvg .timelineValueLine {\n          stroke: #2af;\n          stroke-width: 1; }\n        /* line 1029, stdin */\n        .parent .timelineContainer .timeline .timelineSvg .timelineTimeText {\n          fill: #2af; }\n        /* line 1033, stdin */\n        .parent .timelineContainer .timeline .timelineSvg .timelineValueText {\n          fill: #2af; }\n        /* line 1037, stdin */\n        .parent .timelineContainer .timeline .timelineSvg .timelineTimePoint {\n          fill: #2af; }\n  /* line 1044, stdin */\n  .parent .dialogContainer {\n    position: absolute;\n    width: 100%;\n    height: 100%;\n    text-align: center; }\n    /* line 1051, stdin */\n    .parent .dialogContainer .dialogBackground {\n      position: absolute;\n      width: 100%;\n      height: 100%;\n      background: #000;\n      opacity: 0.5; }\n    /* line 1060, stdin */\n    .parent .dialogContainer .dialog {\n      display: inline-block;\n      position: relative;\n      top: 50px;\n      padding: 10px;\n      background: #333; }\n      /* line 1068, stdin */\n      .parent .dialogContainer .dialog .dialogContent {\n        display: inline-block;\n        width: calc( 100% - 60px); }\n        /* line 1072, stdin */\n        .parent .dialogContainer .dialog .dialogContent * {\n          margin-bottom: 4px; }\n        /* line 1076, stdin */\n        .parent .dialogContainer .dialog .dialogContent .dialogName {\n          display: inline-block;\n          width: 70px;\n          padding-left: 10px;\n          text-align: left; }\n        /* line 1084, stdin */\n        .parent .dialogContainer .dialog .dialogContent .dialogCheck {\n          width: 50px; }\n        /* line 1088, stdin */\n        .parent .dialogContainer .dialog .dialogContent .dialogBox {\n          width: 50px;\n          padding: 2px;\n          background: #666;\n          color: #fff;\n          border: none;\n          text-align: center; }\n          /* line 1098, stdin */\n          .parent .dialogContainer .dialog .dialogContent .dialogBox.save {\n            width: 120px; }\n      /* line 1104, stdin */\n      .parent .dialogContainer .dialog .dialogButtonContainer {\n        width: 100%;\n        height: 24px;\n        margin-top: 5px;\n        text-align: center; }\n        /* line 1111, stdin */\n        .parent .dialogContainer .dialog .dialogButtonContainer .dialogButton {\n          display: inline-block;\n          width: 60px;\n          height: 16px;\n          padding: 4px;\n          margin: 0 5px;\n          text-align: center;\n          background: #555;\n          cursor: pointer; }")
 ;(function(){
 "use strict";
 
@@ -8513,6 +8676,10 @@ var _log2 = _interopRequireDefault(_log);
 var _stringify = require("babel-runtime/core-js/json/stringify");
 
 var _stringify2 = _interopRequireDefault(_stringify);
+
+var _keys = require("babel-runtime/core-js/object/keys");
+
+var _keys2 = _interopRequireDefault(_keys);
 
 var _main = require("../vue-parambox/main.vue");
 
@@ -8555,6 +8722,8 @@ exports.default = {
     var _this = this;
 
     this.$nextTick(function () {
+      _this.selectedParam = (0, _keys2.default)(_this.automaton.params)[0];
+      _this.selectedNode = 0;
       _this.onResize();
     });
     window.addEventListener("resize", this.onResize);
@@ -8632,9 +8801,9 @@ exports.default = {
       modMenuWheelPos: 0,
 
       tlTimeMin: 0.0,
-      tlTimeMax: 5.0,
+      tlTimeMax: 1.0,
       tlValueMin: 0.0,
-      tlValueMax: 100.0,
+      tlValueMax: 1.0,
       tlWidth: 0,
       tlHeight: 0,
       tlPath: "",
@@ -8675,6 +8844,8 @@ exports.default = {
       this.tlPath = path;
     },
     onResize: function onResize() {
+      var _this3 = this;
+
       var el = this.$refs.timelineContainer;
       this.tlWidth = el.clientWidth;
       this.tlHeight = el.clientHeight;
@@ -8682,8 +8853,10 @@ exports.default = {
 
       this.tlTimeMax = Math.min(this.tlTimeMax, this.automaton.length);
 
-      this.updateGrid();
-      this.updatePath();
+      this.$nextTick(function () {
+        _this3.updateGrid();
+        _this3.updatePath();
+      });
     },
     wheelParamList: function wheelParamList(event) {
       this.paramListWheelPos = Math.max(Math.min(this.paramListWheelPos + event.deltaY, this.$refs.paramListInside.clientHeight - (this.$refs.parent.clientHeight - this.$refs.header.clientHeight)), 0);
@@ -8837,6 +9010,30 @@ exports.default = {
       var u = 1.0 - (v - this.tlValueMin) / (this.tlValueMax - this.tlValueMin);
       return u * this.tlHeight;
     },
+    seek: function seek(event) {
+      var _this4 = this;
+
+      this.automaton.seek(this.x2t(event.offsetX));
+      this.automaton.shift(0.0);
+
+      var moveFunc = function moveFunc(event) {
+        event.preventDefault();
+
+        _this4.automaton.seek(_this4.x2t(event.offsetX));
+      };
+
+      var upFunc = function upFunc(event) {
+        event.preventDefault();
+
+        _this4.automaton.shift(1.0);
+
+        window.removeEventListener("mousemove", moveFunc);
+        window.removeEventListener("mouseup", upFunc);
+      };
+
+      window.addEventListener("mousemove", moveFunc);
+      window.addEventListener("mouseup", upFunc);
+    },
     addNode: function addNode(event) {
       if (!this.validSelectedParam()) {
         return;
@@ -8849,15 +9046,20 @@ exports.default = {
       this.updatePath();
     },
     selectNode: function selectNode(index) {
+      var _this5 = this;
+
       if (!this.validSelectedParam()) {
         return;
       }
       if (this.nodeInRange(index)) {
         this.selectedNode = index;
+        this.$nextTick(function () {
+          _this5.modMenuWheelPos = Math.max(Math.min(_this5.modMenuWheelPos, _this5.$refs.modMenuInside.clientHeight - (_this5.$refs.parent.clientHeight - _this5.$refs.header.clientHeight)), 0);
+        });
       }
     },
     grabNode: function grabNode(index, event) {
-      var _this3 = this;
+      var _this6 = this;
 
       this.selectNode(index);
 
@@ -8874,12 +9076,12 @@ exports.default = {
 
         var x = event.clientX - x0 + xr;
         var y = event.clientY - y0 + yr;
-        var t = _this3.x2t(x);
-        var v = _this3.y2v(y);
+        var t = _this6.x2t(x);
+        var v = _this6.y2v(y);
 
-        if (_this3.automaton.guiParams.snap.enable && !event.altKey) {
-          for (var i = 0; i < _this3.snapLines.length; i++) {
-            var line = _this3.snapLines[i];
+        if (_this6.automaton.guiParams.snap.enable && !event.altKey) {
+          for (var i = 0; i < _this6.snapLines.length; i++) {
+            var line = _this6.snapLines[i];
             if (Math.abs(line.pos - x) < 10) {
               t = line.time;
             } else if (x < line.pos) {
@@ -8889,12 +9091,12 @@ exports.default = {
         }
 
         if (!event.ctrlKey && !event.metaKey) {
-          _this3.automaton.params[_this3.selectedParam].setTime(_this3.selectedNode, t);
+          _this6.automaton.params[_this6.selectedParam].setTime(_this6.selectedNode, t);
         }
         if (!event.shiftKey) {
-          _this3.automaton.params[_this3.selectedParam].setValue(_this3.selectedNode, v);
+          _this6.automaton.params[_this6.selectedParam].setValue(_this6.selectedNode, v);
         }
-        _this3.updatePath();
+        _this6.updatePath();
       };
 
       var upFunc = function upFunc(event) {
@@ -8953,7 +9155,7 @@ exports.default = {
 if (module.exports.__esModule) module.exports = module.exports.default
 var __vue__options__ = (typeof module.exports === "function"? module.exports.options: module.exports)
 if (__vue__options__.functional) {console.error("[vueify] functional components are not supported and should be defined in plain js files using render functions.")}
-__vue__options__.render = function render () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{ref:"parent",staticClass:"parent"},[_c('div',{ref:"header",staticClass:"header"},[_c('div',{staticClass:"headerTitle"},[_vm._v("AUTOMATON")]),_vm._v(" "),_c('div',{staticClass:"headerButtonContainer"},_vm._l((_vm.headerButtons),function(button){return _c('img',{staticClass:"headerButton",attrs:{"src":button.src},on:{"click":button.func}})}))]),_vm._v(" "),_c('div',{staticClass:"paramList"},[_c('div',{ref:"paramListInside",staticClass:"paramListInside",style:({ top: -_vm.paramListWheelPos + 'px' }),on:{"wheel":function($event){$event.preventDefault();_vm.wheelParamList($event)}}},_vm._l((_vm.automaton.params),function(param,name){return _c('div',{staticClass:"param",class:{ selected: name === _vm.selectedParam },on:{"click":function($event){_vm.selectedParam = name; _vm.selectedNode = 0; _vm.onResize(); _vm.updatePath();}}},[_vm._v(_vm._s(name))])}))]),_vm._v(" "),_c('div',{staticClass:"modMenu"},[(_vm.validSelectedParam())?_c('div',{ref:"modMenuInside",staticClass:"modMenuInside",style:({ top: -_vm.modMenuWheelPos + 'px' }),on:{"wheel":function($event){$event.preventDefault();_vm.wheelModMenu($event)}}},[_c('parambox',{attrs:{"type":"number","name":"time","value":_vm.automaton.params[ _vm.selectedParam ].nodes[ _vm.selectedNode ].time.toFixed( 3 )},on:{"changed":function($event){_vm.automaton.params[ _vm.selectedParam ].setTime( _vm.selectedNode, $event ); _vm.updatePath()}}}),_vm._v(" "),_c('parambox',{attrs:{"type":"number","name":"value","value":_vm.automaton.params[ _vm.selectedParam ].nodes[ _vm.selectedNode ].value.toFixed( 3 )},on:{"changed":function($event){_vm.automaton.params[ _vm.selectedParam ].setValue( _vm.selectedNode, $event ); _vm.updatePath()}}}),_vm._v(" "),(_vm.selectedNode !== 0)?[_c('div',{staticClass:"sep"}),_vm._v(" "),_c('div',{staticClass:"modeButtonContainer"},_vm._l((_vm.modeButtons),function(button,index){return _c('img',{staticClass:"modeButton",class:{ active: index === _vm.automaton.params[ _vm.selectedParam ].nodes[ _vm.selectedNode ].mode },attrs:{"src":button.src},on:{"click":function($event){_vm.automaton.params[ _vm.selectedParam ].setMode( _vm.selectedNode, index ); _vm.updatePath()}}})})),_vm._v(" "),_vm._l((_vm.automaton.params[ _vm.selectedParam ].nodes[ _vm.selectedNode ].params),function(value,key){return _c('parambox',{attrs:{"type":"number","name":key,"value":_vm.automaton.params[ _vm.selectedParam ].nodes[ _vm.selectedNode ].params[ key ].toFixed( 3 )},on:{"changed":function($event){_vm.automaton.params[ _vm.selectedParam ].setParam( _vm.selectedNode, key, $event ); _vm.updatePath()}}})}),_vm._v(" "),_c('div',{staticClass:"sep"}),_vm._v(" "),_vm._l((_vm.mods),function(mod,modIndex){return _c('div',{staticClass:"modsContainer"},[_c('img',{staticClass:"modIcon",class:{ active: _vm.automaton.params[ _vm.selectedParam ].nodes[ _vm.selectedNode ].mods[ modIndex ] },attrs:{"src":mod.src},on:{"click":function($event){_vm.automaton.params[ _vm.selectedParam ].toggleMod( _vm.selectedNode, modIndex ); _vm.updatePath()}}}),_vm._v(" "),(_vm.automaton.params[ _vm.selectedParam ].nodes[ _vm.selectedNode ].mods[ modIndex ])?_c('div',{staticClass:"modParams"},_vm._l((_vm.automaton.params[ _vm.selectedParam ].nodes[ _vm.selectedNode ].mods[ modIndex ]),function(value,key){return _c('parambox',{attrs:{"type":"number","name":key,"value":_vm.automaton.params[ _vm.selectedParam ].nodes[ _vm.selectedNode ].mods[ modIndex ][ key ].toFixed( 3 )},on:{"changed":function($event){_vm.automaton.params[ _vm.selectedParam ].setModParam( _vm.selectedNode, modIndex, key, $event ); _vm.updatePath()}}})})):_vm._e()])})]:_vm._e()],2):_vm._e()]),_vm._v(" "),_c('div',{ref:"timelineContainer",staticClass:"timelineContainer"},[(_vm.validSelectedParam())?_c('div',{staticClass:"timeline",on:{"wheel":function($event){$event.preventDefault();_vm.wheelTimeline($event)}}},[_c('svg',{staticClass:"timelineSvg",attrs:{"width":_vm.tlWidth,"height":_vm.tlHeight,"viewBox":_vm.tlViewBox},on:{"dblclick":_vm.addNode}},[_vm._l((_vm.grid.x),function(line){return _c('line',{staticClass:"timelineGrid",attrs:{"x1":line.pos,"y1":0,"x2":line.pos,"y2":_vm.tlHeight,"opacity":line.op}})}),_vm._v(" "),_vm._l((_vm.grid.y),function(line){return _c('line',{staticClass:"timelineGrid",attrs:{"x1":0,"y1":line.pos,"x2":_vm.tlWidth,"y2":line.pos,"opacity":line.op}})}),_vm._v(" "),_vm._l((_vm.grid.x),function(line){return _c('text',{staticClass:"timelineGridText",attrs:{"x":line.pos + 2,"y":_vm.tlHeight - 2,"opacity":line.op}},[_vm._v(_vm._s(line.val.toFixed( 3 )))])}),_vm._v(" "),_vm._l((_vm.grid.y),function(line){return _c('text',{staticClass:"timelineGridText",attrs:{"x":"2","y":line.pos - 2,"opacity":line.op}},[_vm._v(_vm._s(line.val.toFixed( 3 )))])}),_vm._v(" "),(_vm.automaton.guiParams.snap.enable)?[_vm._l((_vm.snapLines),function(line){return _c('line',{staticClass:"timelineSnap",attrs:{"x1":line.pos,"y1":0,"x2":line.pos,"y2":_vm.tlHeight}})}),_vm._v(" "),_vm._l((_vm.snapLines),function(line){return _c('text',{staticClass:"timelineSnapText",attrs:{"x":line.pos + 2,"y":"10"}},[_vm._v(_vm._s(line.beat.toFixed( 2 )))])})]:_vm._e(),_vm._v(" "),_c('path',{staticClass:"timelinePath",attrs:{"d":_vm.tlPath}}),_vm._v(" "),_vm._l((_vm.automaton.params[ _vm.selectedParam ].nodes),function(node,index){return (_vm.t2x( _vm.tlTimeMin ) <= _vm.t2x( node.time ) + 10 && _vm.t2x( node.time ) - 10 <= _vm.t2x( _vm.tlTimeMax ))?_c('g',{staticClass:"timelineNode",class:{ active: index === _vm.selectedNode },on:{"dblclick":function($event){$event.stopPropagation();_vm.removeNode( index )},"mousedown":function($event){_vm.grabNode( index, $event )}}},[(_vm.tlValueMin <= node.value && node.value <= _vm.tlValueMax)?_c('circle',{attrs:{"transform":'translate(' + _vm.t2x( node.time ) + ',' + _vm.v2y( node.value ) + ')',"r":"5"}}):(node.value < _vm.tlValueMin)?_c('path',{attrs:{"transform":'translate(' + _vm.t2x( node.time ) + ',' + _vm.tlHeight + ')',"d":"M 0 -4 L 5 -12 L -5 -12 z"}}):_c('path',{attrs:{"transform":'translate(' + _vm.t2x( node.time ) + ',0)',"d":"M 0 4 L -5 12 L 5 12 z"}})]):_vm._e()}),_vm._v(" "),_c('line',{staticClass:"timelineTimeLine",attrs:{"x1":_vm.t2x( _vm.automaton.time ),"y1":0,"x2":_vm.t2x( _vm.automaton.time ),"y2":_vm.tlHeight}}),_vm._v(" "),_c('line',{staticClass:"timelineValueLine",attrs:{"x1":0,"y1":_vm.v2y( _vm.automaton.params[ _vm.selectedParam ].getValue( _vm.automaton.time ) ),"x2":_vm.tlWidth,"y2":_vm.v2y( _vm.automaton.params[ _vm.selectedParam ].getValue( _vm.automaton.time ) )}}),_vm._v(" "),_c('text',{staticClass:"timelineTimeText",attrs:{"x":_vm.t2x( _vm.automaton.time ) + 2,"y":_vm.tlHeight - 2}},[_vm._v(_vm._s(_vm.automaton.time.toFixed( 3 )))]),_vm._v(" "),_c('text',{staticClass:"timelineValueText",attrs:{"x":"2","y":_vm.v2y( _vm.automaton.params[ _vm.selectedParam ].getValue( _vm.automaton.time ) ) - 2}},[_vm._v(_vm._s(_vm.automaton.params[ _vm.selectedParam ].getValue( _vm.automaton.time ).toFixed( 3 )))]),_vm._v(" "),_c('circle',{staticClass:"timelineTimePoint",attrs:{"r":"5","cx":_vm.t2x( _vm.automaton.time ),"cy":_vm.v2y( _vm.automaton.params[ _vm.selectedParam ].getValue( _vm.automaton.time ) )}})],2)]):_vm._e()]),_vm._v(" "),(_vm.dialog.show)?_c('div',{staticClass:"dialogContainer"},[_c('div',{staticClass:"dialogBackground",on:{"click":function($event){_vm.dialog.show = false}}}),_vm._v(" "),_c('div',{staticClass:"dialog"},[(_vm.dialog.mode === 'snap')?[_c('div',{staticClass:"dialogContent",style:({ width: 200 + 'px' })},[_c('div',[_c('div',{staticClass:"dialogName"},[_vm._v("Beatsnap")]),_vm._v(" "),_c('input',{ref:"dialogSnapEnable",staticClass:"dialogCheck",attrs:{"type":"checkbox"}})]),_vm._v(" "),_c('div',[_c('div',{staticClass:"dialogName"},[_vm._v("BPM")]),_vm._v(" "),_c('input',{ref:"dialogSnapBPM",staticClass:"dialogBox"})]),_vm._v(" "),_c('div',[_c('div',{staticClass:"dialogName"},[_vm._v("Offset")]),_vm._v(" "),_c('input',{ref:"dialogSnapOffset",staticClass:"dialogBox"})])]),_vm._v(" "),_c('div',{staticClass:"dialogButtonContainer"},[_c('div',{staticClass:"dialogButton",on:{"click":_vm.dialogSnapOK}},[_vm._v("OK")]),_vm._v(" "),_c('div',{staticClass:"dialogButton",on:{"click":function($event){_vm.dialog.show = false}}},[_vm._v("Cancel")])])]:(_vm.dialog.mode === 'config')?[_c('div',{staticClass:"dialogContent",style:({ width: 200 + 'px' })},[_c('div',[_c('div',{staticClass:"dialogName"},[_vm._v("Length")]),_vm._v(" "),_c('input',{ref:"dialogConfigLength",staticClass:"dialogBox",on:{"input":_vm.dialogConfigLengthTest}})]),_vm._v(" "),_c('div',[_c('div',{staticClass:"dialogName"},[_vm._v("Resolution")]),_vm._v(" "),_c('input',{ref:"dialogConfigResolution",staticClass:"dialogBox"})]),_vm._v(" "),(_vm.dialogConfigLengthShortened)?_c('div',{style:({
+__vue__options__.render = function render () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{ref:"parent",staticClass:"parent"},[_c('div',{ref:"header",staticClass:"header"},[_c('div',{staticClass:"headerTitle"},[_vm._v("AUTOMATON")]),_vm._v(" "),_c('div',{staticClass:"headerButtonContainer"},_vm._l((_vm.headerButtons),function(button){return _c('img',{staticClass:"headerButton",attrs:{"src":button.src},on:{"click":button.func}})}))]),_vm._v(" "),_c('div',{staticClass:"paramList"},[_c('div',{ref:"paramListInside",staticClass:"paramListInside",style:({ top: -_vm.paramListWheelPos + 'px' }),on:{"wheel":function($event){$event.preventDefault();_vm.wheelParamList($event)}}},_vm._l((_vm.automaton.params),function(param,name){return _c('div',{staticClass:"param",class:{ selected: name === _vm.selectedParam },on:{"click":function($event){_vm.selectedParam = name; _vm.selectedNode = 0; _vm.onResize(); _vm.updatePath();}}},[_vm._v(_vm._s(name))])}))]),_vm._v(" "),_c('div',{staticClass:"modMenu"},[(_vm.validSelectedParam())?_c('div',{ref:"modMenuInside",staticClass:"modMenuInside",style:({ top: -_vm.modMenuWheelPos + 'px' }),on:{"wheel":function($event){$event.preventDefault();_vm.wheelModMenu($event)}}},[_c('parambox',{attrs:{"type":"number","name":"time","value":_vm.automaton.params[ _vm.selectedParam ].nodes[ _vm.selectedNode ].time.toFixed( 3 )},on:{"changed":function($event){_vm.automaton.params[ _vm.selectedParam ].setTime( _vm.selectedNode, $event ); _vm.updatePath()}}}),_vm._v(" "),_c('parambox',{attrs:{"type":"number","name":"value","value":_vm.automaton.params[ _vm.selectedParam ].nodes[ _vm.selectedNode ].value.toFixed( 3 )},on:{"changed":function($event){_vm.automaton.params[ _vm.selectedParam ].setValue( _vm.selectedNode, $event ); _vm.updatePath()}}}),_vm._v(" "),(_vm.selectedNode !== 0)?[_c('div',{staticClass:"sep"}),_vm._v(" "),_c('div',{staticClass:"modeButtonContainer"},_vm._l((_vm.modeButtons),function(button,index){return _c('img',{staticClass:"modeButton",class:{ active: index === _vm.automaton.params[ _vm.selectedParam ].nodes[ _vm.selectedNode ].mode },attrs:{"src":button.src},on:{"click":function($event){_vm.automaton.params[ _vm.selectedParam ].setMode( _vm.selectedNode, index ); _vm.updatePath()}}})})),_vm._v(" "),_vm._l((_vm.automaton.params[ _vm.selectedParam ].nodes[ _vm.selectedNode ].params),function(value,key){return _c('parambox',{attrs:{"type":"number","name":key,"value":_vm.automaton.params[ _vm.selectedParam ].nodes[ _vm.selectedNode ].params[ key ].toFixed( 3 )},on:{"changed":function($event){_vm.automaton.params[ _vm.selectedParam ].setParam( _vm.selectedNode, key, $event ); _vm.updatePath()}}})}),_vm._v(" "),_c('div',{staticClass:"sep"}),_vm._v(" "),_vm._l((_vm.mods),function(mod,modIndex){return _c('div',{staticClass:"modsContainer"},[_c('img',{staticClass:"modIcon",class:{ active: _vm.automaton.params[ _vm.selectedParam ].nodes[ _vm.selectedNode ].mods[ modIndex ] },attrs:{"src":mod.src},on:{"click":function($event){_vm.automaton.params[ _vm.selectedParam ].toggleMod( _vm.selectedNode, modIndex ); _vm.updatePath()}}}),_vm._v(" "),(_vm.automaton.params[ _vm.selectedParam ].nodes[ _vm.selectedNode ].mods[ modIndex ])?_c('div',{staticClass:"modParams"},_vm._l((_vm.automaton.params[ _vm.selectedParam ].nodes[ _vm.selectedNode ].mods[ modIndex ]),function(value,key){return _c('parambox',{attrs:{"type":"number","name":key,"value":_vm.automaton.params[ _vm.selectedParam ].nodes[ _vm.selectedNode ].mods[ modIndex ][ key ].toFixed( 3 )},on:{"changed":function($event){_vm.automaton.params[ _vm.selectedParam ].setModParam( _vm.selectedNode, modIndex, key, $event ); _vm.updatePath()}}})})):_vm._e()])})]:_vm._e()],2):_vm._e()]),_vm._v(" "),_c('div',{ref:"timelineContainer",staticClass:"timelineContainer"},[(_vm.validSelectedParam())?_c('div',{staticClass:"timeline",on:{"wheel":function($event){$event.preventDefault();_vm.wheelTimeline($event)}}},[_c('svg',{staticClass:"timelineSvg",attrs:{"width":_vm.tlWidth,"height":_vm.tlHeight,"viewBox":_vm.tlViewBox},on:{"mousedown":function($event){if(!$event.altKey){ return null; }$event.preventDefault();_vm.seek($event)},"dblclick":_vm.addNode}},[_vm._l((_vm.grid.x),function(line){return _c('line',{staticClass:"timelineGrid",attrs:{"x1":line.pos,"y1":0,"x2":line.pos,"y2":_vm.tlHeight,"opacity":line.op}})}),_vm._v(" "),_vm._l((_vm.grid.y),function(line){return _c('line',{staticClass:"timelineGrid",attrs:{"x1":0,"y1":line.pos,"x2":_vm.tlWidth,"y2":line.pos,"opacity":line.op}})}),_vm._v(" "),_vm._l((_vm.grid.x),function(line){return _c('text',{staticClass:"timelineGridText",attrs:{"x":line.pos + 2,"y":_vm.tlHeight - 2,"opacity":line.op}},[_vm._v(_vm._s(line.val.toFixed( 3 )))])}),_vm._v(" "),_vm._l((_vm.grid.y),function(line){return _c('text',{staticClass:"timelineGridText",attrs:{"x":"2","y":line.pos - 2,"opacity":line.op}},[_vm._v(_vm._s(line.val.toFixed( 3 )))])}),_vm._v(" "),(_vm.automaton.guiParams.snap.enable)?[_vm._l((_vm.snapLines),function(line){return _c('line',{staticClass:"timelineSnap",attrs:{"x1":line.pos,"y1":0,"x2":line.pos,"y2":_vm.tlHeight}})}),_vm._v(" "),_vm._l((_vm.snapLines),function(line){return _c('text',{staticClass:"timelineSnapText",attrs:{"x":line.pos + 2,"y":"10"}},[_vm._v(_vm._s(line.beat.toFixed( 2 )))])})]:_vm._e(),_vm._v(" "),_c('path',{staticClass:"timelinePath",attrs:{"d":_vm.tlPath}}),_vm._v(" "),_vm._l((_vm.automaton.params[ _vm.selectedParam ].nodes),function(node,index){return (_vm.t2x( _vm.tlTimeMin ) <= _vm.t2x( node.time ) + 10 && _vm.t2x( node.time ) - 10 <= _vm.t2x( _vm.tlTimeMax ))?_c('g',{staticClass:"timelineNode",class:{ active: index === _vm.selectedNode },on:{"dblclick":function($event){$event.stopPropagation();_vm.removeNode( index )},"mousedown":function($event){_vm.grabNode( index, $event )}}},[(_vm.tlValueMin <= node.value && node.value <= _vm.tlValueMax)?_c('circle',{attrs:{"transform":'translate(' + _vm.t2x( node.time ) + ',' + _vm.v2y( node.value ) + ')',"r":"5"}}):(node.value < _vm.tlValueMin)?_c('path',{attrs:{"transform":'translate(' + _vm.t2x( node.time ) + ',' + _vm.tlHeight + ')',"d":"M 0 -4 L 5 -12 L -5 -12 z"}}):_c('path',{attrs:{"transform":'translate(' + _vm.t2x( node.time ) + ',0)',"d":"M 0 4 L -5 12 L 5 12 z"}})]):_vm._e()}),_vm._v(" "),_c('line',{staticClass:"timelineTimeLine",attrs:{"x1":_vm.t2x( _vm.automaton.time ),"y1":0,"x2":_vm.t2x( _vm.automaton.time ),"y2":_vm.tlHeight}}),_vm._v(" "),_c('line',{staticClass:"timelineValueLine",attrs:{"x1":0,"y1":_vm.v2y( _vm.automaton.params[ _vm.selectedParam ].getValue( _vm.automaton.time ) ),"x2":_vm.tlWidth,"y2":_vm.v2y( _vm.automaton.params[ _vm.selectedParam ].getValue( _vm.automaton.time ) )}}),_vm._v(" "),_c('text',{staticClass:"timelineTimeText",attrs:{"x":_vm.t2x( _vm.automaton.time ) + 2,"y":_vm.tlHeight - 2}},[_vm._v(_vm._s(_vm.automaton.time.toFixed( 3 )))]),_vm._v(" "),_c('text',{staticClass:"timelineValueText",attrs:{"x":"2","y":_vm.v2y( _vm.automaton.params[ _vm.selectedParam ].getValue( _vm.automaton.time ) ) - 2}},[_vm._v(_vm._s(_vm.automaton.params[ _vm.selectedParam ].getValue( _vm.automaton.time ).toFixed( 3 )))]),_vm._v(" "),_c('circle',{staticClass:"timelineTimePoint",attrs:{"r":"5","cx":_vm.t2x( _vm.automaton.time ),"cy":_vm.v2y( _vm.automaton.params[ _vm.selectedParam ].getValue( _vm.automaton.time ) )}})],2)]):_vm._e()]),_vm._v(" "),(_vm.dialog.show)?_c('div',{staticClass:"dialogContainer"},[_c('div',{staticClass:"dialogBackground",on:{"click":function($event){_vm.dialog.show = false}}}),_vm._v(" "),_c('div',{staticClass:"dialog"},[(_vm.dialog.mode === 'snap')?[_c('div',{staticClass:"dialogContent",style:({ width: 200 + 'px' })},[_c('div',[_c('div',{staticClass:"dialogName"},[_vm._v("Beatsnap")]),_vm._v(" "),_c('input',{ref:"dialogSnapEnable",staticClass:"dialogCheck",attrs:{"type":"checkbox"}})]),_vm._v(" "),_c('div',[_c('div',{staticClass:"dialogName"},[_vm._v("BPM")]),_vm._v(" "),_c('input',{ref:"dialogSnapBPM",staticClass:"dialogBox"})]),_vm._v(" "),_c('div',[_c('div',{staticClass:"dialogName"},[_vm._v("Offset")]),_vm._v(" "),_c('input',{ref:"dialogSnapOffset",staticClass:"dialogBox"})])]),_vm._v(" "),_c('div',{staticClass:"dialogButtonContainer"},[_c('div',{staticClass:"dialogButton",on:{"click":_vm.dialogSnapOK}},[_vm._v("OK")]),_vm._v(" "),_c('div',{staticClass:"dialogButton",on:{"click":function($event){_vm.dialog.show = false}}},[_vm._v("Cancel")])])]:(_vm.dialog.mode === 'config')?[_c('div',{staticClass:"dialogContent",style:({ width: 200 + 'px' })},[_c('div',[_c('div',{staticClass:"dialogName"},[_vm._v("Length")]),_vm._v(" "),_c('input',{ref:"dialogConfigLength",staticClass:"dialogBox",on:{"input":_vm.dialogConfigLengthTest}})]),_vm._v(" "),_c('div',[_c('div',{staticClass:"dialogName"},[_vm._v("Resolution")]),_vm._v(" "),_c('input',{ref:"dialogConfigResolution",staticClass:"dialogBox"})]),_vm._v(" "),(_vm.dialogConfigLengthShortened)?_c('div',{style:({
               fontSize: 9 + 'px',
               color: '#f66'
             })},[_vm._v("\n            Shortening length may cause loss of node data\n          ")]):_vm._e()]),_vm._v(" "),_c('div',{staticClass:"dialogButtonContainer"},[_c('div',{staticClass:"dialogButton",on:{"click":_vm.dialogConfigOK}},[_vm._v("OK")]),_vm._v(" "),_c('div',{staticClass:"dialogButton",on:{"click":function($event){_vm.dialog.show = false}}},[_vm._v("Cancel")])])]:(_vm.dialog.mode === 'save')?[_c('div',{staticClass:"dialogContent",style:({ width: 200 + 'px' })},[_c('div',[_vm._v("\n            Copy the JSON below:\n          ")]),_vm._v(" "),_c('div',[_c('input',{ref:"dialogSaveJSON",staticClass:"dialogBox save",attrs:{"readonly":"true"}})])]),_vm._v(" "),_c('div',{staticClass:"dialogButtonContainer"},[_c('div',{staticClass:"dialogButton",on:{"click":function($event){_vm.dialog.show = false}}},[_vm._v("OK")])])]:_vm._e()],2)]):_vm._e()])}
@@ -8969,7 +9171,7 @@ if (module.hot) {(function () {  var hotAPI = require("vue-hot-reload-api")
     hotAPI.reload("data-v-3e83ac13", __vue__options__)
   }
 })()}
-},{"../images":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/images.js","../interpolator":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/interpolator.js","../vue-parambox/main.vue":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/vue-parambox/main.vue","babel-runtime/core-js/json/stringify":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/babel-runtime/core-js/json/stringify.js","babel-runtime/core-js/math/log10":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/babel-runtime/core-js/math/log10.js","vue":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/vue/dist/vue.runtime.common.js","vue-hot-reload-api":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/vue-hot-reload-api/index.js","vueify/lib/insert-css":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/vueify/lib/insert-css.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/vue-parambox/main.vue":[function(require,module,exports){
+},{"../images":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/images.js","../interpolator":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/interpolator.js","../vue-parambox/main.vue":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/vue-parambox/main.vue","babel-runtime/core-js/json/stringify":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/babel-runtime/core-js/json/stringify.js","babel-runtime/core-js/math/log10":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/babel-runtime/core-js/math/log10.js","babel-runtime/core-js/object/keys":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/babel-runtime/core-js/object/keys.js","vue":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/vue/dist/vue.runtime.common.js","vue-hot-reload-api":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/vue-hot-reload-api/index.js","vueify/lib/insert-css":"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/node_modules/vueify/lib/insert-css.js"}],"/Users/Yutaka/Dropbox/pro/JavaScript/automaton/src/vue-parambox/main.vue":[function(require,module,exports){
 var __vueify_style_dispose__ = require("vueify/lib/insert-css").insert("/* line 108, stdin */\n.parambox {\n  position: relative;\n  width: 100%;\n  height: 16px;\n  margin: 0 0 5px 0;\n  font-size: 14px; }\n  /* line 116, stdin */\n  .parambox .name {\n    position: absolute;\n    left: 20px;\n    top: 0;\n    height: 100%; }\n  /* line 123, stdin */\n  .parambox .number {\n    position: absolute;\n    right: 10px;\n    top: 0;\n    width: 60px;\n    height: 100%; }\n    /* line 130, stdin */\n    .parambox .number .valueText {\n      position: absolute;\n      left: 0;\n      top: 0;\n      width: 100%;\n      height: 100%;\n      text-align: center;\n      cursor: pointer; }\n    /* line 142, stdin */\n    .parambox .number .valueInput {\n      position: absolute;\n      left: 0;\n      top: 0;\n      width: 100%;\n      height: 100%;\n      border: none;\n      padding: 0;\n      text-align: center;\n      background: #666;\n      color: #fff; }\n  /* line 158, stdin */\n  .parambox .boolean {\n    position: absolute;\n    right: 34px;\n    bottom: 0;\n    width: 12px;\n    height: 12px;\n    background: #ddd; }\n    /* line 167, stdin */\n    .parambox .boolean .booleanCheck {\n      position: absolute;\n      left: 2px;\n      top: 2px;\n      width: calc( 100% - 4px);\n      height: calc( 100% - 4px);\n      background: #2af; }")
 ;(function(){
 "use strict";
