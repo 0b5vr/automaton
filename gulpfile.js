@@ -16,6 +16,7 @@ const browserSync = require( 'browser-sync' );
 
 // ------
 
+let debugName = 'automaton.js';
 let debugBro = browserify( './src/main.js', {
   cache: {},
   packageCache: {},
@@ -29,12 +30,12 @@ let debugBro = browserify( './src/main.js', {
     vueify,
     imgurify,
     [ babelify, {
-      presets: 'es2015'
+      presets: 'env'
     } ],
-    uglifyify
   ]
 } );
 
+let minName = 'automaton.min.js';
 let minBro = browserify( './src/main.js', {
   cache: {},
   packageCache: {},
@@ -47,12 +48,13 @@ let minBro = browserify( './src/main.js', {
     vueify,
     imgurify,
     [ babelify, {
-      presets: 'es2015'
+      presets: 'env'
     } ],
     uglifyify
   ]
 } );
 
+let noguiName = 'automaton.nogui.js';
 let noguiBro = browserify( './src/main.js', {
   cache: {},
   packageCache: {},
@@ -62,9 +64,8 @@ let noguiBro = browserify( './src/main.js', {
     [ envify, {
       GUI: false
     } ],
-    vueify,
     [ babelify, {
-      presets: 'es2015'
+      presets: 'env'
     } ],
     uglifyify
   ]
@@ -73,17 +74,17 @@ let noguiBro = browserify( './src/main.js', {
 gulp.task( 'script-build', () => {
   debugBro.bundle()
   .on( 'error', _error => console.error( _error ) )
-  .pipe( source( 'automaton.js' ) )
+  .pipe( source( debugName ) )
   .pipe( gulp.dest( './dist' ) );
 
   minBro.bundle()
   .on( 'error', _error => console.error( _error ) )
-  .pipe( source( 'automaton.min.js' ) )
+  .pipe( source( minName ) )
   .pipe( gulp.dest( './dist' ) );
 
   noguiBro.bundle()
   .on( 'error', _error => console.error( _error ) )
-  .pipe( source( 'automaton.nogui.js' ) )
+  .pipe( source( noguiName ) )
   .pipe( gulp.dest( './dist' ) );
 } );
 
