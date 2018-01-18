@@ -1,8 +1,12 @@
-import Vue from "vue";
-import GUI from "./gui.vue";
 import compat from "./compat";
 
 import AutomatonParam from "./param";
+
+let Vue, GUI;
+if ( process.env.GUI ) { 
+	Vue = require( "vue" );
+	GUI = require( "./gui.vue" );
+}
 
 // ------
 
@@ -45,9 +49,15 @@ let Automaton = ( _props ) => {
 	automaton.params = {};
 	automaton.createParam = ( _name ) => {
 		let param = new AutomatonParam( automaton );
-		automaton.params[ _name ] = param;
+		if ( process.env.GUI ) { Vue.set( automaton.params, _name, param ); }
+		else { automaton.params[ _name ] = param; }
 
 		return param;
+	};
+
+	automaton.deleteParam = ( _name ) => {
+		if ( process.env.GUI ) { Vue.delete( automaton.params, _name ); }
+		else { delete automaton.params[ _name ]; }
 	};
 
 	automaton.getParamNames = () => {
@@ -87,29 +97,31 @@ let Automaton = ( _props ) => {
 
 	// ------
 
-	if ( props.gui ) {
-		let el = document.createElement( "div" );
-		props.gui.appendChild( el );
-		automaton.vue = new Vue( {
-			el: el,
-			data: {
-				automaton: automaton
-			},
-			render: function( createElement ) {
-				return createElement(
-					GUI,
-					{ props: { automaton: this.automaton } }
-				);
-			}
-		} );
+	if ( process.env.GUI ) {
+		if ( props.gui ) {
+			let el = document.createElement( "div" );
+			props.gui.appendChild( el );
+			automaton.vue = new Vue( {
+				el: el,
+				data: {
+					automaton: automaton
+				},
+				render: function( createElement ) {
+					return createElement(
+						GUI,
+						{ props: { automaton: this.automaton } }
+					);
+				}
+			} );
 
-		automaton.guiParams = typeof data.gui === "object" ? data.gui : {
-			snap: {
-				enable: false,
-				bpm: 120,
-				offset: 0
-			}
-		};
+			automaton.guiParams = typeof data.gui === "object" ? data.gui : {
+				snap: {
+					enable: false,
+					bpm: 120,
+					offset: 0
+				}
+			};
+		}
 	}
 
 	// ------
@@ -125,11 +137,13 @@ let Automaton = ( _props ) => {
 	};
 
 	automaton.auto = ( _name ) => {
-		if ( !automaton.params[ _name ] ) {
-			let param = automaton.createParam( _name );
+		let param = automaton.params[ _name ];
+		if ( !param ) {
+			param = automaton.createParam( _name );
 		}
+		param.used = true;
 
-		return automaton.params[ _name ].getValue();
+		return param.getValue();
 	};
 
 	// ------
@@ -140,25 +154,27 @@ let Automaton = ( _props ) => {
 
 	// ------
 
-	automaton.save = () => {
-		let obj = {
-			rev: 20170418,
-			length: automaton.length,
-			resolution: automaton.resolution,
+	if ( process.env.GUI ) {
+		automaton.save = () => {
+			let obj = {
+				rev: 20170418,
+				length: automaton.length,
+				resolution: automaton.resolution,
+			};
+
+			obj.params = {};
+			for ( let name in automaton.params ) {
+				let param = automaton.params[ name ];
+				obj.params[ name ] = param.nodes;
+			}
+
+			if ( automaton.guiParams ) {
+				obj.gui = automaton.guiParams;
+			}
+
+			return obj;
 		};
-
-		obj.params = {};
-		for ( let name in automaton.params ) {
-			let param = automaton.params[ name ];
-			obj.params[ name ] = param.nodes;
-		}
-
-		if ( automaton.guiParams ) {
-			obj.gui = automaton.guiParams;
-		}
-
-		return obj;
-	};
+	}
 
 	// -----
 

@@ -5,60 +5,100 @@ const rename = require( 'gulp-rename' );
 
 const browserify = require( 'browserify' );
 const watchify = require( 'watchify' );
+const envify = require( 'envify' );
 const babelify = require( 'babelify' );
 const source = require( 'vinyl-source-stream' );
-const uglify = require( 'gulp-uglify' );
 const vueify = require( 'vueify' );
 const imgurify = require( 'imgurify' );
+const uglifyify = require( 'uglifyify' );
 
 const browserSync = require( 'browser-sync' );
 
 // ------
 
-let brwsrfy = browserify( './src/main.js', {
+let debugBro = browserify( './src/main.js', {
+  cache: {},
+  packageCache: {},
+  fullPaths: true,
+  debug: true,
+  standalone: 'Automaton',
+  transform: [
+    [ envify, {
+      GUI: true
+    } ],
+    vueify,
+    imgurify,
+    [ babelify, {
+      presets: 'es2015'
+    } ],
+    uglifyify
+  ]
+} );
+
+let guiBro = browserify( './src/main.js', {
   cache: {},
   packageCache: {},
   fullPaths: true,
   standalone: 'Automaton',
   transform: [
+    [ envify, {
+      GUI: true
+    } ],
     vueify,
     imgurify,
     [ babelify, {
       presets: 'es2015'
-    } ]
+    } ],
+    uglifyify
+  ]
+} );
+
+let miniBro = browserify( './src/main.js', {
+  cache: {},
+  packageCache: {},
+  fullPaths: true,
+  standalone: 'Automaton',
+  transform: [
+    [ envify, {
+      GUI: false
+    } ],
+    vueify,
+    [ babelify, {
+      presets: 'es2015'
+    } ],
+    uglifyify
   ]
 } );
 
 gulp.task( 'script-build', () => {
-  brwsrfy.bundle()
-  .on( 'error', function( _error ) {
-    console.error( _error );
-    this.emit( 'end' );
-  } )
+  debugBro.bundle()
+  .on( 'error', _error => console.error( _error ) )
+  .pipe( source( 'automaton.dev.js' ) )
+  .pipe( gulp.dest( './dist' ) );
+
+  guiBro.bundle()
+  .on( 'error', _error => console.error( _error ) )
   .pipe( source( 'automaton.js' ) )
   .pipe( gulp.dest( './dist' ) );
 
-  gulp.src( './dist/automaton.js' )
-  .pipe( uglify() )
-  .pipe( rename( 'automaton.min.js' ) )
-  .pipe( gulp.dest( './dist' ) )
+  miniBro.bundle()
+  .on( 'error', _error => console.error( _error ) )
+  .pipe( source( 'automaton.min.js' ) )
+  .pipe( gulp.dest( './dist' ) );
 } );
 
 gulp.task( 'script-watch', () => {
-  let wtcfy = watchify( brwsrfy );
+  let debugWatch = watchify( debugBro );
 
-  wtcfy.on( 'update', function() {
+  debugWatch.on( 'update', () => {
     console.log( '🔮 Browserify!' );
-    wtcfy.bundle()
-    .on( 'error', function( _error ) {
-      console.error( _error );
-      this.emit( 'end' );
-    } )
-    .pipe( source( 'automaton.js' ) )
+    debugWatch.bundle()
+    .on( 'error', _error => console.error( _error ) )
+    .pipe( source( 'automaton.dev.js' ) )
     .pipe( gulp.dest( './dist' ) );
   } );
 
-  wtcfy.on( 'log', ( _log ) => {
+  debugWatch.on( 'log', ( _log ) => {
     console.log( '🍕 ' + _log );
   } );
 } );

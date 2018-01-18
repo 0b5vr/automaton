@@ -4,41 +4,55 @@
     <div class="headerTitle">AUTOMATON</div>
     <div class="headerButtonContainer">
       <img class="headerButton"
-        v-for="button in headerButtons"
-        v-bind:src="button.src"
-        v-on:click="button.func"
+        v-for="( button, index ) in headerButtons"
+        :key="index"
+        :src="button.src"
+        @click="button.func"
       />
     </div>
   </div>
   <div class="paramList">
     <div class="paramListInside"
       ref="paramListInside"
-      v-bind:style="{ top: -paramListWheelPos + 'px' }"
-      v-on:wheel.prevent="wheelParamList"
+      :style="{ top: -paramListWheelPos + 'px' }"
+      @wheel.prevent="wheelParamList"
     >
       <div class="param"
         v-for="( param, name ) in automaton.params"
-        v-bind:class="{ selected: name === selectedParam }"
-        v-on:click="selectedParam = name; selectedNode = 0; onResize(); updatePath();"
-      >{{ name }}</div>
+        :key="name"
+        :class="{ selected: name === selectedParam }"
+        @click="selectedParam = name; selectedNode = 0; onResize(); updatePath();"
+      >
+        <div class="paramName">{{ name }}</div>
+        <div class="paramValue"
+          v-if="param.used"
+        >
+          {{ param.getValue().toFixed( 3 ) }}
+        </div>
+        <img class="paramWarning"
+          v-if="!param.used"
+          :src="require( './images/warning.svg' )"
+          @click.stop="automaton.deleteParam( name )"
+        />
+      </div>
     </div>
   </div>
   <div class="modMenu">
     <div class="modMenuInside"
     ref="modMenuInside"
       v-if="validSelectedParam()"
-      v-bind:style="{ top: -modMenuWheelPos + 'px' }"
-      v-on:wheel.prevent="wheelModMenu"
+      :style="{ top: -modMenuWheelPos + 'px' }"
+      @wheel.prevent="wheelModMenu"
     >
       <parambox type="number"
         name="time"
-        v-bind:value="automaton.params[ selectedParam ].nodes[ selectedNode ].time.toFixed( 3 )"
-        v-on:changed="automaton.params[ selectedParam ].setTime( selectedNode, $event ); updatePath()"
+        :value="automaton.params[ selectedParam ].nodes[ selectedNode ].time.toFixed( 3 )"
+        @changed="automaton.params[ selectedParam ].setTime( selectedNode, $event ); updatePath()"
       />
       <parambox type="number"
         name="value"
-        v-bind:value="automaton.params[ selectedParam ].nodes[ selectedNode ].value.toFixed( 3 )"
-        v-on:changed="automaton.params[ selectedParam ].setValue( selectedNode, $event ); updatePath()"
+        :value="automaton.params[ selectedParam ].nodes[ selectedNode ].value.toFixed( 3 )"
+        @changed="automaton.params[ selectedParam ].setValue( selectedNode, $event ); updatePath()"
       />
 
       <template
@@ -49,36 +63,40 @@
         <div class="modeButtonContainer">
           <img class="modeButton"
             v-for="( button, index ) in modeButtons"
-            v-bind:src="button.src"
-            v-bind:class="{ active: index === automaton.params[ selectedParam ].nodes[ selectedNode ].mode }"
-            v-on:click="automaton.params[ selectedParam ].setMode( selectedNode, index ); updatePath()"
+            :key="index"
+            :src="button.src"
+            :class="{ active: index === automaton.params[ selectedParam ].nodes[ selectedNode ].mode }"
+            @click="automaton.params[ selectedParam ].setMode( selectedNode, index ); updatePath()"
           />
         </div>
         <parambox type="number"
           v-for="( value, key ) in automaton.params[ selectedParam ].nodes[ selectedNode ].params"
-          v-bind:name="key"
-          v-bind:value="automaton.params[ selectedParam ].nodes[ selectedNode ].params[ key ].toFixed( 3 )"
-          v-on:changed="automaton.params[ selectedParam ].setParam( selectedNode, key, $event ); updatePath()"
+          :key="key"
+          :name="key"
+          :value="automaton.params[ selectedParam ].nodes[ selectedNode ].params[ key ].toFixed( 3 )"
+          @changed="automaton.params[ selectedParam ].setParam( selectedNode, key, $event ); updatePath()"
         />
 
         <div class="sep"></div>
         
         <div class="modsContainer"
           v-for="( mod, modIndex ) in mods"
+          :key="modIndex"
         >
           <img class="modIcon"
-            v-bind:src="mod.src"
-            v-bind:class="{ active: automaton.params[ selectedParam ].nodes[ selectedNode ].mods[ modIndex ] }"
-            v-on:click="automaton.params[ selectedParam ].toggleMod( selectedNode, modIndex ); updatePath()"
+            :src="mod.src"
+            :class="{ active: automaton.params[ selectedParam ].nodes[ selectedNode ].mods[ modIndex ] }"
+            @click="automaton.params[ selectedParam ].toggleMod( selectedNode, modIndex ); updatePath()"
           />
           <div class="modParams"
             v-if="automaton.params[ selectedParam ].nodes[ selectedNode ].mods[ modIndex ]"
           >
             <parambox type="number"
               v-for="( value, key ) in automaton.params[ selectedParam ].nodes[ selectedNode ].mods[ modIndex ]"
-              v-bind:name="key"
-              v-bind:value="automaton.params[ selectedParam ].nodes[ selectedNode ].mods[ modIndex ][ key ].toFixed( 3 )"
-              v-on:changed="automaton.params[ selectedParam ].setModParam( selectedNode, modIndex, key, $event ); updatePath()"
+              :key="key"
+              :name="key"
+              :value="automaton.params[ selectedParam ].nodes[ selectedNode ].mods[ modIndex ][ key ].toFixed( 3 )"
+              @changed="automaton.params[ selectedParam ].setModParam( selectedNode, modIndex, key, $event ); updatePath()"
             />
           </div>
         </div>
@@ -90,113 +108,120 @@
   >
     <div class="timeline"
       v-if="validSelectedParam()"
-      v-on:wheel.prevent="wheelTimeline"
+      @wheel.prevent="wheelTimeline"
     >
       <svg class="timelineSvg"
-        v-bind:width="tlWidth"
-        v-bind:height="tlHeight"
-        v-bind:viewBox="tlViewBox"
-        v-on:mousedown.alt.prevent="seek"
-        v-on:dblclick="addNode"
+        :width="tlWidth"
+        :height="tlHeight"
+        :viewBox="tlViewBox"
+        @mousedown.alt.prevent="seek"
+        @dblclick="addNode"
       >
         <line class="timelineGrid"
-          v-for="line in grid.x"
-          v-bind:x1="line.pos"
-          v-bind:y1="0"
-          v-bind:x2="line.pos"
-          v-bind:y2="tlHeight"
-          v-bind:opacity="line.op"
+          v-for="( line, index ) in grid.x"
+          :key="'timelineGlidX'+index"
+          :x1="line.pos"
+          :y1="0"
+          :x2="line.pos"
+          :y2="tlHeight"
+          :opacity="line.op"
         />
         <line class="timelineGrid"
-          v-for="line in grid.y"
-          v-bind:x1="0"
-          v-bind:y1="line.pos"
-          v-bind:x2="tlWidth"
-          v-bind:y2="line.pos"
-          v-bind:opacity="line.op"
+          v-for="( line, index ) in grid.y"
+          :key="'timelineGlidY'+index"
+          :x1="0"
+          :y1="line.pos"
+          :x2="tlWidth"
+          :y2="line.pos"
+          :opacity="line.op"
         />
         <text class="timelineGridText"
-          v-for="line in grid.x"
-          v-bind:x="line.pos + 2"
-          v-bind:y="tlHeight - 2"
-          v-bind:opacity="line.op"
+          v-for="( line, index ) in grid.x"
+          :key="'timelineGlidTextX'+index"
+          :x="line.pos + 2"
+          :y="tlHeight - 2"
+          :opacity="line.op"
         >{{ line.val.toFixed( 3 ) }}</text>
         <text class="timelineGridText"
-          v-for="line in grid.y"
+          v-for="( line, index ) in grid.y"
+          :key="'timelineGlidTextY'+index"
           x="2"
-          v-bind:y="line.pos - 2"
-          v-bind:opacity="line.op"
+          :y="line.pos - 2"
+          :opacity="line.op"
         >{{ line.val.toFixed( 3 ) }}</text>
 
         <template
           v-if="automaton.guiParams.snap.enable"
         >
           <line class="timelineSnap"
-            v-for="line in snapLines"
-            v-bind:x1="line.pos"
-            v-bind:y1="0"
-            v-bind:x2="line.pos"
-            v-bind:y2="tlHeight"
+            v-for="( line, index ) in snapLines"
+            :key="index"
+            :x1="line.pos"
+            :y1="0"
+            :x2="line.pos"
+            :y2="tlHeight"
           />
           <text class="timelineSnapText"
-            v-for="line in snapLines"
-            v-bind:x="line.pos + 2"
+            v-for="( line, index ) in snapLines"
+            :key="index"
+            :x="line.pos + 2"
             y="10"
           >{{ line.beat.toFixed( 2 ) }}</text>
         </template>
 
         <path class="timelinePath"
-          v-bind:d="tlPath"
+          :d="tlPath"
         />
         
         <g class="timelineNode"
           v-for="( node, index ) in automaton.params[ selectedParam ].nodes"
+          :key="index"
           v-if="t2x( tlTimeMin ) <= t2x( node.time ) + 10 && t2x( node.time ) - 10 <= t2x( tlTimeMax )"
-          v-bind:class="{ active: index === selectedNode }"
-          v-on:dblclick.stop="removeNode( index )"
-          v-on:mousedown="grabNode( index, $event )"
+          :class="{ active: index === selectedNode }"
+          @dblclick.stop="removeNode( index )"
+          @mousedown="grabNode( index, $event )"
         >
           <circle
             v-if="tlValueMin <= node.value && node.value <= tlValueMax"
-            v-bind:transform="'translate(' + t2x( node.time ) + ',' + v2y( node.value ) + ')'"
+            :transform="'translate(' + t2x( node.time ) + ',' + v2y( node.value ) + ')'"
             r="5"
           />
           <path
             v-else-if="node.value < tlValueMin"
-            v-bind:transform="'translate(' + t2x( node.time ) + ',' + tlHeight + ')'"
+            :transform="'translate(' + t2x( node.time ) + ',' + tlHeight + ')'"
             d="M 0 -4 L 5 -12 L -5 -12 z"
           />
           <path
             v-else
-            v-bind:transform="'translate(' + t2x( node.time ) + ',0)'"
+            :transform="'translate(' + t2x( node.time ) + ',0)'"
             d="M 0 4 L -5 12 L 5 12 z"
           />
         </g>
 
         <line class="timelineTimeLine"
-          v-bind:x1="t2x( automaton.time )"
-          v-bind:y1="0"
-          v-bind:x2="t2x( automaton.time )"
-          v-bind:y2="tlHeight"
+          :x1="t2x( automaton.time )"
+          :y1="0"
+          :x2="t2x( automaton.time )"
+          :y2="tlHeight"
         />
         <line class="timelineValueLine"
-          v-bind:x1="0"
-          v-bind:y1="v2y( automaton.params[ selectedParam ].getValue( automaton.time ) )"
-          v-bind:x2="tlWidth"
-          v-bind:y2="v2y( automaton.params[ selectedParam ].getValue( automaton.time ) )"
+          :x1="0"
+          :y1="v2y( automaton.params[ selectedParam ].getValue( automaton.time ) )"
+          :x2="tlWidth"
+          :y2="v2y( automaton.params[ selectedParam ].getValue( automaton.time ) )"
         />
         <text class="timelineTimeText"
-          v-bind:x="t2x( automaton.time ) + 2"
-          v-bind:y="tlHeight - 2"
+          :x="t2x( automaton.time ) + 2"
+          :y="tlHeight - 2"
         >{{ automaton.time.toFixed( 3 ) }}</text>
         <text class="timelineValueText"
           x="2"
-          v-bind:y="v2y( automaton.params[ selectedParam ].getValue( automaton.time ) ) - 2"
+          :y="v2y( automaton.params[ selectedParam ].getValue( automaton.time ) ) - 2"
         >{{ automaton.params[ selectedParam ].getValue( automaton.time ).toFixed( 3 ) }}</text>
         <circle class="timelineTimePoint"
           r="5"
-          v-bind:cx="t2x( automaton.time )"
-          v-bind:cy="v2y( automaton.params[ selectedParam ].getValue( automaton.time ) )"
+          :cx="t2x( automaton.time )"
+          :cy="v2y( automaton.params[ selectedParam ].getValue( automaton.time ) )"
         />
       </svg>
     </div>
@@ -205,14 +230,14 @@
     v-if="dialog.show"
   >
     <div class="dialogBackground"
-      v-on:click="dialog.show = false"
+      @click="dialog.show = false"
     ></div>
     <div class="dialog">
       <template
         v-if="dialog.mode === 'snap'"
       >
         <div class="dialogContent"
-          v-bind:style="{ width: 200 + 'px' }"
+          :style="{ width: 200 + 'px' }"
         >
           <div>
             <div class="dialogName">Beatsnap</div>
@@ -236,10 +261,10 @@
         </div>
         <div class="dialogButtonContainer">
           <div class="dialogButton"
-            v-on:click="dialogSnapOK"
+            @click="dialogSnapOK"
           >OK</div>
           <div class="dialogButton"
-            v-on:click="dialog.show = false"
+            @click="dialog.show = false"
           >Cancel</div>
         </div>
       </template>
@@ -248,13 +273,13 @@
         v-else-if="dialog.mode === 'config'"
       >
         <div class="dialogContent"
-          v-bind:style="{ width: 200 + 'px' }"
+          :style="{ width: 200 + 'px' }"
         >
           <div>
             <div class="dialogName">Length</div>
             <input class="dialogBox"
               ref="dialogConfigLength"
-              v-on:input="dialogConfigLengthTest"
+              @input="dialogConfigLengthTest"
             />
           </div>
           <div>
@@ -265,7 +290,7 @@
           </div>
           <div
             v-if="dialogConfigLengthShortened"
-            v-bind:style="{
+            :style="{
               fontSize: 9 + 'px',
               color: '#f66'
             }"
@@ -275,10 +300,10 @@
         </div>
         <div class="dialogButtonContainer">
           <div class="dialogButton"
-            v-on:click="dialogConfigOK"
+            @click="dialogConfigOK"
           >OK</div>
           <div class="dialogButton"
-            v-on:click="dialog.show = false"
+            @click="dialog.show = false"
           >Cancel</div>
         </div>
       </template>
@@ -287,7 +312,7 @@
         v-else-if="dialog.mode === 'save'"
       >
         <div class="dialogContent"
-          v-bind:style="{ width: 200 + 'px' }"
+          :style="{ width: 200 + 'px' }"
         >
           <div>
             Copy the JSON below:
@@ -301,7 +326,7 @@
         </div>
         <div class="dialogButtonContainer">
           <div class="dialogButton"
-            v-on:click="dialog.show = false"
+            @click="dialog.show = false"
           >OK</div>
         </div>
       </template>
@@ -844,6 +869,8 @@ export default {
         margin: 3px;
 
         cursor: pointer;
+
+        &:hover { opacity: 0.7; }
       }
     }
   }
@@ -866,20 +893,48 @@ export default {
       width: 100%;
 
       .param {
+        position: relative;
         margin: 2px;
-        padding: 2px 8px;
-        width: calc( 100% - 4px - 16px );
-        height: 20px;
-
-        font-size: 14px;
+        width: calc( 100% - 4px );
+        height: 24px;
 
         background: #333;
+        overflow: hidden;
 
         cursor: pointer;
 
-        &.selected {
-          background: #555;
+        &.selected { background: #555; }
+
+        .paramName {
+          position: absolute;
+          left: 8px;
+          top: 2px;
+
+          font-size: 14px;
           color: #fff;
+          opacity: 0.9;
+        }
+
+        .paramValue {
+          position: absolute;
+          right: 2px;
+          bottom: 2px;
+
+          font-size: 10px;
+          color: #fff;
+          opacity: 0.5;
+        }
+
+        .paramWarning {
+          position: absolute;
+          width: 20px;
+          height: 20px;
+          right: 2px;
+          top: 2px;
+
+          cursor: pointer;
+
+          &:hover { opacity: 0.7; }
         }
       }
     }
