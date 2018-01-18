@@ -35,7 +35,7 @@ let debugBro = browserify( './src/main.js', {
   ]
 } );
 
-let guiBro = browserify( './src/main.js', {
+let minBro = browserify( './src/main.js', {
   cache: {},
   packageCache: {},
   fullPaths: true,
@@ -53,7 +53,7 @@ let guiBro = browserify( './src/main.js', {
   ]
 } );
 
-let miniBro = browserify( './src/main.js', {
+let noguiBro = browserify( './src/main.js', {
   cache: {},
   packageCache: {},
   fullPaths: true,
@@ -73,17 +73,17 @@ let miniBro = browserify( './src/main.js', {
 gulp.task( 'script-build', () => {
   debugBro.bundle()
   .on( 'error', _error => console.error( _error ) )
-  .pipe( source( 'automaton.dev.js' ) )
-  .pipe( gulp.dest( './dist' ) );
-
-  guiBro.bundle()
-  .on( 'error', _error => console.error( _error ) )
   .pipe( source( 'automaton.js' ) )
   .pipe( gulp.dest( './dist' ) );
 
-  miniBro.bundle()
+  minBro.bundle()
   .on( 'error', _error => console.error( _error ) )
   .pipe( source( 'automaton.min.js' ) )
+  .pipe( gulp.dest( './dist' ) );
+
+  noguiBro.bundle()
+  .on( 'error', _error => console.error( _error ) )
+  .pipe( source( 'automaton.nogui.js' ) )
   .pipe( gulp.dest( './dist' ) );
 } );
 
