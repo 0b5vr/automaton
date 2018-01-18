@@ -1,5 +1,5 @@
 import Vue from "vue";
-import GUI from "./vue-gui/main.vue";
+import GUI from "./gui.vue";
 import compat from "./compat";
 
 import AutomatonParam from "./param";

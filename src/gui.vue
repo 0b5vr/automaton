@@ -311,9 +311,9 @@
 </template>
 
 <script>
-import parambox from "../vue-parambox/main.vue";
-import genImages from "../images";
-import Interpolator from "../interpolator";
+import parambox from "./parambox.vue";
+import genImages from "./images";
+import Interpolator from "./interpolator";
 
 let fuckNaN = ( v, def ) => {
   let n = parseFloat( v );
@@ -385,7 +385,7 @@ export default {
         },
         {
           name: "Config",
-          src: images.config,
+          src: require( "./images/cog.svg" ),
           func: () => {
             this.dialog = {
               show: true,

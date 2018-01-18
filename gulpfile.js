@@ -9,6 +9,7 @@ const babelify = require( 'babelify' );
 const source = require( 'vinyl-source-stream' );
 const uglify = require( 'gulp-uglify' );
 const vueify = require( 'vueify' );
+const imgurify = require( 'imgurify' );
 
 const browserSync = require( 'browser-sync' );
 
@@ -21,6 +22,7 @@ let brwsrfy = browserify( './src/main.js', {
   standalone: 'Automaton',
   transform: [
     vueify,
+    imgurify,
     [ babelify, {
       presets: 'es2015'
     } ]
