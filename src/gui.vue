@@ -11,12 +11,10 @@
       />
     </div>
   </div>
-  <div class="paramList">
-    <div class="paramListInside"
-      ref="paramListInside"
-      :style="{ top: -paramListWheelPos + 'px' }"
-      @wheel.prevent="wheelParamList"
-    >
+  <div class="paramList"
+    @wheel="wheelKick"
+  >
+    <div class="paramListInside">
       <div class="param"
         v-for="( param, name ) in automaton.params"
         :key="name"
@@ -37,12 +35,11 @@
       </div>
     </div>
   </div>
-  <div class="modMenu">
+  <div class="modMenu"
+    @wheel="wheelKick"
+  >
     <div class="modMenuInside"
-    ref="modMenuInside"
       v-if="validSelectedParam()"
-      :style="{ top: -modMenuWheelPos + 'px' }"
-      @wheel.prevent="wheelModMenu"
     >
       <parambox type="number"
         name="time"
@@ -443,9 +440,6 @@ export default {
       selectedParam: "",
       selectedNode: 0,
 
-      paramListWheelPos: 0,
-      modMenuWheelPos: 0,
-
       tlTimeMin: 0.0,
       tlTimeMax: 1.0,
       tlValueMin: 0.0,
@@ -500,24 +494,21 @@ export default {
       } );
     },
 
-    wheelParamList( event ) {
-      this.paramListWheelPos = Math.max(
-        Math.min(
-          this.paramListWheelPos + event.deltaY,
-          this.$refs.paramListInside.clientHeight - ( this.$refs.parent.clientHeight - this.$refs.header.clientHeight )
-        ),
-        0
-      );
+    wheelKick( event ) {
+      let div = event.currentTarget;
+      
+      // top
+      if ( div.scrollTop === 0 && event.deltaY < 0 ) {
+        event.preventDefault();
+      }
+
+      // bottom
+      let top = div.scrollHeight - div.clientHeight;
+      if ( div.scrollTop === top && 0 < event.deltaY ) {
+        event.preventDefault();
+      }
     },
-    wheelModMenu( event ) {
-      this.modMenuWheelPos = Math.max(
-        Math.min(
-          this.modMenuWheelPos + event.deltaY,
-          this.$refs.modMenuInside.clientHeight - ( this.$refs.parent.clientHeight - this.$refs.header.clientHeight )
-        ),
-        0
-      );
-    },
+    
     wheelTimeline( event ) {
       if ( event.shiftKey ) {
         let cursorT = this.x2t( event.offsetX );
@@ -722,15 +713,6 @@ export default {
       if ( !this.validSelectedParam() ) { return; }
       if ( this.nodeInRange( index ) ) {
         this.selectedNode = index;
-        this.$nextTick( () => {
-          this.modMenuWheelPos = Math.max(
-            Math.min(
-              this.modMenuWheelPos,
-              this.$refs.modMenuInside.clientHeight - ( this.$refs.parent.clientHeight - this.$refs.header.clientHeight )
-            ),
-            0
-          );
-        } );
       }
     },
     grabNode( index, event ) {
@@ -823,6 +805,8 @@ export default {
 </script>
 
 <style lang="scss">
+$scrollbar-hell: 20px;
+
 .parent {
   position: absolute;
   left: 0;
@@ -880,17 +864,18 @@ export default {
     position: absolute;
 		left: 0;
 		top: $header-height;
-		width: $paramlist-width;
+		width: $paramlist-width + $scrollbar-hell;
 		height: calc( 100% - #{ $header-height } );
 
 		background: #111;
 
-		overflow: hidden;
+    overflow-x: hidden;
+		overflow-y: scroll;
 
     .paramListInside {
       position: absolute;
       top: 0px;
-      width: 100%;
+      width: $paramlist-width;
 
       .param {
         position: relative;
@@ -943,19 +928,20 @@ export default {
   $modmenu-width: 200px;
   .modMenu {
     position: absolute;
-		right: 0;
+		right: -$scrollbar-hell;
 		top: $header-height;
-		width: $modmenu-width;
+		width: $modmenu-width + $scrollbar-hell;
 		height: calc( 100% - #{ $header-height } );
 
 		background: #333;
 
-		overflow: hidden;
+    overflow-x: hidden;
+		overflow-y: scroll;
 
     .modMenuInside {
       position: absolute;
       top: 0px;
-      width: calc( 100% - 20px );
+      width: $modmenu-width - 20px;
       padding: 20px 10px;
     }
 
