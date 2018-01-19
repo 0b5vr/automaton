@@ -95,7 +95,7 @@ gulp.task( 'script-watch', () => {
     console.log( '🔮 Browserify!' );
     debugWatch.bundle()
     .on( 'error', _error => console.error( _error ) )
-    .pipe( source( 'automaton.dev.js' ) )
+    .pipe( source( debugName ) )
     .pipe( gulp.dest( './dist' ) );
   } );
 

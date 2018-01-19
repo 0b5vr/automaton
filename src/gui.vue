@@ -172,31 +172,6 @@
         <path class="timelinePath"
           :d="tlPath"
         />
-        
-        <g class="timelineNode"
-          v-for="( node, index ) in automaton.params[ selectedParam ].nodes"
-          :key="index"
-          v-if="t2x( tlTimeMin ) <= t2x( node.time ) + 10 && t2x( node.time ) - 10 <= t2x( tlTimeMax )"
-          :class="{ active: index === selectedNode }"
-          @dblclick.stop="removeNode( index )"
-          @mousedown="grabNode( index, $event )"
-        >
-          <circle
-            v-if="tlValueMin <= node.value && node.value <= tlValueMax"
-            :transform="'translate(' + t2x( node.time ) + ',' + v2y( node.value ) + ')'"
-            r="5"
-          />
-          <path
-            v-else-if="node.value < tlValueMin"
-            :transform="'translate(' + t2x( node.time ) + ',' + tlHeight + ')'"
-            d="M 0 -4 L 5 -12 L -5 -12 z"
-          />
-          <path
-            v-else
-            :transform="'translate(' + t2x( node.time ) + ',0)'"
-            d="M 0 4 L -5 12 L 5 12 z"
-          />
-        </g>
 
         <line class="timelineTimeLine"
           :x1="t2x( automaton.time )"
@@ -223,6 +198,31 @@
           :cx="t2x( automaton.time )"
           :cy="v2y( automaton.params[ selectedParam ].getValue( automaton.time ) )"
         />
+        
+        <g class="timelineNode"
+          v-for="( node, index ) in automaton.params[ selectedParam ].nodes"
+          :key="index"
+          v-if="t2x( tlTimeMin ) <= t2x( node.time ) + 10 && t2x( node.time ) - 10 <= t2x( tlTimeMax )"
+          :class="{ active: index === selectedNode }"
+          @dblclick.stop="removeNode( index )"
+          @mousedown="grabNode( index, $event )"
+        >
+          <circle
+            v-if="tlValueMin <= node.value && node.value <= tlValueMax"
+            :transform="'translate(' + t2x( node.time ) + ',' + v2y( node.value ) + ')'"
+            r="5"
+          />
+          <path
+            v-else-if="node.value < tlValueMin"
+            :transform="'translate(' + t2x( node.time ) + ',' + tlHeight + ')'"
+            d="M 0 -4 L 5 -12 L -5 -12 z"
+          />
+          <path
+            v-else
+            :transform="'translate(' + t2x( node.time ) + ',0)'"
+            d="M 0 4 L -5 12 L 5 12 z"
+          />
+        </g>
       </svg>
     </div>
   </div>
@@ -1033,6 +1033,8 @@ export default {
 
         font: 400 10px "Helvetica Neue", sans-serif;
 
+        pointer-events: none;
+
         .timelineGrid {
           stroke: #fff;
           stroke-width: 1;
@@ -1064,6 +1066,7 @@ export default {
           stroke: #2af;
           stroke-width: 2;
 
+          pointer-events: auto;
           cursor: pointer;
 
           &.active {
