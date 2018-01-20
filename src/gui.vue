@@ -428,7 +428,7 @@ export default {
         },
         {
           name: "Save",
-          src: images.save,
+          src: require( "./images/save.svg" ),
           func: () => {
             this.dialog = {
               show: true,

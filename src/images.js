@@ -225,58 +225,6 @@ let genImages = () => {
     context.fill();
   } );
 
-  images.config = genImage( () => {
-    context.beginPath();
-    let c = s / 2.0;
-    for ( let i = 0; i < 24; i ++ ) {
-      let r = ( i & 2 ) === 0 ? s * 0.42 : s * 0.30;
-      let t = Math.PI * ( i - 0.5 ) / 12.0;
-
-      if ( i === 0 ) {
-        context.moveTo( c + Math.cos( t ) * r, c + Math.sin( t ) * r );
-      } else {
-        context.lineTo( c + Math.cos( t ) * r, c + Math.sin( t ) * r );
-      }
-    }
-    context.closePath();
-
-    context.arc( c, c, s * 0.15, 0.0, Math.PI * 2.0, true );
-
-    context.fillStyle = "#2af";
-    context.fill();
-  } );
-
-  images.save = genImage( () => {
-    context.beginPath();
-    context.moveTo( s / 8.0, s / 8.0 );
-    context.lineTo( s / 8.0, s / 8.0 * 7.0 );
-    context.lineTo( s / 8.0 * 7.0, s / 8.0 * 7.0 );
-    context.lineTo( s / 8.0 * 7.0, s / 4.0 );
-    context.lineTo( s / 4.0 * 3.0, s / 8.0 );
-    context.closePath();
-
-    context.moveTo( s / 4.0, s / 2.0 );
-    context.lineTo( s / 4.0 * 3.0, s / 2.0 );
-    context.lineTo( s / 4.0 * 3.0, s / 6.0 * 5.0 );
-    context.lineTo( s / 4.0, s / 6.0 * 5.0 );
-    context.closePath();
-
-    context.moveTo( s / 4.0, s / 6.0 );
-    context.lineTo( s / 3.0 * 2.0, s / 6.0 );
-    context.lineTo( s / 3.0 * 2.0, s / 8.0 * 3.0 );
-    context.lineTo( s / 4.0, s / 8.0 * 3.0 );
-    context.closePath();
-
-    context.moveTo( s / 2.0, s / 5.0 );
-    context.lineTo( s / 8.0 * 5.0, s / 5.0 );
-    context.lineTo( s / 8.0 * 5.0, s / 3.0 );
-    context.lineTo( s / 2.0, s / 3.0 );
-    context.closePath();
-
-    context.fillStyle = "#2af";
-    context.fill();
-  } );
-
   return images;
 };
 
