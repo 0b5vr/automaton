@@ -100,14 +100,13 @@
       </template>
     </div>
   </div>
-  <div class="timelineContainer"
-    ref="timelineContainer"
-  >
+  <div class="timelineContainer">
     <div class="timeline"
-      v-if="validSelectedParam()"
+      ref="timeline"
       @wheel.prevent="wheelTimeline"
     >
       <svg class="timelineSvg"
+        v-if="validSelectedParam()"
         :width="tlWidth"
         :height="tlHeight"
         :viewBox="tlViewBox"
@@ -152,7 +151,7 @@
         >
           <line class="timelineSnap"
             v-for="( line, index ) in snapLines"
-            :key="index"
+            :key="'timelineSnap'+index"
             :x1="line.pos"
             :y1="0"
             :x2="line.pos"
@@ -160,9 +159,9 @@
           />
           <text class="timelineSnapText"
             v-for="( line, index ) in snapLines"
-            :key="index"
+            :key="'timelineSnapText'+index"
             :x="line.pos + 2"
-            y="10"
+            :y="tlHeight - 14"
           >{{ line.beat.toFixed( 2 ) }}</text>
         </template>
 
@@ -222,6 +221,14 @@
         </g>
       </svg>
     </div>
+
+    <div class="timelineScrollbarBg"></div>
+    <div class="timelineScrollbar"
+      :style="{
+        left: tlTimeMin / automaton.length * tlWidth + 'px',
+        width: ( tlTimeMax - tlTimeMin ) / automaton.length * tlWidth + 'px'
+      }"
+    ></div>
   </div>
   <div class="dialogContainer"
     v-if="dialog.show"
@@ -481,7 +488,7 @@ export default {
       this.tlPath = path;
     },
     onResize() {
-      let el = this.$refs.timelineContainer;
+      let el = this.$refs.timeline;
       this.tlWidth = el.clientWidth;
       this.tlHeight = el.clientHeight;
       this.tlViewBox = "0 0 " + this.tlWidth + " " + this.tlHeight;
@@ -997,21 +1004,21 @@ $scrollbar-hell: 20px;
     }
   }
 
+  $timeline-scrollbar: 3px;
   .timelineContainer {
     position: absolute;
     left: $paramlist-width;
     top: $header-height;
     width: calc( 100% - #{ $paramlist-width + $modmenu-width } );
     height: calc( 100% - #{ $header-height } );
-
     overflow: hidden;
+
+    background: #222;
 
     .timeline {
       position: absolute;
       width: 100%;
-      height: 100%;
-
-      background: #222;
+      height: calc( 100% - #{ $timeline-scrollbar } );
 
       .timelineSvg {
         stroke-linecap: round;
@@ -1055,9 +1062,7 @@ $scrollbar-hell: 20px;
           pointer-events: auto;
           cursor: pointer;
 
-          &.active {
-            fill: #2af;
-          }
+          &.active { fill: #2af; }
         }
 
         .timelineTimeLine {
@@ -1081,7 +1086,31 @@ $scrollbar-hell: 20px;
         .timelineTimePoint {
           fill: #2af;
         }
+
+        .timelineScrollbar {
+          stroke: #2af;
+          stroke-width: 4;
+        }
       }
+    }
+
+    .timelineScrollbarBg {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: $timeline-scrollbar;
+
+      background: #000;
+    }
+
+    .timelineScrollbar {
+      position: absolute;
+      bottom: 0;
+      height: $timeline-scrollbar;
+
+      background: #2af;
+      border-radius: $timeline-scrollbar / 2;
     }
   }
 
