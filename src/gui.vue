@@ -104,13 +104,13 @@
     <div class="timeline"
       ref="timeline"
       @wheel.prevent="wheelTimeline"
+      @mousedown.alt.prevent="seek"
     >
       <svg class="timelineSvg"
         v-if="validSelectedParam()"
         :width="tlWidth"
         :height="tlHeight"
         :viewBox="tlViewBox"
-        @mousedown.alt.prevent="seek"
         @dblclick="addNode"
       >
         <line class="timelineGrid"
