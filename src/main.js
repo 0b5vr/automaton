@@ -147,7 +147,7 @@ let Automaton = ( _props ) => {
 
 	automaton.update = ( _time ) => {
 		if ( props.fps ) {
-			if ( typeof _time === "number" || !automaton.frame || !automaton.isPlaying ) {
+			if ( typeof _time === "number" || typeof automaton.frame !== "number" || !automaton.isPlaying ) {
 				automaton.frame = Math.floor( ( _time || automaton.time ) * props.fps );
 			}
 
@@ -168,13 +168,14 @@ let Automaton = ( _props ) => {
 
 			
 			let now = automaton.rtTime + ( date - automaton.rtDate ) * 1E-3;
-			automaton.time = now % automaton.length;
+			automaton.time = now - Math.floor( now / automaton.length ) * automaton.length;
 
 			if ( !automaton.rtPrev ) { automaton.rtPrev = date; }
 			automaton.deltaTime = ( date - automaton.rtPrev ) * 1E-3;
 			automaton.rtPrev = date;
 		} else {
-			let now = _time % automaton.length;
+			let now = _time - Math.floor( now / automaton.length ) * automaton.length;
+			now = now || automaton.time;
 			automaton.deltaTime = now - automaton.time;
 			automaton.time = now;
 		}
