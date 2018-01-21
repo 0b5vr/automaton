@@ -146,15 +146,19 @@ let Automaton = ( _props ) => {
 	};
 
 	automaton.update = ( _time ) => {
-		let now;
-
 		if ( props.fps ) {
 			if ( typeof _time === "number" || !automaton.frame || !automaton.isPlaying ) {
 				automaton.frame = Math.floor( ( _time || automaton.time ) * props.fps );
 			}
 
-			now = automaton.frame / props.fps;
-			if ( automaton.isPlaying ) { automaton.frame ++; }
+			automaton.time = automaton.frame / props.fps;
+
+			automaton.deltaTime = 1.0 / props.fps;
+			
+			if ( automaton.isPlaying ) {
+				let frames = Math.floor( automaton.length * props.fps );
+				automaton.frame = ( automaton.frame + 1 ) % frames;
+			}
 		} else if ( props.realtime ) {
 			let date = +new Date();
 			if ( typeof _time === "number" || ( !automaton.rtDate ) || !automaton.isPlaying ) {
@@ -162,13 +166,18 @@ let Automaton = ( _props ) => {
 				automaton.rtDate = date;
 			}
 
-			now = automaton.rtTime + ( date - automaton.rtDate ) * 1E-3;
-		} else {
-			now = _time;
-		}
+			
+			let now = automaton.rtTime + ( date - automaton.rtDate ) * 1E-3;
+			automaton.time = now % automaton.length;
 
-		automaton.deltaTime = now - automaton.time;
-		automaton.time = now % automaton.length;
+			if ( !automaton.rtPrev ) { automaton.rtPrev = date; }
+			automaton.deltaTime = ( date - automaton.rtPrev ) * 1E-3;
+			automaton.rtPrev = date;
+		} else {
+			let now = _time % automaton.length;
+			automaton.deltaTime = now - automaton.time;
+			automaton.time = now;
+		}
 	};
 
 	automaton.auto = ( _name ) => {
