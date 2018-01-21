@@ -3,7 +3,7 @@
   <div class="header" ref="header">
     <div class="headerText">
       <span class="title">AUTOMATON</span>
-      <span class="rev">rev. {{ automaton.rev }}</span>
+      <span class="rev">rev{{ automaton.rev }}</span>
     </div>
     <div class="headerButtonContainer">
       <img class="headerButton"
