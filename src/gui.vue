@@ -689,7 +689,7 @@ export default {
 
     seek( event ) {
       this.automaton.seek( this.x2t( event.offsetX ) );
-      this.automaton.shift( 0.0 );
+      this.automaton.pause();
 
       let moveFunc = ( event ) => {
         event.preventDefault();
@@ -700,7 +700,7 @@ export default {
       let upFunc = ( event ) => {
         event.preventDefault();
 
-        this.automaton.shift( 1.0 );
+        this.automaton.play();
         
         window.removeEventListener( "mousemove", moveFunc );
         window.removeEventListener( "mouseup", upFunc );

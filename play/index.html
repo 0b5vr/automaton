@@ -123,15 +123,10 @@ You can load this JSON by adding parameter named <code>data</code> when you inst
     <div id="editor">// Press Ctrl+S (Cmd+S on MacOS) to run script
 // The script will be run under 🔥 eval() 🔥. be calm, safety first.
 
-var time = 0.0;
-var rate = 1.0;
-var fps = 60.0;
-
 // generate automaton instance
 var automaton = Automaton( {
   gui: divAutomatonContainer,
-  onseek: ( t ) => { time = t; },
-  onshift: ( r ) => { rate = r; },
+  realtime: true,
   data: `
 {"rev":20170418,"length":5,"resolution":1000,"params":{"rectX":[{"time":0,"value":0.2,"mode":1,"params":{},"mods":[false,false,false,false]},{"time":0.9900990099009903,"value":1.2833449480575507,"mode":1,"params":{},"mods":[false,false,false,false]},{"time":2.198019801980198,"value":0.32581881492806136,"mode":4,"params":{"rate":100,"damp":1},"mods":[false,false,false,false]},{"time":3.3861386138613865,"value":0.8472125432853742,"mode":5,"params":{"gravity":10,"bounce":0.5},"mods":[false,false,false,false]},{"time":5,"value":0.2,"mode":2,"params":{},"mods":[false,{"freq":5,"amp":0.1,"phase":0},false,false]}],"rectY":[{"time":0,"value":0,"mode":1,"params":{},"mods":[false,false,false,false]},{"time":5,"value":1,"mode":1,"params":{},"mods":[false,false,false,false]}]},"gui":{"snap":{"enable":false,"bpm":"120","offset":"0"}}}
   `
@@ -148,10 +143,9 @@ var context = canvas.getContext( "2d" );
 var stop = false;
 function update() {
   if ( stop ) { return; }
-  time += 1.0 / fps * rate;
   
   // pass time to automaton and update it
-  automaton.update( time );
+  automaton.update();
 
   context.fillStyle = "#fff";
   context.fillRect( 0, 0, width, height );
