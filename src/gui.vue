@@ -1,7 +1,10 @@
 <template>
 <div class="parent" ref="parent">
   <div class="header" ref="header">
-    <div class="headerTitle">AUTOMATON</div>
+    <div class="headerText">
+      <span class="title">AUTOMATON</span>
+      <span class="rev">rev. {{ automaton.rev }}</span>
+    </div>
     <div class="headerButtonContainer">
       <img class="headerButton"
         v-for="( button, index ) in headerButtons"
@@ -838,16 +841,22 @@ $scrollbar-hell: 20px;
 
     background: #444;
 
-    .headerTitle {
+    .headerText {
       position: absolute;
       left: 6px;
       top: 0;
       height: $header-height;
 
-      font: 500 24px "Century Gothic", sans-serif;
-      letter-spacing: 8px;
+      .title {
+        font: 500 23px "Century Gothic", sans-serif;
+        letter-spacing: 8px;
+        color: #ddd;
+      }
 
-      color: #ddd;
+      .rev {
+        font-size: 10px;
+        color: #999;
+      }
     }
 
     .headerButtonContainer {
