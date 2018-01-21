@@ -12,7 +12,7 @@ let compat = ( json ) => {
   let data = JSON.parse( json );
   let rev = data.rev;
 
-  if ( rev === 20170418 ) {
+  if ( 20170418 <= rev ) {
     return data;
   } else {
     if ( data.gui ) { // The "Shift" revision of automaton, has uncompatible gui params
