@@ -12,7 +12,7 @@ if ( process.env.GUI ) {
 
 let Automaton = ( _props ) => {
 	let automaton = {};
-	automaton.rev = 20180121;
+	automaton.rev = 20180130;
 
 	let props = typeof _props === "object" ? _props : {};
 	let data = compat( props.data );

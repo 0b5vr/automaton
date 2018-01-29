@@ -1035,8 +1035,6 @@ $scrollbar-hell: 20px;
 
         font: 400 10px "Helvetica Neue", sans-serif;
 
-        pointer-events: none;
-
         .timelineGrid {
           stroke: #fff;
           stroke-width: 1;
