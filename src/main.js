@@ -10,6 +10,10 @@ if ( process.env.GUI ) {
 
 // ------
 
+let mod = ( x, d ) => x - Math.floor( x / d ) * d;
+
+// ------
+
 let Automaton = ( _props ) => {
 	let automaton = {};
 	automaton.version = process.env.VERSION;
@@ -146,38 +150,41 @@ let Automaton = ( _props ) => {
 	};
 
 	automaton.update = ( _time ) => {
-		if ( props.fps ) {
-			if ( typeof _time === "number" || typeof automaton.frame !== "number" || !automaton.isPlaying ) {
-				automaton.frame = Math.floor( ( _time || automaton.time ) * props.fps );
+		let prevTime = automaton.time; // use for calculate deltaTime
+
+		if ( props.fps ) { // frame mode
+			if ( typeof _time === "number" ) {
+				automaton.frame = Math.floor( _time * props.fps );
+			} else if ( typeof automaton.frame !== "number" ) {
+				// TODO: the code is bad tbh, I should make individual time module instead
+				automaton.frame = Math.floor( automaton.time * props.fps );
 			}
+
+			let frames = Math.floor( automaton.length * props.fps );
+			let d = automaton.isPlaying ? 1 : 0;
+			automaton.frame = ( automaton.frame + d ) % frames;
 
 			automaton.time = automaton.frame / props.fps;
 
-			automaton.deltaTime = 1.0 / props.fps;
-			
-			if ( automaton.isPlaying ) {
-				let frames = Math.floor( automaton.length * props.fps );
-				automaton.frame = ( automaton.frame + 1 ) % frames;
-			}
-		} else if ( props.realtime ) {
+		} else if ( props.realtime ) { // realtime mode
 			let date = +new Date();
 			if ( typeof _time === "number" || ( !automaton.rtDate ) || !automaton.isPlaying ) {
 				automaton.rtTime = _time || automaton.time;
 				automaton.rtDate = date;
 			}
-
 			
 			let now = automaton.rtTime + ( date - automaton.rtDate ) * 1E-3;
 			automaton.time = now - Math.floor( now / automaton.length ) * automaton.length;
 
-			if ( !automaton.rtPrev ) { automaton.rtPrev = date; }
-			automaton.deltaTime = ( date - automaton.rtPrev ) * 1E-3;
-			automaton.rtPrev = date;
-		} else {
-			let now = _time - Math.floor( now / automaton.length ) * automaton.length;
-			now = now || automaton.time;
-			automaton.deltaTime = now - automaton.time;
-			automaton.time = now;
+		} else { // manual mode
+			let now = typeof _time === "number" ? _time : automaton.time
+			automaton.time = mod( now, automaton.length );
+		}
+
+		{ // calculate deltaTime
+			let d = automaton.time - prevTime;
+			let hl = automaton.length / 2.0;
+			automaton.deltaTime = mod( d + hl, automaton.length ) - hl;
 		}
 	};
 
