@@ -1,5 +1,5 @@
 /*!
-  Automaton rev1.1.0
+  Automaton v1.1.0
   Animation tool with Timeline GUI for art coding
  
   Copyright (c) 2017-2018 FMS_Cat
