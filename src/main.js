@@ -12,7 +12,7 @@ if ( process.env.GUI ) {
 
 let Automaton = ( _props ) => {
 	let automaton = {};
-	automaton.rev = 20180130;
+	automaton.version = process.env.VERSION;
 
 	let props = typeof _props === "object" ? _props : {};
 	let data = compat( props.data );
@@ -202,7 +202,7 @@ let Automaton = ( _props ) => {
 	if ( process.env.GUI ) {
 		automaton.save = () => {
 			let obj = {
-				rev: automaton.rev,
+				v: automaton.version,
 				length: automaton.length,
 				resolution: automaton.resolution,
 			};

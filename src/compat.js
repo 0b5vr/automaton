@@ -9,20 +9,30 @@ let compat = ( json ) => {
     return defObj();
   }
 
-  let data = JSON.parse( json );
-  let rev = data.rev;
+  let data;
+  try {
+    data = JSON.parse( json );
+  } catch ( e ) {
+    console.error( "Automaton: Loaded data is invalid" );
+    return defObj();    
+  }
 
-  if ( 20170418 <= rev ) {
-    return data;
-  } else {
-    if ( data.gui ) { // The "Shift" revision of automaton, has uncompatible gui params
+  let v = parseFloat( data.v );
+
+  if ( !v && !data.rev ) {
+    if ( data.gui ) { // "Shift" version of automaton, has incompatible gui params
       delete data.gui;
-      return data;
     } else {
-      console.log( "Loaded data is invalid or not compatible with this revision" );
+      console.error( "Automaton: Loaded data is not compatible with this revision" );
       return defObj();
     }
   }
+
+  if ( data.rev ) { // fuck
+    v = 1.0;
+  }
+
+  return data;
 };
 
 export default compat;

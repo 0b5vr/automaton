@@ -11,10 +11,17 @@ const source = require( 'vinyl-source-stream' );
 const vueify = require( 'vueify' );
 const imgurify = require( 'imgurify' );
 const uglifyify = require( 'uglifyify' );
+const banner = require( 'browserify-banner' );
 
 const browserSync = require( 'browser-sync' );
 
+const packageJson = require( './package.json' );
+
 // ------
+
+let bannerSettings = {
+  file: "banner"
+};
 
 let debugName = 'automaton.js';
 let debugBro = browserify( './src/main.js', {
@@ -24,52 +31,38 @@ let debugBro = browserify( './src/main.js', {
   debug: true,
   standalone: 'Automaton',
   transform: [
-    [ envify, {
-      GUI: true
-    } ],
+    [ envify, { GUI: true, VERSION: packageJson.version } ],
     vueify,
     imgurify,
-    [ babelify, {
-      presets: 'env'
-    } ],
+    [ babelify, { presets: 'env' } ],
   ]
-} );
+} ).plugin( banner, { file: "banner" } );
 
 let minName = 'automaton.min.js';
 let minBro = browserify( './src/main.js', {
   cache: {},
   packageCache: {},
-  fullPaths: true,
   standalone: 'Automaton',
   transform: [
-    [ envify, {
-      GUI: true
-    } ],
+    [ envify, { GUI: true, VERSION: packageJson.version } ],
     vueify,
     imgurify,
-    [ babelify, {
-      presets: 'env'
-    } ],
-    uglifyify
+    [ babelify, { presets: 'env' } ],
+    [ uglifyify, { global: true } ]
   ]
-} );
+} ).plugin( banner, { file: "banner-min" } );
 
 let noguiName = 'automaton.nogui.js';
 let noguiBro = browserify( './src/main.js', {
   cache: {},
   packageCache: {},
-  fullPaths: true,
   standalone: 'Automaton',
   transform: [
-    [ envify, {
-      GUI: false
-    } ],
-    [ babelify, {
-      presets: 'env'
-    } ],
-    uglifyify
+    [ envify, { GUI: false, VERSION: packageJson.version } ],
+    [ babelify, { presets: 'env' } ],
+    [ uglifyify, { global: true } ]
   ]
-} );
+} ).plugin( banner, { file: "banner-min" } );
 
 gulp.task( 'script-build', () => {
   debugBro.bundle()
