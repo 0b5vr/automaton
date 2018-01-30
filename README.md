@@ -9,8 +9,6 @@ made for [Shift](https://GitHub.com/fms-cat/shift), my WebGL demo
 **Releases**: https://github.com/FMS-Cat/automaton/releases  
 Latest build: https://github.com/FMS-Cat/automaton/tree/master/dist
 
----
-
 ## Playground!
 
 ![](https://i.imgur.com/jNWfrqu.gif)
@@ -18,13 +16,9 @@ Latest build: https://github.com/FMS-Cat/automaton/tree/master/dist
 You can try Automaton experience here!
 [https://fms-cat.github.io/automaton](https://fms-cat.github.io/automaton)
 
----
-
 ## License
 
 MIT
-
----
 
 ## TODO
 
