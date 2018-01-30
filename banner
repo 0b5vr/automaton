@@ -1,5 +1,5 @@
 /*!
-  Automaton rev<%= pkg.version %>
+  Automaton v<%= pkg.version %>
   Animation tool with Timeline GUI for art coding
  
   Copyright (c) 2017-2018 FMS_Cat
