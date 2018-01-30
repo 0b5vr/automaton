@@ -1,6 +1,6 @@
 # Automaton
 
-![](automaton.jpg)
+![](https://i.imgur.com/QY3WSrE.jpg)
 
 Animation tool with Timeline GUI for art coding
 
@@ -13,7 +13,7 @@ Latest build: https://github.com/FMS-Cat/automaton/tree/master/dist
 
 ## Playground!
 
-![](playground.gif)
+![](https://i.imgur.com/jNWfrqu.gif)
 
 You can try Automaton experience here!
 [https://fms-cat.github.io/automaton](https://fms-cat.github.io/automaton)
