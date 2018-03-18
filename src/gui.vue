@@ -925,6 +925,8 @@ $scrollbar-hell: 20px;
           font-size: 14px;
           color: #fff;
           opacity: 0.9;
+
+          white-space: nowrap;
         }
 
         .paramValue {
