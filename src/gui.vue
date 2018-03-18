@@ -19,7 +19,7 @@
   >
     <div class="paramListInside">
       <div class="param"
-        v-for="( param, name ) in automaton.params"
+        v-for="( param, name ) in sortedParams"
         :key="name"
         :class="{ selected: name === selectedParam }"
         @click="selectedParam = name; selectedNode = 0; onResize(); updatePath();"
@@ -808,6 +808,17 @@ export default {
       this.dialog.show = false;
     }
   },
+
+  computed: {
+    sortedParams() {
+      let ret = {};
+      Object.keys( this.automaton.params ).sort().map( ( key ) => {
+        ret[ key ] = this.automaton.params[ key ];
+      } );
+      return ret;
+    }
+  },
+
   components: {
     parambox
   }
