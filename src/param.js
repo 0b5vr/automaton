@@ -21,11 +21,11 @@ let AutomatonParam = class {
 		}
 		param.nodes = [];
 
-		if ( false ) {
-		} else {
-			param.addNode( 0.0, 0.0 );
-			param.addNode( param.automaton.length, 1.0 );
-		}
+		param.addNode( 0.0, 0.0 );
+		param.addNode( param.automaton.length, 1.0 );
+
+		param.lastTime = -1.0;
+		param.lastValue = 0.0;
 
 		param.render();
 	}
@@ -285,6 +285,10 @@ let AutomatonParam = class {
 
 		let time = typeof _time === "number" ? _time : param.automaton.time;
 
+		if ( time === param.lastTime ) {
+			return param.lastValue;
+		}
+
 		if ( time <= 0.0 ) {
 			return param.values[ 0 ];
 		} else if ( param.automaton.length <= time ) {
@@ -297,7 +301,14 @@ let AutomatonParam = class {
 			let pv = param.values[ indexi ];
 			let fv = param.values[ indexi + 1 ];
 
-			return pv + ( fv - pv ) * indexf;
+			let v = pv + ( fv - pv ) * indexf;
+
+			if ( param.automaton.time === time ) {
+				param.lastTime = time;
+				param.lastValue = v;
+			}
+
+			return v;
 		}
 	}
 };
