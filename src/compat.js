@@ -14,7 +14,7 @@ let compat = ( json ) => {
     data = JSON.parse( json );
   } catch ( e ) {
     console.error( "Automaton: Loaded data is invalid" );
-    return defObj();    
+    return defObj();
   }
 
   let v = parseFloat( data.v );
