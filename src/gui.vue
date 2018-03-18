@@ -353,6 +353,18 @@ let fuckNaN = ( v, def ) => {
   return isNaN( n ) ? d : n;
 };
 
+let mouseEvents = ( move, up ) => {
+  let u = ( event ) => {
+    if ( typeof up === "function" ) { up( event ); } 
+
+    window.removeEventListener( "mousemove", move );
+    window.removeEventListener( "mouseup", u );
+  };
+
+  window.addEventListener( "mousemove", move );
+  window.addEventListener( "mouseup", u );
+};
+
 let images = genImages();
 
 let modeButtons = new Array( Interpolator.MODES ).fill( 0 ).map( ( _, i ) => {
@@ -691,40 +703,33 @@ export default {
       this.automaton.seek( this.x2t( event.offsetX ) );
       this.automaton.pause();
 
-      let moveFunc = ( event ) => {
-        event.preventDefault();
-
+      mouseEvents( ( event ) => {
         this.automaton.seek( this.x2t( event.offsetX ) );
-      };
-
-      let upFunc = ( event ) => {
-        event.preventDefault();
-
+      }, ( event ) => {
         this.automaton.play();
-        
-        window.removeEventListener( "mousemove", moveFunc );
-        window.removeEventListener( "mouseup", upFunc );
-      };
-
-      window.addEventListener( "mousemove", moveFunc );
-      window.addEventListener( "mouseup", upFunc );
+      } );
     },
 
     addNode( event ) {
       if ( !this.validSelectedParam() ) { return; }
+
       let t = this.x2t( event.offsetX );
       let v = this.y2v( event.offsetY );
       let param = this.automaton.params[ this.selectedParam ];
       let node = param.addNode( t, v );
       this.selectNode( param.nodes.indexOf( node ) );
       this.updatePath();
+
+      this.automaton.his();
     },
+
     selectNode( index ) {
       if ( !this.validSelectedParam() ) { return; }
       if ( this.nodeInRange( index ) ) {
         this.selectedNode = index;
       }
     },
+    
     grabNode( index, event ) {
       this.selectNode( index );
 
@@ -734,9 +739,7 @@ export default {
       let x0 = event.clientX;
       let y0 = event.clientY;
 
-      let moveFunc = ( event ) => {
-        event.preventDefault();
-
+      mouseEvents( ( event ) => {
         let x = event.clientX - x0 + xr;
         let y = event.clientY - y0 + yr;
         let t = this.x2t( x );
@@ -751,8 +754,7 @@ export default {
               break;
             }
           }
-				}
-
+        }
 
         if ( !event.ctrlKey && !event.metaKey ) {
           this.automaton.params[ this.selectedParam ].setTime( this.selectedNode, t );
@@ -761,17 +763,7 @@ export default {
           this.automaton.params[ this.selectedParam ].setValue( this.selectedNode, v );
         }
         this.updatePath();
-      };
-
-      let upFunc = ( event ) => {
-        event.preventDefault();
-        
-        window.removeEventListener( "mousemove", moveFunc );
-        window.removeEventListener( "mouseup", upFunc );
-      };
-
-      window.addEventListener( "mousemove", moveFunc );
-      window.addEventListener( "mouseup", upFunc );
+      } );
     },
     removeNode( index ) {
       if ( !this.validSelectedParam() ) { return; }
