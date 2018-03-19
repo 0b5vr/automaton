@@ -146,6 +146,17 @@ let AutomatonParam = class {
     return param.nodes[ _index ].value;
   }
 
+  copyProps( _index, _node ) {
+    if ( _index < 0 || this.nodes.length <= _index ) { return; }
+
+    let node = this.nodes[ _index ];
+    node.mode = _node.mode;
+    node.params = cloneObj( _node.params );
+    node.mods = _node.mods.map( _obj => cloneObj( _obj ) );
+
+    this.render();
+  }
+
   setMode( _index, _mode ) {
     let param = this;
 

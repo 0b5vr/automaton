@@ -94,6 +94,26 @@ let AutomatonWithGUI = class extends Automaton {
   }
 
   /**
+   * Undo the operation based on history
+   * @returns {any} Result of _undo
+   */
+  undo() {
+    if ( this.historyIndex <= 0 ) { return; }
+    this.historyIndex --;
+    return this.history[ this.historyIndex ].undo();
+  }
+
+  /**
+   * Redo the operation based on history
+   * @returns {any} Result of _do
+   */
+  redo() {
+    if ( this.history.length <= this.historyIndex ) { return; }
+    this.historyIndex ++;
+    return this.history[ this.historyIndex - 1 ].do();
+  }
+
+  /**
    * Drop all the history. YABAI.
    */
   dropHistory() {

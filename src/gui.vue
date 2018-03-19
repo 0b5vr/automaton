@@ -402,14 +402,14 @@ export default {
           name: "Undo",
           src: images.undo,
           func: () => {
-            alert( "🙀 Not implemented 🙀" );
+            this.automaton.undo();
           }
         },
         {
           name: "Redo",
           src: images.redo,
           func: () => {
-            alert( "🙀 Not implemented 🙀" );
+            this.automaton.redo();
           }
         },
         {
@@ -715,10 +715,20 @@ export default {
 
       let t = this.x2t( event.offsetX );
       let v = this.y2v( event.offsetY );
-      let param = this.automaton.params[ this.selectedParam ];
-      let node = param.addNode( t, v );
-      this.selectNode( param.nodes.indexOf( node ) );
-      this.updatePath();
+      let name = this.selectedParam;
+      let param = this.automaton.params[ name ];
+      let index;
+
+      this.automaton.operate( name + ": Add node", () => {
+        let node = param.addNode( t, v );
+        index = param.nodes.indexOf( node );
+        this.updatePath();
+      }, () => {
+        param.removeNode( index );
+        this.updatePath();
+      } );
+      
+      this.selectNode( index );
     },
 
     selectNode( index ) {
@@ -732,16 +742,26 @@ export default {
       this.selectNode( index );
 
       if ( !( this.validSelectedParam() && this.validSelectedNode() ) ) { return; }
-      let xr = this.t2x( this.automaton.params[ this.selectedParam ].nodes[ this.selectedNode ].time );
-      let yr = this.v2y( this.automaton.params[ this.selectedParam ].nodes[ this.selectedNode ].value );
+
+      let name = this.selectedParam;
+      let param = this.automaton.params[ name ];
+      let node = this.selectedNode;
+      let t0 = param.nodes[ node ].time;
+      let v0 = param.nodes[ node ].value;
+
+      let xr = this.t2x( t0 );
+      let yr = this.v2y( v0 );
       let x0 = event.clientX;
       let y0 = event.clientY;
+
+      let t = t0;
+      let v = v0;
 
       mouseEvents( ( event ) => {
         let x = event.clientX - x0 + xr;
         let y = event.clientY - y0 + yr;
-        let t = this.x2t( x );
-        let v = this.y2v( y );
+        t = this.x2t( x );
+        v = this.y2v( y );
 
         if ( this.automaton.data.gui.snap.enable && !event.altKey ) {
           for ( let i = 0; i < this.snapLines.length; i ++ ) {
@@ -755,19 +775,44 @@ export default {
         }
 
         if ( !event.ctrlKey && !event.metaKey ) {
-          this.automaton.params[ this.selectedParam ].setTime( this.selectedNode, t );
+          param.setTime( node, t );
         }
         if ( !event.shiftKey ) {
-          this.automaton.params[ this.selectedParam ].setValue( this.selectedNode, v );
+          param.setValue( node, v );
         }
         this.updatePath();
+      }, () => {
+        if ( t0 === t && v0 === v ) { return; }
+
+        this.automaton.operate( name + ": Move node", () => {
+          param.setTime( node, t );
+          param.setValue( node, v );
+          this.updatePath();
+        }, () => {
+          param.setTime( node, t0 );
+          param.setValue( node, v0 );
+          this.updatePath();
+        } );
       } );
     },
+
     removeNode( index ) {
       if ( !this.validSelectedParam() ) { return; }
-      let param = this.automaton.params[ this.selectedParam ];
-      param.removeNode( index );
-      this.updatePath();
+
+      let name = this.selectedParam;
+      let param = this.automaton.params[ name ];
+      let node = param.nodes[ index ];
+      let t = node.time;
+      let v = node.value;
+
+      this.automaton.operate( name + ": Remove node", () => {
+        param.removeNode( index );
+        this.updatePath();
+      }, () => {
+        param.addNode( t, v );
+        param.copyProps( index, node );
+        this.updatePath();
+      } );
     },
 
     dialogSnapOK() {
