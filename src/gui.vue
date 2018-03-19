@@ -150,7 +150,7 @@
         >{{ line.val.toFixed( 3 ) }}</text>
 
         <template
-          v-if="automaton.guiParams.snap.enable"
+          v-if="automaton.data.gui.snap.enable"
         >
           <line class="timelineSnap"
             v-for="( line, index ) in snapLines"
@@ -173,29 +173,29 @@
         />
 
         <line class="timelineTimeLine"
-          :x1="t2x( automaton.time )"
+          :x1="t2x( automaton.clock.time )"
           :y1="0"
-          :x2="t2x( automaton.time )"
+          :x2="t2x( automaton.clock.time )"
           :y2="tlHeight"
         />
         <line class="timelineValueLine"
           :x1="0"
-          :y1="v2y( automaton.params[ selectedParam ].getValue( automaton.time ) )"
+          :y1="v2y( automaton.params[ selectedParam ].getValue( automaton.clock.time ) )"
           :x2="tlWidth"
-          :y2="v2y( automaton.params[ selectedParam ].getValue( automaton.time ) )"
+          :y2="v2y( automaton.params[ selectedParam ].getValue( automaton.clock.time ) )"
         />
         <text class="timelineTimeText"
-          :x="t2x( automaton.time ) + 2"
+          :x="t2x( automaton.clock.time ) + 2"
           :y="tlHeight - 2"
-        >{{ automaton.time.toFixed( 3 ) }}</text>
+        >{{ automaton.clock.time.toFixed( 3 ) }}</text>
         <text class="timelineValueText"
           x="2"
-          :y="v2y( automaton.params[ selectedParam ].getValue( automaton.time ) ) - 2"
-        >{{ automaton.params[ selectedParam ].getValue( automaton.time ).toFixed( 3 ) }}</text>
+          :y="v2y( automaton.params[ selectedParam ].getValue( automaton.clock.time ) ) - 2"
+        >{{ automaton.params[ selectedParam ].getValue( automaton.clock.time ).toFixed( 3 ) }}</text>
         <circle class="timelineTimePoint"
           r="5"
-          :cx="t2x( automaton.time )"
-          :cy="v2y( automaton.params[ selectedParam ].getValue( automaton.time ) )"
+          :cx="t2x( automaton.clock.time )"
+          :cy="v2y( automaton.params[ selectedParam ].getValue( automaton.clock.time ) )"
         />
         
         <g class="timelineNode"
@@ -228,8 +228,8 @@
     <div class="timelineScrollbarBg"></div>
     <div class="timelineScrollbar"
       :style="{
-        left: tlTimeMin / automaton.length * tlWidth + 'px',
-        width: ( tlTimeMax - tlTimeMin ) / automaton.length * tlWidth + 'px'
+        left: tlTimeMin / automaton.data.length * tlWidth + 'px',
+        width: ( tlTimeMax - tlTimeMin ) / automaton.data.length * tlWidth + 'px'
       }"
     ></div>
   </div>
@@ -421,9 +421,9 @@ export default {
               mode: "snap"
             };
             this.$nextTick( () => {
-              this.$refs.dialogSnapEnable.checked = this.automaton.guiParams.snap.enable;
-              this.$refs.dialogSnapBPM.value = this.automaton.guiParams.snap.bpm;
-              this.$refs.dialogSnapOffset.value = this.automaton.guiParams.snap.offset;
+              this.$refs.dialogSnapEnable.checked = this.automaton.data.gui.snap.enable;
+              this.$refs.dialogSnapBPM.value = this.automaton.data.gui.snap.bpm;
+              this.$refs.dialogSnapOffset.value = this.automaton.data.gui.snap.offset;
             } );
           }
         },
@@ -436,8 +436,8 @@ export default {
               mode: "config"
             };
             this.$nextTick( () => {
-              this.$refs.dialogConfigLength.value = this.automaton.length;
-              this.$refs.dialogConfigResolution.value = this.automaton.resolution;
+              this.$refs.dialogConfigLength.value = this.automaton.data.length;
+              this.$refs.dialogConfigResolution.value = this.automaton.data.resolution;
             } );
           }
         },
@@ -508,7 +508,7 @@ export default {
       this.tlHeight = el.clientHeight;
       this.tlViewBox = "0 0 " + this.tlWidth + " " + this.tlHeight;
 
-      this.tlTimeMax = Math.min( this.tlTimeMax, this.automaton.length );
+      this.tlTimeMax = Math.min( this.tlTimeMax, this.automaton.data.length );
 
       this.$nextTick( () => {
         this.updateGrid();
@@ -541,14 +541,14 @@ export default {
         if (this.tlTimeMin < 0.0 ) {
           this.tlTimeMax = Math.max( this.tlTimeMax - this.tlTimeMin, this.tlTimeMax );
         }
-        if ( this.automaton.length < this.tlTimeMax ) {
-          this.tlTimeMin += this.automaton.length - this.tlTimeMax;
+        if ( this.automaton.data.length < this.tlTimeMax ) {
+          this.tlTimeMin += this.automaton.data.length - this.tlTimeMax;
         }
         if ( this.tlTimeMin < 0.0 ) {
           this.tlTimeMin = 0.0;
         }
-        if ( this.automaton.length < this.tlTimeMax ) {
-          this.tlTimeMax = this.automaton.length;
+        if ( this.automaton.data.length < this.tlTimeMax ) {
+          this.tlTimeMax = this.automaton.data.length;
         }
       } else if ( event.altKey ) {
         let cursorV = this.y2v( event.offsetY );
@@ -564,14 +564,14 @@ export default {
         if ( this.tlTimeMin < 0.0 ) {
           this.tlTimeMax += 0.0 - this.tlTimeMin;
         }
-        if ( this.automaton.length < this.tlTimeMax ) {
-          this.tlTimeMin += this.automaton.length - this.tlTimeMax;
+        if ( this.automaton.data.length < this.tlTimeMax ) {
+          this.tlTimeMin += this.automaton.data.length - this.tlTimeMax;
         }
         if ( this.tlTimeMin < 0.0 ) {
           this.tlTimeMin = 0.0;
         }
-        if ( this.automaton.length < this.tlTimeMax ) {
-          this.tlTimeMax = this.automaton.length;
+        if ( this.automaton.data.length < this.tlTimeMax ) {
+          this.tlTimeMax = this.automaton.data.length;
         }
 
         this.tlValueMin -= event.deltaY * deltaV / this.tlHeight;
@@ -665,16 +665,16 @@ export default {
       }
 
       {
-        let deltaBeat = 60.0 / this.automaton.guiParams.snap.bpm;
+        let deltaBeat = 60.0 / this.automaton.data.gui.snap.bpm;
         let delta = ( this.tlTimeMax - this.tlTimeMin );
         let logDelta = Math.log( delta / deltaBeat ) / Math.log( 4.0 );
         let scale = Math.pow( 4.0, Math.floor( logDelta - 0.5 ) ) * deltaBeat;
-        let begin = Math.floor( ( this.tlTimeMin ) / scale ) * scale + ( this.automaton.guiParams.snap.offset % scale );
+        let begin = Math.floor( ( this.tlTimeMin ) / scale ) * scale + ( this.automaton.data.gui.snap.offset % scale );
 
         this.snapLines = [];
         for ( let v = begin; v < this.tlTimeMax; v += scale ) {
           this.snapLines.push( {
-            beat: ( ( v - this.automaton.guiParams.snap.offset ) / deltaBeat ),
+            beat: ( ( v - this.automaton.data.gui.snap.offset ) / deltaBeat ),
             time: v,
             pos: this.t2x( v )
           } );
@@ -719,8 +719,6 @@ export default {
       let node = param.addNode( t, v );
       this.selectNode( param.nodes.indexOf( node ) );
       this.updatePath();
-
-      this.automaton.his();
     },
 
     selectNode( index ) {
@@ -745,7 +743,7 @@ export default {
         let t = this.x2t( x );
         let v = this.y2v( y );
 
-        if ( this.automaton.guiParams.snap.enable && !event.altKey ) {
+        if ( this.automaton.data.gui.snap.enable && !event.altKey ) {
           for ( let i = 0; i < this.snapLines.length; i ++ ) {
             let line = this.snapLines[ i ];
             if ( Math.abs( line.pos - x ) < 10 ) {
@@ -773,9 +771,9 @@ export default {
     },
 
     dialogSnapOK() {
-      this.automaton.guiParams.snap.enable = this.$refs.dialogSnapEnable.checked;
-      this.automaton.guiParams.snap.bpm = this.$refs.dialogSnapBPM.value;
-      this.automaton.guiParams.snap.offset = this.$refs.dialogSnapOffset.value;
+      this.automaton.data.gui.snap.enable = this.$refs.dialogSnapEnable.checked;
+      this.automaton.data.gui.snap.bpm = this.$refs.dialogSnapBPM.value;
+      this.automaton.data.gui.snap.offset = this.$refs.dialogSnapOffset.value;
 
       this.updateGrid();
 
@@ -783,16 +781,16 @@ export default {
     },
     dialogConfigLengthTest() {
       if ( !this.$refs.dialogConfigLength ) { return false; }
-      let l = fuckNaN( this.$refs.dialogConfigLength.value, this.automaton.length );
-      this.dialogConfigLengthShortened = l < this.automaton.length;
+      let l = fuckNaN( this.$refs.dialogConfigLength.value, this.automaton.data.length );
+      this.dialogConfigLengthShortened = l < this.automaton.data.length;
     },
     dialogConfigOK() {
-      let l = fuckNaN( this.$refs.dialogConfigLength.value, this.automaton.length );
+      let l = fuckNaN( this.$refs.dialogConfigLength.value, this.automaton.data.length );
       this.automaton.setLength( l );
-      this.tlTimeMax = Math.min( this.tlTimeMax, this.automaton.length );
-      console.log( this.automaton.length );
+      this.tlTimeMax = Math.min( this.tlTimeMax, this.automaton.data.length );
+      console.log( this.automaton.data.length );
 
-      this.automaton.resolution = fuckNaN( this.$refs.dialogConfigResolution.value, this.automaton.resolution );
+      this.automaton.data.resolution = fuckNaN( this.$refs.dialogConfigResolution.value, this.automaton.data.resolution );
 
       this.automaton.renderAll();
       this.updatePath();

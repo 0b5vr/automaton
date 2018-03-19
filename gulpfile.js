@@ -24,14 +24,14 @@ let bannerSettings = {
 };
 
 let debugName = 'automaton.js';
-let debugBro = browserify( './src/main.js', {
+let debugBro = browserify( './src/main-gui.js', {
   cache: {},
   packageCache: {},
   fullPaths: true,
   debug: true,
   standalone: 'Automaton',
   transform: [
-    [ envify, { GUI: true, VERSION: packageJson.version } ],
+    [ envify, { VERSION: packageJson.version } ],
     vueify,
     imgurify,
     [ babelify, { presets: 'env' } ],
@@ -39,12 +39,12 @@ let debugBro = browserify( './src/main.js', {
 } ).plugin( banner, { file: "banner" } );
 
 let minName = 'automaton.min.js';
-let minBro = browserify( './src/main.js', {
+let minBro = browserify( './src/main-gui.js', {
   cache: {},
   packageCache: {},
   standalone: 'Automaton',
   transform: [
-    [ envify, { GUI: true, VERSION: packageJson.version } ],
+    [ envify, { VERSION: packageJson.version } ],
     vueify,
     imgurify,
     [ babelify, { presets: 'env' } ],
@@ -58,7 +58,7 @@ let noguiBro = browserify( './src/main.js', {
   packageCache: {},
   standalone: 'Automaton',
   transform: [
-    [ envify, { GUI: false, VERSION: packageJson.version } ],
+    [ envify, { VERSION: packageJson.version } ],
     [ babelify, { presets: 'env' } ],
     [ uglifyify, { global: true } ]
   ]

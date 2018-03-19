@@ -1,12 +1,22 @@
-let defObj = () => ( {
+let defaultData = {
+  v: process.env.VERSION,
+
   length: 1.0,
   resolution: 1000.0,
-  params: []
-} );
+  params: [],
+
+  gui: {
+    snap: {
+      enable: false,
+      bpm: 120,
+      offset: 0
+    }
+  }
+};
 
 let compat = ( json ) => {
   if ( !json ) {
-    return defObj();
+    return Object.assign( {}, defaultData );
   }
 
   let data;
@@ -14,7 +24,7 @@ let compat = ( json ) => {
     data = JSON.parse( json );
   } catch ( e ) {
     console.error( "Automaton: Loaded data is invalid" );
-    return defObj();
+    return Object.assign( {}, defaultData );
   }
 
   let v = parseFloat( data.v );
@@ -22,16 +32,19 @@ let compat = ( json ) => {
   if ( !v && !data.rev ) {
     if ( data.gui ) { // "Shift" version of automaton, has incompatible gui params
       delete data.gui;
+      data.gui = Object.assign( {}, defaultData.gui );
     } else {
       console.error( "Automaton: Loaded data is not compatible with this revision" );
-      return defObj();
+      return Object.assign( {}, defaultData );
     }
   }
 
   if ( data.rev ) { // fuck
     v = 1.0;
+    delete data.rev;
   }
 
+  data.v = process.env.VERSION;
   return data;
 };
 

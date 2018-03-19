@@ -1,238 +1,112 @@
-import compat from "./compat";
+import AutomatonClock from "./clock";
+import AutomatonClockFrame from "./clock-frame";
+import AutomatonClockRealtime from "./clock-realtime";
 
 import AutomatonParam from "./param";
 
-let Vue, GUI;
-if ( process.env.GUI ) { 
-  Vue = require( "vue" );
-  GUI = require( "./gui.vue" );
-}
-
 // ------
 
-let mod = ( x, d ) => x - Math.floor( x / d ) * d;
-
-// ------
-
-let Automaton = ( _props ) => {
-  let automaton = {};
-  automaton.version = process.env.VERSION;
-
-  let props = typeof _props === "object" ? _props : {};
-  let data = compat( props.data );
-
-  automaton.time = 0.0;
-  automaton.deltaTime = 0.0;
-  automaton.isPlaying = true;
-  automaton.length = data.length;
-  automaton.resolution = data.resolution;
-
-  // ------
-
-  automaton.setLength = ( _len ) => {
-    if ( isNaN( _len ) ) { return; }
-
-    for ( let paramName in automaton.params ) {
-      let param = automaton.params[ paramName ];
-
-      for ( let iNode = param.nodes.length - 1; 0 < iNode; iNode -- ) {
-        let node = param.nodes[ iNode ];
-        if ( _len < node.time ) {
-          param.nodes.splice( iNode, 1 );
-        }
-      }
-
-      let lastNode = param.nodes[ param.nodes.length - 1 ];
-      if ( lastNode.time !== _len ) {
-        param.addNode( _len, 0.0 );
-      }
-    }
-
-    automaton.length = _len;
-  };
-
-  // ------
-
-  automaton.params = {};
-  automaton.createParam = ( _name ) => {
-    let param = new AutomatonParam( automaton );
-    if ( process.env.GUI ) { Vue.set( automaton.params, _name, param ); }
-    else { automaton.params[ _name ] = param; }
-
-    return param;
-  };
-
-  automaton.deleteParam = ( _name ) => {
-    if ( process.env.GUI ) { Vue.delete( automaton.params, _name ); }
-    else { delete automaton.params[ _name ]; }
-  };
-
-  automaton.getParamNames = () => {
-    let arr = [];
-    for ( let name in automaton.params ) { arr.push( name ); }
-    arr = arr.sort();
-    return arr;
-  };
-
-  automaton.countParams = () => {
-    let sum = 0;
-    for ( let name in automaton.params ) { sum ++; }
-    return sum;
-  };
-
-  // ------
-
-  for ( let name in data.params ) {
-    let param = automaton.createParam( name );
-    param.load( data.params[ name ] );
+/**
+ * IT'S AUTOMATON!
+ * @param {object} _props
+ * @param {boolean} [_props.loop] Whether let the time loop or not
+ * @param {number} [_props.fps] If this is set, the clock will become frame mode
+ * @param {boolean} [_props.realtime] If this is true, the clock will become realtime mode
+ * @param {function} [_props.onSeek] Will call when the method seek() is called
+ * @param {function} [_props.onPlay] Will call when the method play() is called
+ * @param {function} [_props.onPause] Will call when the method pause() is called
+ * @param {string} _props.data Data of the automaton in JSON format. Required in noGUI mode
+ */
+let Automaton = class {
+  constructor( _props ) {
+    this.version = process.env.VERSION;
+    this.loadProps( _props );
+    this.auto = ( _name ) => this.__auto( _name );
   }
 
-  automaton.setLength( automaton.length );
+  /**
+   * Load props object.
+   * @param {object} _props Props object of constructor
+   */
+  loadProps( _props ) {
+    this.props = _props;
+    this.data = JSON.parse( this.props.data ); // without compatibility check
 
-  // ------
+    this.clock = (
+      this.props.fps ? new AutomatonClockFrame( this, fps ) :
+      this.props.realtime ? new AutomatonClockRealtime( this ) :
+      new AutomatonClock( this )
+    );
 
-  automaton.seek = ( _time ) => {
-    let time = _time - Math.floor( _time / automaton.length ) * automaton.length;
-    automaton.update( time );
-
-    if ( typeof props.onseek === "function" ) {
-      props.onseek( time );
-    }
-  };
-
-  automaton.play = () => {
-    automaton.isPlaying = true;
-    if ( typeof props.onplay === "function" ) {
-      props.onplay();
-    }
-  };
-
-  automaton.pause = () => {
-    automaton.isPlaying = false;
-    if ( typeof props.onpause === "function" ) {
-      props.onpause();
-    }
-  };
-
-  // ------
-
-  if ( process.env.GUI ) {
-    if ( props.gui ) {
-      let el = document.createElement( "div" );
-      props.gui.appendChild( el );
-      automaton.vue = new Vue( {
-        el: el,
-        data: {
-          automaton: automaton
-        },
-        render: function( createElement ) {
-          return createElement(
-            GUI,
-            { props: { automaton: this.automaton } }
-          );
-        }
-      } );
-
-      automaton.guiParams = typeof data.gui === "object" ? data.gui : {
-        snap: {
-          enable: false,
-          bpm: 120,
-          offset: 0
-        }
-      };
+    // load params from data
+    this.params = {};
+    for ( let name in this.data.params ) {
+      let param = new AutomatonParam( this );
+      param.load( this.data.params[ name ] );
+      this.params[ name ] = param;
     }
   }
 
   // ------
 
-  automaton.renderAll = () => {
-    for ( let name in automaton.params ) {
-      automaton.params[ name ].render();
-    }
-  };
-
-  automaton.update = ( _time ) => {
-    let prevTime = automaton.time; // use for calculate deltaTime
-
-    if ( props.fps ) { // frame mode
-      if ( typeof _time === "number" ) {
-        automaton.frame = Math.floor( _time * props.fps );
-      } else if ( typeof automaton.frame !== "number" ) {
-        // TODO: the code is bad tbh, I should make individual time module instead
-        automaton.frame = Math.floor( automaton.time * props.fps );
-      }
-
-      let frames = Math.floor( automaton.length * props.fps );
-      let d = automaton.isPlaying ? 1 : 0;
-      automaton.frame = ( automaton.frame + d ) % frames;
-
-      automaton.time = automaton.frame / props.fps;
-
-    } else if ( props.realtime ) { // realtime mode
-      let date = +new Date();
-      if ( typeof _time === "number" || ( !automaton.rtDate ) || !automaton.isPlaying ) {
-        automaton.rtTime = _time || automaton.time;
-        automaton.rtDate = date;
-      }
-      
-      let now = automaton.rtTime + ( date - automaton.rtDate ) * 1E-3;
-      automaton.time = now - Math.floor( now / automaton.length ) * automaton.length;
-
-    } else { // manual mode
-      let now = typeof _time === "number" ? _time : automaton.time
-      automaton.time = mod( now, automaton.length );
-    }
-
-    { // calculate deltaTime
-      let d = automaton.time - prevTime;
-      let hl = automaton.length / 2.0;
-      automaton.deltaTime = mod( d + hl, automaton.length ) - hl;
-    }
-  };
-
-  automaton.auto = ( _name ) => {
-    let param = automaton.params[ _name ];
-    if ( !param ) {
-      param = automaton.createParam( _name );
-    }
-    param.used = true;
-
-    return param.getValue();
-  };
-
-  // ------
-
-  automaton.bye = () => {
-    automaton = null;
-  };
-
-  // ------
-
-  if ( process.env.GUI ) {
-    automaton.save = () => {
-      let obj = {
-        v: automaton.version,
-        length: automaton.length,
-        resolution: automaton.resolution,
-      };
-
-      obj.params = {};
-      for ( let name in automaton.params ) {
-        let param = automaton.params[ name ];
-        obj.params[ name ] = Object.assign( {}, param.nodes );
-      }
-
-      if ( automaton.guiParams ) {
-        obj.gui = Object.assign( {}, automaton.guiParams );
-      }
-
-      return JSON.parse( JSON.stringify( obj ) );
-    };
+  /**
+   * Seek the timeline.
+   * @param {number} _time Time
+   */
+  seek( _time ) {
+    this.clock.setTime( _time );
+    if ( typeof it.props.onSeek === "function" ) { this.props.onSeek( time ); }
   }
 
-  // -----
+  /**
+   * Play the timeline.
+   */
+  play() {
+    this.clock.play();
+    if ( typeof this.props.onPlay === "function" ) { this.props.onPlay(); }
+  }
 
-  return automaton;
+  /**
+   * Pause the timeline.
+   */
+  pause() {
+    this.clock.pause();
+    if ( typeof this.props.onPause === "function" ) { this.props.onPause(); }
+  }
+
+  // ------
+
+  /**
+   * Update the entire automaton.
+   * @param {number} [_time] Current time, Required if the clock mode is manual
+   */
+  update( _time ) {
+    // update the clock
+    this.clock.update( _time );
+
+    // loop the time
+    if ( this.props.loop && this.data.length < this.clock.time ) {
+      this.clock.setTime( this.clock.time - Math.floor( this.clock.time / this.data.length ) * this.data.length );
+    }
+
+    // set currentValue to each params
+    for ( let name in this.params ) {
+      this.params[ name ].currentValue = this.params[ name ].getValue( this.clock.time );
+    }
+  }
+
+  // ------
+  
+  /**
+   * Assigned to Automaton.auto at constructor.
+   * Same as param.getValue() in noGUI mode.
+   * @param {string} _name name of the param
+   * @returns {number} Current value of the param
+   */
+  __auto( _name ) {
+    return this.params[ _name ].currentValue;
+  }
 };
 
 module.exports = Automaton;
+Automaton.default = Automaton;
