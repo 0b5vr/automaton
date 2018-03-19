@@ -26,7 +26,6 @@ import GUI from "./gui.vue";
 let AutomatonWithGUI = class extends Automaton {
   constructor( _props ) {
     super( _props || {} );
-    console.log(1);
 
     this.history = [];
     this.historyIndex = 0;
