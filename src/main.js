@@ -152,6 +152,3 @@ let Automaton = class {
 
 module.exports = Automaton;
 Automaton.default = Automaton;
-
-automaton = new Automaton();
-automaton.progr
