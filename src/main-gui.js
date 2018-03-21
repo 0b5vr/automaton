@@ -83,6 +83,16 @@ let AutomatonWithGUI = class extends Automaton {
   }
 
   // ------
+
+  /**
+   * Toggle play / pause.
+   */
+  togglePlay() {
+    if ( this.isPlaying ) { this.pause(); }
+    else { this.play(); }
+  }
+
+  // ------
   
   /**
    * Operate something and put the operation into the history stack.

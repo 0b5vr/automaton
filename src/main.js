@@ -76,6 +76,13 @@ let Automaton = class {
   get deltaTime() { return this.clock.deltaTime; }
 
   /**
+   * Whether it's playing or not. Same as `automaton.clock.isPlaying`.
+   * @type {boolean}
+   * @readonly
+   */
+  get isPlaying() { return this.clock.isPlaying; }
+
+  /**
    * Current progress by whole length. Might NOT be [0-1] unless `_props.loop` (see constructor) is true.
    * @type {number}
    * @readonly
