@@ -28,7 +28,7 @@
         <div class="paramValue"
           v-if="param.used"
         >
-          {{ param.getValue().toFixed( 3 ) }}
+          {{ param.currentValue.toFixed( 3 ) }}
         </div>
         <img class="paramWarning"
           v-if="!param.used"
@@ -180,9 +180,9 @@
         />
         <line class="timelineValueLine"
           :x1="0"
-          :y1="v2y( automaton.params[ selectedParam ].getValue( automaton.clock.time ) )"
+          :y1="v2y( automaton.params[ selectedParam ].currentValue )"
           :x2="tlWidth"
-          :y2="v2y( automaton.params[ selectedParam ].getValue( automaton.clock.time ) )"
+          :y2="v2y( automaton.params[ selectedParam ].currentValue )"
         />
         <text class="timelineTimeText"
           :x="t2x( automaton.clock.time ) + 2"
@@ -190,12 +190,12 @@
         >{{ automaton.clock.time.toFixed( 3 ) }}</text>
         <text class="timelineValueText"
           x="2"
-          :y="v2y( automaton.params[ selectedParam ].getValue( automaton.clock.time ) ) - 2"
-        >{{ automaton.params[ selectedParam ].getValue( automaton.clock.time ).toFixed( 3 ) }}</text>
+          :y="v2y( automaton.params[ selectedParam ].currentValue ) - 2"
+        >{{ automaton.params[ selectedParam ].currentValue.toFixed( 3 ) }}</text>
         <circle class="timelineTimePoint"
           r="5"
           :cx="t2x( automaton.clock.time )"
-          :cy="v2y( automaton.params[ selectedParam ].getValue( automaton.clock.time ) )"
+          :cy="v2y( automaton.params[ selectedParam ].currentValue )"
         />
         
         <g class="timelineNode"

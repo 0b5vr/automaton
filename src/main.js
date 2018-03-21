@@ -55,7 +55,7 @@ let Automaton = class {
    */
   seek( _time ) {
     this.clock.setTime( _time );
-    if ( typeof it.props.onSeek === "function" ) { this.props.onSeek( time ); }
+    if ( typeof this.props.onSeek === "function" ) { this.props.onSeek( time ); }
   }
 
   /**
