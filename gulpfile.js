@@ -2,6 +2,7 @@ const fs = require( 'fs' );
 
 const gulp = require( 'gulp' );
 const rename = require( 'gulp-rename' );
+const jsdoc = require( 'gulp-jsdoc3' );
 
 const browserify = require( 'browserify' );
 const watchify = require( 'watchify' );
@@ -121,6 +122,14 @@ gulp.task( 'browser-watch', () => {
 
 // ------
 
+let jsdocConfig = require( './jsdoc.json' );
+gulp.task( 'jsdoc-build', () => {
+  gulp.src( [ 'README.md', './src/**/*.js' ], { read: false } )
+    .pipe( jsdoc( jsdocConfig ) );
+} );
+
+// ------
+
 let recursiveUnlink = ( _path ) => {
   if ( fs.existsSync( _path ) ) {
     fs.readdirSync( _path ).map( ( _file ) => {
@@ -146,7 +155,8 @@ gulp.task( 'watch', [
 ] );
 
 gulp.task( 'build', [
-  'script-build'
+  'script-build',
+  'jsdoc-build'
 ] );
 
 gulp.task( 'browser', [
