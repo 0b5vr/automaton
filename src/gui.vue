@@ -535,8 +535,11 @@ export default {
       if ( event.shiftKey ) {
         let cursorT = this.x2t( event.offsetX );
 
-        this.tlTimeMin -= ( cursorT - this.tlTimeMin ) * 0.005 * event.deltaY;
-        this.tlTimeMax += ( this.tlTimeMax - cursorT ) * 0.005 * event.deltaY;
+        let d = this.tlTimeMax - this.tlTimeMin;
+        let min = 0.02;
+        let z = Math.max( 0.005 * event.deltaY, min / d - 1.0 );
+        this.tlTimeMin -= ( cursorT - this.tlTimeMin ) * z;
+        this.tlTimeMax += ( this.tlTimeMax - cursorT ) * z;
 
         if (this.tlTimeMin < 0.0 ) {
           this.tlTimeMax = Math.max( this.tlTimeMax - this.tlTimeMin, this.tlTimeMax );
@@ -553,8 +556,12 @@ export default {
       } else if ( event.altKey ) {
         let cursorV = this.y2v( event.offsetY );
 
-        this.tlValueMin -= ( cursorV - this.tlValueMin ) * 0.005 * event.deltaY;
-        this.tlValueMax += ( this.tlValueMax - cursorV ) * 0.005 * event.deltaY;
+        let d = this.tlValueMax - this.tlValueMin;
+        let min = 0.02;
+        let max = 200.0;
+        let z = Math.max( Math.min( 0.005 * event.deltaY, max / d - 1.0 ), min / d - 1.0 );
+        this.tlValueMin -= ( cursorV - this.tlValueMin ) * z;
+        this.tlValueMax += ( this.tlValueMax - cursorV ) * z;
       } else {
         let deltaT = this.tlTimeMax - this.tlTimeMin;
         let deltaV = this.tlValueMax - this.tlValueMin;
