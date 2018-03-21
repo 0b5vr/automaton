@@ -781,12 +781,16 @@ export default {
           }
         }
 
-        if ( !event.ctrlKey && !event.metaKey ) {
-          param.setTime( node, t );
+        if ( event.ctrlKey || event.metaKey ) {
+          t = t0;
         }
-        if ( !event.shiftKey ) {
-          param.setValue( node, v );
+        if ( event.shiftKey ) {
+          v = v0;
         }
+
+        param.setTime( node, t )
+        param.setValue( node, v );
+
         this.updatePath();
       }, () => {
         if ( t0 === t && v0 === v ) { return; }
