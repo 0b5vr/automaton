@@ -31,3 +31,5 @@ MIT
 - [ ] Time shift feature (inspired by Houdini)
 - [ ] Modularize modes and mods
 - [ ] More minify stuff
+- [ ] Vertical snap
+- [ ] Ghost of other params
