@@ -1,11 +1,12 @@
-import AutomatonClock from "./clock";
+import Clock from "./clock";
 
 /**
- * Class that deals with time.
- * This is "realtime" type clock, the time is going on as real world.
+ * **Usually you don't need to know about this class.**  
+ * Class that deals with time.  
+ * This is "realtime" type clock, the time goes on as real world.
  * @param {Automaton} _automaton Parent automaton object
  */
-let AutomatonClockRealtime = class extends AutomatonClock {
+let ClockRealtime = class extends Clock {
   constructor( _automaton ) {
     super( _automaton );
 
@@ -41,4 +42,4 @@ let AutomatonClockRealtime = class extends AutomatonClock {
   }
 };
 
-export default AutomatonClockRealtime;
+export default ClockRealtime;

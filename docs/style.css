@@ -1,0 +1,281 @@
+html, body {
+  padding: 0;
+  margin: 0;
+  max-height: 100%;
+  max-width: 100%;
+  height: 100%;
+  width: 100%;
+  font-family: 'Source Sans Pro';
+  color: #333333;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+}
+
+.content {
+  width: 100%;
+  height: 100%;
+}
+
+.flex {
+  flex: 1;
+}
+
+.scroll-y {
+  max-height: 100%;
+  overflow-y: auto;
+}
+
+.scroll-y-enforced {
+  max-height: 100%;
+  overflow-y: scroll-y;  
+}
+
+.scroll-x {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.max-height-100 {
+  max-height: 100%;
+}
+
+table {
+  border-collapse: collapse;
+  width: calc(100% - 24px);
+  margin: 10px 0px;
+}
+
+table td, table th {
+  border: solid 1px #ddd;
+  padding: 4px;
+}
+
+table th {
+  background: #eee;
+  color: #aaa;
+  font-weight: normal;
+  text-align: left;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: normal;
+  margin-bottom: 0;
+}
+
+h3 {
+  padding: 4px;
+  background: #eee;
+}
+
+hr {
+  border: none;
+  border-bottom: 1px solid #ccc;
+}
+
+h4 {
+  font-weight: bold;
+}
+
+a[href] {
+  color: #039BE5;
+  text-decoration: none;
+}
+
+p, table {
+  margin: 12px 12px;
+}
+
+header {
+  height: 40px;
+  line-height: 40px;
+  padding: 0px 16px;
+  border-bottom: solid 1px #ddd;
+  background: #fafafa;
+}
+
+td > p {
+  margin: 0px;
+}
+
+.monospace {
+  font-family: 'monospace';
+}
+
+.doc-monospace {
+  font-family: 'Source Code Pro';
+}
+
+.doc-sourcepath {
+  font-size: 12px;
+  text-align: right;
+}
+
+.doc-menupath {
+  font-size: 12px;
+  color: grey;
+}
+
+.doc-gutter {
+  padding: 16px;
+}
+
+.doc-menu {
+  list-style: none;
+  padding-left: 8px;
+  margin: 8px 0;
+}
+
+.doc-code-identifier {
+  font-family: 'Source Code Pro';
+}
+
+.doc-code-literal {
+  font-family: 'Source Code Pro';
+  color: green;
+}
+
+.doc-no-margin-before {
+  margin-top: 0;
+}
+
+.doc-permalink {
+  color: darkgrey;
+  font-size: 16px;
+  float: right;
+  margin-top: 3px;
+  margin-right: 6px;
+}
+
+.letter-icon {
+  border-radius: 2px;
+  font-weight: bold;
+  background: #efefef;
+  color: grey;
+  width: 1.2em;
+  display: inline-block;
+  height: 1.2em;
+  text-align: center;
+}
+
+.letter-icon.letter-icon-class {
+  color: #009800;
+  background: #bfe5bf;
+}
+
+.letter-icon.letter-icon-variable, .letter-icon.letter-icon-constant {
+  color: #eb6420;
+  background: #fad8c7;
+}
+
+.letter-icon.letter-icon-function {
+  color: #6b0090;
+  background-color: #d6bdde;
+}
+
+.letter-icon.letter-icon-typedef {
+  color: #eb6420;
+  background-color: #fad8c7;
+}
+
+.letter-icon.letter-icon-module {
+  color: #42a5de;
+  background-color: #c6def7;
+}
+
+.show-mobile {
+  display: none;
+}
+
+.nav-menu {
+  background: white;
+  border-right: 1px solid lightgrey;
+}
+
+.menu-toggle-button {
+  border: none;
+  margin-right: 8px;
+  background: transparent;
+}
+
+.doc-leftpane {
+  max-width: 300px;
+}
+
+@media (max-width: 600px) {
+  .show-mobile {
+    display: block;
+  }
+
+  .overlay {
+    z-index: 1;
+    background: #333;
+    opacity: 0;
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    transition: opacity 0.3s ease;
+  }
+
+  .overlay.open {
+    opacity: 0.5;
+  }
+
+  .nav-menu {
+    top: 0;
+    left: -100%;
+    height: 100%;
+    /* display: none; */
+    position: fixed;
+    z-index: 2;
+    transition: left 0.3s ease;
+  }
+
+  .doc-leftpane {
+    max-width: 80%;
+  }
+
+  .nav-menu.open {
+    /* display: block; */
+    left: 0;
+  }
+}
+
+.doc-search-input {
+  padding: 6px 12px;
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+}
+
+.doc-search-box {
+  border-bottom: 1px solid #ccc;
+}
+
+pre {
+  background: #efefef;
+  padding: 6px;
+  border-radius: 2px;
+  border: 1px solid #ccc;
+  margin: 12px;
+  max-width: calc(100% - 24px);
+  overflow-x: auto;
+}
+
+.hljs {
+  padding: 0;
+}
+
+a.doc-repository-link {
+  font-size: 32px;
+  color: #666;
+}

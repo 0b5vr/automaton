@@ -1,0 +1,387 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    
+      <title>source: /main.js - undefined</title>
+    
+    <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:400,600,700|Source+Sans+Pro:400,700" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.10.0/styles/default.min.css">
+    <link href="style.css" rel="stylesheet">
+  </head>
+  <body>
+    <div class="overlay" id="menu-overlay" style="display: none;"></div>
+    <div class="content column">
+      <header class="row">
+        <button class="show-mobile menu-toggle-button" id="toggle-menu">
+          <i class="fa fa-bars"></i>
+        </button>
+        <a href="index.html">Home</a>
+
+        
+      </header>
+      <div class="row flex">
+        <div class="nav-menu" id="menu">
+          <div class="column max-height-100" id="leftpane">
+  <div class="doc-gutter doc-search-box">
+    <input type="text" id="search" class="doc-search-input" placeholder="Search documentation" />
+  </div>
+  <div class="doc-menu-wrapper doc-gutter flex scroll-y" id="search-results">
+    
+    <div class="doc-menupath">clock-frame</div>
+    <ul class="doc-menu">
+      
+        <li>
+          <span title="class" class="letter-icon letter-icon-class">
+            C
+          </span>
+          &nbsp;
+          <a href="clock-frame-ClockFrame.html">ClockFrame</a>
+        </li>
+      
+    </ul>
+    
+    <div class="doc-menupath">clock-realtime</div>
+    <ul class="doc-menu">
+      
+        <li>
+          <span title="class" class="letter-icon letter-icon-class">
+            C
+          </span>
+          &nbsp;
+          <a href="clock-realtime-ClockRealtime.html">ClockRealtime</a>
+        </li>
+      
+    </ul>
+    
+    <div class="doc-menupath">clock</div>
+    <ul class="doc-menu">
+      
+        <li>
+          <span title="class" class="letter-icon letter-icon-class">
+            C
+          </span>
+          &nbsp;
+          <a href="clock-Clock.html">Clock</a>
+        </li>
+      
+    </ul>
+    
+    <div class="doc-menupath">main-gui</div>
+    <ul class="doc-menu">
+      
+        <li>
+          <span title="class" class="letter-icon letter-icon-class">
+            C
+          </span>
+          &nbsp;
+          <a href="main-gui-AutomatonWithGUI.html">AutomatonWithGUI</a>
+        </li>
+      
+    </ul>
+    
+    <div class="doc-menupath">main</div>
+    <ul class="doc-menu">
+      
+        <li>
+          <span title="class" class="letter-icon letter-icon-class">
+            C
+          </span>
+          &nbsp;
+          <a href="main-Automaton.html">Automaton</a>
+        </li>
+      
+    </ul>
+    
+    <div class="doc-menupath">param</div>
+    <ul class="doc-menu">
+      
+        <li>
+          <span title="class" class="letter-icon letter-icon-class">
+            C
+          </span>
+          &nbsp;
+          <a href="param-Param.html">Param</a>
+        </li>
+      
+    </ul>
+    
+  </div>
+
+</div>
+<script>
+  // define a global JS client containing menu data object for search
+  
+  // global containing menu data
+  window.__MENUDATA = {"_clock-frame":[{"name":"ClockFrame","scope":"global","kind":"class","recordUrl":"clock-frame-ClockFrame.html"}],"_clock-realtime":[{"name":"ClockRealtime","scope":"global","kind":"class","recordUrl":"clock-realtime-ClockRealtime.html"}],"_clock":[{"name":"Clock","scope":"global","kind":"class","recordUrl":"clock-Clock.html"}],"_main-gui":[{"name":"AutomatonWithGUI","scope":"global","kind":"class","recordUrl":"main-gui-AutomatonWithGUI.html"}],"_main":[{"name":"Automaton","scope":"global","kind":"class","recordUrl":"main-Automaton.html"}],"_param":[{"name":"Param","scope":"global","kind":"class","recordUrl":"param-Param.html"}]};
+</script>
+
+        </div>
+        <div class="flex scroll-y">
+          <div class="doc-gutter">
+  <h1>Source: /main.js</h1>
+  <hr />
+  <pre>
+    <code>import deprec from "./utils/deprec";
+
+import Clock from "./clock";
+import ClockFrame from "./clock-frame";
+import ClockRealtime from "./clock-realtime";
+
+import Param from "./param";
+
+// ------
+
+/**
+ * IT'S AUTOMATON!
+ * @param {object} _props
+ * @param {boolean} [_props.loop] Whether let the time loop or not
+ * @param {number} [_props.fps] If this is set, the clock will become frame mode
+ * @param {boolean} [_props.realtime] If this is true, the clock will become realtime mode
+ * @param {function} [_props.onSeek] Will call when the method `seek()` is called
+ * @param {function} [_props.onPlay] Will call when the method `play()` is called
+ * @param {function} [_props.onPause] Will call when the method `pause()` is called
+ * @param {string} _props.data Data of the automaton in JSON format. <b>Required in noGUI mode</b>
+ */
+let Automaton = class {
+  constructor( _props ) {
+    this.version = process.env.VERSION;
+    this.__loadProps( _props );
+
+    /**
+     * **THE MIGHTY `auto()` FUNCTION!! GRAB IT**  
+     * It creates a new param automatically if there are no param called `_name` (GUI mode only).  
+     * Otherwise it returns current value of the param called `_name`.
+     * @param {string} _name name of the param
+     * @returns {number} Current value of the param
+     */
+    this.auto = ( _name ) => this.__auto( _name );
+  }
+
+  /**
+   * Load props object.
+   * @param {object} _props Props object from constructor
+   * @protected
+   */
+  __loadProps( _props ) {
+    this.props = _props;
+    this.data = JSON.parse( this.props.data ); // without compatibility check
+
+    this.clock = (
+      this.props.fps ? new ClockFrame( this, fps ) :
+      this.props.realtime ? new ClockRealtime( this ) :
+      new Clock( this )
+    );
+
+    // load params from data
+    this.params = {};
+    for ( let name in this.data.params ) {
+      let param = new Param( this );
+      param.load( this.data.params[ name ] );
+      this.params[ name ] = param;
+    }
+  }
+
+  // ------
+
+  /**
+   * Current time. Same as `automaton.clock.time`.
+   * @type {number}
+   * @readonly
+   */
+  get time() { return this.clock.time; }
+
+  /**
+   * Delta of time between now and previous update call. Same as `automaton.clock.deltaTime`.
+   * @type {number}
+   * @readonly
+   */
+  get deltaTime() { return this.clock.deltaTime; }
+
+  /**
+   * Current progress by whole length. Might NOT be [0-1] unless `_props.loop` is true.
+   * @type {number}
+   * @readonly
+   */
+  get progress() { return this.clock.time / this.data.length; }
+
+  // ------
+
+  /**
+   * Seek the timeline.
+   * @param {number} _time Time
+   */
+  seek( _time ) {
+    this.clock.setTime( _time );
+    if ( typeof this.props.onSeek === "function" ) { this.props.onSeek( _time ); }
+    deprec.handler( this.props.onseek, "Automaton: The handler onseek", "onSeek" );
+  }
+
+  /**
+   * Play the timeline.
+   */
+  play() {
+    this.clock.play();
+    if ( typeof this.props.onPlay === "function" ) { this.props.onPlay(); }
+    deprec.handler( this.props.onplay, "Automaton: The handler onplay", "onPlay" );
+  }
+
+  /**
+   * Pause the timeline.
+   */
+  pause() {
+    this.clock.pause();
+    if ( typeof this.props.onPause === "function" ) { this.props.onPause(); }
+    deprec.handler( this.props.onpause, "Automaton: The handler onpause", "onPause" );
+  }
+
+  // ------
+
+  /**
+   * Update the entire automaton.
+   * @param {number} [_time] Current time, **Required if the clock mode is manual**
+   */
+  update( _time ) {
+    // update the clock
+    this.clock.update( _time );
+
+    // loop the time
+    if ( this.props.loop && this.data.length < this.clock.time ) {
+      this.clock.setTime( this.clock.time - Math.floor( this.clock.time / this.data.length ) * this.data.length );
+    }
+
+    // set currentValue to each params
+    for ( let name in this.params ) {
+      this.params[ name ].currentValue = this.params[ name ].getValue( this.clock.time );
+    }
+  }
+
+  // ------
+
+  /**
+   * Assigned to Automaton.auto at constructor.
+   * @param {string} _name name of the param
+   * @returns {number} Current value of the param
+   * @protected
+   */
+  __auto( _name ) {
+    return this.params[ _name ].currentValue;
+  }
+};
+
+module.exports = Automaton;
+Automaton.default = Automaton;
+
+automaton = new Automaton();
+automaton.progr</code>
+  </pre>
+</div>
+
+        </div>
+      </div>
+    </div>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.10.0/highlight.min.js"></script>
+    <script>
+      // syntax highlight code
+      document.querySelectorAll('pre code').forEach(el => hljs.highlightBlock(el));
+      
+      // spoiler code
+      function toggle(element) {
+        if (element.style.display === 'block') {
+          element.style.display = 'none';
+        } else {
+          element.style.display = 'block';
+        }
+      }
+
+      document.querySelectorAll('[data-spoiler-button]').forEach(button => {
+        const spoilElementId = button.getAttribute('data-spoiler-button');
+        const spoilElement = document.querySelector(`[data-spoiler="${spoilElementId}"]`);
+
+        if (spoilElement) {
+          button.addEventListener('click', () => toggle(spoilElement));
+        }
+      });
+
+      // toggle menu mobile nav code
+      const menu = document.getElementById('menu');
+      const toggleMenuBtn = document.getElementById('toggle-menu');
+      const menuOverlay = document.getElementById('menu-overlay');
+
+      function openMenu() {
+        menu.className += ' open';
+        menuOverlay.style.display = 'block';
+        setTimeout(() => menuOverlay.className += ' open', 1);
+      }
+
+      function closeMenu() {        
+        menu.className = menu.className.replace('open', '');
+        menuOverlay.className = menuOverlay.className.replace('open', '');
+        setTimeout(() => menuOverlay.style.display = 'none', 300);
+      }
+
+      function toggleMenu() {
+        if (menu.className.indexOf('open') !== -1) {
+          closeMenu();
+        } else {
+          openMenu();
+        }
+      }
+
+      toggleMenuBtn.addEventListener('click', toggleMenu);
+      menuOverlay.addEventListener('click', closeMenu);
+
+      // search menu
+      console.log(__MENUDATA);
+      const leftpane = document.getElementById('leftpane');
+      const searchField = document.getElementById('search');
+      const searchResults = document.getElementById('search-results');
+      // fix menu width for search
+      leftpane.style.width = `${leftpane.offsetWidth}px`;
+
+      function renderMenu(results) {
+        let html = '';
+
+        Object.keys(results).forEach((menupath) => {
+          html += `<div class="doc-menupath">${menupath.slice(1, menupath.length)}</div>`;
+          html += '<ul class="doc-menu">';
+          html += results[menupath].map(symbol => `<li>
+            <span title="${symbol.kind}" class="letter-icon letter-icon-${symbol.kind}">${symbol.kind[0]}</span>
+            <a href="${symbol.recordUrl}">${symbol.name}</a>
+          </li>`).join('');
+          html += '</ul>';
+        });
+
+        if (html === '') {
+          html = '<p>No results.</p>';
+        }
+
+        searchResults.innerHTML = html;
+      }
+
+      searchField.addEventListener('keyup', (event) => {
+        const searchStr = event.target.value.toLowerCase();
+
+        const results = {};
+
+        Object.keys(__MENUDATA).forEach((menupath) => {
+          const matches = [];
+
+          __MENUDATA[menupath].forEach((symbol) => {
+            if (symbol.name.toLowerCase().indexOf(searchStr) !== -1) {
+              matches.push(symbol);
+            }
+          });
+
+          if (matches.length) {
+            results[menupath] = matches;
+          }
+        });
+
+        renderMenu(results);
+      });
+    </script>
+  </body>
+</html>

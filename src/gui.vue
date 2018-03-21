@@ -726,7 +726,7 @@ export default {
       let param = this.automaton.params[ name ];
       let index;
 
-      this.automaton.operate( name + ": Add node", () => {
+      this.automaton.__operate( name + ": Add node", () => {
         let node = param.addNode( t, v );
         index = param.nodes.indexOf( node );
         this.updatePath();
@@ -791,7 +791,7 @@ export default {
       }, () => {
         if ( t0 === t && v0 === v ) { return; }
 
-        this.automaton.operate( name + ": Move node", () => {
+        this.automaton.__operate( name + ": Move node", () => {
           param.setTime( node, t );
           param.setValue( node, v );
           this.updatePath();
@@ -812,7 +812,7 @@ export default {
       let t = node.time;
       let v = node.value;
 
-      this.automaton.operate( name + ": Remove node", () => {
+      this.automaton.__operate( name + ": Remove node", () => {
         param.removeNode( index );
         this.updatePath();
       }, () => {

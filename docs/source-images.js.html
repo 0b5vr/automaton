@@ -1,0 +1,466 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    
+      <title>source: /images.js - undefined</title>
+    
+    <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:400,600,700|Source+Sans+Pro:400,700" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.10.0/styles/default.min.css">
+    <link href="style.css" rel="stylesheet">
+  </head>
+  <body>
+    <div class="overlay" id="menu-overlay" style="display: none;"></div>
+    <div class="content column">
+      <header class="row">
+        <button class="show-mobile menu-toggle-button" id="toggle-menu">
+          <i class="fa fa-bars"></i>
+        </button>
+        <a href="index.html">Home</a>
+
+        
+      </header>
+      <div class="row flex">
+        <div class="nav-menu" id="menu">
+          <div class="column max-height-100" id="leftpane">
+  <div class="doc-gutter doc-search-box">
+    <input type="text" id="search" class="doc-search-input" placeholder="Search documentation" />
+  </div>
+  <div class="doc-menu-wrapper doc-gutter flex scroll-y" id="search-results">
+    
+    <div class="doc-menupath">clock-frame</div>
+    <ul class="doc-menu">
+      
+        <li>
+          <span title="class" class="letter-icon letter-icon-class">
+            C
+          </span>
+          &nbsp;
+          <a href="clock-frame-ClockFrame.html">ClockFrame</a>
+        </li>
+      
+    </ul>
+    
+    <div class="doc-menupath">clock-realtime</div>
+    <ul class="doc-menu">
+      
+        <li>
+          <span title="class" class="letter-icon letter-icon-class">
+            C
+          </span>
+          &nbsp;
+          <a href="clock-realtime-ClockRealtime.html">ClockRealtime</a>
+        </li>
+      
+    </ul>
+    
+    <div class="doc-menupath">clock</div>
+    <ul class="doc-menu">
+      
+        <li>
+          <span title="class" class="letter-icon letter-icon-class">
+            C
+          </span>
+          &nbsp;
+          <a href="clock-Clock.html">Clock</a>
+        </li>
+      
+    </ul>
+    
+    <div class="doc-menupath">main-gui</div>
+    <ul class="doc-menu">
+      
+        <li>
+          <span title="class" class="letter-icon letter-icon-class">
+            C
+          </span>
+          &nbsp;
+          <a href="main-gui-AutomatonWithGUI.html">AutomatonWithGUI</a>
+        </li>
+      
+    </ul>
+    
+    <div class="doc-menupath">main</div>
+    <ul class="doc-menu">
+      
+        <li>
+          <span title="class" class="letter-icon letter-icon-class">
+            C
+          </span>
+          &nbsp;
+          <a href="main-Automaton.html">Automaton</a>
+        </li>
+      
+    </ul>
+    
+    <div class="doc-menupath">param</div>
+    <ul class="doc-menu">
+      
+        <li>
+          <span title="class" class="letter-icon letter-icon-class">
+            C
+          </span>
+          &nbsp;
+          <a href="param-Param.html">Param</a>
+        </li>
+      
+    </ul>
+    
+  </div>
+
+</div>
+<script>
+  // define a global JS client containing menu data object for search
+  
+  // global containing menu data
+  window.__MENUDATA = {"_clock-frame":[{"name":"ClockFrame","scope":"global","kind":"class","recordUrl":"clock-frame-ClockFrame.html"}],"_clock-realtime":[{"name":"ClockRealtime","scope":"global","kind":"class","recordUrl":"clock-realtime-ClockRealtime.html"}],"_clock":[{"name":"Clock","scope":"global","kind":"class","recordUrl":"clock-Clock.html"}],"_main-gui":[{"name":"AutomatonWithGUI","scope":"global","kind":"class","recordUrl":"main-gui-AutomatonWithGUI.html"}],"_main":[{"name":"Automaton","scope":"global","kind":"class","recordUrl":"main-Automaton.html"}],"_param":[{"name":"Param","scope":"global","kind":"class","recordUrl":"param-Param.html"}]};
+</script>
+
+        </div>
+        <div class="flex scroll-y">
+          <div class="doc-gutter">
+  <h1>Source: /images.js</h1>
+  <hr />
+  <pre>
+    <code>import Interpolator from "./interpolator";
+
+let genImages = () => {
+  let images = {};
+
+  let canvas = document.createElement( "canvas" );
+  let s = canvas.width = canvas.height = 128;
+  let context = canvas.getContext( "2d" );
+
+  context.lineCap = "round";
+  context.lineJoin = "round";
+
+  let genImage = ( _func ) => {
+    context.save();
+    context.clearRect( 0, 0, s, s );
+    _func();
+    context.restore();
+
+    return canvas.toDataURL();
+  };
+
+  // ------
+
+  images.modes = [];
+
+  for ( let i = 0; i < Interpolator.MODES; i ++ ) {
+    images.modes[ i ] = genImage( () => {
+      context.beginPath();
+      context.moveTo( s / 8.0, s / 8.0 * 7.0 );
+      let arr = Interpolator.generate( {
+        mode: i
+      } );
+      for ( let i = 1; i < arr.length; i ++ ) {
+        context.lineTo(
+          s / 8.0 + s / 4.0 * 3.0 * i / arr.length,
+          s / 8.0 * 7.0 - s / 4.0 * 3.0 * arr[ i ]
+        );
+      }
+
+      context.strokeStyle = "#2af";
+      context.lineWidth = s / 12.0;
+      context.stroke();
+    } );
+  }
+
+  // ------
+
+  images.mods = [];
+
+  images.mods[ Interpolator.MOD_RESET ] = genImage( () => {
+    context.beginPath();
+    context.arc( s / 2.0, s / 2.0, s / 3.0, -Math.PI / 4.0, Math.PI / 4.0 * 5.0, false );
+    context.moveTo( s / 2.0, s / 2.0 );
+    context.lineTo( s / 2.0, s / 8.0 );
+
+    context.strokeStyle = "#2af";
+    context.lineWidth = s / 12.0;
+    context.stroke();
+  } );
+
+  images.mods[ Interpolator.MOD_SIN ] = genImage( () => {
+    context.beginPath();
+    context.moveTo( s / 8.0, s / 2.0 );
+    let arr = Interpolator.generate( {
+      mode: Interpolator.MODE_LINEAR,
+      start: 0.5,
+      end: 0.5,
+      mods: [ false, {} ]
+    } );
+    for ( let i = 1; i < arr.length; i ++ ) {
+      context.lineTo(
+        s / 8.0 + s / 4.0 * 3.0 * i / arr.length,
+        s / 8.0 * 7.0 - s / 4.0 * 3.0 * arr[ i ]
+      );
+    }
+
+    context.strokeStyle = "#2af";
+    context.lineWidth = s / 12.0;
+    context.stroke();
+  } );
+
+  images.mods[ Interpolator.MOD_NOISE ] = genImage( () => {
+    context.beginPath();
+    context.moveTo( s / 8.0, s / 2.0 );
+    let arr = Interpolator.generate( {
+      mode: Interpolator.MODE_LINEAR,
+      start: 0.5,
+      end: 0.5,
+      mods: [ false, false, {} ]
+    } );
+    for ( let i = 1; i < arr.length; i ++ ) {
+      context.lineTo(
+        s / 8.0 + s / 4.0 * 3.0 * i / arr.length,
+        s / 8.0 * 7.0 - s / 4.0 * 3.0 * arr[ i ]
+      );
+    }
+
+    context.strokeStyle = "#2af";
+    context.lineWidth = s / 12.0;
+    context.stroke();
+  } );
+
+  images.mods[ Interpolator.MOD_LOFI ] = genImage( () => {
+    context.beginPath();
+    context.moveTo( s / 8.0, s / 8.0 * 7.0 );
+    let arr = Interpolator.generate( {
+      mode: Interpolator.MODE_LINEAR,
+      start: 0.0,
+      end: 1.0,
+      mods: [ false, false, false, {} ]
+    } );
+    for ( let i = 1; i < arr.length; i ++ ) {
+      context.lineTo(
+        s / 8.0 + s / 4.0 * 3.0 * i / arr.length,
+        s / 8.0 * 7.0 - s / 4.0 * 3.0 * arr[ i ]
+      );
+    }
+
+    context.strokeStyle = "#2af";
+    context.lineWidth = s / 12.0;
+    context.stroke();
+  } );
+
+  // ------
+
+  images.save = genImage( () => {
+    context.beginPath();
+    context.moveTo( s / 8.0, s / 8.0 );
+    context.lineTo( s / 8.0, s / 8.0 * 7.0 );
+    context.lineTo( s / 8.0 * 7.0, s / 8.0 * 7.0 );
+    context.lineTo( s / 8.0 * 7.0, s / 4.0 );
+    context.lineTo( s / 4.0 * 3.0, s / 8.0 );
+    context.closePath();
+
+    context.moveTo( s / 4.0, s / 2.0 );
+    context.lineTo( s / 4.0 * 3.0, s / 2.0 );
+    context.lineTo( s / 4.0 * 3.0, s / 6.0 * 5.0 );
+    context.lineTo( s / 4.0, s / 6.0 * 5.0 );
+    context.closePath();
+
+    context.moveTo( s / 4.0, s / 6.0 );
+    context.lineTo( s / 3.0 * 2.0, s / 6.0 );
+    context.lineTo( s / 3.0 * 2.0, s / 8.0 * 3.0 );
+    context.lineTo( s / 4.0, s / 8.0 * 3.0 );
+    context.closePath();
+
+    context.moveTo( s / 2.0, s / 5.0 );
+    context.lineTo( s / 8.0 * 5.0, s / 5.0 );
+    context.lineTo( s / 8.0 * 5.0, s / 3.0 );
+    context.lineTo( s / 2.0, s / 3.0 );
+    context.closePath();
+
+    context.fillStyle = "#2af";
+    context.fill();
+  } );
+
+  images.undo = genImage( () => {
+    context.beginPath();
+    
+    context.moveTo( s / 8.0 * 7.0, s / 16.0 * 13.0 );
+    context.lineTo( s / 8.0 * 7.0, s / 8.0 * 3.0 );
+    context.lineTo( s / 4.0 * 3.0, s / 4.0 );
+    context.lineTo( s / 8.0 * 3.0, s / 4.0 );
+    context.lineTo( s / 8.0 * 3.0, s / 8.0 );
+    context.lineTo( s / 8.0, s / 8.0 * 3.0 );
+    context.lineTo( s / 8.0 * 3.0, s / 8.0 * 5.0 );
+    context.lineTo( s / 8.0 * 3.0, s / 2.0 );
+    context.lineTo( s / 8.0 * 5.0, s / 2.0 );
+    context.lineTo( s / 8.0 * 5.0, s / 16.0 * 13.0 );
+    context.closePath();
+
+    context.fillStyle = "#2af";
+    context.fill();
+  } );
+
+  images.redo = genImage( () => {
+    context.beginPath();
+    
+    context.moveTo( s / 8.0, s / 16.0 * 13.0 );
+    context.lineTo( s / 8.0, s / 8.0 * 3.0 );
+    context.lineTo( s / 4.0, s / 4.0 );
+    context.lineTo( s / 8.0 * 5.0, s / 4.0 );
+    context.lineTo( s / 8.0 * 5.0, s / 8.0 );
+    context.lineTo( s / 8.0 * 7.0, s / 8.0 * 3.0 );
+    context.lineTo( s / 8.0 * 5.0, s / 8.0 * 5.0 );
+    context.lineTo( s / 8.0 * 5.0, s / 2.0 );
+    context.lineTo( s / 8.0 * 3.0, s / 2.0 );
+    context.lineTo( s / 8.0 * 3.0, s / 16.0 * 13.0 );
+    context.closePath();
+
+    context.fillStyle = "#2af";
+    context.fill();
+  } );
+
+  images.beatsnap = genImage( () => {
+    context.beginPath();
+    
+    context.moveTo( s / 8.0, s / 4.0 * 3.0 );
+    context.lineTo( s / 8.0, s / 8.0 * 7.0 );
+    context.lineTo( s / 8.0 * 3.0, s / 8.0 * 7.0 );
+    context.lineTo( s / 8.0 * 3.0, s / 4.0 * 3.0 );
+    context.closePath();
+
+    context.moveTo( s / 8.0 * 5.0, s / 4.0 * 3.0 );
+    context.lineTo( s / 8.0 * 5.0, s / 8.0 * 7.0 );
+    context.lineTo( s / 8.0 * 7.0, s / 8.0 * 7.0 );
+    context.lineTo( s / 8.0 * 7.0, s / 4.0 * 3.0 );
+    context.closePath();
+
+    context.fillStyle = "#2af";
+    context.fill();
+
+    context.beginPath();
+    context.moveTo( s / 8.0, s / 16.0 * 11.0 );
+    context.lineTo( s / 8.0, s / 2.0 );
+    context.arc( s / 2.0, s / 2.0, s / 8.0 * 3.0, Math.PI, 0.0, false );
+    context.lineTo( s / 8.0 * 7.0, s / 16.0 * 11.0 );
+    context.lineTo( s / 8.0 * 5.0, s / 16.0 * 11.0 );
+    context.lineTo( s / 8.0 * 5.0, s / 2.0 );
+    context.arc( s / 2.0, s / 2.0, s / 8.0, 0.0, Math.PI, true );
+    context.lineTo( s / 8.0 * 3.0, s / 16.0 * 11.0 );
+    context.closePath();
+
+    context.fillStyle = "#2af";
+    context.fill();
+  } );
+
+  return images;
+};
+
+export default genImages;</code>
+  </pre>
+</div>
+
+        </div>
+      </div>
+    </div>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.10.0/highlight.min.js"></script>
+    <script>
+      // syntax highlight code
+      document.querySelectorAll('pre code').forEach(el => hljs.highlightBlock(el));
+      
+      // spoiler code
+      function toggle(element) {
+        if (element.style.display === 'block') {
+          element.style.display = 'none';
+        } else {
+          element.style.display = 'block';
+        }
+      }
+
+      document.querySelectorAll('[data-spoiler-button]').forEach(button => {
+        const spoilElementId = button.getAttribute('data-spoiler-button');
+        const spoilElement = document.querySelector(`[data-spoiler="${spoilElementId}"]`);
+
+        if (spoilElement) {
+          button.addEventListener('click', () => toggle(spoilElement));
+        }
+      });
+
+      // toggle menu mobile nav code
+      const menu = document.getElementById('menu');
+      const toggleMenuBtn = document.getElementById('toggle-menu');
+      const menuOverlay = document.getElementById('menu-overlay');
+
+      function openMenu() {
+        menu.className += ' open';
+        menuOverlay.style.display = 'block';
+        setTimeout(() => menuOverlay.className += ' open', 1);
+      }
+
+      function closeMenu() {        
+        menu.className = menu.className.replace('open', '');
+        menuOverlay.className = menuOverlay.className.replace('open', '');
+        setTimeout(() => menuOverlay.style.display = 'none', 300);
+      }
+
+      function toggleMenu() {
+        if (menu.className.indexOf('open') !== -1) {
+          closeMenu();
+        } else {
+          openMenu();
+        }
+      }
+
+      toggleMenuBtn.addEventListener('click', toggleMenu);
+      menuOverlay.addEventListener('click', closeMenu);
+
+      // search menu
+      console.log(__MENUDATA);
+      const leftpane = document.getElementById('leftpane');
+      const searchField = document.getElementById('search');
+      const searchResults = document.getElementById('search-results');
+      // fix menu width for search
+      leftpane.style.width = `${leftpane.offsetWidth}px`;
+
+      function renderMenu(results) {
+        let html = '';
+
+        Object.keys(results).forEach((menupath) => {
+          html += `<div class="doc-menupath">${menupath.slice(1, menupath.length)}</div>`;
+          html += '<ul class="doc-menu">';
+          html += results[menupath].map(symbol => `<li>
+            <span title="${symbol.kind}" class="letter-icon letter-icon-${symbol.kind}">${symbol.kind[0]}</span>
+            <a href="${symbol.recordUrl}">${symbol.name}</a>
+          </li>`).join('');
+          html += '</ul>';
+        });
+
+        if (html === '') {
+          html = '<p>No results.</p>';
+        }
+
+        searchResults.innerHTML = html;
+      }
+
+      searchField.addEventListener('keyup', (event) => {
+        const searchStr = event.target.value.toLowerCase();
+
+        const results = {};
+
+        Object.keys(__MENUDATA).forEach((menupath) => {
+          const matches = [];
+
+          __MENUDATA[menupath].forEach((symbol) => {
+            if (symbol.name.toLowerCase().indexOf(searchStr) !== -1) {
+              matches.push(symbol);
+            }
+          });
+
+          if (matches.length) {
+            results[menupath] = matches;
+          }
+        });
+
+        renderMenu(results);
+      });
+    </script>
+  </body>
+</html>

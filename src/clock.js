@@ -1,9 +1,11 @@
 /**
- * Class that deals with time.
- * In this base class, you need to set time manually at update call.
+ * **Usually you don't need to know about this class.**  
+ * Class that deals with time.  
+ * In this base class, you need to set time manually from `Automaton.update()`.  
+ * Best for sync with external clock stuff.
  * @param {Automaton} _automaton Parent automaton object
  */
-let AutomatonClock = class {
+let Clock = class {
   constructor( _automaton ) {
     this.automaton = _automaton;
 
@@ -45,4 +47,4 @@ let AutomatonClock = class {
   }
 };
 
-export default AutomatonClock;
+export default Clock;

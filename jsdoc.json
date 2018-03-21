@@ -1,0 +1,17 @@
+{
+  "source": {
+    "include": [ "./src" ]
+  },
+  "opts": {
+    "template": "node_modules/boxy-jsdoc-template", 
+    "destination": "./docs",
+    "recurese": true,
+    "private": false
+  },
+  "templates": {
+    "default": {
+      "useLongnameInNav": true
+    }
+  },
+  "plugins": [ "plugins/markdown" ]
+}

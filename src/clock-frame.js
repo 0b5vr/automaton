@@ -1,12 +1,13 @@
-import AutomatonClock from "./clock";
+import Clock from "./clock";
 
 /**
- * Class that deals with time.
+ * **Usually you don't need to know about this class.**  
+ * Class that deals with time.  
  * This is "frame" type clock, the frame increases every update call.
  * @param {Automaton} _automaton Parent automaton object
  * @param {number} _fps Frames per second
  */
-let AutomatonClockFrame = class extends AutomatonClock {
+let ClockFrame = class extends Clock {
   constructor( _automaton, _fps ) {
     super( _automaton );
 
@@ -28,4 +29,4 @@ let AutomatonClockFrame = class extends AutomatonClock {
   }
 };
 
-export default AutomatonClockFrame;
+export default ClockFrame;
