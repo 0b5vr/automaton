@@ -8,7 +8,7 @@ made for [Shift](https://GitHub.com/fms-cat/shift), my WebGL demo
 
 **Releases**: [https://github.com/FMS-Cat/automaton/releases](https://github.com/FMS-Cat/automaton/releases)  
 Latest build: [https://github.com/FMS-Cat/automaton/tree/master/dist](https://github.com/FMS-Cat/automaton/tree/master/dist)  
-MORE experimental build: [https://github.com/FMS-Cat/automaton/tree/div/dist](https://github.com/FMS-Cat/automaton/tree/div/dist)
+MORE experimental build: [https://github.com/FMS-Cat/automaton/tree/dev/dist](https://github.com/FMS-Cat/automaton/tree/dev/dist)
 
 `automaton.js` - Isn't minified, Easy to debug. for development stage.  
 `automaton.min.js` - Minimal build w/ GUI. for production stage.  
