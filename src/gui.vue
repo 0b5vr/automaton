@@ -844,7 +844,6 @@ export default {
       let l = fuckNaN( this.$refs.dialogConfigLength.value, this.automaton.data.length );
       this.automaton.setLength( l );
       this.tlTimeMax = Math.min( this.tlTimeMax, this.automaton.data.length );
-      console.log( this.automaton.data.length );
 
       this.automaton.data.resolution = fuckNaN( this.$refs.dialogConfigResolution.value, this.automaton.data.resolution );
 

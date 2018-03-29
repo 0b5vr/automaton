@@ -46,7 +46,7 @@ let AutomatonWithGUI = class extends Automaton {
     this.data = compat( this.props.data ); // with compatibility check
 
     this.clock = (
-      this.props.fps ? new ClockFrame( this, fps ) :
+      this.props.fps ? new ClockFrame( this, parseFloat( this.props.fps ) ) :
       this.props.realtime ? new ClockRealtime( this ) :
       new Clock( this )
     );
@@ -168,12 +168,12 @@ let AutomatonWithGUI = class extends Automaton {
       // generate a new end
       let lastNode = param.nodes[ param.nodes.length - 1 ];
       if ( lastNode.time !== _len ) {
-        param.addNode( _len, 0.0 );
+        param.addNode( _len, lastNode.value );
       }
     }
 
     // finally set the length
-    this.length = _len;
+    this.data.length = _len;
 
     // It's irreversible operation, sorry.
     this.__dropHistory();
