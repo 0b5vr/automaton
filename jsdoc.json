@@ -1,11 +1,8 @@
 {
-  "source": {
-    "include": [ "./src" ]
-  },
   "opts": {
     "template": "node_modules/boxy-jsdoc-template", 
     "destination": "./docs",
-    "recurese": true,
+    "recurse": true,
     "private": false
   },
   "templates": {

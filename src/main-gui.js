@@ -13,7 +13,7 @@ import GUI from "./gui.vue";
 
 /**
  * IT'S AUTOMATON!  
- * It's `automaton.js` and 'automaton.min.js' version.  
+ * It's `automaton.js` and `automaton.min.js` version.  
  * Since GUI stuff is pretty big for intro heh
  * @extends Automaton
  * @param {object} [_props]
