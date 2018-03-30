@@ -4,6 +4,7 @@ import Clock from "./clock";
  * **Usually you don't need to know about this class.**  
  * Class that deals with time.  
  * This is "frame" type clock, the frame increases every update call.
+ * @extends Clock
  * @param {Automaton} _automaton Parent automaton object
  * @param {number} _fps Frames per second
  */
