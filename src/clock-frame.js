@@ -20,9 +20,9 @@ let ClockFrame = class extends Clock {
    */
   update() {
     if ( this.isPlaying ) {
-      this.frame ++;
       this.time = this.frame / this.fps;
       this.deltaTime = 1.0 / this.fps;
+      this.frame ++;
     } else {
       this.deltaTime = 0.0;
     }
