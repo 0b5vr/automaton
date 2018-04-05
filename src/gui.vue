@@ -389,9 +389,11 @@ export default {
       this.onResize();
     } );
     window.addEventListener( "resize", this.onResize );
+    window.addEventListener( "beforeunload", this.onBeforeUnload );
   },
   beforeDestroy() {
     window.removeEventListener( "resize", this.onResize );
+    window.removeEventListener( "beforeunload", this.onBeforeUnload );
   },
 
   props: [ "automaton" ],
@@ -502,6 +504,15 @@ export default {
       
       this.tlPath = path;
     },
+
+    onBeforeUnload( event ) {
+      if ( this.automaton.historyIndex !== 0 ) {
+        let m = "Automaton: There are changes! Did you save the progress?";
+        event.returnValue = m;
+        return m;
+      }
+    },
+
     onResize() {
       let el = this.$refs.timeline;
       this.tlWidth = el.clientWidth;
