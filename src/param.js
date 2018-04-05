@@ -35,60 +35,62 @@ let Param = class {
     this.render();
   }
 
+  /**
+   * If the index of node is invalid, throw an error.
+   * @param {number} _index Index of node
+   */
+  validateNodeIndex( _index ) {
+    if ( _index < 0 || this.nodes.length <= _index ) {
+      throw "Automaton: invalid index of the parameter";
+    }
+
+  }
+
   load( _data ) {
-    let param = this;
-
-    param.nodes = _data;
-
-    param.render();
+    this.nodes = _data;
+    this.render();
   }
 
   sortNodes() {
-    let param = this;
-
-    param.nodes.sort( ( a, b ) => a.time - b.time );
+    this.nodes.sort( ( a, b ) => a.time - b.time );
   }
 
-  render( _index ) {
-    let param = this;
+  render() {
+    this.values = [];
 
-    param.values = [];
+    for ( let i = 1; i < this.nodes.length; i ++ ) {
+      let startt = this.nodes[ i - 1 ].time;
+      let starti = Math.floor( startt * this.automaton.data.resolution );
 
-    for ( let i = 1; i < param.nodes.length; i ++ ) {
-      let startt = param.nodes[ i - 1 ].time;
-      let starti = Math.floor( startt * param.automaton.data.resolution );
+      let endt = this.nodes[ i ].time;
+      let endi = Math.floor( endt * this.automaton.data.resolution );
 
-      let endt = param.nodes[ i ].time;
-      let endi = Math.floor( endt * param.automaton.data.resolution );
-
-      let reset = i === 1 || param.nodes[ i ].mods[ Interpolator.MOD_RESET ];
-      let resetVel = param.nodes[ i ].mods[ Interpolator.MOD_RESET ] ? param.nodes[ i ].mods[ Interpolator.MOD_RESET ].velocity : 0.0;
-      let deltaTime = 1.0 / param.automaton.data.resolution;
+      let reset = i === 1 || this.nodes[ i ].mods[ Interpolator.MOD_RESET ];
+      let resetVel = this.nodes[ i ].mods[ Interpolator.MOD_RESET ] ? this.nodes[ i ].mods[ Interpolator.MOD_RESET ].velocity : 0.0;
+      let deltaTime = 1.0 / this.automaton.data.resolution;
 
       let iparam = {
-        mode: param.nodes[ i ].mode,
-        start: reset ? param.nodes[ i - 1 ].value : param.values[ starti ],
-        end: param.nodes[ i ].value,
+        mode: this.nodes[ i ].mode,
+        start: reset ? this.nodes[ i - 1 ].value : this.values[ starti ],
+        end: this.nodes[ i ].value,
         deltaTime: deltaTime,
         length: endi - starti + 1,
-        vel: ( !reset && 2 < param.values.length ) ? ( param.values[ param.values.length - 1 ] - param.values[ param.values.length - 2 ] ) / deltaTime : resetVel,
-        mods: param.nodes[ i ].mods
+        vel: ( !reset && 2 < this.values.length ) ? ( this.values[ this.values.length - 1 ] - this.values[ this.values.length - 2 ] ) / deltaTime : resetVel,
+        mods: this.nodes[ i ].mods
       };
-      for ( let key in param.nodes[ i ].params ) {
-        iparam[ key ] = param.nodes[ i ].params[ key ];
+      for ( let key in this.nodes[ i ].params ) {
+        iparam[ key ] = this.nodes[ i ].params[ key ];
       }
 
       let arr = Interpolator.generate( iparam );
-      param.values.pop();
+      this.values.pop();
 
-      param.values = param.values.concat( arr );
+      this.values = this.values.concat( arr );
     }
   }
 
   addNode( _time, _value ) {
-    let param = this;
-
-    let next = param.nodes.filter( node => _time < node.time )[ 0 ];
+    let next = this.nodes.filter( node => _time < node.time )[ 0 ];
     if ( !next ) {
       next = {
         mode: Interpolator.MODE_LINEAR,
@@ -107,47 +109,43 @@ let Param = class {
       params: cloneObj( next.params ),
       mods: next.mods.map( _obj => cloneObj( _obj ) )
     };
-    param.nodes.push( node );
+    this.nodes.push( node );
 
-    param.sortNodes();
-    param.render();
+    this.sortNodes();
+    this.render();
 
     return node;
   }
 
   setTime( _index, _time ) {
-    let param = this;
+    this.validateNodeIndex( _index );
 
-    if ( _index < 0 || param.nodes.length <= _index ) { return; }
-
-    if ( _index !== 0 && param.nodes.length - 1 !== _index ) {
-      param.nodes[ _index ].time = Math.min(
+    if ( _index !== 0 && this.nodes.length - 1 !== _index ) {
+      this.nodes[ _index ].time = Math.min(
         Math.max(
           _time,
-          param.nodes[ _index - 1 ].time + 1.0 / param.automaton.data.resolution
+          this.nodes[ _index - 1 ].time + 1.0 / this.automaton.data.resolution
         ),
-        param.nodes[ _index + 1 ].time - 1.0 / param.automaton.data.resolution
+        this.nodes[ _index + 1 ].time - 1.0 / this.automaton.data.resolution
       );
-      param.render();
+      this.render();
     }
 
-    return param.nodes[ _index ].time;
+    return this.nodes[ _index ].time;
   }
 
   setValue( _index, _value ) {
-    let param = this;
+    this.validateNodeIndex( _index );
 
-    if ( _index < 0 || param.nodes.length <= _index ) { return; }
+    this.nodes[ _index ].value = _value;
 
-    param.nodes[ _index ].value = _value;
+    this.render();
 
-    param.render();
-
-    return param.nodes[ _index ].value;
+    return this.nodes[ _index ].value;
   }
 
   copyProps( _index, _node ) {
-    if ( _index < 0 || this.nodes.length <= _index ) { return; }
+    this.validateNodeIndex( _index );
 
     let node = this.nodes[ _index ];
     node.mode = _node.mode;
@@ -158,11 +156,9 @@ let Param = class {
   }
 
   setMode( _index, _mode ) {
-    let param = this;
+    this.validateNodeIndex( _index );
 
-    if ( _index < 1 || param.nodes.length <= _index ) { return; }
-
-    let node = param.nodes[ _index ];
+    let node = this.nodes[ _index ];
     node.mode = _mode;
     if ( _mode === Interpolator.MODE_HOLD ) {
       node.params = {};
@@ -186,39 +182,33 @@ let Param = class {
       };
     }
 
-    param.render();
+    this.render();
   }
 
   setParam( _index, _key, _value ) {
-    let param = this;
+    this.validateNodeIndex( _index );
 
-    if ( _index < 0 || param.nodes.length <= _index ) { return; }
+    this.nodes[ _index ].params[ _key ] = _value;
 
-    param.nodes[ _index ].params[ _key ] = _value;
-
-    param.render();
+    this.render();
   }
 
   setParams( _index, _params ) {
-    let param = this;
-
-    if ( _index < 0 || param.nodes.length <= _index ) { return; }
+    this.validateNodeIndex( _index );
 
     for ( let key in _params ) {
-      param.nodes[ _index ].params[ key ] = _params[ key ];
+      this.nodes[ _index ].params[ key ] = _params[ key ];
     }
 
-    param.render();
+    this.render();
   }
 
   activeModParams( _index, _mod, _active ) {
-    let param = this;
-
-    if ( _index < 0 || param.nodes.length <= _index ) { return; }
+    this.validateNodeIndex( _index );
     if ( _mod < 0 || Interpolator.MODS <= _mod ) { return; }
 
     if ( _active ) {
-      param.nodes[ _index ].mods[ _mod ] = {};
+      this.nodes[ _index ].mods[ _mod ] = {};
 
       let params;
       if ( _mod === Interpolator.MOD_RESET ) {
@@ -244,75 +234,65 @@ let Param = class {
           freq: 10.0
         };
       }
-      param.setModParams( _index, _mod, params );
+      this.setModParams( _index, _mod, params );
     } else {
-      param.nodes[ _index ].mods[ _mod ] = false;
-      param.render();
+      this.nodes[ _index ].mods[ _mod ] = false;
+      this.render();
     }
   }
 
   toggleMod( _index, _mod ) {
-    let param = this;
-
-    if ( _index < 0 || param.nodes.length <= _index ) { return; }
+    this.validateNodeIndex( _index );
     if ( _mod < 0 || Interpolator.MODS <= _mod ) { return; }
 
-    param.activeModParams( _index, _mod, !( param.nodes[ _index ].mods[ _mod ] ) );	
+    this.activeModParams( _index, _mod, !( this.nodes[ _index ].mods[ _mod ] ) );	
   }
 
   setModParam( _index, _mod, _key, _value ) {
-    let param = this;
-
-    if ( _index < 0 || param.nodes.length <= _index ) { return; }
+    this.validateNodeIndex( _index );
     if ( _mod < 0 || Interpolator.MODS <= _mod ) { return; }
 
-    param.nodes[ _index ].mods[ _mod ][ _key ] = _value;
+    this.nodes[ _index ].mods[ _mod ][ _key ] = _value;
 
-    param.render();
+    this.render();
   }
 
   setModParams( _index, _mod, _params ) {
-    let param = this;
-
-    if ( _index < 0 || param.nodes.length <= _index ) { return; }
+    this.validateNodeIndex( _index );
     if ( _mod < 0 || Interpolator.MODS <= _mod ) { return; }
 
     for ( let key in _params ) {
-      param.nodes[ _index ].mods[ _mod ][ key ] = _params[ key ];
+      this.nodes[ _index ].mods[ _mod ][ key ] = _params[ key ];
     }
 
-    param.render();
+    this.render();
   }
 
   removeNode( _index ) {
-    let param = this;
+    this.validateNodeIndex( _index );
 
-    if ( _index < 1 || param.nodes.length - 1 <= _index ) { return; }
+    let node = this.nodes.splice( _index, 1 );
 
-    let node = param.nodes.splice( _index, 1 );
-
-    param.render();
+    this.render();
 
     return node;
   }
 
   getValue( _time ) {
-    let param = this;
-
-    if ( typeof _time !== "number" ) { return param.currentValue; }
+    if ( typeof _time !== "number" ) { return this.currentValue; }
     let time = _time;
 
     if ( time <= 0.0 ) {
-      return param.values[ 0 ];
-    } else if ( param.automaton.data.length <= time ) {
-      return param.values[ param.values.length - 1 ];
+      return this.values[ 0 ];
+    } else if ( this.automaton.data.length <= time ) {
+      return this.values[ this.values.length - 1 ];
     } else {
-      let index = time * param.automaton.data.resolution;
+      let index = time * this.automaton.data.resolution;
       let indexi = Math.floor( index );
       let indexf = index % 1.0;
 
-      let pv = param.values[ indexi ];
-      let fv = param.values[ indexi + 1 ];
+      let pv = this.values[ indexi ];
+      let fv = this.values[ indexi + 1 ];
 
       let v = pv + ( fv - pv ) * indexf;
 
