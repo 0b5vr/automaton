@@ -28,6 +28,18 @@
 </template>
 
 <script>
+let mouseEvents = ( move, up ) => {
+  let u = ( event ) => {
+    if ( typeof up === "function" ) { up( event ); } 
+
+    window.removeEventListener( "mousemove", move );
+    window.removeEventListener( "mouseup", u );
+  };
+
+  window.addEventListener( "mousemove", move );
+  window.addEventListener( "mouseup", u );
+};
+
 export default {
   props: [ "width", "name", "value", "type" ],
   data() {
@@ -51,9 +63,9 @@ export default {
 
       if ( this.type === "number" ) {
         let lastY = event.clientY;
-        let moveFunc = ( event ) => {
-          event.preventDefault();
+        let v0 = Number( this.value );
 
+        mouseEvents( ( event ) => {
           let v = Number( this.value );
           let y = event.clientY;
           let d = lastY - y;
@@ -74,22 +86,14 @@ export default {
             let r = event.altKey ? 0.001 : 0.01;
             this.$emit( "changed", Number( ( v + d * r ).toFixed( 3 ) ) );
           }
-        };
-
-        let upFunc = ( event ) => {
-          event.preventDefault();
-          
-          window.removeEventListener( "mousemove", moveFunc );
-          window.removeEventListener( "mouseup", upFunc );
-        };
-
-        window.addEventListener( "mousemove", moveFunc );
-        window.addEventListener( "mouseup", upFunc );
+        }, ( event ) => {
+          this.$emit( "finished", [ v0, Number( this.value ) ] );
+        } );
       }
     },
 
     enter( event ) {
-      this.$emit( "changed", Number( this.$refs.valueInput.value ) );
+      this.$emit( "changed", Number( this.value ) );
       this.input = false;
     },
 

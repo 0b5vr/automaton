@@ -48,11 +48,27 @@
         name="time"
         :value="automaton.params[ selectedParam ].nodes[ selectedNode ].time.toFixed( 3 )"
         @changed="automaton.params[ selectedParam ].setTime( selectedNode, $event ); updatePath()"
+        @finished="
+          let param = selectedParam; let node = selectedNode;
+          automaton.__operate( name + ': Change node time', () => {
+            automaton.params[ param ].setTime( node, $event[ 1 ] ); updatePath();
+          }, () => {
+            automaton.params[ param ].setTime( node, $event[ 0 ] ); updatePath();
+          } );
+        "
       />
       <parambox type="number"
         name="value"
         :value="automaton.params[ selectedParam ].nodes[ selectedNode ].value.toFixed( 3 )"
         @changed="automaton.params[ selectedParam ].setValue( selectedNode, $event ); updatePath()"
+        @finished="
+          let param = selectedParam; let node = selectedNode;
+          automaton.__operate( name + ': Change node value', () => {
+            automaton.params[ param ].setValue( node, $event[ 1 ] ); updatePath();
+          }, () => {
+            automaton.params[ param ].setValue( node, $event[ 0 ] ); updatePath();
+          } );
+        "
       />
 
       <template
