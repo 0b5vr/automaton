@@ -91,14 +91,14 @@ The Automaton GUI has a lot of feature!
 First, choose the parameter you want to tweak by left menu.
 Then the GUI will be show parameter animation curve on timeline.
 
-When you doubleclicked inside the timeline, new "node" will be created.
+When you <code>doubleclick</code> inside the timeline, new "node" will be created.
 The animation curve will transform to pass through nodes.
-You can grab and move around the node by clicking and dragging.
-And you doubleclicked the node, the node will be removed.
+You can grab and move around the node by <code>drag</code>ging.
+And you <code>doubleclick</code> the node, the node will be removed.
 
-You can scroll around the timeline using mouse wheel.
-Shift-Scroll lets the timeline horizontal zoom.
-Alt-Scroll lets the timeline vertical zoom.
+You can scroll around the timeline using mouse <code>wheel</code>.
+<code>Shift-Scroll</code> lets the timeline horizontal zoom.
+<code>Alt-Scroll</code> lets the timeline vertical zoom.
 
 Shape of animation curve can be changed by menu on the right side.
 You can use various curve such as Linear, ExpSmooth, Spring, etc...
@@ -121,19 +121,19 @@ You can load this JSON by adding parameter named <code>data</code> when you inst
     </div>
 
     <div id="editor">// Press Ctrl+S (Cmd+S on MacOS) to run script
-// The script will be run under eval(). be calm, safety first.
+// The script will be run under 🔥 eval() 🔥. be calm, safety first.
 
-var time = 0.0;
-var rate = 1.0;
-
-var automaton = Automaton( {
+// generate automaton instance
+var automaton = new Automaton( {
   gui: divAutomatonContainer,
-  onseek: ( t ) => { time = t; },
-  onshift: ( r ) => { rate = r; },
+  realtime: true,
+  loop: true,
   data: `
-{"rev":20170418,"length":5,"resolution":1000,"params":{"rectX":[{"time":0,"value":0.2,"mode":1,"params":{},"mods":[false,false,false,false]},{"time":0.9900990099009903,"value":1.2833449480575507,"mode":1,"params":{},"mods":[false,false,false,false]},{"time":2.198019801980198,"value":0.32581881492806136,"mode":4,"params":{"rate":100,"damp":1},"mods":[false,false,false,false]},{"time":3.3861386138613865,"value":0.8472125432853742,"mode":5,"params":{"gravity":10,"bounce":0.5},"mods":[false,false,false,false]},{"time":5,"value":0.2,"mode":2,"params":{},"mods":[false,{"freq":5,"amp":0.1,"phase":0},false,false]}],"rectY":[{"time":0,"value":0,"mode":1,"params":{},"mods":[false,false,false,false]},{"time":5,"value":1,"mode":1,"params":{},"mods":[false,false,false,false]}]},"gui":{"snap":{"enable":false,"bpm":"120","offset":"0"}}}
+{"length":5,"resolution":1000,"params":{"rectX":[{"time":0,"value":0.2,"mode":1,"params":{},"mods":[false,false,false,false]},{"time":0.9900990099009903,"value":1.2833449480575507,"mode":1,"params":{},"mods":[false,false,false,false]},{"time":2.198019801980198,"value":0.32581881492806136,"mode":4,"params":{"rate":100,"damp":1},"mods":[false,false,false,false]},{"time":3.3861386138613865,"value":0.8472125432853742,"mode":5,"params":{"gravity":10,"bounce":0.5},"mods":[false,false,false,false]},{"time":5,"value":0.2,"mode":2,"params":{},"mods":[false,{"freq":5,"amp":0.1,"phase":0},false,false]}],"rectY":[{"time":0,"value":0,"mode":1,"params":{},"mods":[false,false,false,false]},{"time":5,"value":1,"mode":1,"params":{},"mods":[false,false,false,false]}]},"gui":{"snap":{"enable":false,"bpm":"120","offset":"0"}},"v":"1.1.3"}
   `
 } );
+
+// define auto function
 var auto = automaton.auto;
 
 var width = canvas.width = 300;
@@ -144,23 +144,30 @@ var context = canvas.getContext( "2d" );
 var stop = false;
 function update() {
   if ( stop ) { return; }
-  time += 1.0 / 60.0 * rate;
   
-  automaton.update( time );
+  // pass time to automaton and update it
+  automaton.update();
 
   context.fillStyle = "#fff";
   context.fillRect( 0, 0, width, height );
   
   context.fillStyle = "#f00";
-  context.fillRect( auto( "rectX" ) * 100.0, auto( "rectY" ) * 100, 100, 100 );
+
+  // here's auto function!
+  context.fillRect(
+    auto( "rectX" ) * 100,
+    auto( "rectY" ) * 100,
+    100,
+    100
+  );
   
-  requestAnimationFrame( update );
+  requestAnimationFrame( update ); // rAF fps = 60
 }
 update();
 
 playground.unload = function() {
   stop = true;
-  automaton.bye();
+  automaton = null;
 }</div>
   </div>
 </body>

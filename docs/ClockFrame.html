@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>ClockFrame - Documentation</title>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <span class="navicon"></span>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Automaton.html">Automaton</a><ul class='members'><li class='list-title'>Members</li><li data-type='member'><a href="Automaton.html#deltaTime">deltaTime</a></li><li data-type='member'><a href="Automaton.html#isPlaying">isPlaying</a></li><li data-type='member'><a href="Automaton.html#progress">progress</a></li><li data-type='member'><a href="Automaton.html#time">time</a></li></ul><ul class='methods'><li class='list-title'>Methods</li><li data-type='method'><a href="Automaton.html#__auto">__auto</a></li><li data-type='method'><a href="Automaton.html#__loadProps">__loadProps</a></li><li data-type='method'><a href="Automaton.html#auto">auto</a></li><li data-type='method'><a href="Automaton.html#pause">pause</a></li><li data-type='method'><a href="Automaton.html#play">play</a></li><li data-type='method'><a href="Automaton.html#seek">seek</a></li><li data-type='method'><a href="Automaton.html#update">update</a></li></ul></li><li><a href="AutomatonWithGUI.html">AutomatonWithGUI</a><ul class='members'><li class='list-title'>Members</li><li data-type='member'><a href="AutomatonWithGUI.html#deltaTime">deltaTime</a></li><li data-type='member'><a href="AutomatonWithGUI.html#isPlaying">isPlaying</a></li><li data-type='member'><a href="AutomatonWithGUI.html#progress">progress</a></li><li data-type='member'><a href="AutomatonWithGUI.html#time">time</a></li></ul><ul class='methods'><li class='list-title'>Methods</li><li data-type='method'><a href="AutomatonWithGUI.html#__auto">__auto</a></li><li data-type='method'><a href="AutomatonWithGUI.html#__dropHistory">__dropHistory</a></li><li data-type='method'><a href="AutomatonWithGUI.html#__loadProps">__loadProps</a></li><li data-type='method'><a href="AutomatonWithGUI.html#__operate">__operate</a></li><li data-type='method'><a href="AutomatonWithGUI.html#__prepareGUI">__prepareGUI</a></li><li data-type='method'><a href="AutomatonWithGUI.html#auto">auto</a></li><li data-type='method'><a href="AutomatonWithGUI.html#countParams">countParams</a></li><li data-type='method'><a href="AutomatonWithGUI.html#createParam">createParam</a></li><li data-type='method'><a href="AutomatonWithGUI.html#deleteParam">deleteParam</a></li><li data-type='method'><a href="AutomatonWithGUI.html#getParamNames">getParamNames</a></li><li data-type='method'><a href="AutomatonWithGUI.html#pause">pause</a></li><li data-type='method'><a href="AutomatonWithGUI.html#play">play</a></li><li data-type='method'><a href="AutomatonWithGUI.html#redo">redo</a></li><li data-type='method'><a href="AutomatonWithGUI.html#renderAll">renderAll</a></li><li data-type='method'><a href="AutomatonWithGUI.html#save">save</a></li><li data-type='method'><a href="AutomatonWithGUI.html#seek">seek</a></li><li data-type='method'><a href="AutomatonWithGUI.html#setLength">setLength</a></li><li data-type='method'><a href="AutomatonWithGUI.html#togglePlay">togglePlay</a></li><li data-type='method'><a href="AutomatonWithGUI.html#undo">undo</a></li><li data-type='method'><a href="AutomatonWithGUI.html#update">update</a></li></ul></li><li><a href="Clock.html">Clock</a><ul class='methods'><li class='list-title'>Methods</li><li data-type='method'><a href="Clock.html#pause">pause</a></li><li data-type='method'><a href="Clock.html#play">play</a></li><li data-type='method'><a href="Clock.html#setTime">setTime</a></li><li data-type='method'><a href="Clock.html#update">update</a></li></ul></li><li><a href="ClockFrame.html">ClockFrame</a><ul class='methods'><li class='list-title'>Methods</li><li data-type='method'><a href="ClockFrame.html#pause">pause</a></li><li data-type='method'><a href="ClockFrame.html#play">play</a></li><li data-type='method'><a href="ClockFrame.html#setTime">setTime</a></li><li data-type='method'><a href="ClockFrame.html#update">update</a></li></ul></li><li><a href="ClockRealtime.html">ClockRealtime</a><ul class='methods'><li class='list-title'>Methods</li><li data-type='method'><a href="ClockRealtime.html#pause">pause</a></li><li data-type='method'><a href="ClockRealtime.html#play">play</a></li><li data-type='method'><a href="ClockRealtime.html#setTime">setTime</a></li><li data-type='method'><a href="ClockRealtime.html#update">update</a></li></ul></li><li><a href="Param.html">Param</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">ClockFrame</h1>
+    
+
+    
+
+
+
+
+<section>
+
+<header>
+    <span class="creds">
+      
+
+      
+    </span>
+
+    <hr>
+
+    
+        <h2>
+        ClockFrame
+        </h2>
+        
+            <div class="class-description"><p><strong>Usually you don't need to know about this class.</strong><br>Class that deals with time.<br>This is &quot;frame&quot; type clock, the frame increases every update call.</p></div>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+
+    
+    <h2>Constructor</h2>
+    
+
+
+<div class="group" id="ClockFrame">
+
+
+    <h4 class="name"><span class="type-signature"></span>new <b>ClockFrame</b><span class="signature">(<span class="sig-params">_automaton<span class="params-divider">, </span>_fps</span>)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters</h5>
+    
+
+<div class="params">
+    
+
+    
+        <span class="name">_automaton</span><span class="type"><span class="param-type">:<a href="Automaton.html">Automaton</a></span></span>
+    
+
+    
+
+    
+
+    <div class="description last"><p>Parent automaton object</p></div>
+
+    
+
+    
+        <span class="name">_fps</span><span class="type"><span class="param-type">:number</span></span>
+    
+
+    
+
+    
+
+    <div class="description last"><p>Frames per second</p></div>
+
+    
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="src">Source: <a href="clock-frame.js.html">clock-frame.js</a>, <a href="clock-frame.js.html#line11">line 11</a></div>
+
+
+</div>
+
+    
+    </div>
+
+    
+        <h3 class="subsection-title">Extends</h3>
+
+        
+
+
+    <ul>
+        <li><a href="Clock.html">Clock</a></li>
+    </ul>
+
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+
+    
+
+
+<div class="group" id="pause">
+
+
+    <h4 class="name"><span class="type-signature"></span><b>pause</b><span class="signature">(<span class="sig-params"></span>)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Stop the clock.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Details</h5>
+<dl class="details">
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Clock.html#pause">Clock#pause</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+ 
+
+
+
+
+
+<div class="src">Source: <a href="clock.js.html">clock.js</a>, <a href="clock.js.html#line37">line 37</a></div>
+
+
+</div>
+
+        
+            
+
+
+    
+
+
+<div class="group" id="play">
+
+
+    <h4 class="name"><span class="type-signature"></span><b>play</b><span class="signature">(<span class="sig-params"></span>)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Start the clock.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Details</h5>
+<dl class="details">
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Clock.html#play">Clock#play</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+ 
+
+
+
+
+
+<div class="src">Source: <a href="clock.js.html">clock.js</a>, <a href="clock.js.html#line30">line 30</a></div>
+
+
+</div>
+
+        
+            
+
+
+    
+
+
+<div class="group" id="setTime">
+
+
+    <h4 class="name"><span class="type-signature"></span><b>setTime</b><span class="signature">(<span class="sig-params">_time</span>)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Set the time manually.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters</h5>
+    
+
+<div class="params">
+    
+
+    
+        <span class="name">_time</span><span class="type"><span class="param-type">:number</span></span>
+    
+
+    
+
+    
+
+    <div class="description last"><p>Time</p></div>
+
+    
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Details</h5>
+<dl class="details">
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Clock.html#setTime">Clock#setTime</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+ 
+
+
+
+
+
+<div class="src">Source: <a href="clock.js.html">clock.js</a>, <a href="clock.js.html#line45">line 45</a></div>
+
+
+</div>
+
+        
+            
+
+
+    
+
+
+<div class="group" id="update">
+
+
+    <h4 class="name"><span class="type-signature"></span><b>update</b><span class="signature">(<span class="sig-params"></span>)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Update the clock. It will increase the frame by 1.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Details</h5>
+<dl class="details">
+    
+
+    
+
+    
+
+    
+    <dt class="tag-overrides">Overrides</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="Clock.html#update">Clock#update</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+ 
+
+
+
+
+
+<div class="src">Source: <a href="clock-frame.js.html">clock-frame.js</a>, <a href="clock-frame.js.html#line22">line 22</a></div>
+
+
+</div>
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc" target="_blank">JSDoc 3.5.5</a> on 4/5/2018 using the <a href="https://github.com/Grafluxe/boxy-jsdoc-template" target="_blank">boxy-jsdoc-template</a> theme.
+</footer>
+
+<script src="scripts/prettify/prettify.js"></script>
+<script src="scripts/prettify/lang-css.js"></script>
+<script src="scripts/script.js"></script>
+
+</body>
+</html>
