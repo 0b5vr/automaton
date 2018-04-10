@@ -418,21 +418,21 @@ export default {
       headerButtons: [
         {
           name: "Undo",
-          src: images.undo,
+          src: require( "./images/undo.svg" ),
           func: () => {
             this.automaton.undo();
           }
         },
         {
           name: "Redo",
-          src: images.redo,
+          src: require( "./images/redo.svg" ),
           func: () => {
             this.automaton.redo();
           }
         },
         {
           name: "Snap",
-          src: images.beatsnap,
+          src: require( "./images/snap.svg" ),
           func: () => {
             this.dialog = {
               show: true,
