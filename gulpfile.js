@@ -1,7 +1,6 @@
 const fs = require( 'fs' );
 
 const gulp = require( 'gulp' );
-const rename = require( 'gulp-rename' );
 const jsdoc = require( 'gulp-jsdoc3' );
 
 const browserify = require( 'browserify' );
@@ -20,20 +19,13 @@ const packageJson = require( './package.json' );
 
 // ------
 
-let bannerSettings = {
-  file: "banner"
-};
-
-let env = {
+const env = {
   NAME: packageJson.name,
   VERSION: packageJson.version
-}
+};
 
-let debugName = 'automaton.js';
-let debugBro = browserify( './src/main-gui.js', {
-  cache: {},
-  packageCache: {},
-  fullPaths: true,
+const debugName = 'automaton.js';
+const debugBro = browserify( './src/main-gui.js', {
   debug: true,
   standalone: 'Automaton',
   transform: [
@@ -42,12 +34,10 @@ let debugBro = browserify( './src/main-gui.js', {
     imgurify,
     [ babelify, { presets: 'env' } ],
   ]
-} ).plugin( banner, { file: "banner" } );
+} ).plugin( banner, { file: 'banner' } );
 
-let minName = 'automaton.min.js';
-let minBro = browserify( './src/main-gui.js', {
-  cache: {},
-  packageCache: {},
+const minName = 'automaton.min.js';
+const minBro = browserify( './src/main-gui.js', {
   standalone: 'Automaton',
   transform: [
     [ envify, env ],
@@ -56,44 +46,42 @@ let minBro = browserify( './src/main-gui.js', {
     [ babelify, { presets: 'env' } ],
     [ uglifyify, { global: true } ]
   ]
-} ).plugin( banner, { file: "banner-min" } );
+} ).plugin( banner, { file: 'banner-min' } );
 
-let noguiName = 'automaton.nogui.js';
-let noguiBro = browserify( './src/main.js', {
-  cache: {},
-  packageCache: {},
+const noguiName = 'automaton.nogui.js';
+const noguiBro = browserify( './src/main.js', {
   standalone: 'Automaton',
   transform: [
     [ envify, env ],
     [ babelify, { presets: 'env' } ],
     [ uglifyify, { global: true } ]
   ]
-} ).plugin( banner, { file: "banner-min" } );
+} ).plugin( banner, { file: 'banner-min' } );
 
 gulp.task( 'script-build', () => {
   debugBro.bundle()
-  .on( 'error', _error => console.error( _error ) )
+  .on( 'error', ( _error ) => console.error( _error ) )
   .pipe( source( debugName ) )
   .pipe( gulp.dest( './dist' ) );
 
   minBro.bundle()
-  .on( 'error', _error => console.error( _error ) )
+  .on( 'error', ( _error ) => console.error( _error ) )
   .pipe( source( minName ) )
   .pipe( gulp.dest( './dist' ) );
 
   noguiBro.bundle()
-  .on( 'error', _error => console.error( _error ) )
+  .on( 'error', ( _error ) => console.error( _error ) )
   .pipe( source( noguiName ) )
   .pipe( gulp.dest( './dist' ) );
 } );
 
 gulp.task( 'script-watch', () => {
-  let debugWatch = watchify( debugBro );
+  const debugWatch = watchify( debugBro );
 
   debugWatch.on( 'update', () => {
     console.log( '🔮 Browserify!' );
     debugWatch.bundle()
-    .on( 'error', _error => console.error( _error ) )
+    .on( 'error', ( _error ) => console.error( _error ) )
     .pipe( source( debugName ) )
     .pipe( gulp.dest( './dist' ) );
   } );
@@ -108,7 +96,7 @@ gulp.task( 'script-watch', () => {
 gulp.task( 'browser-init', () => {
   browserSync.init( {
     server: '.',
-    startPath: './play/index.html'
+    startPath: './index.html'
   } );
 } );
 
@@ -122,18 +110,18 @@ gulp.task( 'browser-watch', () => {
 
 // ------
 
-let jsdocConfig = require( './jsdoc.json' );
+const jsdocConfig = require( './jsdoc.json' );
 gulp.task( 'jsdoc-build', () => {
   gulp.src( [ 'README.md', './src/**/*.js' ], { read: false } )
-    .pipe( jsdoc( jsdocConfig ) );
+  .pipe( jsdoc( jsdocConfig ) );
 } );
 
 // ------
 
-let recursiveUnlink = ( _path ) => {
+const recursiveUnlink = ( _path ) => {
   if ( fs.existsSync( _path ) ) {
     fs.readdirSync( _path ).map( ( _file ) => {
-      let filePath = _path + '/' + _file;
+      const filePath = _path + '/' + _file;
       if ( fs.lstatSync( filePath ).isDirectory() ) {
         recursiveUnlink( filePath );
       } else {
@@ -142,10 +130,11 @@ let recursiveUnlink = ( _path ) => {
     } );
     fs.rmdirSync( _path );
   }
-}
+};
 
 gulp.task( 'clean', () => {
   recursiveUnlink( './dist' );
+  recursiveUnlink( './docs' );
 } );
 
 // ------

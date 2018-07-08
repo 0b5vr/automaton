@@ -1,63 +1,40 @@
-import compat from "./compat";
+import ass from './ass';
+import compat from './compat';
 
-import Clock from "./clock";
-import ClockFrame from "./clock-frame";
-import ClockRealtime from "./clock-realtime";
+import Param from './param-gui';
 
-import Param from "./param";
+import Automaton from './main';
 
-import Automaton from "./main.js";
-
-import Vue from "vue";
-import GUI from "./gui.vue";
+import Vue from 'vue';
+import GUI from './vue/main.vue';
 
 /**
- * IT'S AUTOMATON!  
- * It's `automaton.js` and `automaton.min.js` version.  
+ * IT'S AUTOMATON!
+ * It's `automaton.js` and `automaton.min.js` version.
  * Since GUI stuff is pretty big for intro heh
  * @extends Automaton
- * @param {object} [_props]
+ * @param {Object} [_props]
  * @param {boolean} [_props.loop] Whether let the time loop or not
  * @param {number} [_props.fps] If this is set, the clock will become frame mode
  * @param {boolean} [_props.realtime] If this is true, the clock will become realtime mode
- * @param {function} [_props.onSeek] Will call when the method seek() is called
- * @param {function} [_props.onPlay] Will call when the method play() is called
- * @param {function} [_props.onPause] Will call when the method pause() is called
  * @param {DOM} [_props.gui] DOM element where you want to attach the Automaton GUI
- * @param {string} [_props.data] Data of the automaton in JSON format. Don't worry, I can generate the empty data for you!
+ * @param {string|Object} [_props.data] Data of the automaton. Don't worry, I can generate an initial data for you!
  */
 let AutomatonWithGUI = class extends Automaton {
   constructor( _props ) {
-    super( _props || {} );
+    let props = Object.assign( {}, _props );
+    props.data = compat( props.data );
+
+    ass( !_props.onseek, 'The handler "onseek" is no longer supported. Use Automaton.on( "seek", ... ) instead.' );
+    ass( !_props.onplay, 'The handler "onplay" is no longer supported. Use Automaton.on( "play", ... ) instead.' );
+    ass( !_props.onpause, 'The handler "onpause" is no longer supported. Use Automaton.on( "pause", ... ) instead.' );
+
+    super( props );
 
     this.history = [];
     this.historyIndex = 0;
 
-    if ( this.props.gui ) { this.__prepareGUI( this.props.gui ); }
-  }
-
-  /**
-   * Load props object.
-   * @param {object} _props Props object from constructor
-   * @protected
-   */
-  __loadProps( _props ) {
-    this.props = _props;
-    this.data = compat( this.props.data ); // with compatibility check
-
-    this.clock = (
-      this.props.fps ? new ClockFrame( this, parseFloat( this.props.fps ) ) :
-      this.props.realtime ? new ClockRealtime( this ) :
-      new Clock( this )
-    );
-
-    // loads params from data
-    this.params = {};
-    for ( let name in this.data.params ) {
-      let param = new Param( this );
-      param.load( this.data.params[ name ] );
-      this.params[ name ] = param;
-    }
+    if ( _props.gui ) { this.__prepareGUI( _props.gui ); }
   }
 
   /**
@@ -66,7 +43,7 @@ let AutomatonWithGUI = class extends Automaton {
    * @protected
    */
   __prepareGUI( _target ) {
-    let el = document.createElement( "div" );
+    let el = document.createElement( 'div' );
     _target.appendChild( el );
     this.vue = new Vue( {
       el: el,
@@ -82,8 +59,6 @@ let AutomatonWithGUI = class extends Automaton {
     } );
   }
 
-  // ------
-
   /**
    * Toggle play / pause.
    */
@@ -92,8 +67,6 @@ let AutomatonWithGUI = class extends Automaton {
     else { this.play(); }
   }
 
-  // ------
-  
   /**
    * Operate something and put the operation into the history stack.
    * @param {string} _desc Description of the operation
@@ -110,7 +83,7 @@ let AutomatonWithGUI = class extends Automaton {
   }
 
   /**
-   * Undo the operation based on history  
+   * Undo the operation based on history
    * Can be performed via GUI.
    * @returns {any} Result of _undo
    */
@@ -121,7 +94,7 @@ let AutomatonWithGUI = class extends Automaton {
   }
 
   /**
-   * Redo the operation based on history.  
+   * Redo the operation based on history.
    * Can be performed via GUI.
    * @returns {any} Result of _do
    */
@@ -140,18 +113,16 @@ let AutomatonWithGUI = class extends Automaton {
     this.historyIndex = 0;
   }
 
-  // ------
-
   /**
-   * Set new length.  
-   * **Some nodes might be automatically removed.**  
+   * Set new length.
+   * **Some nodes might be automatically removed.**
    * Can be performed via GUI.
    * @param {number} _len new length
    */
   setLength( _len ) {
     // if len is invalid then throw error
     if ( isNaN( _len ) ) {
-      throw "Automaton.setLength: _len is invalid"
+      throw 'Automaton.setLength: _len is invalid';
     }
 
     for ( let paramName in this.params ) {
@@ -179,16 +150,16 @@ let AutomatonWithGUI = class extends Automaton {
     this.__dropHistory();
   }
 
-  // ------
-  
   /**
    * Create a new param.
    * @param {string} _name Name of param
    * @returns {Param} Created param
    */
   createParam( _name ) {
-    let param = new Param( this );
-    Vue.set( this.params, _name, param );
+    let param = new Param( {
+      automaton: this
+    } );
+    Vue.set( this.__params, _name, param );
     return param;
   }
 
@@ -197,7 +168,7 @@ let AutomatonWithGUI = class extends Automaton {
    * @param {string} _name Name of param
    */
   deleteParam( _name ) {
-    Vue.delete( this.params, _name );
+    Vue.delete( this.__params, _name );
   }
 
   /**
@@ -206,10 +177,10 @@ let AutomatonWithGUI = class extends Automaton {
    */
   getParamNames() {
     let arr = [];
-    for ( let name in this.params ) { arr.push( name ); }
+    for ( const name in this.__params ) { arr.push( name ); }
     arr = arr.sort();
     return arr;
-  };
+  }
 
   /**
    * Return count of params.
@@ -217,34 +188,22 @@ let AutomatonWithGUI = class extends Automaton {
    */
   countParams() {
     let sum = 0;
-    for ( let name in this.params ) { sum ++; }
+    for ( const name in this.__params ) { sum ++; }
     return sum;
-  };
-
-  // ------
+  }
 
   /**
-   * Render all params.  
-   * Usually you don't need to execute by your hand.
-   */
-  renderAll() {
-    for ( let name in this.params ) { this.params[ name ].render(); }
-  };
-
-  /**
-   * Assigned to `Automaton.auto` at constructor.  
+   * Assigned to `Automaton.auto` at constructor.
    * @param {string} _name name of the param
    * @returns {number} Current value of the param
    * @protected
    */
   __auto( _name ) {
-    let param = this.params[ _name ];
+    let param = this.__params[ _name ];
     if ( !param ) { param = this.createParam( _name ); }
-    param.used = true;
-    return param.currentValue;
-  };
-
-  // ------
+    param.__used = true;
+    return param.getValue();
+  }
 
   /**
    * Export current state as object.
@@ -257,8 +216,8 @@ let AutomatonWithGUI = class extends Automaton {
     let obj = this.data;
 
     obj.params = {};
-    for ( let name in this.params ) {
-      let param = this.params[ name ];
+    for ( let name in this.__params ) {
+      let param = this.__params[ name ];
       obj.params[ name ] = param.nodes;
     }
 

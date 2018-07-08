@@ -1,8 +1,8 @@
-import Clock from "./clock";
+import Clock from './clock';
 
 /**
- * **Usually you don't need to know about this class.**  
- * Class that deals with time.  
+ * **Usually you don't need to know about this class.**
+ * Class that deals with time.
  * This is "frame" type clock, the frame increases every update call.
  * @extends Clock
  * @param {Automaton} _automaton Parent automaton object

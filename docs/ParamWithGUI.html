@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Clock - Documentation</title>
+    <title>ParamWithGUI - Documentation</title>
     <!--[if lt IE 9]>
       <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
@@ -25,7 +25,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">Clock</h1>
+    <h1 class="page-title">ParamWithGUI</h1>
     
 
     
@@ -46,10 +46,10 @@
 
     
         <h2>
-        Clock
+        ParamWithGUI
         </h2>
         
-            <div class="class-description"><p><strong>Usually you don't need to know about this class.</strong><br>Class that deals with time.<br>In this base class, you need to set time manually from <code>Automaton.update()</code>.<br>Best for sync with external clock stuff.</p></div>
+            <div class="class-description"><p>It represents a param of Automaton.<br>It's <code>automaton.js</code> and <code>automaton.min.js</code> version.<br>It has even more pretty APIs yay</p></div>
         
     
 </header>
@@ -65,10 +65,10 @@
     
 
 
-<div class="group" id="Clock">
+<div class="group" id="ParamWithGUI">
 
 
-    <h4 class="name"><span class="type-signature"></span>new <b>Clock</b><span class="signature">(<span class="sig-params">_automaton</span>)</span><span class="type-signature"></span></h4>
+    <h4 class="name"><span class="type-signature"></span>new <b>ParamWithGUI</b><span class="signature">(<span class="sig-params">_props</span>)</span><span class="type-signature"></span></h4>
 
     
 
@@ -89,14 +89,57 @@
     
 
     
-        <span class="name">_automaton</span><span class="type"><span class="param-type">:<a href="Automaton.html">Automaton</a></span></span>
+        <span class="name">_props</span><span class="type"><span class="param-type">:Object</span></span>
     
 
     
 
     
 
-    <div class="description last"><p>Parent automaton object</p></div>
+    <div class="description last">
+        <div class="child-params">
+          
+
+<div class="params">
+    
+
+    
+        <span class="name"><span class="obj-tree">_props.</span>automaton</span><span class="type"><span class="param-type">:<a href="Automaton.html">Automaton</a></span></span>
+    
+
+    
+
+    
+
+    <div class="description last"><p>Parent automaton</p></div>
+
+    
+
+    
+        <span class="name"><span class="obj-tree">_props.</span>data</span><span class="type"><span class="param-type">:Object</span></span>
+    
+
+    
+
+    
+        <span class="attributes">
+        
+            (optional)<br>
+        
+
+        
+
+        
+        </span>
+    
+
+    <div class="description last"><p>Data of the param. Don't worry, I can generate an initial data for you!</p></div>
+
+    
+</div>
+
+        </div>
+    </div>
 
     
 </div>
@@ -124,7 +167,7 @@
 
 
 
-<div class="src">Source: <a href="clock.js.html">clock.js</a>, <a href="clock.js.html#line8">line 8</a></div>
+<div class="src">Source: <a href="param-gui.js.html">param-gui.js</a>, <a href="param-gui.js.html#line24">line 24</a></div>
 
 
 </div>
@@ -154,17 +197,17 @@
     
 
 
-<div class="group" id="pause">
+<div class="group" id="__sortNodes">
 
 
-    <h4 class="name"><span class="type-signature"></span><b>pause</b><span class="signature">(<span class="sig-params"></span>)</span><span class="type-signature"></span></h4>
+    <h4 class="name"><span class="type-signature">(protected) </span><b>__sortNodes</b><span class="signature">(<span class="sig-params"></span>)</span><span class="type-signature"></span></h4>
 
     
 
 
 
 <div class="description">
-    <p>Stop the clock.</p>
+    <p>Sort nodes by time.</p>
 </div>
 
 
@@ -197,7 +240,7 @@
 
 
 
-<div class="src">Source: <a href="clock.js.html">clock.js</a>, <a href="clock.js.html#line37">line 37</a></div>
+<div class="src">Source: <a href="param-gui.js.html">param-gui.js</a>, <a href="param-gui.js.html#line54">line 54</a></div>
 
 
 </div>
@@ -209,72 +252,17 @@
     
 
 
-<div class="group" id="play">
+<div class="group" id="__validateNodeIndex">
 
 
-    <h4 class="name"><span class="type-signature"></span><b>play</b><span class="signature">(<span class="sig-params"></span>)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Start the clock.</p>
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="src">Source: <a href="clock.js.html">clock.js</a>, <a href="clock.js.html#line30">line 30</a></div>
-
-
-</div>
-
-        
-            
-
-
-    
-
-
-<div class="group" id="setTime">
-
-
-    <h4 class="name"><span class="type-signature"></span><b>setTime</b><span class="signature">(<span class="sig-params">_time</span>)</span><span class="type-signature"></span></h4>
+    <h4 class="name"><span class="type-signature">(protected) </span><b>__validateNodeIndex</b><span class="signature">(<span class="sig-params">_index</span>)</span><span class="type-signature"></span></h4>
 
     
 
 
 
 <div class="description">
-    <p>Set the time manually.</p>
+    <p>If the index of node is invalid, throw an error.</p>
 </div>
 
 
@@ -292,89 +280,14 @@
     
 
     
-        <span class="name">_time</span><span class="type"><span class="param-type">:number</span></span>
+        <span class="name">_index</span><span class="type"><span class="param-type">:number</span></span>
     
 
     
 
     
 
-    <div class="description last"><p>Time</p></div>
-
-    
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="src">Source: <a href="clock.js.html">clock.js</a>, <a href="clock.js.html#line45">line 45</a></div>
-
-
-</div>
-
-        
-            
-
-
-    
-
-
-<div class="group" id="update">
-
-
-    <h4 class="name"><span class="type-signature"></span><b>update</b><span class="signature">(<span class="sig-params">_time</span>)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Update the clock.</p>
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters</h5>
-    
-
-<div class="params">
-    
-
-    
-        <span class="name">_time</span><span class="type"><span class="param-type">:number</span></span>
-    
-
-    
-
-    
-
-    <div class="description last"><p>Time. You need to set manually</p></div>
+    <div class="description last"><p>Index of node</p></div>
 
     
 </div>
@@ -402,7 +315,7 @@
 
 
 
-<div class="src">Source: <a href="clock.js.html">clock.js</a>, <a href="clock.js.html#line21">line 21</a></div>
+<div class="src">Source: <a href="param-gui.js.html">param-gui.js</a>, <a href="param-gui.js.html#line43">line 43</a></div>
 
 
 </div>

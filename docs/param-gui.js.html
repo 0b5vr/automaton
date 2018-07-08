@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Clock - Documentation</title>
+    <title>param-gui.js - Documentation</title>
     <!--[if lt IE 9]>
       <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
@@ -25,397 +25,79 @@
 
 <div id="main">
     
-    <h1 class="page-title">Clock</h1>
+    <h1 class="page-title">param-gui.js</h1>
     
 
     
 
 
 
-
-<section>
-
-<header>
-    <span class="creds">
-      
-
-      
-    </span>
-
-    <hr>
-
     
-        <h2>
-        Clock
-        </h2>
-        
-            <div class="class-description"><p><strong>Usually you don't need to know about this class.</strong><br>Class that deals with time.<br>In this base class, you need to set time manually from <code>Automaton.update()</code>.<br>Best for sync with external clock stuff.</p></div>
-        
-    
-</header>
-
-<article>
-    <div class="container-overview">
-    
-        
-
-
-    
-    <h2>Constructor</h2>
-    
-
-
-<div class="group" id="Clock">
-
-
-    <h4 class="name"><span class="type-signature"></span>new <b>Clock</b><span class="signature">(<span class="sig-params">_automaton</span>)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-
-
-
-
-
-
-
-
-    <h5>Parameters</h5>
-    
-
-<div class="params">
-    
-
-    
-        <span class="name">_automaton</span><span class="type"><span class="param-type">:<a href="Automaton.html">Automaton</a></span></span>
-    
-
-    
-
-    
-
-    <div class="description last"><p>Parent automaton object</p></div>
-
-    
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="src">Source: <a href="clock.js.html">clock.js</a>, <a href="clock.js.html#line8">line 8</a></div>
-
-
-</div>
-
-    
-    </div>
-
-    
-
-    
-
-    
-
-     
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        
-            
-
-
-    
-
-
-<div class="group" id="pause">
-
-
-    <h4 class="name"><span class="type-signature"></span><b>pause</b><span class="signature">(<span class="sig-params"></span>)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Stop the clock.</p>
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="src">Source: <a href="clock.js.html">clock.js</a>, <a href="clock.js.html#line37">line 37</a></div>
-
-
-</div>
-
-        
-            
-
-
-    
-
-
-<div class="group" id="play">
-
-
-    <h4 class="name"><span class="type-signature"></span><b>play</b><span class="signature">(<span class="sig-params"></span>)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Start the clock.</p>
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="src">Source: <a href="clock.js.html">clock.js</a>, <a href="clock.js.html#line30">line 30</a></div>
-
-
-</div>
-
-        
-            
-
-
-    
-
-
-<div class="group" id="setTime">
-
-
-    <h4 class="name"><span class="type-signature"></span><b>setTime</b><span class="signature">(<span class="sig-params">_time</span>)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Set the time manually.</p>
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters</h5>
-    
-
-<div class="params">
-    
-
-    
-        <span class="name">_time</span><span class="type"><span class="param-type">:number</span></span>
-    
-
-    
-
-    
-
-    <div class="description last"><p>Time</p></div>
-
-    
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="src">Source: <a href="clock.js.html">clock.js</a>, <a href="clock.js.html#line45">line 45</a></div>
-
-
-</div>
-
-        
-            
-
-
-    
-
-
-<div class="group" id="update">
-
-
-    <h4 class="name"><span class="type-signature"></span><b>update</b><span class="signature">(<span class="sig-params">_time</span>)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Update the clock.</p>
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters</h5>
-    
-
-<div class="params">
-    
-
-    
-        <span class="name">_time</span><span class="type"><span class="param-type">:number</span></span>
-    
-
-    
-
-    
-
-    <div class="description last"><p>Time. You need to set manually</p></div>
-
-    
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="src">Source: <a href="clock.js.html">clock.js</a>, <a href="clock.js.html#line21">line 21</a></div>
-
-
-</div>
-
-        
-    
-
-    
-
-    
-</article>
-
-</section>
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import ass from './ass';
+
+import Automaton from './main-gui';
+import Param from './param';
+
+// 🔥 あとでAssignに変える
+let cloneObj = ( _obj ) => {
+  if ( typeof _obj !== 'object' ) { return _obj; }
+  let obj = {};
+  for ( let key in _obj ) {
+    obj[ key ] = _obj[ key ];
+  }
+  return obj;
+};
+
+/**
+ * It represents a param of Automaton.
+ * It's `automaton.js` and `automaton.min.js` version.
+ * It has even more pretty APIs yay
+ * @param {Object} _props
+ * @param {Automaton} _props.automaton Parent automaton
+ * @param {Object} [_props.data] Data of the param. Don't worry, I can generate an initial data for you!
+ */
+let ParamWithGUI = class extends Param {
+  constructor( _props ) {
+    let props = Object.assign( {}, _props );
+    props.data = props.data ? props.data : {
+      nodes: [
+        { time: 0.0, value: 0.0, out: { time: 0.0, value: 0.0 } },
+        { time: _props.automaton.length, value: 0.0, in: { time: 0.0, value: 0.0 } }
+      ],
+      fxs: []
+    };
+
+    super( props );
+  }
+
+  /**
+   * If the index of node is invalid, throw an error.
+   * @param {number} _index Index of node
+   * @protected
+   */
+  __validateNodeIndex( _index ) {
+    ass(
+      0 &lt; _index &amp;&amp; _index &lt; this.__nodes.length,
+      'Invalid node index'
+    );
+  }
+
+  /**
+   * Sort nodes by time.
+   * @protected
+   */
+  __sortNodes() {
+    this.__nodes.sort( ( a, b ) => a.time - b.time );
+  }
+};
+
+// ------
+
+export default ParamWithGUI;</code></pre>
+        </article>
+    </section>
 
 
 

@@ -10,5 +10,8 @@
       "useLongnameInNav": true
     }
   },
-  "plugins": [ "plugins/markdown" ]
+  "plugins": [ "plugins/markdown" ],
+  "markdown": {
+    "hardwrap": "true"
+  }
 }

@@ -1,12 +1,12 @@
-import xorshift from "./xorshift";
+import xorshift from './xorshift';
 
 let int = ( _a, _b, _k ) => {
   let smooth = _k * _k * ( 3.0 - 2.0 * _k );
   return _a + ( _b - _a ) * smooth;
-}
+};
 
 let genNoise = ( _params ) => {
-  let params = typeof _params === "object" ? _params : {
+  let params = typeof _params === 'object' ? _params : {
     length: 32,
     recursion: 6,
     freq: 1.0,
@@ -38,7 +38,7 @@ let genNoise = ( _params ) => {
       arr[ i ] += amp * ( int( table[ indexi ], table[ indexi + 1 ], indexf ) );
     }
   }
-  
+
   return arr;
 };
 

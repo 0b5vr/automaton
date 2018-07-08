@@ -6,14 +6,22 @@ module.exports = {
     },
 
     "parserOptions": {
+        "sourceType": "module",
         "ecmaVersion": 2017
     },
 
     "extends": "eslint:recommended",
 
+    "globals": {
+        "process": true // since gulp has envify
+    },
+
     "rules": {
         // basics
-        "indent": [ "error", 2 ], // it forces 2 spaces indentation
+        "indent": [ "error", 2, { // indentation should be 2 spaces
+            "flatTernaryExpressions": true, // ternary should be performed in flat
+            "MemberExpression": 0 // member chain should be performed in flat
+        } ], // it forces 2 spaces indentation
         "linebreak-style": [ "error", "windows" ], // CRLF is nice
         "quotes": [ "error", "single" ], // quotes must be single
         "eqeqeq": [ "error", "always" ], // fuck you, `==`

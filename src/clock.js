@@ -1,7 +1,7 @@
 /**
- * **Usually you don't need to know about this class.**  
- * Class that deals with time.  
- * In this base class, you need to set time manually from `Automaton.update()`.  
+ * **Usually you don't need to know about this class.**
+ * Class that deals with time.
+ * In this base class, you need to set time manually from `Automaton.update()`.
  * Best for sync with external clock stuff.
  * @param {Automaton} _automaton Parent automaton object
  */

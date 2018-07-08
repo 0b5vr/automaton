@@ -1,300 +1,141 @@
-import Interpolator from "./interpolator";
+import cubicBezier from './cubic-bezier';
 
-// 🔥 あとでDocs書く
+import Automaton from './main';
 
 // 🔥 あとでAssignに変える
 let cloneObj = ( _obj ) => {
-  if ( typeof _obj !== "object" ) { return _obj; }
+  if ( typeof _obj !== 'object' ) { return _obj; }
   let obj = {};
   for ( let key in _obj ) {
     obj[ key ] = _obj[ key ];
   }
   return obj;
-}
+};
 
 /**
- * Param of Automaton. 🔥 DOCS: WIP 🔥
- * @param {Automaton} _automaton Parent automaton object
+ * It represents a param of Automaton.
+ * It's `automaton.nogui.js` version and also base class for {@link ParamWithGUI}
+ * @param {Object} _props
+ * @param {Automaton} _automaton Parent automaton
+ * @param {Object} [_props.data] Data of the param. **Required in noGUI mode**
  */
 let Param = class {
-  constructor( _automaton ) {
-    this.automaton = _automaton;
+  constructor( _props ) {
+    /**
+     * The parent automaton.
+     * @type {Automaton}
+     * @protected
+     */
+    this.__automaton = _props.automaton;
 
-    this.values = [];
-    let arrayLength = Math.ceil( this.automaton.data.resolution * this.automaton.data.length ) + 1;
-    for ( let i = 0; i < arrayLength; i ++ ) {
-      this.values[ i ] = 0.0;
-    }
-    this.nodes = [];
+    this.load( _props.data );
 
-    this.addNode( 0.0, 0.0 );
-    this.addNode( this.automaton.data.length, 0.0 );
+    /**
+     * A buffer of last calculated value.
+     * @type {number}
+     * @protected
+     */
+    this.__lastValue = 0.0;
 
-    this.currentValue = 0.0;
-
-    this.render();
+    /**
+     * Will be used for calculation of `param.__lastValue`.
+     * @type {number}
+     * @protected
+     */
+    this.__lastTime = 0.0;
   }
 
   /**
-   * If the index of node is invalid, throw an error.
-   * @param {number} _index Index of node
+   * Load a param data.
+   * @param {object} _data Data of param
    */
-  validateNodeIndex( _index ) {
-    if ( _index < 0 || this.nodes.length <= _index ) {
-      throw "Automaton: invalid index of the parameter";
-    }
-
-  }
-
   load( _data ) {
-    this.nodes = _data;
-    this.render();
+    /**
+     * List of node.
+     * @type {ParamNode[]}
+     * @protected
+     */
+    this.__nodes = _data.nodes;
+
+    /**
+     * List of fx.
+     * @type {ParamFxStrip[]}
+     * @protected
+     */
+    this.__fxs = _data.fxs;
+
+    this.precalc();
   }
 
-  sortNodes() {
-    this.nodes.sort( ( a, b ) => a.time - b.time );
-  }
+  /**
+   * Precalculate value and store into `param.__values`.
+   */
+  precalc() {
+    /**
+     * An array of precalculated value.
+     * Its length is same as `param.automaton.data.resolution * param.automaton.data.length + 1`.
+     * @type {number[]}
+     * @protected
+     */
+    this.__values = [];
 
-  render() {
-    this.values = [];
+    // 🔥 超適当！！！！！
+    for ( let iNode = 0; iNode < this.__nodes.length - 1; iNode ++ ) {
+      const node0 = this.__nodes[ iNode ];
+      const node1 = this.__nodes[ iNode + 1 ];
+      const i0 = Math.floor( node0.time * this.__automaton.resolution );
+      const i1 = Math.floor( node1.time * this.__automaton.resolution );
 
-    for ( let i = 1; i < this.nodes.length; i ++ ) {
-      let startt = this.nodes[ i - 1 ].time;
-      let starti = Math.floor( startt * this.automaton.data.resolution );
-
-      let endt = this.nodes[ i ].time;
-      let endi = Math.floor( endt * this.automaton.data.resolution );
-
-      let reset = i === 1 || this.nodes[ i ].mods[ Interpolator.MOD_RESET ];
-      let resetVel = this.nodes[ i ].mods[ Interpolator.MOD_RESET ] ? this.nodes[ i ].mods[ Interpolator.MOD_RESET ].velocity : 0.0;
-      let deltaTime = 1.0 / this.automaton.data.resolution;
-
-      let iparam = {
-        mode: this.nodes[ i ].mode,
-        start: reset ? this.nodes[ i - 1 ].value : this.values[ starti ],
-        end: this.nodes[ i ].value,
-        deltaTime: deltaTime,
-        length: endi - starti + 1,
-        vel: ( !reset && 2 < this.values.length ) ? ( this.values[ this.values.length - 1 ] - this.values[ this.values.length - 2 ] ) / deltaTime : resetVel,
-        mods: this.nodes[ i ].mods
-      };
-      for ( let key in this.nodes[ i ].params ) {
-        iparam[ key ] = this.nodes[ i ].params[ key ];
-      }
-
-      let arr = Interpolator.generate( iparam );
-      this.values.pop();
-
-      this.values = this.values.concat( arr );
-    }
-  }
-
-  addNode( _time, _value ) {
-    let next = this.nodes.filter( node => _time < node.time )[ 0 ];
-    if ( !next ) {
-      next = {
-        mode: Interpolator.MODE_LINEAR,
-        params: {},
-        mods: []
-      };
-      for ( let i = 0; i < Interpolator.MODS; i ++ ) {
-        next.mods[ i ] = false;
+      this.__values[ i0 ] = node0.value;
+      for ( let i = i0 + 1; i <= i1; i ++ ) {
+        const time = i / this.__automaton.resolution;
+        this.__values[ i ] = cubicBezier( node0, node1, time );
       }
     }
-
-    let node = {
-      time: _time,
-      value: _value,
-      mode: next.mode,
-      params: cloneObj( next.params ),
-      mods: next.mods.map( _obj => cloneObj( _obj ) )
-    };
-    this.nodes.push( node );
-
-    this.sortNodes();
-    this.render();
-
-    return node;
   }
 
-  setTime( _index, _time ) {
-    this.validateNodeIndex( _index );
-
-    if ( _index !== 0 && this.nodes.length - 1 !== _index ) {
-      this.nodes[ _index ].time = Math.min(
-        Math.max(
-          _time,
-          this.nodes[ _index - 1 ].time + 1.0 / this.automaton.data.resolution
-        ),
-        this.nodes[ _index + 1 ].time - 1.0 / this.automaton.data.resolution
-      );
-      this.render();
-    }
-
-    return this.nodes[ _index ].time;
-  }
-
-  setValue( _index, _value ) {
-    this.validateNodeIndex( _index );
-
-    this.nodes[ _index ].value = _value;
-
-    this.render();
-
-    return this.nodes[ _index ].value;
-  }
-
-  copyProps( _index, _node ) {
-    this.validateNodeIndex( _index );
-
-    let node = this.nodes[ _index ];
-    node.mode = _node.mode;
-    node.params = cloneObj( _node.params );
-    node.mods = _node.mods.map( _obj => cloneObj( _obj ) );
-
-    this.render();
-  }
-
-  setMode( _index, _mode ) {
-    this.validateNodeIndex( _index );
-
-    let node = this.nodes[ _index ];
-    node.mode = _mode;
-    if ( _mode === Interpolator.MODE_HOLD ) {
-      node.params = {};
-    } else if ( _mode === Interpolator.MODE_LINEAR ) {
-      node.params = {};
-    } else if ( _mode === Interpolator.MODE_SMOOTH ) {
-      node.params = {};
-    } else if ( _mode === Interpolator.MODE_EXP ) {
-      node.params = {
-        factor: 10.0
-      };
-    } else if ( _mode === Interpolator.MODE_SPRING ) {
-      node.params = {
-        rate: 500.0,
-        damp: 1.0
-      };
-    } else if ( _mode === Interpolator.MODE_GRAVITY ) {
-      node.params = {
-        gravity: 70.0,
-        bounce: 0.3
-      };
-    }
-
-    this.render();
-  }
-
-  setParam( _index, _key, _value ) {
-    this.validateNodeIndex( _index );
-
-    this.nodes[ _index ].params[ _key ] = _value;
-
-    this.render();
-  }
-
-  setParams( _index, _params ) {
-    this.validateNodeIndex( _index );
-
-    for ( let key in _params ) {
-      this.nodes[ _index ].params[ key ] = _params[ key ];
-    }
-
-    this.render();
-  }
-
-  activeModParams( _index, _mod, _active ) {
-    this.validateNodeIndex( _index );
-    if ( _mod < 0 || Interpolator.MODS <= _mod ) { return; }
-
-    if ( _active ) {
-      this.nodes[ _index ].mods[ _mod ] = {};
-
-      let params;
-      if ( _mod === Interpolator.MOD_RESET ) {
-        params = {
-          velocity: 0.0
-        };
-      } else if ( _mod === Interpolator.MOD_SIN ) {
-        params = {
-          freq: 5.0,
-          amp: 0.1,
-          phase: 0.0
-        };
-      } else if ( _mod === Interpolator.MOD_NOISE ) {
-        params = {
-          freq: 1.0,
-          amp: 0.2,
-          reso: 8.0,
-          recursion: 4.0,
-          seed: 1.0
-        };
-      } else if ( _mod === Interpolator.MOD_LOFI ) {
-        params = {
-          freq: 10.0
-        };
-      }
-      this.setModParams( _index, _mod, params );
-    } else {
-      this.nodes[ _index ].mods[ _mod ] = false;
-      this.render();
-    }
-  }
-
-  toggleMod( _index, _mod ) {
-    this.validateNodeIndex( _index );
-    if ( _mod < 0 || Interpolator.MODS <= _mod ) { return; }
-
-    this.activeModParams( _index, _mod, !( this.nodes[ _index ].mods[ _mod ] ) );	
-  }
-
-  setModParam( _index, _mod, _key, _value ) {
-    this.validateNodeIndex( _index );
-    if ( _mod < 0 || Interpolator.MODS <= _mod ) { return; }
-
-    this.nodes[ _index ].mods[ _mod ][ _key ] = _value;
-
-    this.render();
-  }
-
-  setModParams( _index, _mod, _params ) {
-    this.validateNodeIndex( _index );
-    if ( _mod < 0 || Interpolator.MODS <= _mod ) { return; }
-
-    for ( let key in _params ) {
-      this.nodes[ _index ].mods[ _mod ][ key ] = _params[ key ];
-    }
-
-    this.render();
-  }
-
-  removeNode( _index ) {
-    this.validateNodeIndex( _index );
-
-    let node = this.nodes.splice( _index, 1 );
-
-    this.render();
-
-    return node;
-  }
+  /**
+   * Return the value of specified time point.
+   * @param {number} {_time} Time at the point you want to grab the value.
+   * If it is not given, use current time of parent automaton instead
+   * @returns {number} Result value
+   */
 
   getValue( _time ) {
-    if ( typeof _time !== "number" ) { return this.currentValue; }
     let time = _time;
+    if ( typeof time !== 'number' ) { // use parent automaton time instead
+      time = this.__automaton.time;
+    }
 
-    if ( time <= 0.0 ) {
-      return this.values[ 0 ];
-    } else if ( this.automaton.data.length <= time ) {
-      return this.values[ this.values.length - 1 ];
-    } else {
-      let index = time * this.automaton.data.resolution;
+    if ( time === this.__lastTime ) { // use the buffer!
+      return this.__lastValue;
+    }
+
+    if ( this.__automaton.loop ) {
+      time = this.__automaton.time - Math.floor( this.__automaton.time / this.__automaton.length ) * this.__automaton.length;
+    }
+
+    if ( time <= 0.0 ) { // left clamp
+      return this.__values[ 0 ];
+
+    } else if ( this.__automaton.length <= time ) { // right clamp
+      return this.__values[ this.__values.length - 1 ];
+
+    } else { // fetch two value then do linear interpolation
+      let index = time * this.__automaton.resolution;
       let indexi = Math.floor( index );
       let indexf = index % 1.0;
 
-      let pv = this.values[ indexi ];
-      let fv = this.values[ indexi + 1 ];
+      let v0 = this.__values[ indexi ];
+      let v1 = this.__values[ indexi + 1 ];
 
-      let v = pv + ( fv - pv ) * indexf;
+      let v = v0 + ( v1 - v0 ) * indexf;
+
+      // store lastValue
+      if ( time === this.__automaton.time ) {
+        this.__lastTime = time;
+        this.__lastValue = v;
+      }
 
       return v;
     }

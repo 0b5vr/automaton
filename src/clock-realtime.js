@@ -1,8 +1,8 @@
-import Clock from "./clock";
+import Clock from './clock';
 
 /**
- * **Usually you don't need to know about this class.**  
- * Class that deals with time.  
+ * **Usually you don't need to know about this class.**
+ * Class that deals with time.
  * This is "realtime" type clock, the time goes on as real world.
  * @extends Clock
  * @param {Automaton} _automaton Parent automaton object
@@ -11,6 +11,7 @@ let ClockRealtime = class extends Clock {
   constructor( _automaton ) {
     super( _automaton );
 
+    this.realtime = true;
     this.rtTime = 0.0;
     this.rtDate = +new Date();
   }

@@ -1,150 +1,254 @@
-import deprec from "./utils/deprec";
+import Clock from './clock';
+import ClockFrame from './clock-frame';
+import ClockRealtime from './clock-realtime';
 
-import Clock from "./clock";
-import ClockFrame from "./clock-frame";
-import ClockRealtime from "./clock-realtime";
-
-import Param from "./param";
-
-// ------
+import Param from './param';
 
 /**
- * IT'S AUTOMATON!  
+ * IT'S AUTOMATON!
  * It's `automaton.nogui.js` version and also base class for {@link AutomatonWithGUI}.
- * @param {object} _props
+ * @param {Object} _props
  * @param {boolean} [_props.loop] Whether let the time loop or not
  * @param {number} [_props.fps] If this is set, the clock will become frame mode
  * @param {boolean} [_props.realtime] If this is true, the clock will become realtime mode
- * @param {function} [_props.onSeek] Will call when the method `seek()` is called
- * @param {function} [_props.onPlay] Will call when the method `play()` is called
- * @param {function} [_props.onPause] Will call when the method `pause()` is called
- * @param {string} _props.data Data of the automaton in JSON format. <b>Required in noGUI mode</b>
+ * @param {Object} _props.data Data of the automaton. **Required in noGUI mode**
  */
 let Automaton = class {
   constructor( _props ) {
-    this.version = process.env.VERSION;
-    this.__loadProps( _props );
+    /**
+     * Version of the automaton.
+     * @type {number}
+     * @protected
+     */
+    this.__version = process.env.VERSION;
 
     /**
-     * **THE MIGHTY `auto()` FUNCTION!! GRAB IT**  
-     * It creates a new param automatically if there are no param called `_name` (GUI mode only).  
+     * Whether the animation will be looped or not.
+     * @type {boolean}
+     */
+    this.loop = _props.loop || false;
+
+    /**
+     * Clock of the automaton.
+     * @type {Clock}
+     * @protected
+     */
+    this.__clock = (
+      _props.fps ? new ClockFrame( this, _props.fps ) :
+      _props.realtime ? new ClockRealtime( this ) :
+      new Clock( this )
+    );
+
+    const data = _props.data;
+    this.load( data );
+
+    /**
+     * **THE MIGHTY `auto()` FUNCTION!! GRAB IT**
+     * It creates a new param automatically if there are no param called `_name` (GUI mode only).
      * Otherwise it returns current value of the param called `_name`.
      * @param {string} _name name of the param
      * @returns {number} Current value of the param
      */
     this.auto = ( _name ) => this.__auto( _name );
+
+    /**
+     * A list of param fxs.
+     * @type {Fx[]}
+     * @protected
+     */
+    this.__paramFxs = {};
+
+    /**
+     * List of event listeners.
+     * @type {Object.<string, function[]>}
+     */
+    this.__listeners = {};
   }
 
   /**
-   * Load props object.
-   * @param {object} _props Props object from constructor
-   * @protected
-   */
-  __loadProps( _props ) {
-    this.props = _props;
-    this.data = JSON.parse( this.props.data ); // without compatibility check
-
-    this.clock = (
-      this.props.fps ? new ClockFrame( this, fps ) :
-      this.props.realtime ? new ClockRealtime( this ) :
-      new Clock( this )
-    );
-
-    // load params from data
-    this.params = {};
-    for ( let name in this.data.params ) {
-      let param = new Param( this );
-      param.load( this.data.params[ name ] );
-      this.params[ name ] = param;
-    }
-  }
-
-  // ------
-
-  /**
-   * Current time. Same as `automaton.clock.time`.
+   * Version of the automaton.
    * @type {number}
    * @readonly
    */
-  get time() { return this.clock.time; }
+  get version() { return this.__version; }
 
   /**
-   * Delta of time between now and previous update call. Same as `automaton.clock.deltaTime`.
+   * Current time. Same as `automaton.__clock.time`.
    * @type {number}
    * @readonly
    */
-  get deltaTime() { return this.clock.deltaTime; }
+  get time() { return this.__clock.time; }
 
   /**
-   * Whether it's playing or not. Same as `automaton.clock.isPlaying`.
+   * Total length of animation in seconds.
+   * @type {number}
+   * @readonly
+   */
+  get length() { return this.__length; }
+
+  /**
+   * Resolution = Sampling point per second.
+   * @type {number}
+   * @readonly
+   */
+  get resolution() { return this.__resolution; }
+
+  /**
+   * Delta of time between now and previous update call.
+   * @type {number}
+   * @readonly
+   */
+  get deltaTime() { return this.__clock.deltaTime; }
+
+  /**
+   * Whether it's playing or not.
    * @type {boolean}
    * @readonly
    */
-  get isPlaying() { return this.clock.isPlaying; }
+  get isPlaying() { return this.__clock.isPlaying; }
 
   /**
    * Current progress by whole length. Might NOT be [0-1] unless `_props.loop` (see constructor) is true.
    * @type {number}
    * @readonly
    */
-  get progress() { return this.clock.time / this.data.length; }
-
-  // ------
+  get progress() { return this.time / this.length; }
 
   /**
-   * Seek the timeline.  
+   * Frame per second. If the clock type is not fps, it will return `0` instead.
+   * @type {number}
+   * @readonly
+   */
+  get fps() { return this.__clock.fps ? this.__clock.fps : 0; }
+
+  /**
+   * Boolean that represents whether the clock is based on realtime or not.
+   * @type {boolean}
+   * @readonly
+   */
+  get realtime() { return Boolean( this.__clock.realtime ); }
+
+  /**
+   * Load automaton state data.
+   * @param {Object} _data Object contains automaton data.
+   */
+  load( _data ) {
+    /**
+     * Total length of animation in seconds.
+     * @type {number}
+     * @protected
+     */
+    this.__length = _data.length;
+
+    /**
+     * Resolution = Sampling point per second.
+     * @type {number}
+     * @protected
+     */
+    this.__resolution = _data.resolution;
+
+    /**
+     * List of Param.
+     * @type {Object.<string, Param>}
+     * @protected
+     */
+    this.__params = {};
+    for ( const name in _data.params ) {
+      let param = new Param( {
+        automaton: this,
+        data: _data.params[ name ]
+      } );
+      this.__params[ name ] = param;
+    }
+  }
+
+  /**
+   * Seek the timeline.
    * Can be performed via GUI.
    * @param {number} _time Time
    */
   seek( _time ) {
-    this.clock.setTime( _time );
-    if ( typeof this.props.onSeek === "function" ) { this.props.onSeek( _time ); }
-    deprec.handler( this.props.onseek, "Automaton: The handler onseek", "onSeek" );
+    this.__clock.setTime( _time );
+    this.__emit( 'seek' );
   }
 
   /**
-   * Play the timeline.  
+   * Play the timeline.
    * @todo SHOULD be performed via GUI.
    */
   play() {
-    this.clock.play();
-    if ( typeof this.props.onPlay === "function" ) { this.props.onPlay(); }
-    deprec.handler( this.props.onplay, "Automaton: The handler onplay", "onPlay" );
+    this.__clock.play();
+    this.__emit( 'play' );
   }
 
   /**
-   * Pause the timeline.  
+   * Pause the timeline.
    * @todo SHOULD be performed via GUI.
    */
   pause() {
-    this.clock.pause();
-    if ( typeof this.props.onPause === "function" ) { this.props.onPause(); }
-    deprec.handler( this.props.onpause, "Automaton: The handler onpause", "onPause" );
+    this.__clock.pause();
+    this.__emit( 'pause' );
   }
 
-  // ------
+  /**
+   * Add a fx.
+   * @param {Fx} _fx Fx object
+   */
+  addFx( _fx ) {
+    this.__paramFxs[ _fx.name ] = _fx;
+  }
 
   /**
-   * Update the entire automaton.  
+   * Emit an event.
+   * @param {string} _event Event name
+   * @param {...any} _arg Arguments passed to listeners
+   * @protected
+   */
+  __emit( _event, ..._arg ) {
+    if ( !this.__listeners[ _event ] ) { return; }
+    this.__listeners[ _event ].map( ( listener ) => listener( ..._arg ) );
+  }
+
+  /**
+   * Register a listener function.
+   * @param {string} _event Event name
+   * @param {function} _func Listener function
+   */
+  on( _event, _func ) {
+    if ( !this.__listeners[ _event ] ) {
+      this.__listeners[ _event ] = [];
+    }
+    this.__listeners[ _event ].push( _func );
+  }
+
+  /**
+   * Precalculate all params.
+   */
+  precalcAll() {
+    for ( const name in this.__params ) {
+      this.__params[ name ].precalc();
+    }
+  }
+
+  /**
+   * Update the entire automaton.
    * **You may want to call this in your update loop.**
    * @param {number} [_time] Current time, **Required if the clock mode is manual**
    */
   update( _time ) {
     // update the clock
-    this.clock.update( _time );
+    this.__clock.update( _time );
 
-    // loop the time
-    if ( this.props.loop && this.data.length < this.clock.time ) {
-      this.clock.setTime( this.clock.time - Math.floor( this.clock.time / this.data.length ) * this.data.length );
+    // if loop is enabled, loop the time
+    if ( this.loop && this.length < this.time ) {
+      this.__clock.setTime( this.time - Math.floor( this.time / this.length ) * this.length );
     }
 
-    // set currentValue to each params
-    for ( let name in this.params ) {
-      this.params[ name ].currentValue = this.params[ name ].getValue( this.clock.time );
+    // grab current value for each param
+    for ( let name in this.__params ) {
+      this.__params[ name ].getValue();
     }
   }
-
-  // ------
 
   /**
    * Assigned to Automaton.auto at constructor.
@@ -153,7 +257,7 @@ let Automaton = class {
    * @protected
    */
   __auto( _name ) {
-    return this.params[ _name ].currentValue;
+    return this.params[ _name ].__currentValue;
   }
 };
 
