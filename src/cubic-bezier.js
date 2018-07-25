@@ -80,8 +80,8 @@ const cubicBezier = ( node0, node1, time ) => {
   const vL = node1.value - node0.value;
   const x1 = node0.out.time / tL;
   const y1 = node0.out.value / vL;
-  const x2 = ( node1.time - node1.in.time - node0.time ) / tL;
-  const y2 = ( node1.value - node1.in.value - node0.value ) / vL;
+  const x2 = ( node1.time + node1.in.time - node0.time ) / tL;
+  const y2 = ( node1.value + node1.in.value - node0.value ) / vL;
   const x = ( time - node0.time ) / tL;
   return node0.value + rawCubicBezier( x1, y1, x2, y2, x ) * vL;
 };

@@ -7,7 +7,7 @@ import Clock from './clock';
  * @extends Clock
  * @param {Automaton} _automaton Parent automaton object
  */
-let ClockRealtime = class extends Clock {
+const ClockRealtime = class extends Clock {
   constructor( _automaton ) {
     super( _automaton );
 
@@ -21,9 +21,9 @@ let ClockRealtime = class extends Clock {
    */
   update() {
     if ( this.isPlaying ) {
-      let prevTime = this.time;
-      let now = Date.now();
-      let deltaDate = ( now - this.rtDate );
+      const prevTime = this.time;
+      const now = Date.now();
+      const deltaDate = ( now - this.rtDate );
       this.time = this.rtTime + deltaDate / 1000.0;
       this.deltaTime = this.time - prevTime;
     } else {

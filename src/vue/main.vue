@@ -6,16 +6,19 @@
     />
     <ParamList class="paramlist"
       :automaton="automaton"
-      :selectedParam="selectedParam"
+      :selectedParamName="selectedParamName"
       @selected="selectParam( $event )"
     />
     <PropMenu class="propmenu"
       :automaton="automaton"
-      :selectedParam="selectedParam"
+      :selectedParamName="selectedParamName"
+      :selectedNodesIndex="selectedNodesIndex"
     />
     <Timeline class="timeline"
       :automaton="automaton"
-      :selectedParam="selectedParam"
+      :selectedParamName="selectedParamName"
+      :selectedNodesIndex="selectedNodesIndex"
+      @selected="selectedNodesIndex = $event"
     />
   </div>
 </div>
@@ -44,13 +47,19 @@ export default {
 
   data() {
     return {
-      selectedParam: null
+      selectedParamName: null,
+      selectedNodesIndex: []
     }
   },
 
   methods: {
     selectParam( name ) {
-      this.selectedParam = name;
+      this.selectedParamName = name;
+      this.selectNode( [] );
+    },
+
+    selectNode( arr ) {
+      this.selectedNodesIndex = arr;
     }
   }
 }
@@ -68,6 +77,8 @@ export default {
 
 <style lang="scss" scoped>
 .root {
+  user-select: none;
+
   $header-height: 30px;
   .header {
     position: absolute;

@@ -1,0 +1,9 @@
+{
+  "tasks": [
+    {
+      "type": "gulp",
+      "task": "default",
+      "problemMatcher": []
+    }
+  ]
+}

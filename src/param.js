@@ -2,24 +2,14 @@ import cubicBezier from './cubic-bezier';
 
 import Automaton from './main';
 
-// 🔥 あとでAssignに変える
-let cloneObj = ( _obj ) => {
-  if ( typeof _obj !== 'object' ) { return _obj; }
-  let obj = {};
-  for ( let key in _obj ) {
-    obj[ key ] = _obj[ key ];
-  }
-  return obj;
-};
-
 /**
  * It represents a param of Automaton.
  * It's `automaton.nogui.js` version and also base class for {@link ParamWithGUI}
  * @param {Object} _props
- * @param {Automaton} _automaton Parent automaton
+ * @param {Automaton} _props.automaton Parent automaton
  * @param {Object} [_props.data] Data of the param. **Required in noGUI mode**
  */
-let Param = class {
+const Param = class {
   constructor( _props ) {
     /**
      * The parent automaton.
@@ -63,12 +53,32 @@ let Param = class {
      * @protected
      */
     this.__fxs = _data.fxs;
+    this.__fxs = [ // 🔥
+      {
+        name: 'Add',
+        row: 0,
+        time: 0.1,
+        length: 0.5,
+        params: {
+          value: 1.0
+        }
+      },
+      {
+        name: 'Lo-Fi',
+        row: 0,
+        time: 1.0,
+        length: 0.7,
+        params: {
+          resolution: 10.0
+        }
+      }
+    ];
 
     this.precalc();
   }
 
   /**
-   * Precalculate value and store into `param.__values`.
+   * Precalculate values.
    */
   precalc() {
     /**
@@ -79,7 +89,6 @@ let Param = class {
      */
     this.__values = [];
 
-    // 🔥 超適当！！！！！
     for ( let iNode = 0; iNode < this.__nodes.length - 1; iNode ++ ) {
       const node0 = this.__nodes[ iNode ];
       const node1 = this.__nodes[ iNode + 1 ];
@@ -89,7 +98,31 @@ let Param = class {
       this.__values[ i0 ] = node0.value;
       for ( let i = i0 + 1; i <= i1; i ++ ) {
         const time = i / this.__automaton.resolution;
-        this.__values[ i ] = cubicBezier( node0, node1, time );
+        const value = cubicBezier( node0, node1, time );
+        this.__values[ i ] = value;
+      }
+    }
+
+    for ( let iFx = 0; iFx < this.__fxs.length; iFx ++ ) {
+      const fx = this.__fxs[ iFx ];
+      const fxDef = this.__automaton.__paramFxs[ fx.name ];
+      if ( !fxDef ) { continue; }
+
+      const i0 = Math.floor( this.__automaton.resolution * fx.time );
+      const i1 = Math.floor( this.__automaton.resolution * ( fx.time + fx.length ) );
+
+      let context = {
+        i: i0,
+        t: fx.time,
+        params: fx.params,
+        array: this.__values,
+        getValue: this.getValue.bind( this )
+      };
+
+      for ( let i = i0; i < i1; i ++ ) {
+        context.i = i;
+        context.t = i / this.__automaton.resolution;
+        this.__values[ i ] = fxDef.func( context );
       }
     }
   }
@@ -112,7 +145,7 @@ let Param = class {
     }
 
     if ( this.__automaton.loop ) {
-      time = this.__automaton.time - Math.floor( this.__automaton.time / this.__automaton.length ) * this.__automaton.length;
+      time = time - Math.floor( time / this.__automaton.length ) * this.__automaton.length;
     }
 
     if ( time <= 0.0 ) { // left clamp
@@ -122,20 +155,18 @@ let Param = class {
       return this.__values[ this.__values.length - 1 ];
 
     } else { // fetch two value then do linear interpolation
-      let index = time * this.__automaton.resolution;
-      let indexi = Math.floor( index );
-      let indexf = index % 1.0;
+      const index = time * this.__automaton.resolution;
+      const indexi = Math.floor( index );
+      const indexf = index % 1.0;
 
-      let v0 = this.__values[ indexi ];
-      let v1 = this.__values[ indexi + 1 ];
+      const v0 = this.__values[ indexi ];
+      const v1 = this.__values[ indexi + 1 ];
 
-      let v = v0 + ( v1 - v0 ) * indexf;
+      const v = v0 + ( v1 - v0 ) * indexf;
 
       // store lastValue
-      if ( time === this.__automaton.time ) {
-        this.__lastTime = time;
-        this.__lastValue = v;
-      }
+      this.__lastTime = time;
+      this.__lastValue = v;
 
       return v;
     }

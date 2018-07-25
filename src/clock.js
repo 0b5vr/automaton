@@ -5,7 +5,7 @@
  * Best for sync with external clock stuff.
  * @param {Automaton} _automaton Parent automaton object
  */
-let Clock = class {
+const Clock = class {
   constructor( _automaton ) {
     this.automaton = _automaton;
 
@@ -19,7 +19,7 @@ let Clock = class {
    * @param {number} _time Time. You need to set manually
    */
   update( _time ) {
-    let prevTime = this.time;
+    const prevTime = this.time;
     this.time = _time;
     this.deltaTime = this.time - prevTime;
   }

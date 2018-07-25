@@ -4,7 +4,7 @@
     <div class="param"
       v-for="( param, name ) in automaton.__params"
       :key="'param' + name"
-      :class="{ selected: name === selectedParam }"
+      :class="{ selected: name === selectedParamName }"
       @click="$emit( 'selected', name )"
     >
       <div class="name">{{ name }}</div>
@@ -14,14 +14,13 @@
 </div>
 </template>
 
-
 <script>
 export default {
   mounted() {},
 
   beforeDestroy() {},
 
-  props: [ "automaton", "selectedParam" ],
+  props: [ "automaton", "selectedParamName" ],
 
   data() {
     return {
@@ -66,6 +65,8 @@ export default {
       top: 3px;
 
       font-size: 1.1em;
+
+      user-select: none;
     }
 
     .value {
@@ -75,6 +76,8 @@ export default {
 
       font-size: 0.6em;
       opacity: 0.7;
+
+      user-select: none;
     }
   }
 }

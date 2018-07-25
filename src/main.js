@@ -13,7 +13,7 @@ import Param from './param';
  * @param {boolean} [_props.realtime] If this is true, the clock will become realtime mode
  * @param {Object} _props.data Data of the automaton. **Required in noGUI mode**
  */
-let Automaton = class {
+const Automaton = class {
   constructor( _props ) {
     /**
      * Version of the automaton.
@@ -39,6 +39,19 @@ let Automaton = class {
       new Clock( this )
     );
 
+    /**
+     * List of event listeners.
+     * @type {Object.<string, function[]>}
+     */
+    this.__listeners = {};
+
+    /**
+     * A list of param fxs.
+     * @type {Object.<string, Fx>}
+     * @protected
+     */
+    this.__paramFxs = {};
+
     const data = _props.data;
     this.load( data );
 
@@ -50,19 +63,6 @@ let Automaton = class {
      * @returns {number} Current value of the param
      */
     this.auto = ( _name ) => this.__auto( _name );
-
-    /**
-     * A list of param fxs.
-     * @type {Fx[]}
-     * @protected
-     */
-    this.__paramFxs = {};
-
-    /**
-     * List of event listeners.
-     * @type {Object.<string, function[]>}
-     */
-    this.__listeners = {};
   }
 
   /**
@@ -129,6 +129,18 @@ let Automaton = class {
   get realtime() { return Boolean( this.__clock.realtime ); }
 
   /**
+   * Create a new param.
+   * @param _name Name of the param
+   * @param _data Data for the param
+   */
+  createParam( _name, _data ) {
+    this.__params[ name ] = new Param( {
+      automaton: this,
+      data: _data
+    } );
+  }
+
+  /**
    * Load automaton state data.
    * @param {Object} _data Object contains automaton data.
    */
@@ -154,11 +166,7 @@ let Automaton = class {
      */
     this.__params = {};
     for ( const name in _data.params ) {
-      let param = new Param( {
-        automaton: this,
-        data: _data.params[ name ]
-      } );
-      this.__params[ name ] = param;
+      this.createParam( name, _data.params[ name ] );
     }
   }
 
@@ -196,6 +204,8 @@ let Automaton = class {
    */
   addFx( _fx ) {
     this.__paramFxs[ _fx.name ] = _fx;
+
+    this.precalcAll();
   }
 
   /**

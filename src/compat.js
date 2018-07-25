@@ -1,4 +1,6 @@
-let defaultData = {
+import ParamWithGUI from './param-gui';
+
+const defaultData = {
   v: process.env.VERSION,
 
   length: 1.0,
@@ -14,7 +16,7 @@ let defaultData = {
   }
 };
 
-let compat = ( _data ) => {
+const compat = ( _data ) => {
   if ( !_data ) {
     return Object.assign( {}, defaultData );
   }
@@ -53,13 +55,13 @@ let compat = ( _data ) => {
 
   if ( v < 2.0 ) { // v1, modes and modifiers, CURSED
     for ( const name in data.params ) {
-      let param = data.params[ name ];
+      const param = data.params[ name ];
       data.params[ name ] = {
         nodes: param.map( ( node, i ) => ( {
           time: node.time,
           value: node.value,
-          in: i === 0 ? undefined : { time: 0.0, value: 0.0 },
-          out: ( i === param.length - 1 ) ? undefined : { time: 0.0, value: 0.0 }
+          in: i === 0 ? undefined : { time: -ParamWithGUI.DEFAULT_HANDLE_LENGTH, value: 0.0 },
+          out: ( i === param.length - 1 ) ? undefined : { time: ParamWithGUI.DEFAULT_HANDLE_LENGTH, value: 0.0 }
         } ) ),
         fxs: []
       };

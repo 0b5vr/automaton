@@ -31,14 +31,14 @@ export default {
           name: 'Undo',
           image: require( '../images/undo.svg' ),
           func: () => {
-            console.log( 'heh' )
+            this.automaton.undo();
           }
         },
         {
           name: 'Redo',
           image: require( '../images/redo.svg' ),
           func: () => {
-            console.log( 'a' )
+            this.automaton.redo();
           }
         },
         {

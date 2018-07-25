@@ -8,7 +8,7 @@ import Clock from './clock';
  * @param {Automaton} _automaton Parent automaton object
  * @param {number} _fps Frames per second
  */
-let ClockFrame = class extends Clock {
+const ClockFrame = class extends Clock {
   constructor( _automaton, _fps ) {
     super( _automaton );
 

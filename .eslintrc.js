@@ -22,7 +22,7 @@ module.exports = {
             "flatTernaryExpressions": true, // ternary should be performed in flat
             "MemberExpression": 0 // member chain should be performed in flat
         } ], // it forces 2 spaces indentation
-        "linebreak-style": [ "error", "windows" ], // CRLF is nice
+        "linebreak-style": [ "error", "unix" ], // fuck you, CRLF
         "quotes": [ "error", "single" ], // quotes must be single
         "eqeqeq": [ "error", "always" ], // fuck you, `==`
 
@@ -55,7 +55,7 @@ module.exports = {
         "func-call-spacing": [ "error", "never" ], // no-trailing-spaces. yea.
         "no-trailing-spaces": [ "error" ], // no-trailing-spaces. yea.
         "no-whitespace-before-property": [ "error" ], // it kills `obj .key`
-        "space-before-function-paren": [ "error", { "anonymous": "never", "named": "never", "asyncArrow": "always" } ], // it kills `func()`
+        "space-before-function-paren": [ "error", { "anonymous": "never", "named": "never", "asyncArrow": "always" } ], // it kills `func ()`
 
         // others
         "no-eval": [ "warn" ], // wow, are you really going to use `eval()`? are you mad lol

@@ -20,9 +20,9 @@ import GUI from './vue/main.vue';
  * @param {DOM} [_props.gui] DOM element where you want to attach the Automaton GUI
  * @param {string|Object} [_props.data] Data of the automaton. Don't worry, I can generate an initial data for you!
  */
-let AutomatonWithGUI = class extends Automaton {
+const AutomatonWithGUI = class extends Automaton {
   constructor( _props ) {
-    let props = Object.assign( {}, _props );
+    const props = Object.assign( {}, _props );
     props.data = compat( props.data );
 
     ass( !_props.onseek, 'The handler "onseek" is no longer supported. Use Automaton.on( "seek", ... ) instead.' );
@@ -43,9 +43,14 @@ let AutomatonWithGUI = class extends Automaton {
    * @protected
    */
   __prepareGUI( _target ) {
-    let el = document.createElement( 'div' );
+    const el = document.createElement( 'div' );
     _target.appendChild( el );
-    this.vue = new Vue( {
+
+    /**
+     * Vue instance that manages automaton gui.
+     * @type {Vue}
+     */
+    this.__vue = new Vue( {
       el: el,
       data: {
         automaton: this
@@ -57,6 +62,7 @@ let AutomatonWithGUI = class extends Automaton {
         );
       }
     } );
+    this.__vue.$on
   }
 
   /**
@@ -68,22 +74,22 @@ let AutomatonWithGUI = class extends Automaton {
   }
 
   /**
-   * Operate something and put the operation into the history stack.
+   * Put some operation into the history stack.
+   * For gui development.
    * @param {string} _desc Description of the operation
    * @param {function} _do Operation
    * @param {function} _undo Operation that undoes the `_do`
    * @returns {any} Result of `_do`
    * @protected
    */
-  __operate( _desc, _do, _undo ) {
+  pushHistory( _desc, _do, _undo ) {
     this.history.splice( this.historyIndex );
     this.history.push( { do: _do, undo: _undo } );
     this.historyIndex ++;
-    return _do();
   }
 
   /**
-   * Undo the operation based on history
+   * Undo the operation based on history stack.
    * Can be performed via GUI.
    * @returns {any} Result of _undo
    */
@@ -94,7 +100,7 @@ let AutomatonWithGUI = class extends Automaton {
   }
 
   /**
-   * Redo the operation based on history.
+   * Redo the operation based on history stack.
    * Can be performed via GUI.
    * @returns {any} Result of _do
    */
@@ -106,9 +112,8 @@ let AutomatonWithGUI = class extends Automaton {
 
   /**
    * Drop all the history. YABAI.
-   * @protected
    */
-  __dropHistory() {
+  dropHistory() {
     this.history.splice( 0 );
     this.historyIndex = 0;
   }
@@ -126,18 +131,18 @@ let AutomatonWithGUI = class extends Automaton {
     }
 
     for ( let paramName in this.params ) {
-      let param = this.params[ paramName ];
+      const param = this.params[ paramName ];
 
       // remove loose ends
       for ( let iNode = param.nodes.length - 1; 0 < iNode; iNode -- ) {
-        let node = param.nodes[ iNode ];
+        const node = param.nodes[ iNode ];
         if ( _len < node.time ) {
           param.nodes.splice( iNode, 1 );
         }
       }
 
       // generate a new end
-      let lastNode = param.nodes[ param.nodes.length - 1 ];
+      const lastNode = param.nodes[ param.nodes.length - 1 ];
       if ( lastNode.time !== _len ) {
         param.addNode( _len, lastNode.value );
       }
@@ -155,9 +160,10 @@ let AutomatonWithGUI = class extends Automaton {
    * @param {string} _name Name of param
    * @returns {Param} Created param
    */
-  createParam( _name ) {
-    let param = new Param( {
-      automaton: this
+  createParam( _name, _data ) {
+    const param = new Param( {
+      automaton: this,
+      data: _data
     } );
     Vue.set( this.__params, _name, param );
     return param;
@@ -169,6 +175,15 @@ let AutomatonWithGUI = class extends Automaton {
    */
   deleteParam( _name ) {
     Vue.delete( this.__params, _name );
+  }
+
+  /**
+   * Get a param.
+   * @param {string} _name Name of the param
+   * @returns {Param} Param object
+   */
+  getParam( _name ) {
+    return this.__params[ _name ] || null;
   }
 
   /**
@@ -213,11 +228,11 @@ let AutomatonWithGUI = class extends Automaton {
    * @todo はい
    */
   save() {
-    let obj = this.data;
+    const obj = this.data;
 
     obj.params = {};
     for ( let name in this.__params ) {
-      let param = this.__params[ name ];
+      const param = this.__params[ name ];
       obj.params[ name ] = param.nodes;
     }
 

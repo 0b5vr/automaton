@@ -133,8 +133,31 @@ var automaton = new Automaton( {
   `
 } );
 
-// define auto function
+// define an auto function
 var auto = automaton.auto;
+
+// v2.0.0 new feature: FX!
+automaton.addFx( {
+  name: 'Add',
+  params: {
+    value: { type: 'float', value: 1.0, min: -10.0, max: 10.0 }
+  },
+  func: function( context ) {
+    var t = context.t;
+    return context.getValue( t ) + context.params.value;
+  }
+} );
+
+automaton.addFx( {
+  name: 'Lo-Fi',
+  params: {
+    resolution: { type: 'float', value: 10.0, min: 1E-3, max: 100.0 }
+  },
+  func: function( context ) {
+    var t = Math.floor( context.t * context.params.resolution ) / context.params.resolution;
+    return context.getValue( t );
+  }
+} );
 
 var width = canvas.width = 300;
 var height = canvas.height = 300;
@@ -153,7 +176,7 @@ function update() {
   
   context.fillStyle = "#f00";
 
-  // here's auto function!
+  // here's the auto function!
   context.fillRect(
     auto( "rectX" ) * 100,
     auto( "rectY" ) * 100,
