@@ -132,6 +132,7 @@ const Automaton = class {
    * Create a new param.
    * @param _name Name of the param
    * @param _data Data for the param
+   * @returns {void} void
    */
   createParam( _name, _data ) {
     this.__params[ name ] = new Param( {
@@ -143,6 +144,7 @@ const Automaton = class {
   /**
    * Load automaton state data.
    * @param {Object} _data Object contains automaton data.
+   * @returns {void} void
    */
   load( _data ) {
     /**
@@ -174,6 +176,7 @@ const Automaton = class {
    * Seek the timeline.
    * Can be performed via GUI.
    * @param {number} _time Time
+   * @returns {void} void
    */
   seek( _time ) {
     this.__clock.setTime( _time );
@@ -182,6 +185,7 @@ const Automaton = class {
 
   /**
    * Play the timeline.
+   * @returns {void} void
    * @todo SHOULD be performed via GUI.
    */
   play() {
@@ -191,6 +195,7 @@ const Automaton = class {
 
   /**
    * Pause the timeline.
+   * @returns {void} void
    * @todo SHOULD be performed via GUI.
    */
   pause() {
@@ -201,6 +206,7 @@ const Automaton = class {
   /**
    * Add a fx.
    * @param {Fx} _fx Fx object
+   * @returns {void} void
    */
   addFx( _fx ) {
     this.__paramFxs[ _fx.name ] = _fx;
@@ -212,6 +218,7 @@ const Automaton = class {
    * Emit an event.
    * @param {string} _event Event name
    * @param {...any} _arg Arguments passed to listeners
+   * @returns {void} void
    * @protected
    */
   __emit( _event, ..._arg ) {
@@ -223,6 +230,7 @@ const Automaton = class {
    * Register a listener function.
    * @param {string} _event Event name
    * @param {function} _func Listener function
+   * @returns {void} void
    */
   on( _event, _func ) {
     if ( !this.__listeners[ _event ] ) {
@@ -233,6 +241,7 @@ const Automaton = class {
 
   /**
    * Precalculate all params.
+   * @returns {void} void
    */
   precalcAll() {
     for ( const name in this.__params ) {
@@ -244,6 +253,7 @@ const Automaton = class {
    * Update the entire automaton.
    * **You may want to call this in your update loop.**
    * @param {number} [_time] Current time, **Required if the clock mode is manual**
+   * @returns {void} void
    */
   update( _time ) {
     // update the clock

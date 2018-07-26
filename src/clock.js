@@ -17,6 +17,7 @@ const Clock = class {
   /**
    * Update the clock.
    * @param {number} _time Time. You need to set manually
+   * @returns {void} void
    */
   update( _time ) {
     const prevTime = this.time;
@@ -26,6 +27,7 @@ const Clock = class {
 
   /**
    * Start the clock.
+   * @returns {void} void
    */
   play() {
     this.isPlaying = true;
@@ -33,6 +35,7 @@ const Clock = class {
 
   /**
    * Stop the clock.
+   * @returns {void} void
    */
   pause() {
     this.isPlaying = false;
@@ -41,6 +44,7 @@ const Clock = class {
   /**
    * Set the time manually.
    * @param {number} _time Time
+   * @returns {void} void
    */
   setTime( _time ) {
     this.time = _time;

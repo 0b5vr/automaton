@@ -40,6 +40,7 @@ const ParamWithGUI = class extends Param {
   /**
    * If the index of node is invalid, throw an error.
    * @param {number} _index Index of node
+   * @returns {void} void
    * @protected
    */
   __validateNodeIndex( _index ) {
@@ -51,6 +52,7 @@ const ParamWithGUI = class extends Param {
 
   /**
    * Sort nodes by time.
+   * @returns {void} void
    * @protected
    */
   __sortNodes() {
@@ -62,6 +64,7 @@ const ParamWithGUI = class extends Param {
    * @param {Object|Array} _target Target object / array
    * @param {number|string} _key Key
    * @param {any} _value Value
+   * @returns {void} void
    * @protected
    */
   __set( _target, _key, _value ) {
@@ -70,6 +73,7 @@ const ParamWithGUI = class extends Param {
 
   /**
    * Return how many node the param currently have.
+   * @returns {number} Nodes count
    */
   getNumNode() {
     return this.__nodes.length;
@@ -77,6 +81,7 @@ const ParamWithGUI = class extends Param {
 
   /**
    * Precalculate values.
+   * @returns {void} void
    */
   precalc() {
     super.precalc();
@@ -119,6 +124,7 @@ const ParamWithGUI = class extends Param {
   /**
    * Create a node from dumped data.
    * @param {object} _obj Dumped node data
+   * @returns {void} void
    */
   createNodeFromData( _obj ) {
     this.__nodes.push( jsonCopy( _obj ) );
@@ -130,6 +136,7 @@ const ParamWithGUI = class extends Param {
   /**
    * Remove a node.
    * @param {number} _index Index of node
+   * @returns {void} void
    */
   removeNode( _index ) {
     this.__validateNodeIndex( _index );
@@ -144,6 +151,7 @@ const ParamWithGUI = class extends Param {
    * @param {number} _index Index of node
    * @param {number} _time Time
    * @param {number} _value Value
+   * @returns {void} void
    */
   moveNode( _index, _time, _value ) {
     this.__validateNodeIndex( _index );
@@ -171,6 +179,7 @@ const ParamWithGUI = class extends Param {
    * @param {boolean} _isOut Input handle if false, output handle if true
    * @param {number} _time Time
    * @param {number} _value Value
+   * @returns {void} void
    */
   moveHandle( _index, _isOut, _time, _value ) {
     this.__validateNodeIndex( _index );
@@ -200,6 +209,7 @@ const ParamWithGUI = class extends Param {
    * Reset a handle of a node.
    * @param {number} _index Index of node
    * @param {boolean} _isOut Input handle if false, output handle if true
+   * @returns {void} void
    */
   resetHandle( _index, _isOut ) {
     this.__validateNodeIndex( _index );
@@ -221,6 +231,7 @@ const ParamWithGUI = class extends Param {
   /**
    * If the index of fx is invalid, throw an error.
    * @param {number} _index Index of fx
+   * @returns {void} void
    * @protected
    */
   __validateFxIndex( _index ) {
@@ -232,6 +243,7 @@ const ParamWithGUI = class extends Param {
 
   /**
    * Sort nodes by time.
+   * @returns {void} void
    * @protected
    */
   __sortFxs() {
@@ -250,6 +262,7 @@ const ParamWithGUI = class extends Param {
   /**
    * Remove a fx.
    * @param {number} _index Index of node
+   * @returns {void} void
    */
   removeFx( _index ) {
     this.__validateFxIndex( _index );
@@ -263,6 +276,7 @@ const ParamWithGUI = class extends Param {
    * Move a fx.
    * @param {number} _index Index of node
    * @param {number} _time Beginning time
+   * @returns {void} void
    */
   moveFx( _index, _time ) {
     this.__validateFxIndex( _index );
@@ -336,6 +350,7 @@ const ParamWithGUI = class extends Param {
    * Resize a fx.
    * @param {number} _index Index of node
    * @param {number} _length Length
+   * @returns {void} void
    */
   resizeFx( _index, _length ) {
     this.__validateFxIndex( _index );
@@ -358,6 +373,7 @@ const ParamWithGUI = class extends Param {
    * It's very GUI dev friendly method. yeah.
    * @param {number} _index Index of node
    * @param {number} _length Length
+   * @returns {void} void
    */
   resizeFxByLeft( _index, _length ) {
     this.__validateFxIndex( _index );

@@ -18,6 +18,7 @@ const ClockFrame = class extends Clock {
 
   /**
    * Update the clock. It will increase the frame by 1.
+   * @returns {void} void
    */
   update() {
     if ( this.isPlaying ) {

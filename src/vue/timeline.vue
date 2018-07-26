@@ -357,6 +357,7 @@ export default {
     /**
      * Create a node.
      * @param {MouseEvent} event Mouse event comes from dblclick event
+     * @returns {void} void
      */
     createNode( event ) {
       const t = this.x2t( event.offsetX );
@@ -379,6 +380,7 @@ export default {
     /**
      * Remove a node.
      * @param {number} index Index of node
+     * @returns {void} void
      */
     removeNode( index ) {
       const param = this.automaton.getParam( this.selectedParamName );
@@ -402,6 +404,7 @@ export default {
      * Remove a handle of a node.
      * @param {number} index Index of node
      * @param {boolean} isOut Input handle if false, output handle if true
+     * @returns {void} void
      */
     removeHandle( index, isOut ) {
       const param = this.automaton.getParam( this.selectedParamName );
@@ -426,6 +429,7 @@ export default {
     /**
      * Reset handles of a node.
      * @param {number} index Index of node
+     * @returns {void} void
      */
     resetHandles( index ) {
       const param = this.automaton.getParam( this.selectedParamName );
@@ -451,6 +455,7 @@ export default {
      * Mouse operation helper.
      * @param {MouseEvent} event Mouse event from mousedown
      * @param {Function} callback Event listener for mousemove / mouseup
+     * @returns {void} void
      */
     grabHelper( event, callback ) {
       const x0 = event.clientX;
@@ -483,6 +488,7 @@ export default {
      * Grab a node.
      * @param {number} index Index of a node
      * @param {MouseEvent} event Mouse event
+     * @returns {void} void
      */
     grabNode( index, event ) {
       const param = this.automaton.getParam( this.selectedParamName );
@@ -534,6 +540,7 @@ export default {
      * @param {number} index Index of a handle
      * @param {boolean} isOut Input handle if false, output handle if true
      * @param {MouseEvent} event Mouse event
+     * @returns {void} void
      */
     grabHandle( index, isOut, event ) {
       const param = this.automaton.getParam( this.selectedParamName );
@@ -591,6 +598,7 @@ export default {
      * Grab a body of fx.
      * @param {number} index Index of fx
      * @param {MouseEvent} event Mouse event
+     * @returns {void} void
      */
     grabFxBody( index, event ) {
       const param = this.automaton.getParam( this.selectedParamName );
@@ -627,6 +635,7 @@ export default {
      * @param {number} index Index of fx
      * @param {boolean} isRight false if left, true if right
      * @param {MouseEvent} event Mouse event
+     * @returns {void} void
      */
     grabFxSide( index, isRight, event ) {
       const param = this.automaton.getParam( this.selectedParamName );

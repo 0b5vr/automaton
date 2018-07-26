@@ -38,6 +38,7 @@ const Param = class {
   /**
    * Load a param data.
    * @param {object} _data Data of param
+   * @returns {void} void
    */
   load( _data ) {
     /**
@@ -79,6 +80,7 @@ const Param = class {
 
   /**
    * Precalculate values.
+   * @returns {void} void
    */
   precalc() {
     /**

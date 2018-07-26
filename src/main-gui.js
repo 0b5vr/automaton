@@ -40,6 +40,7 @@ const AutomatonWithGUI = class extends Automaton {
   /**
    * Prepare GUI.
    * @param {DOM} _target DOM element where you want to attach the Automaton GUI
+   * @returns {void} void
    * @protected
    */
   __prepareGUI( _target ) {
@@ -62,11 +63,11 @@ const AutomatonWithGUI = class extends Automaton {
         );
       }
     } );
-    this.__vue.$on
   }
 
   /**
    * Toggle play / pause.
+   * @returns {void} void
    */
   togglePlay() {
     if ( this.isPlaying ) { this.pause(); }
@@ -79,7 +80,7 @@ const AutomatonWithGUI = class extends Automaton {
    * @param {string} _desc Description of the operation
    * @param {function} _do Operation
    * @param {function} _undo Operation that undoes the `_do`
-   * @returns {any} Result of `_do`
+   * @returns {void} void
    * @protected
    */
   pushHistory( _desc, _do, _undo ) {
@@ -123,6 +124,7 @@ const AutomatonWithGUI = class extends Automaton {
    * **Some nodes might be automatically removed.**
    * Can be performed via GUI.
    * @param {number} _len new length
+   * @returns {void} void
    */
   setLength( _len ) {
     // if len is invalid then throw error
@@ -172,6 +174,7 @@ const AutomatonWithGUI = class extends Automaton {
   /**
    * Delete a param.
    * @param {string} _name Name of param
+   * @returns {void} void
    */
   deleteParam( _name ) {
     Vue.delete( this.__params, _name );

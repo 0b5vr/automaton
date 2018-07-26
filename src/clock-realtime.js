@@ -18,6 +18,7 @@ const ClockRealtime = class extends Clock {
 
   /**
    * Update the clock. Time is calculated based on time in real world.
+   * @returns {void} void
    */
   update() {
     if ( this.isPlaying ) {
@@ -36,6 +37,7 @@ const ClockRealtime = class extends Clock {
   /**
    * Set the time manually.
    * @param {number} _time Time
+   * @returns {void} void
    */
   setTime( _time ) {
     this.time = _time;
