@@ -607,6 +607,18 @@ export default {
 
         param.moveFx( i, t0 + dt );
         i = param.changeFxRow( i, r0 + Math.round( -dy / 16.0 ) );
+
+        if ( isUp ) {
+          this.automaton.pushHistory(
+            `${this.selectedParamName}: Move Fx`,
+            () => {
+              param.forceMoveFx( index, t0 + dt, r0 + Math.round( -dy / 16.0 ) );
+            },
+            () => {
+              param.forceMoveFx( i, t0, r0 );
+            }
+          );
+        }
       } );
     },
 
@@ -625,8 +637,32 @@ export default {
       this.grabHelper( event, ( dt, dv, event, isUp ) => {
         if ( isRight ) {
           param.resizeFx( index, l0 + dt );
+
+          if ( isUp ) {
+            this.automaton.pushHistory(
+              `${this.selectedParamName}: Resize Fx`,
+              () => {
+                param.resizeFx( index, l0 + dt );
+              },
+              () => {
+                param.resizeFx( index, l0 );
+              }
+            );
+          }
         } else {
           param.resizeFxByLeft( index, l0 - dt );
+
+          if ( isUp ) {
+            this.automaton.pushHistory(
+              `${this.selectedParamName}: Resize Fx`,
+              () => {
+                param.resizeFx( index, l0 - dt );
+              },
+              () => {
+                param.resizeFx( index, l0 );
+              }
+            );
+          }
         }
       } );
     },

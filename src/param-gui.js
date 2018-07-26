@@ -298,11 +298,33 @@ const ParamWithGUI = class extends Param {
     const sameRow = this.__fxs.filter( ( fxOp ) => fxOp.row === _row );
     const isValid = sameRow.every( ( fxOp ) => (
       !( fxOp.time < fx.time && fx.time < ( fxOp.time + fxOp.length ) ) &&
-      !( fxOp.time < ( fx.time + fx.length ) && ( fx.time + fx.length ) < ( fxOp.time + fxOp.length ) )
+      !( fxOp.time < ( fx.time + fx.length ) && ( fx.time + fx.length ) < ( fxOp.time + fxOp.length ) ) &&
+      !( fx.time < fxOp.time && fxOp.time < ( fx.time + fx.length ) ) &&
+      !( fx.time < ( fxOp.time + fxOp.length ) && ( fxOp.time + fxOp.length ) < ( fx.time + fx.length ) )
     ) );
 
     if ( !isValid ) { return _index; }
 
+    fx.row = _row;
+    this.__sortFxs();
+
+    this.precalc();
+    return this.__fxs.indexOf( fx );
+  }
+
+  /**
+   * Move a fx --force.
+   * @param {number} _index Index of node
+   * @param {number} _time Beginning time
+   * @param {number} _row Row
+   * @returns {number} New index
+   */
+  forceMoveFx( _index, _time, _row ) {
+    this.__validateFxIndex( _index );
+
+    const fx = this.__fxs[ _index ];
+
+    fx.time = _time;
     fx.row = _row;
     this.__sortFxs();
 
