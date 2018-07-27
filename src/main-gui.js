@@ -66,6 +66,24 @@ const AutomatonWithGUI = class extends Automaton {
   }
 
   /**
+   * Generate default fx params object.
+   * @param {string} _name Name of fx
+   * @returns {Object} Default fx params object
+   * @protected
+   */
+  __generateDefaultFxParams( _name ) {
+    const fxDef = this.__paramFxDefs[ _name ];
+    if ( !fxDef ) { throw new Error( `Fx definition called ${_name} is not defined` ); }
+
+    const ret = {};
+    for ( let key in fxDef.params ) {
+      ret[ key ] = fxDef.params[ key ].default;
+    }
+
+    return ret;
+  }
+
+  /**
    * Toggle play / pause.
    * @returns {void} void
    */

@@ -46,11 +46,11 @@ const Automaton = class {
     this.__listeners = {};
 
     /**
-     * A list of param fxs.
+     * A list of param fx definitions.
      * @type {Object.<string, Fx>}
      * @protected
      */
-    this.__paramFxs = {};
+    this.__paramFxDefs = {};
 
     const data = _props.data;
     this.load( data );
@@ -204,12 +204,12 @@ const Automaton = class {
   }
 
   /**
-   * Add a fx.
+   * Add a fx definition.
    * @param {Fx} _fx Fx object
    * @returns {void} void
    */
-  addFx( _fx ) {
-    this.__paramFxs[ _fx.name ] = _fx;
+  addFxDefinition( _fx ) {
+    this.__paramFxDefs[ _fx.name ] = _fx;
 
     this.precalcAll();
   }

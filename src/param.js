@@ -107,7 +107,7 @@ const Param = class {
 
     for ( let iFx = 0; iFx < this.__fxs.length; iFx ++ ) {
       const fx = this.__fxs[ iFx ];
-      const fxDef = this.__automaton.__paramFxs[ fx.name ];
+      const fxDef = this.__automaton.__paramFxDefs[ fx.name ];
       if ( !fxDef ) { continue; }
 
       const i0 = Math.floor( this.__automaton.resolution * fx.time );

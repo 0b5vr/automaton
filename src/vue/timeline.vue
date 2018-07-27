@@ -4,6 +4,7 @@
     @wheel.prevent="onWheel"
     @dragstart.prevent
     @dblclick.stop="createNode"
+    @contextmenu.stop.prevent="createFx( $event, 'Add' )"
   >
     <svg class="svg"
       :width="width"
@@ -151,6 +152,7 @@
             rx="5"
             ry="5"
             @mousedown="grabFxBody( index, $event )"
+            @dblclick.stop="removeFx( index )"
           />
           <rect class="side"
             :x="t2x( fx.time ) - 3"
@@ -219,7 +221,11 @@ export default {
     window.removeEventListener( 'resize', this.onResize );
   },
 
-  props: [ "automaton", "selectedParamName", "selectedNodesIndex" ],
+  props: [
+    "automaton",
+    "selectedParamName",
+    "selectedNodesIndex"
+  ],
 
   data() {
     return {
@@ -595,6 +601,53 @@ export default {
     },
 
     /**
+     * Create a fx.
+     * @param {MouseEvent} event Mouse event comes from dblclick event
+     * @param {string} name Name of fx definition
+     * @returns {void} void
+     */
+    createFx( event, name ) {
+      const t = this.x2t( event.offsetX );
+
+      const param = this.automaton.getParam( this.selectedParamName );
+      const index = param.createFx( t, 1.0, name );
+
+      if ( index === -1 ) { return; }
+
+      this.automaton.pushHistory(
+        `${this.selectedParamName}: Create Fx (${name})`,
+        () => {
+          param.createFx( t, 1.0, name );
+        },
+        () => {
+          param.removeFx( index );
+        }
+      );
+    },
+
+    /**
+     * Remove a fx.
+     * @param {number} index Index of fx
+     * @returns {void} void
+     */
+    removeFx( index ) {
+      const param = this.automaton.getParam( this.selectedParamName );
+
+      const fx = param.dumpFx( index );
+      param.removeFx( index );
+
+      this.automaton.pushHistory(
+        `${this.selectedParamName}: Remove Fx (${fx.name})`,
+        () => {
+          param.removeFx( index );
+        },
+        () => {
+          param.createFxFromData( fx );
+        }
+      );
+    },
+
+    /**
      * Grab a body of fx.
      * @param {number} index Index of fx
      * @param {MouseEvent} event Mouse event
@@ -617,6 +670,8 @@ export default {
         i = param.changeFxRow( i, r0 + Math.round( -dy / 16.0 ) );
 
         if ( isUp ) {
+          if ( dt === 0 && dv === 0 ) { return; }
+
           this.automaton.pushHistory(
             `${this.selectedParamName}: Move Fx`,
             () => {
@@ -633,7 +688,7 @@ export default {
     /**
      * Grab a side of fx.
      * @param {number} index Index of fx
-     * @param {boolean} isRight false if left, true if right
+     * @param {boolean} isprevent false if left, true if right
      * @param {MouseEvent} event Mouse event
      * @returns {void} void
      */
@@ -662,6 +717,8 @@ export default {
           param.resizeFxByLeft( index, l0 - dt );
 
           if ( isUp ) {
+            if ( dt === 0 && dv === 0 ) { return; }
+
             this.automaton.pushHistory(
               `${this.selectedParamName}: Resize Fx`,
               () => {

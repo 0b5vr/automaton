@@ -1,5 +1,6 @@
 import jsonCopy from './json-copy';
 import ass from './ass';
+import hasOverwrap from './has-overwrap';
 
 import Automaton from './main-gui';
 import Param from './param';
@@ -124,13 +125,16 @@ const ParamWithGUI = class extends Param {
   /**
    * Create a node from dumped data.
    * @param {object} _obj Dumped node data
-   * @returns {void} void
+   * @returns {number} Index of the new node
    */
   createNodeFromData( _obj ) {
-    this.__nodes.push( jsonCopy( _obj ) );
+    const obj = jsonCopy( _obj );
+    this.__nodes.push( obj );
     this.__sortNodes();
 
     this.precalc();
+
+    return this.__nodes.indexOf( obj );
   }
 
   /**
@@ -251,12 +255,84 @@ const ParamWithGUI = class extends Param {
   }
 
   /**
+   * Search for vacance fx row for given time and length.
+   * @param {number} _time Beginning time of fx
+   * @param {number} _length Length of fx
+   * @param {number} [_row=0] If given, rows lower than this value will not be searched.
+   * @returns {number} Minimal free fx row
+   * @protected
+   */
+  __getFreeRow( _time, _length, _row ) {
+    let row = _row || 0;
+    for ( let iFx = 0; iFx < this.__fxs.length; iFx ++ ) {
+      const fx = this.__fxs[ iFx ];
+      if ( fx.row < row ) { continue; }
+      if ( row < fx.row ) { break; }
+      if ( hasOverwrap( _time, _length, fx.time, fx.length ) ) {
+        row ++;
+      }
+    }
+    return row;
+  }
+
+  /**
    * Dump data of a fx.
    * @param {number} _index Index of a fx you want to dump
    * @returns {object} Data of the fx
    */
   dumpFx( _index ) {
     return jsonCopy( this.__fxs[ _index ] );
+  }
+
+  /**
+   * Create a fx.
+   * @param {number} _time Beginning time of new fx
+   * @param {number} _length Length of new fx
+   * @param {string} _name Name (kind) of new fx
+   * @returns {number} Index of the new fx. If it couldn't create fx, it will return `-1` instead
+   */
+  createFx( _time, _length, _name ) {
+    let row = this.__getFreeRow( _time, _length );
+    if ( ParamWithGUI.FX_ROW_MAX < row ) {
+      console.error( 'Too many fx stacks at here!' );
+      return -1;
+    }
+
+    const data = {
+      time: _time,
+      length: _length,
+      row: row,
+      name: _name,
+      params: this.__automaton.__generateDefaultFxParams( _name )
+    };
+    this.__fxs.push( data );
+    this.__sortFxs();
+
+    this.precalc();
+
+    return this.__fxs.indexOf( data );
+  }
+
+  /**
+   * Create a fx from dumped data.
+   * @param {object} _obj Dumped fx data
+   * @returns {number} Index of the new fx
+   */
+  createFxFromData( _obj ) {
+    let row = this.__getFreeRow( _obj.time, _obj.length, _obj.row );
+    if ( ParamWithGUI.FX_ROW_MAX < row ) {
+      console.error( 'Too many fx stacks at here!' );
+      return -1;
+    }
+
+    let obj = jsonCopy( _obj );
+    obj.row = row;
+    this.__fxs.push( obj );
+    this.__sortFxs();
+
+    this.precalc();
+
+    return this.__fxs.indexOf( obj );
   }
 
   /**
@@ -400,5 +476,6 @@ const ParamWithGUI = class extends Param {
  * @constant
  */
 ParamWithGUI.DEFAULT_HANDLE_LENGTH = 0.5;
+ParamWithGUI.FX_ROW_MAX = 4;
 
 export default ParamWithGUI;

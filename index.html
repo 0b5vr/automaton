@@ -137,10 +137,10 @@ var automaton = new Automaton( {
 var auto = automaton.auto;
 
 // v2.0.0 new feature: FX!
-automaton.addFx( {
+automaton.addFxDefinition( {
   name: 'Add',
   params: {
-    value: { type: 'float', value: 1.0, min: -10.0, max: 10.0 }
+    value: { type: 'float', default: 1.0, min: -10.0, max: 10.0 }
   },
   func: function( context ) {
     var t = context.t;
@@ -148,10 +148,10 @@ automaton.addFx( {
   }
 } );
 
-automaton.addFx( {
+automaton.addFxDefinition( {
   name: 'Lo-Fi',
   params: {
-    resolution: { type: 'float', value: 10.0, min: 1E-3, max: 100.0 }
+    resolution: { type: 'float', default: 10.0, min: 1E-3, max: 100.0 }
   },
   func: function( context ) {
     var t = Math.floor( context.t * context.params.resolution ) / context.params.resolution;
