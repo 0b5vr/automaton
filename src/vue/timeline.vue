@@ -370,16 +370,12 @@ export default {
       const v = this.y2v( event.offsetY );
 
       const param = this.automaton.getParam( this.selectedParamName );
-      const index = param.createNode( t, v );
 
-      this.automaton.pushHistory(
+      const index = this.automaton.pushHistory(
         `${this.selectedParamName}: Create Node`,
-        () => {
-          param.createNode( t, v );
-        },
-        () => {
-          param.removeNode( index );
-        }
+        () => param.createNode( t, v ),
+        () => param.removeNode( index ),
+        true
       );
     },
 
@@ -393,16 +389,12 @@ export default {
       if ( index === 0 || index === param.getNumNode() - 1 ) { return; }
 
       const node = param.dumpNode( index );
-      param.removeNode( index );
 
       this.automaton.pushHistory(
         `${this.selectedParamName}: Remove Node`,
-        () => {
-          param.removeNode( index );
-        },
-        () => {
-          param.createNodeFromData( node );
-        }
+        () => param.removeNode( index ),
+        () => param.createNodeFromData( node ),
+        true
       );
     },
 
@@ -423,12 +415,9 @@ export default {
 
       this.automaton.pushHistory(
         `${this.selectedParamName}: Remove Handle`,
-        () => {
-          param.moveHandle( index, isOut, 0.0, 0.0 );
-        },
-        () => {
-          param.moveHandle( index, isOut, t0, v0 );
-        }
+        () => param.moveHandle( index, isOut, 0.0, 0.0 ),
+        () => param.moveHandle( index, isOut, t0, v0 ),
+        true
       );
     },
 
@@ -441,9 +430,6 @@ export default {
       const param = this.automaton.getParam( this.selectedParamName );
       const node = param.dumpNode( index );
 
-      param.resetHandle( index, false );
-      param.resetHandle( index, true );
-
       this.automaton.pushHistory(
         `${this.selectedParamName}: Reset Handles`,
         () => {
@@ -453,7 +439,8 @@ export default {
         () => {
           param.moveHandle( index, false, node.in.time, node.in.value );
           param.moveHandle( index, true, node.out.time, node.out.value );
-        }
+        },
+        true
       );
     },
 
@@ -616,12 +603,8 @@ export default {
 
       this.automaton.pushHistory(
         `${this.selectedParamName}: Create Fx (${name})`,
-        () => {
-          param.createFx( t, 1.0, name );
-        },
-        () => {
-          param.removeFx( index );
-        }
+        () => param.createFx( t, 1.0, name ),
+        () => param.removeFx( index )
       );
     },
 
@@ -634,16 +617,12 @@ export default {
       const param = this.automaton.getParam( this.selectedParamName );
 
       const fx = param.dumpFx( index );
-      param.removeFx( index );
 
       this.automaton.pushHistory(
         `${this.selectedParamName}: Remove Fx (${fx.name})`,
-        () => {
-          param.removeFx( index );
-        },
-        () => {
-          param.createFxFromData( fx );
-        }
+        () => param.removeFx( index ),
+        () => param.createFxFromData( fx ),
+        true
       );
     },
 
@@ -674,12 +653,8 @@ export default {
 
           this.automaton.pushHistory(
             `${this.selectedParamName}: Move Fx`,
-            () => {
-              param.forceMoveFx( index, t0 + dt, r0 + Math.round( -dy / 16.0 ) );
-            },
-            () => {
-              param.forceMoveFx( i, t0, r0 );
-            }
+            () => param.forceMoveFx( index, t0 + dt, r0 + Math.round( -dy / 16.0 ) ),
+            () => param.forceMoveFx( i, t0, r0 )
           );
         }
       } );
@@ -705,12 +680,8 @@ export default {
           if ( isUp ) {
             this.automaton.pushHistory(
               `${this.selectedParamName}: Resize Fx`,
-              () => {
-                param.resizeFx( index, l0 + dt );
-              },
-              () => {
-                param.resizeFx( index, l0 );
-              }
+              () => param.resizeFx( index, l0 + dt ),
+              () => param.resizeFx( index, l0 )
             );
           }
         } else {
@@ -721,12 +692,8 @@ export default {
 
             this.automaton.pushHistory(
               `${this.selectedParamName}: Resize Fx`,
-              () => {
-                param.resizeFx( index, l0 - dt );
-              },
-              () => {
-                param.resizeFx( index, l0 );
-              }
+              () => param.resizeFx( index, l0 - dt ),
+              () => param.resizeFx( index, l0 )
             );
           }
         }

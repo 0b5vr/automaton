@@ -98,13 +98,18 @@ const AutomatonWithGUI = class extends Automaton {
    * @param {string} _desc Description of the operation
    * @param {function} _do Operation
    * @param {function} _undo Operation that undoes the `_do`
-   * @returns {void} void
+   * @param {boolean} [_execute=false] _do will be executed instantly if true
+   * @returns {any} any if `_execute` is true, void otherwise
    * @protected
    */
-  pushHistory( _desc, _do, _undo ) {
+  pushHistory( _desc, _do, _undo, _execute ) {
     this.history.splice( this.historyIndex );
     this.history.push( { do: _do, undo: _undo } );
     this.historyIndex ++;
+
+    if ( _execute || false ) {
+      return _do();
+    }
   }
 
   /**
