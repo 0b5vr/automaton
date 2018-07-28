@@ -13,13 +13,13 @@
       :automaton="automaton"
       :selectedParamName="selectedParamName"
       :selectedNodesIndex="selectedNodesIndex"
-      :selectedFxsIndex="selectedNodesIndex"
+      :selectedFxsIndex="selectedFxsIndex"
     />
     <Timeline class="timeline"
       :automaton="automaton"
       :selectedParamName="selectedParamName"
       :selectedNodesIndex="selectedNodesIndex"
-      :selectedFxsIndex="selectedNodesIndex"
+      :selectedFxsIndex="selectedFxsIndex"
       @nodeSelected="selectedNodesIndex = $event"
       @fxSelected="selectedFxsIndex = $event"
     />

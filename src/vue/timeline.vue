@@ -146,6 +146,7 @@
           :key="'fx'+index"
         >
           <rect class="body"
+            :class="{ selected: selectedFxsIndex.some( ( i ) => i === index ) }"
             :x="t2x( fx.time )"
             :width="t2x( fx.time + fx.length ) - t2x( fx.time )"
             height="16"
@@ -180,6 +181,7 @@
             :clip-path="'url(#fxclip' + index + ')'"
           >
             <text class="text"
+              :class="{ selected: selectedFxsIndex.some( ( i ) => i === index ) }"
               :x="t2x( fx.time ) + 4"
               y="12"
             >{{ fx.name }}</text>
@@ -224,7 +226,8 @@ export default {
   props: [
     "automaton",
     "selectedParamName",
-    "selectedNodesIndex"
+    "selectedNodesIndex",
+    "selectedFxsIndex"
   ],
 
   data() {
@@ -617,6 +620,10 @@ export default {
      */
     grabFxBody( index, event ) {
       const param = this.selectedParam;
+
+      this.$emit( 'nodeSelected', [] );
+      this.$emit( 'fxSelected', [ index ] );
+      
       const fx = param.dumpFx( index );
 
       const t0 = fx.time;
