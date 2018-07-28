@@ -47,7 +47,7 @@
       </g>
 
       <polyline class="graph"
-        v-if="automaton.getParam( selectedParamName )"
+        v-if="selectedParam"
         :points="graphPoints"
       />
 
@@ -62,26 +62,26 @@
         :y="height - 2"
       >{{ automaton.time.toFixed( 3 ) }}</text>
       <g
-        v-if="automaton.getParam( selectedParamName )"
+        v-if="selectedParam"
       >
         <line class="currentLine"
           x1="0"
-          :y1="v2y( automaton.getParam( selectedParamName ).getValue() )"
+          :y1="v2y( selectedParam.getValue() )"
           :x2="width"
-          :y2="v2y( automaton.getParam( selectedParamName ).getValue() )"
+          :y2="v2y( selectedParam.getValue() )"
         />
         <text class="currentText"
           x="2"
-          :y="v2y( automaton.getParam( selectedParamName ).getValue() ) - 2"
-        >{{ automaton.getParam( selectedParamName ).getValue().toFixed( 3 ) }}</text>
+          :y="v2y( selectedParam.getValue() ) - 2"
+        >{{ selectedParam.getValue().toFixed( 3 ) }}</text>
         <circle class="currentPoint"
           r="5"
           :cx="t2x( automaton.time )"
-          :cy="v2y( automaton.getParam( selectedParamName ).getValue() )"
+          :cy="v2y( selectedParam.getValue() )"
         />
 
         <g class="node"
-          v-for="( node, index ) in automaton.getParam( selectedParamName ).__nodes"
+          v-for="( node, index ) in selectedParam.__nodes"
           :key="'node'+index"
         >
           <g class="handle">
@@ -141,7 +141,7 @@
         </g>
 
         <g class="fx"
-          v-for="( fx, index ) in automaton.getParam( selectedParamName ).__fxs"
+          v-for="( fx, index ) in selectedParam.__fxs"
           :transform="'translate(0,' + ( height - 24 - 16 * fx.row ) + ')'"
           :key="'fx'+index"
         >
@@ -328,7 +328,7 @@ export default {
     },
 
     updateGraph() {
-      const param = this.automaton.getParam( this.selectedParamName );
+      const param = this.selectedParam;
       if ( !param ) { return; }
 
       let points = '';
@@ -366,10 +366,10 @@ export default {
      * @returns {void} void
      */
     createNode( event ) {
+      const param = this.selectedParam;
+
       const t = this.x2t( event.offsetX );
       const v = this.y2v( event.offsetY );
-
-      const param = this.automaton.getParam( this.selectedParamName );
 
       const index = this.automaton.pushHistory(
         `${this.selectedParamName}: Create Node`,
@@ -385,7 +385,7 @@ export default {
      * @returns {void} void
      */
     removeNode( index ) {
-      const param = this.automaton.getParam( this.selectedParamName );
+      const param = this.selectedParam;
       if ( index === 0 || index === param.getNumNode() - 1 ) { return; }
 
       const node = param.dumpNode( index );
@@ -405,7 +405,7 @@ export default {
      * @returns {void} void
      */
     removeHandle( index, isOut ) {
-      const param = this.automaton.getParam( this.selectedParamName );
+      const param = this.selectedParam;
       const node = param.dumpNode( index );
 
       const t0 = isOut ? node.out.time : node.in.time;
@@ -427,7 +427,7 @@ export default {
      * @returns {void} void
      */
     resetHandles( index ) {
-      const param = this.automaton.getParam( this.selectedParamName );
+      const param = this.selectedParam;
       const node = param.dumpNode( index );
 
       this.automaton.pushHistory(
@@ -484,7 +484,7 @@ export default {
      * @returns {void} void
      */
     grabNode( index, event ) {
-      const param = this.automaton.getParam( this.selectedParamName );
+      const param = this.selectedParam;
 
       this.$emit( 'selected', [ index ] );
       const grabbedNodes = [ index ];
@@ -536,7 +536,7 @@ export default {
      * @returns {void} void
      */
     grabHandle( index, isOut, event ) {
-      const param = this.automaton.getParam( this.selectedParamName );
+      const param = this.selectedParam;
       const node = param.dumpNode( index );
       const handle = isOut ? node.out : node.in;
 
@@ -594,12 +594,13 @@ export default {
      * @returns {void} void
      */
     createFx( event, name ) {
-      const t = this.x2t( event.offsetX );
+      const param = this.selectedParam;
 
-      const param = this.automaton.getParam( this.selectedParamName );
+      const t = this.x2t( event.offsetX );
       const index = param.createFx( t, 1.0, name );
 
       if ( index === -1 ) { return; }
+
 
       this.automaton.pushHistory(
         `${this.selectedParamName}: Create Fx (${name})`,
@@ -614,8 +615,7 @@ export default {
      * @returns {void} void
      */
     removeFx( index ) {
-      const param = this.automaton.getParam( this.selectedParamName );
-
+      const param = this.selectedParam;
       const fx = param.dumpFx( index );
 
       this.automaton.pushHistory(
@@ -633,7 +633,7 @@ export default {
      * @returns {void} void
      */
     grabFxBody( index, event ) {
-      const param = this.automaton.getParam( this.selectedParamName );
+      const param = this.selectedParam;
       const fx = param.dumpFx( index );
 
       const t0 = fx.time;
@@ -668,7 +668,7 @@ export default {
      * @returns {void} void
      */
     grabFxSide( index, isRight, event ) {
-      const param = this.automaton.getParam( this.selectedParamName );
+      const param = this.selectedParam;
       const fx = param.dumpFx( index );
 
       const l0 = fx.length;
@@ -770,6 +770,12 @@ export default {
         this.updateGrid();
         this.updateGraph();
       } );
+    }
+  },
+
+  computed: {
+    selectedParam() {
+      return this.automaton.getParam( this.selectedParamName );
     }
   },
 
