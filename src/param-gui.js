@@ -98,6 +98,7 @@ const ParamWithGUI = class extends Param {
    * @returns {object} Data of the node
    */
   dumpNode( _index ) {
+    this.__validateNodeIndex( _index );
     return jsonCopy( this.__nodes[ _index ] );
   }
 

@@ -13,12 +13,15 @@
       :automaton="automaton"
       :selectedParamName="selectedParamName"
       :selectedNodesIndex="selectedNodesIndex"
+      :selectedFxsIndex="selectedNodesIndex"
     />
     <Timeline class="timeline"
       :automaton="automaton"
       :selectedParamName="selectedParamName"
       :selectedNodesIndex="selectedNodesIndex"
-      @selected="selectedNodesIndex = $event"
+      :selectedFxsIndex="selectedNodesIndex"
+      @nodeSelected="selectedNodesIndex = $event"
+      @fxSelected="selectedFxsIndex = $event"
     />
   </div>
 </div>
@@ -48,7 +51,8 @@ export default {
   data() {
     return {
       selectedParamName: null,
-      selectedNodesIndex: []
+      selectedNodesIndex: [],
+      selectedFxsIndex: []
     }
   },
 

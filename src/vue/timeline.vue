@@ -486,43 +486,26 @@ export default {
     grabNode( index, event ) {
       const param = this.selectedParam;
 
-      this.$emit( 'selected', [ index ] );
-      const grabbedNodes = [ index ];
+      this.$emit( 'nodeSelected', [ index ] );
+      this.$emit( 'fxSelected', [] );
 
-      const t0s = [];
-      const v0s = [];
-      grabbedNodes.forEach( ( index ) => {
-        const node = param.dumpNode( index );
-        t0s.push( node.time );
-        v0s.push( node.value );
-      } );
+      const node = param.dumpNode( index );
+      const t0 = node.time;
+      const v0 = node.value;
 
       this.grabHelper( event, ( dt, dv, event, isUp ) => {
-        if ( event.shiftKey ) {
-          dv = 0.0;
-        } else if ( event.altKey ) {
-          dt = 0.0;
-        }
+        if ( event.shiftKey ) { dv = 0.0; }
+        else if ( event.altKey ) { dt = 0.0; }
 
-        grabbedNodes.map( ( index, i ) => {
-          param.moveNode( index, t0s[ i ] + dt, v0s[ i ] + dv );
-        } );
+        param.moveNode( index, t0 + dt, v0 + dv );
 
         if ( isUp ) {
           if ( dt === 0 && dv === 0 ) { return; }
 
           this.automaton.pushHistory(
             `${this.selectedParamName}: Move Nodes`,
-            () => {
-              grabbedNodes.map( ( index, i ) => {
-                param.moveNode( index, t0s[ i ] + dt, v0s[ i ] + dv );
-              } );
-            },
-            () => {
-              grabbedNodes.map( ( index, i ) => {
-                param.moveNode( index, t0s[ i ], v0s[ i ] );
-              } );
-            }
+            () => param.moveNode( index, t0 + dt, v0 + dv ),
+            () => param.moveNode( index, t0, v0 )
           );
         }
       } );
