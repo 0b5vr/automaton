@@ -12,16 +12,16 @@
     <PropMenu class="propmenu"
       :automaton="automaton"
       :selectedParamName="selectedParamName"
-      :selectedNodesIndex="selectedNodesIndex"
-      :selectedFxsIndex="selectedFxsIndex"
+      :selectedNodeIds="selectedNodeIds"
+      :selectedFxIds="selectedFxIds"
     />
     <Timeline class="timeline"
       :automaton="automaton"
       :selectedParamName="selectedParamName"
-      :selectedNodesIndex="selectedNodesIndex"
-      :selectedFxsIndex="selectedFxsIndex"
-      @nodeSelected="selectedNodesIndex = $event"
-      @fxSelected="selectedFxsIndex = $event"
+      :selectedNodeIds="selectedNodeIds"
+      :selectedFxIds="selectedFxIds"
+      @nodeSelected="selectedNodeIds = $event"
+      @fxSelected="selectedFxIds = $event"
     />
   </div>
 </div>
@@ -51,8 +51,8 @@ export default {
   data() {
     return {
       selectedParamName: null,
-      selectedNodesIndex: [],
-      selectedFxsIndex: []
+      selectedNodeIds: [],
+      selectedFxIds: []
     }
   },
 
@@ -63,7 +63,7 @@ export default {
     },
 
     selectNode( arr ) {
-      this.selectedNodesIndex = arr;
+      this.selectedNodeIds = arr;
     }
   }
 }

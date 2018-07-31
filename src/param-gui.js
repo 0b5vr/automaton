@@ -1,5 +1,6 @@
 import jsonCopy from './json-copy';
 import ass from './ass';
+import genId from './gen-id';
 import hasOverwrap from './has-overwrap';
 
 import Automaton from './main-gui';
@@ -39,45 +40,16 @@ const ParamWithGUI = class extends Param {
   }
 
   /**
-   * If the index of node is invalid, throw an error.
-   * @param {number} _index Index of node
+   * Load a param data.
+   * @param {object} _data Data of param
    * @returns {void} void
-   * @protected
    */
-  __validateNodeIndex( _index ) {
-    ass(
-      0 <= _index && _index < this.__nodes.length,
-      'Invalid node index: ' + _index
-    );
-  }
+  load( _data ) {
+    const data = jsonCopy( _data );
+    super.load( data );
 
-  /**
-   * Sort nodes by time.
-   * @returns {void} void
-   * @protected
-   */
-  __sortNodes() {
-    this.__nodes = this.__nodes.sort( ( a, b ) => a.time - b.time );
-  }
-
-  /**
-   * Set a property to an object / array;
-   * @param {Object|Array} _target Target object / array
-   * @param {number|string} _key Key
-   * @param {any} _value Value
-   * @returns {void} void
-   * @protected
-   */
-  __set( _target, _key, _value ) {
-    Vue.set( _target, _key, _value );
-  }
-
-  /**
-   * Return how many node the param currently have.
-   * @returns {number} Nodes count
-   */
-  getNumNode() {
-    return this.__nodes.length;
+    this.__nodes.forEach( ( node ) => node.$id = genId() );
+    this.__fxs.forEach( ( fx ) => fx.$id = genId() );
   }
 
   /**
@@ -93,23 +65,61 @@ const ParamWithGUI = class extends Param {
   }
 
   /**
+   * Sort nodes by time.
+   * @returns {void} void
+   * @protected
+   */
+  __sortNodes() {
+    this.__nodes = this.__nodes.sort( ( a, b ) => a.time - b.time );
+  }
+
+  /**
+   * Search for node that has given id then return index of it.
+   * If it couldn't find the node, it will throw an error instead.
+   * @param {number} _id Id of node you want to grab
+   * @protected
+   */
+  __getNodeIndexById( _id ) {
+    const index = this.__nodes.findIndex( ( node ) => node.$id === _id );
+    if ( index === -1 ) { throw new Error( `Searched for node id: ${_id} but not found` ); }
+    return index;
+  }
+
+  /**
+   * Return how many node the param currently have.
+   * @returns {number} Nodes count
+   */
+  getNumNode() {
+    return this.__nodes.length;
+  }
+
+  /**
    * Dump data of a node.
-   * @param {number} _index Index of a node you want to dump
+   * @param {string} _id Id of the node you want to dump
    * @returns {object} Data of the node
    */
-  dumpNode( _index ) {
-    this.__validateNodeIndex( _index );
-    return jsonCopy( this.__nodes[ _index ] );
+  dumpNode( _id ) {
+    const index = this.__getNodeIndexById( _id );
+    return jsonCopy( this.__nodes[ index ] );
+  }
+
+  /**
+   * Dump data of nodes.
+   * @returns {object[]} Data of nodes
+   */
+  dumpNodes() {
+    return jsonCopy( this.__nodes );
   }
 
   /**
    * Create a node.
    * @param {number} _time Time of new node
    * @param {number} _value Value of new node
-   * @returns {number} Index of the new node
+   * @returns {string} Id of the new node
    */
   createNode( _time, _value ) {
     const data = {
+      $id: genId(),
       time: _time,
       value: _value,
       in: { time: -ParamWithGUI.DEFAULT_HANDLE_LENGTH, value: 0.0 },
@@ -120,56 +130,56 @@ const ParamWithGUI = class extends Param {
 
     this.precalc();
 
-    return this.__nodes.indexOf( data );
+    return data.$id;
   }
 
   /**
    * Create a node from dumped data.
    * @param {object} _obj Dumped node data
-   * @returns {number} Index of the new node
+   * @returns {string} Id of the new node
    */
   createNodeFromData( _obj ) {
-    const obj = jsonCopy( _obj );
-    this.__nodes.push( obj );
+    const data = jsonCopy( _obj );
+    this.__nodes.push( data );
     this.__sortNodes();
 
     this.precalc();
 
-    return this.__nodes.indexOf( obj );
+    return data.$id;
   }
 
   /**
    * Remove a node.
-   * @param {number} _index Index of node
+   * @param {string} _id Id of the node you want to remove
    * @returns {void} void
    */
-  removeNode( _index ) {
-    this.__validateNodeIndex( _index );
+  removeNode( _id ) {
+    const index = this.__getNodeIndexById( _id );
 
-    this.__nodes.splice( _index, 1 );
+    this.__nodes.splice( index, 1 );
 
     this.precalc();
   }
 
   /**
    * Move a node.
-   * @param {number} _index Index of node
+   * @param {string} _id Id of the node you want to move
    * @param {number} _time Time
    * @param {number} _value Value
    * @returns {void} void
    */
-  moveNode( _index, _time, _value ) {
-    this.__validateNodeIndex( _index );
+  moveNode( _id, _time, _value ) {
+    const index = this.__getNodeIndexById( _id );
 
-    const node = this.__nodes[ _index ];
+    const node = this.__nodes[ index ];
 
     let time = typeof _time === 'number' ? _time : node.time;
-    if ( _index === 0 ) {
+    if ( index === 0 ) {
       time = 0;
-    } else if ( _index === this.__nodes.length - 1 ) {
+    } else if ( index === this.__nodes.length - 1 ) {
       time = this.__automaton.length;
     } else {
-      time = Math.min( Math.max( time, this.__nodes[ _index - 1 ].time ), this.__nodes[ _index + 1 ].time );
+      time = Math.min( Math.max( time, this.__nodes[ index - 1 ].time ), this.__nodes[ index + 1 ].time );
     }
     node.time = time;
 
@@ -180,21 +190,21 @@ const ParamWithGUI = class extends Param {
 
   /**
    * Move a handle of a node.
-   * @param {number} _index Index of node
+   * @param {string} _id Id of the node you want to operate
    * @param {boolean} _isOut Input handle if false, output handle if true
    * @param {number} _time Time
    * @param {number} _value Value
    * @returns {void} void
    */
-  moveHandle( _index, _isOut, _time, _value ) {
-    this.__validateNodeIndex( _index );
+  moveHandle( _id, _isOut, _time, _value ) {
+    const index = this.__getNodeIndexById( _id );
 
     if (
-      ( _index === 0 && ( !_isOut ) ) ||
-      ( _index === ( this.getNumNode() - 1 ) && _isOut )
+      ( index === 0 && ( !_isOut ) ) ||
+      ( index === ( this.getNumNode() - 1 ) && _isOut )
     ) { return; }
 
-    const node = this.__nodes[ _index ];
+    const node = this.__nodes[ index ];
     const handle = _isOut ? node.out : node.in;
 
     let time = typeof _time === 'number' ? _time : handle.time;
@@ -212,19 +222,19 @@ const ParamWithGUI = class extends Param {
 
   /**
    * Reset a handle of a node.
-   * @param {number} _index Index of node
+   * @param {string} _id Id of the node you want to operate
    * @param {boolean} _isOut Input handle if false, output handle if true
    * @returns {void} void
    */
-  resetHandle( _index, _isOut ) {
-    this.__validateNodeIndex( _index );
+  resetHandle( _id, _isOut ) {
+    const index = this.__getNodeIndexById( _id );
 
     if (
-      ( _index === 0 && ( !_isOut ) ) ||
-      ( _index === ( this.getNumNode() - 1 ) && _isOut )
+      ( index === 0 && ( !_isOut ) ) ||
+      ( index === ( this.getNumNode() - 1 ) && _isOut )
     ) { return; }
 
-    const node = this.__nodes[ _index ];
+    const node = this.__nodes[ index ];
     const handle = _isOut ? node.out : node.in;
 
     handle.time = ( _isOut ? 1.0 : -1.0 ) * ParamWithGUI.DEFAULT_HANDLE_LENGTH;
@@ -234,25 +244,24 @@ const ParamWithGUI = class extends Param {
   }
 
   /**
-   * If the index of fx is invalid, throw an error.
-   * @param {number} _index Index of fx
-   * @returns {void} void
-   * @protected
-   */
-  __validateFxIndex( _index ) {
-    ass(
-      0 <= _index && _index < this.__fxs.length,
-      'Invalid fx index: ' + _index
-    );
-  }
-
-  /**
-   * Sort nodes by time.
+   * Sort fxs by time.
    * @returns {void} void
    * @protected
    */
   __sortFxs() {
     this.__fxs = this.__fxs.sort( ( a, b ) => a.time - b.time ).sort( ( a, b ) => a.row - b.row );
+  }
+
+  /**
+   * Search for fx that has given id then return index of it.
+   * If it couldn't find the fx, it will throw an error instead.
+   * @param {number} _id Id of fx you want to grab
+   * @protected
+   */
+  __getFxIndexById( _id ) {
+    const index = this.__fxs.findIndex( ( fx ) => fx.$id === _id );
+    if ( index === -1 ) { throw new Error( `Searched for fx id: ${_id} but not found` ); }
+    return index;
   }
 
   /**
@@ -278,28 +287,39 @@ const ParamWithGUI = class extends Param {
 
   /**
    * Dump data of a fx.
-   * @param {number} _index Index of a fx you want to dump
+   * @param {number} _id Id of a fx you want to dump
    * @returns {object} Data of the fx
    */
-  dumpFx( _index ) {
-    return jsonCopy( this.__fxs[ _index ] );
+  dumpFx( _id ) {
+    const index = this.__getFxIndexById( _id );
+    return jsonCopy( this.__fxs[ index ] );
+  }
+
+  /**
+   * Dump data of fxs.
+   * @returns {object[]} Data of fxs
+   */
+  dumpFxs() {
+    return jsonCopy( this.__fxs );
   }
 
   /**
    * Create a fx.
+   * If it couldn't create param, it will return empty string instead.
    * @param {number} _time Beginning time of new fx
    * @param {number} _length Length of new fx
    * @param {string} _name Name (kind) of new fx
-   * @returns {number} Index of the new fx. If it couldn't create fx, it will return `-1` instead
+   * @returns {string} Id of the new fx
    */
   createFx( _time, _length, _name ) {
     let row = this.__getFreeRow( _time, _length );
     if ( ParamWithGUI.FX_ROW_MAX < row ) {
       console.error( 'Too many fx stacks at here!' );
-      return -1;
+      return '';
     }
 
     const data = {
+      $id: genId(),
       time: _time,
       length: _length,
       row: row,
@@ -311,54 +331,55 @@ const ParamWithGUI = class extends Param {
 
     this.precalc();
 
-    return this.__fxs.indexOf( data );
+    return data.$id;
   }
 
   /**
    * Create a fx from dumped data.
+   * If it couldn't create param, it will return empty string instead.
    * @param {object} _obj Dumped fx data
-   * @returns {number} Index of the new fx
+   * @returns {string} Id of the new fx
    */
   createFxFromData( _obj ) {
     let row = this.__getFreeRow( _obj.time, _obj.length, _obj.row );
     if ( ParamWithGUI.FX_ROW_MAX < row ) {
       console.error( 'Too many fx stacks at here!' );
-      return -1;
+      return '';
     }
 
-    let obj = jsonCopy( _obj );
-    obj.row = row;
-    this.__fxs.push( obj );
+    let data = jsonCopy( _obj );
+    data.row = row;
+    this.__fxs.push( data );
     this.__sortFxs();
 
     this.precalc();
 
-    return this.__fxs.indexOf( obj );
+    return data.$id;
   }
 
   /**
    * Remove a fx.
-   * @param {number} _index Index of node
+   * @param {string} _id Id of the fx you want to remove
    * @returns {void} void
    */
-  removeFx( _index ) {
-    this.__validateFxIndex( _index );
+  removeFx( _id ) {
+    const index = this.__getFxIndexById( _id );
 
-    this.__fxs.splice( _index, 1 );
+    this.__fxs.splice( index, 1 );
 
     this.precalc();
   }
 
   /**
    * Move a fx.
-   * @param {number} _index Index of node
+   * @param {string} _id Id of the fx you want to move
    * @param {number} _time Beginning time
    * @returns {void} void
    */
-  moveFx( _index, _time ) {
-    this.__validateFxIndex( _index );
+  moveFx( _id, _time ) {
+    const index = this.__getFxIndexById( _id );
 
-    const fx = this.__fxs[ _index ];
+    const fx = this.__fxs[ index ];
 
     const sameRow = this.__fxs.filter( ( fxOp ) => fxOp.row === fx.row );
     const indexInRow = sameRow.indexOf( fx );
@@ -374,17 +395,19 @@ const ParamWithGUI = class extends Param {
 
   /**
    * Change row of a fx.
-   * CAUTION! Index can be changed after perform this method!
-   * @param {number} _index Index of node
+   * @param {string} _id Id of the fx you want to move
    * @param {number} _row Row
-   * @returns {number} New index
+   * @returns {void} void
    */
-  changeFxRow( _index, _row ) {
-    this.__validateFxIndex( _index );
-    if ( _row < 0 || 4 < _row ) { return _index; }
+  changeFxRow( _id, _row ) {
+    const index = this.__getFxIndexById( _id );
 
-    const fx = this.__fxs[ _index ];
-    if ( fx.row === _row ) { return _index; }
+    if ( _row < 0 || ParamWithGUI.FX_ROW_MAX < _row ) {
+      throw new Error( `Row number ${_row} is invalid` );
+    }
+
+    const fx = this.__fxs[ index ];
+    if ( fx.row === _row ) { return; }
 
     const sameRow = this.__fxs.filter( ( fxOp ) => fxOp.row === _row );
     const isValid = sameRow.every( ( fxOp ) => (
@@ -394,45 +417,44 @@ const ParamWithGUI = class extends Param {
       !( fx.time < ( fxOp.time + fxOp.length ) && ( fxOp.time + fxOp.length ) < ( fx.time + fx.length ) )
     ) );
 
-    if ( !isValid ) { return _index; }
+    if ( !isValid ) { return; }
 
     fx.row = _row;
     this.__sortFxs();
 
     this.precalc();
-    return this.__fxs.indexOf( fx );
   }
 
   /**
    * Move a fx --force.
-   * @param {number} _index Index of node
+   * Best for undo-redo operation. probably.
+   * @param {string} _id Id of the fx you want to move
    * @param {number} _time Beginning time
    * @param {number} _row Row
-   * @returns {number} New index
+   * @returns {void} void
    */
-  forceMoveFx( _index, _time, _row ) {
-    this.__validateFxIndex( _index );
+  forceMoveFx( _id, _time, _row ) {
+    const index = this.__getFxIndexById( _id );
 
-    const fx = this.__fxs[ _index ];
+    const fx = this.__fxs[ index ];
 
     fx.time = _time;
     fx.row = _row;
     this.__sortFxs();
 
     this.precalc();
-    return this.__fxs.indexOf( fx );
   }
 
   /**
    * Resize a fx.
-   * @param {number} _index Index of node
+   * @param {string} _id Index of the fx you want to resize
    * @param {number} _length Length
    * @returns {void} void
    */
-  resizeFx( _index, _length ) {
-    this.__validateFxIndex( _index );
+  resizeFx( _id, _length ) {
+    const index = this.__getFxIndexById( _id );
 
-    const fx = this.__fxs[ _index ];
+    const fx = this.__fxs[ index ];
 
     const sameRow = this.__fxs.filter( ( fxOp ) => fxOp.row === fx.row );
     const indexInRow = sameRow.indexOf( fx );
@@ -448,14 +470,14 @@ const ParamWithGUI = class extends Param {
   /**
    * Resize a fx by left side of the end.
    * It's very GUI dev friendly method. yeah.
-   * @param {number} _index Index of node
+   * @param {string} _id Index of the fx you want to resize
    * @param {number} _length Length
    * @returns {void} void
    */
-  resizeFxByLeft( _index, _length ) {
-    this.__validateFxIndex( _index );
+  resizeFxByLeft( _id, _length ) {
+    const index = this.__getFxIndexById( _id );
 
-    const fx = this.__fxs[ _index ];
+    const fx = this.__fxs[ index ];
     const end = fx.time + fx.length;
 
     const sameRow = this.__fxs.filter( ( fxOp ) => fxOp.row === fx.row );

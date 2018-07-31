@@ -31,8 +31,21 @@ const AutomatonWithGUI = class extends Automaton {
 
     super( props );
 
-    this.history = [];
-    this.historyIndex = 0;
+    /**
+     * History stack.
+     * Will be managed from {@link AutomatonWithGUI#pushHistory|pushHistory()}, navigated from {@link AutomatonWithGUI#undo|undo()} and {@link AutomatonWithGUI#redo|redo()}.
+     * @type {Object[]}
+     * @protected
+     */
+    this.__history = [];
+
+
+    /**
+     * Current position of history stack.
+     * @type {number}
+     * @protected
+     */
+    this.__historyIndex = 0;
 
     if ( _props.gui ) { this.__prepareGUI( _props.gui ); }
   }
@@ -94,18 +107,17 @@ const AutomatonWithGUI = class extends Automaton {
 
   /**
    * Put some operation into the history stack.
-   * For gui development.
+   * Since it should accessible from GUI this function is public, basically `-- DON'T TOUCH IT KIDDO --`
    * @param {string} _desc Description of the operation
    * @param {function} _do Operation
    * @param {function} _undo Operation that undoes the `_do`
    * @param {boolean} [_execute=false] _do will be executed instantly if true
    * @returns {any} any if `_execute` is true, void otherwise
-   * @protected
    */
   pushHistory( _desc, _do, _undo, _execute ) {
-    this.history.splice( this.historyIndex );
-    this.history.push( { do: _do, undo: _undo } );
-    this.historyIndex ++;
+    this.__history.splice( this.__historyIndex );
+    this.__history.push( { do: _do, undo: _undo } );
+    this.__historyIndex ++;
 
     if ( _execute || false ) {
       return _do();
@@ -118,9 +130,9 @@ const AutomatonWithGUI = class extends Automaton {
    * @returns {any} Result of _undo
    */
   undo() {
-    if ( this.historyIndex <= 0 ) { return; }
-    this.historyIndex --;
-    return this.history[ this.historyIndex ].undo();
+    if ( this.__historyIndex <= 0 ) { return; }
+    this.__historyIndex --;
+    return this.__history[ this.__historyIndex ].undo();
   }
 
   /**
@@ -129,17 +141,17 @@ const AutomatonWithGUI = class extends Automaton {
    * @returns {any} Result of _do
    */
   redo() {
-    if ( this.history.length <= this.historyIndex ) { return; }
-    this.historyIndex ++;
-    return this.history[ this.historyIndex - 1 ].do();
+    if ( this.__history.length <= this.__historyIndex ) { return; }
+    this.__historyIndex ++;
+    return this.__history[ this.__historyIndex - 1 ].do();
   }
 
   /**
    * Drop all the history. YABAI.
    */
   dropHistory() {
-    this.history.splice( 0 );
-    this.historyIndex = 0;
+    this.__history.splice( 0 );
+    this.__historyIndex = 0;
   }
 
   /**

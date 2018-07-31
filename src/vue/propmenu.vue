@@ -8,15 +8,15 @@
         type="number"
         name="Time"
         :value="selectedNode.time"
-        :readonly="selectedNodeIndex === 0 || selectedNodeIndex === selectedParam.getNumNode() - 1"
+        :readonly="!( selectedNode.in && selectedNode.out )"
         @changed="
-          selectedParam.moveNode( selectedNodeIndex, $event )
+          selectedParam.moveNode( selectedNodeId, $event )
         "
         @finished="
           automaton.pushHistory( selectedParamname + ': Change Node Time', () => {
-            selectedParam.moveNode( selectedNodeIndex, $event[ 1 ] );
+            selectedParam.moveNode( selectedNodeId, $event[ 1 ] );
           }, () => {
-            selectedParam.moveNode( selectedNodeIndex, $event[ 0 ] );
+            selectedParam.moveNode( selectedNodeId, $event[ 0 ] );
           } );
         "
       />
@@ -25,13 +25,13 @@
         name="Value"
         :value="selectedNode.value"
         @changed="
-          selectedParam.moveNode( selectedNodeIndex, undefined, $event )
+          selectedParam.moveNode( selectedNodeId, undefined, $event )
         "
         @finished="
           automaton.pushHistory( selectedParamname + ': Change Node Value', () => {
-            selectedParam.moveNode( selectedNodeIndex, undefined, $event[ 1 ] );
+            selectedParam.moveNode( selectedNodeId, undefined, $event[ 1 ] );
           }, () => {
-            selectedParam.moveNode( selectedNodeIndex, undefined, $event[ 0 ] );
+            selectedParam.moveNode( selectedNodeId, undefined, $event[ 0 ] );
           } );
         "
       />
@@ -42,13 +42,13 @@
         :value="selectedNode.in ? selectedNode.in.time : 0"
         :readonly="!selectedNode.in"
         @changed="
-          selectedParam.moveHandle( selectedNodeIndex, false, $event )
+          selectedParam.moveHandle( selectedNodeId, false, $event )
         "
         @finished="
           automaton.pushHistory( selectedParamname + ': Change Node Time', () => {
-            selectedParam.moveHandle( selectedNodeIndex, false, $event[ 1 ] );
+            selectedParam.moveHandle( selectedNodeId, false, $event[ 1 ] );
           }, () => {
-            selectedParam.moveHandle( selectedNodeIndex, false, $event[ 0 ] );
+            selectedParam.moveHandle( selectedNodeId, false, $event[ 0 ] );
           } );
         "
       />
@@ -58,13 +58,13 @@
         :value="selectedNode.in ? selectedNode.in.value : 0"
         :readonly="!selectedNode.in"
         @changed="
-          selectedParam.moveHandle( selectedNodeIndex, false, undefined, $event )
+          selectedParam.moveHandle( selectedNodeId, false, undefined, $event )
         "
         @finished="
           automaton.pushHistory( selectedParamname + ': Change Node Value', () => {
-            selectedParam.moveHandle( selectedNodeIndex, false, undefined, $event[ 1 ] );
+            selectedParam.moveHandle( selectedNodeId, false, undefined, $event[ 1 ] );
           }, () => {
-            selectedParam.moveHandle( selectedNodeIndex, false, undefined, $event[ 0 ] );
+            selectedParam.moveHandle( selectedNodeId, false, undefined, $event[ 0 ] );
           } );
         "
       />
@@ -75,13 +75,13 @@
         :value="selectedNode.out ? selectedNode.out.time : 0"
         :readonly="!selectedNode.out"
         @changed="
-          selectedParam.moveHandle( selectedNodeIndex, true, $event )
+          selectedParam.moveHandle( selectedNodeId, true, $event )
         "
         @finished="
           automaton.pushHistory( selectedParamname + ': Change Node Time', () => {
-            selectedParam.moveHandle( selectedNodeIndex, true, $event[ 1 ] );
+            selectedParam.moveHandle( selectedNodeId, true, $event[ 1 ] );
           }, () => {
-            selectedParam.moveHandle( selectedNodeIndex, true, $event[ 0 ] );
+            selectedParam.moveHandle( selectedNodeId, true, $event[ 0 ] );
           } );
         "
       />
@@ -91,13 +91,13 @@
         :value="selectedNode.out ? selectedNode.out.value : 0"
         :readonly="!selectedNode.out"
         @changed="
-          selectedParam.moveHandle( selectedNodeIndex, true, undefined, $event )
+          selectedParam.moveHandle( selectedNodeId, true, undefined, $event )
         "
         @finished="
           automaton.pushHistory( selectedParamname + ': Change Node Value', () => {
-            selectedParam.moveHandle( selectedNodeIndex, true, undefined, $event[ 1 ] );
+            selectedParam.moveHandle( selectedNodeId, true, undefined, $event[ 1 ] );
           }, () => {
-            selectedParam.moveHandle( selectedNodeIndex, true, undefined, $event[ 0 ] );
+            selectedParam.moveHandle( selectedNodeId, true, undefined, $event[ 0 ] );
           } );
         "
       />
@@ -115,7 +115,7 @@ export default {
   props: [
     'automaton',
     'selectedParamName',
-    'selectedNodesIndex'
+    'selectedNodeIds'
   ],
 
   components: {
@@ -135,18 +135,18 @@ export default {
       return this.automaton.getParam( this.selectedParamName );
     },
 
-    selectedNodeIndex() {
+    selectedNodeId() {
       return (
-        this.selectedNodesIndex.length === 1
-        ? this.selectedNodesIndex[ 0 ]
+        this.selectedNodeIds.length === 1
+        ? this.selectedNodeIds[ 0 ]
         : null
       );
     },
 
     selectedNode() {
       return (
-        this.selectedNodesIndex.length === 1
-        ? this.selectedParam.dumpNode( this.selectedNodeIndex )
+        this.selectedNodeIds.length === 1
+        ? this.selectedParam.dumpNode( this.selectedNodeId )
         : null
       );
     }

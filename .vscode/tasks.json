@@ -4,6 +4,11 @@
       "type": "gulp",
       "task": "default",
       "problemMatcher": []
+    },
+    {
+      "type": "gulp",
+      "task": "build",
+      "problemMatcher": []
     }
   ]
 }

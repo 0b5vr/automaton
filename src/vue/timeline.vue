@@ -81,8 +81,8 @@
         />
 
         <g class="node"
-          v-for="( node, index ) in selectedParam.__nodes"
-          :key="'node'+index"
+          v-for="node in selectedParam.dumpNodes()"
+          :key="node.$id"
         >
           <g class="handle">
             <line class="line"
@@ -96,8 +96,8 @@
               v-if="node.in"
               r="4"
               :transform="'translate(' + t2x( node.time + node.in.time ) + ',' + v2y( node.value + node.in.value ) + ')'"
-              @mousedown="grabHandle( index, false, $event )"
-              @dblclick.stop="removeHandle( index, false )"
+              @mousedown="grabHandle( node.$id, false, $event )"
+              @dblclick.stop="removeHandle( node.$id, false )"
             />
 
             <line class="line"
@@ -111,16 +111,16 @@
               v-if="node.out"
               r="4"
               :transform="'translate(' + t2x( node.time + node.out.time ) + ',' + v2y( node.value + node.out.value ) + ')'"
-              @mousedown="grabHandle( index, true, $event )"
-              @dblclick.stop="removeHandle( index, true )"
+              @mousedown="grabHandle( node.$id, true, $event )"
+              @dblclick.stop="removeHandle( node.$id, true )"
             />
           </g>
 
           <g class="body"
-            :class="{ selected: selectedNodesIndex.some( ( i ) => i === index ) }"
-            @dblclick.stop="removeNode( index )"
-            @mousedown.shift.stop="resetHandles( index )"
-            @mousedown="grabNode( index, $event )"
+            :class="{ selected: selectedNodeIds.some( ( id ) => id === node.$id ) }"
+            @dblclick.stop="removeNode( node.$id )"
+            @mousedown.shift.stop="resetHandles( node.$id )"
+            @mousedown="grabNode( node.$id, $event )"
           >
             <circle class="circle"
               v-if="v0 <= node.value && node.value <= v1"
@@ -141,35 +141,35 @@
         </g>
 
         <g class="fx"
-          v-for="( fx, index ) in selectedParam.__fxs"
+          v-for="fx in selectedParam.__fxs"
           :transform="'translate(0,' + ( height - 24 - 16 * fx.row ) + ')'"
-          :key="'fx'+index"
+          :key="fx.$id"
         >
           <rect class="body"
-            :class="{ selected: selectedFxsIndex.some( ( i ) => i === index ) }"
+            :class="{ selected: selectedFxIds.some( ( id ) => id === fx.$id ) }"
             :x="t2x( fx.time )"
             :width="t2x( fx.time + fx.length ) - t2x( fx.time )"
             height="16"
             rx="5"
             ry="5"
-            @mousedown="grabFxBody( index, $event )"
-            @dblclick.stop="removeFx( index )"
+            @mousedown="grabFxBody( fx.$id, $event )"
+            @dblclick.stop="removeFx( fx.$id )"
           />
           <rect class="side"
             :x="t2x( fx.time ) - 3"
             width="6"
             height="16"
-            @mousedown="grabFxSide( index, false, $event )"
+            @mousedown="grabFxSide( fx.$id, false, $event )"
           />
           <rect class="side"
             :x="t2x( fx.time + fx.length ) - 3"
             width="6"
             height="16"
-            @mousedown="grabFxSide( index, true, $event )"
+            @mousedown="grabFxSide( fx.$id, true, $event )"
           />
           
           <clipPath
-            :id="'fxclip'+index"
+            :id="'fxclip'+fx.$id"
           >
             <rect
               :x="t2x( fx.time )"
@@ -178,10 +178,10 @@
             />
           </clipPath>
           <g
-            :clip-path="'url(#fxclip' + index + ')'"
+            :clip-path="'url(#fxclip' + fx.$id + ')'"
           >
             <text class="text"
-              :class="{ selected: selectedFxsIndex.some( ( i ) => i === index ) }"
+              :class="{ selected: selectedFxIds.some( ( id ) => id === fx.$id ) }"
               :x="t2x( fx.time ) + 4"
               y="12"
             >{{ fx.name }}</text>
@@ -193,8 +193,9 @@
 </div>
 </template>
 
-
 <script>
+import ParamWithGUI from '../param-gui';
+
 const mouseEvents = ( move, up ) => {
   const u = ( event ) => {
     if ( up ) { up( event ); } 
@@ -226,8 +227,8 @@ export default {
   props: [
     "automaton",
     "selectedParamName",
-    "selectedNodesIndex",
-    "selectedFxsIndex"
+    "selectedNodeIds",
+    "selectedFxIds"
   ],
 
   data() {
@@ -374,28 +375,28 @@ export default {
       const t = this.x2t( event.offsetX );
       const v = this.y2v( event.offsetY );
 
-      const index = this.automaton.pushHistory(
+      const id = this.automaton.pushHistory(
         `${this.selectedParamName}: Create Node`,
         () => param.createNode( t, v ),
-        () => param.removeNode( index ),
+        () => param.removeNode( id ),
         true
       );
     },
 
     /**
      * Remove a node.
-     * @param {number} index Index of node
+     * @param {string} id Id of node
      * @returns {void} void
      */
-    removeNode( index ) {
+    removeNode( id ) {
       const param = this.selectedParam;
-      if ( index === 0 || index === param.getNumNode() - 1 ) { return; }
 
-      const node = param.dumpNode( index );
+      const node = param.dumpNode( id );
+      if ( !( node.in && node.out ) ) { return; }
 
       this.automaton.pushHistory(
         `${this.selectedParamName}: Remove Node`,
-        () => param.removeNode( index ),
+        () => param.removeNode( id ),
         () => param.createNodeFromData( node ),
         true
       );
@@ -403,45 +404,45 @@ export default {
 
     /**
      * Remove a handle of a node.
-     * @param {number} index Index of node
+     * @param {string} id Id of node
      * @param {boolean} isOut Input handle if false, output handle if true
      * @returns {void} void
      */
-    removeHandle( index, isOut ) {
+    removeHandle( id, isOut ) {
       const param = this.selectedParam;
-      const node = param.dumpNode( index );
+      const node = param.dumpNode( id );
 
       const t0 = isOut ? node.out.time : node.in.time;
       const v0 = isOut ? node.out.value : node.in.value;
 
-      param.moveHandle( index, isOut, 0.0, 0.0 );
+      param.moveHandle( id, isOut, 0.0, 0.0 );
 
       this.automaton.pushHistory(
         `${this.selectedParamName}: Remove Handle`,
-        () => param.moveHandle( index, isOut, 0.0, 0.0 ),
-        () => param.moveHandle( index, isOut, t0, v0 ),
+        () => param.moveHandle( id, isOut, 0.0, 0.0 ),
+        () => param.moveHandle( id, isOut, t0, v0 ),
         true
       );
     },
 
     /**
      * Reset handles of a node.
-     * @param {number} index Index of node
+     * @param {string} id Id of node
      * @returns {void} void
      */
-    resetHandles( index ) {
+    resetHandles( id ) {
       const param = this.selectedParam;
-      const node = param.dumpNode( index );
+      const node = param.dumpNode( id );
 
       this.automaton.pushHistory(
         `${this.selectedParamName}: Reset Handles`,
         () => {
-          param.resetHandle( index, false );
-          param.resetHandle( index, true );
+          param.resetHandle( id, false );
+          param.resetHandle( id, true );
         },
         () => {
-          param.moveHandle( index, false, node.in.time, node.in.value );
-          param.moveHandle( index, true, node.out.time, node.out.value );
+          param.moveHandle( id, false, node.in.time, node.in.value );
+          param.moveHandle( id, true, node.out.time, node.out.value );
         },
         true
       );
@@ -482,17 +483,17 @@ export default {
 
     /**
      * Grab a node.
-     * @param {number} index Index of a node
+     * @param {number} id Id of a node
      * @param {MouseEvent} event Mouse event
      * @returns {void} void
      */
-    grabNode( index, event ) {
+    grabNode( id, event ) {
       const param = this.selectedParam;
 
-      this.$emit( 'nodeSelected', [ index ] );
+      this.$emit( 'nodeSelected', [ id ] );
       this.$emit( 'fxSelected', [] );
 
-      const node = param.dumpNode( index );
+      const node = param.dumpNode( id );
       const t0 = node.time;
       const v0 = node.value;
 
@@ -500,15 +501,15 @@ export default {
         if ( event.shiftKey ) { dv = 0.0; }
         else if ( event.altKey ) { dt = 0.0; }
 
-        param.moveNode( index, t0 + dt, v0 + dv );
+        param.moveNode( id, t0 + dt, v0 + dv );
 
         if ( isUp ) {
           if ( dt === 0 && dv === 0 ) { return; }
 
           this.automaton.pushHistory(
             `${this.selectedParamName}: Move Nodes`,
-            () => param.moveNode( index, t0 + dt, v0 + dv ),
-            () => param.moveNode( index, t0, v0 )
+            () => param.moveNode( id, t0 + dt, v0 + dv ),
+            () => param.moveNode( id, t0, v0 )
           );
         }
       } );
@@ -516,14 +517,14 @@ export default {
 
     /**
      * Grab a handle.
-     * @param {number} index Index of a handle
+     * @param {number} id Id of a handle
      * @param {boolean} isOut Input handle if false, output handle if true
      * @param {MouseEvent} event Mouse event
      * @returns {void} void
      */
-    grabHandle( index, isOut, event ) {
+    grabHandle( id, isOut, event ) {
       const param = this.selectedParam;
-      const node = param.dumpNode( index );
+      const node = param.dumpNode( id );
       const handle = isOut ? node.out : node.in;
 
       const t0 = handle.time;
@@ -552,8 +553,8 @@ export default {
           vOp = -v;
         }
 
-        param.moveHandle( index, isOut, t, v );
-        param.moveHandle( index, !isOut, tOp, vOp );
+        param.moveHandle( id, isOut, t, v );
+        param.moveHandle( id, !isOut, tOp, vOp );
 
         if ( isUp ) {
           if ( dt === 0 && dv === 0 ) { return; }
@@ -561,12 +562,12 @@ export default {
           this.automaton.pushHistory(
             `${this.selectedParamName}: Move Handle`,
             () => {
-              param.moveHandle( index, isOut, t, v );
-              param.moveHandle( index, !isOut, tOp, vOp );
+              param.moveHandle( id, isOut, t, v );
+              param.moveHandle( id, !isOut, tOp, vOp );
             },
             () => {
-              param.moveHandle( index, isOut, t0, v0 );
-              param.moveHandle( index, !isOut, tOp0, vOp0 );
+              param.moveHandle( id, isOut, t0, v0 );
+              param.moveHandle( id, !isOut, tOp0, vOp0 );
             }
           );
         }
@@ -583,10 +584,9 @@ export default {
       const param = this.selectedParam;
 
       const t = this.x2t( event.offsetX );
-      const index = param.createFx( t, 1.0, name );
+      const id = param.createFx( t, 1.0, name );
 
-      if ( index === -1 ) { return; }
-
+      if ( !id ) { return; }
 
       this.automaton.pushHistory(
         `${this.selectedParamName}: Create Fx (${name})`,
@@ -597,16 +597,16 @@ export default {
 
     /**
      * Remove a fx.
-     * @param {number} index Index of fx
+     * @param {string} id Id of fx
      * @returns {void} void
      */
-    removeFx( index ) {
+    removeFx( id ) {
       const param = this.selectedParam;
-      const fx = param.dumpFx( index );
+      const fx = param.dumpFx( id );
 
       this.automaton.pushHistory(
         `${this.selectedParamName}: Remove Fx (${fx.name})`,
-        () => param.removeFx( index ),
+        () => param.removeFx( id ),
         () => param.createFxFromData( fx ),
         true
       );
@@ -614,37 +614,37 @@ export default {
 
     /**
      * Grab a body of fx.
-     * @param {number} index Index of fx
+     * @param {string} id Id of fx
      * @param {MouseEvent} event Mouse event
      * @returns {void} void
      */
-    grabFxBody( index, event ) {
+    grabFxBody( id, event ) {
       const param = this.selectedParam;
 
       this.$emit( 'nodeSelected', [] );
-      this.$emit( 'fxSelected', [ index ] );
+      this.$emit( 'fxSelected', [ id ] );
       
-      const fx = param.dumpFx( index );
+      const fx = param.dumpFx( id );
 
       const t0 = fx.time;
       const r0 = fx.row;
 
-      let i = index;
       const y0 = event.clientY;
 
       this.grabHelper( event, ( dt, dv, event, isUp ) => {
         const dy = event.clientY - y0;
+        const newRow = Math.min( Math.max( r0 + Math.round( -dy / 16.0 ), 0 ), ParamWithGUI.FX_ROW_MAX );
 
-        param.moveFx( i, t0 + dt );
-        i = param.changeFxRow( i, r0 + Math.round( -dy / 16.0 ) );
+        param.moveFx( id, t0 + dt );
+        param.changeFxRow( id, newRow );
 
         if ( isUp ) {
           if ( dt === 0 && dv === 0 ) { return; }
 
           this.automaton.pushHistory(
             `${this.selectedParamName}: Move Fx`,
-            () => param.forceMoveFx( index, t0 + dt, r0 + Math.round( -dy / 16.0 ) ),
-            () => param.forceMoveFx( i, t0, r0 )
+            () => param.forceMoveFx( id, t0 + dt, newRow ),
+            () => param.forceMoveFx( id, t0, r0 )
           );
         }
       } );
@@ -652,38 +652,38 @@ export default {
 
     /**
      * Grab a side of fx.
-     * @param {number} index Index of fx
+     * @param {string} id Id of fx
      * @param {boolean} isprevent false if left, true if right
      * @param {MouseEvent} event Mouse event
      * @returns {void} void
      */
-    grabFxSide( index, isRight, event ) {
+    grabFxSide( id, isRight, event ) {
       const param = this.selectedParam;
-      const fx = param.dumpFx( index );
+      const fx = param.dumpFx( id );
 
       const l0 = fx.length;
 
       this.grabHelper( event, ( dt, dv, event, isUp ) => {
         if ( isRight ) {
-          param.resizeFx( index, l0 + dt );
+          param.resizeFx( id, l0 + dt );
 
           if ( isUp ) {
             this.automaton.pushHistory(
               `${this.selectedParamName}: Resize Fx`,
-              () => param.resizeFx( index, l0 + dt ),
-              () => param.resizeFx( index, l0 )
+              () => param.resizeFx( id, l0 + dt ),
+              () => param.resizeFx( id, l0 )
             );
           }
         } else {
-          param.resizeFxByLeft( index, l0 - dt );
+          param.resizeFxByLeft( id, l0 - dt );
 
           if ( isUp ) {
             if ( dt === 0 && dv === 0 ) { return; }
 
             this.automaton.pushHistory(
               `${this.selectedParamName}: Resize Fx`,
-              () => param.resizeFx( index, l0 - dt ),
-              () => param.resizeFx( index, l0 )
+              () => param.resizeFx( id, l0 - dt ),
+              () => param.resizeFx( id, l0 )
             );
           }
         }
