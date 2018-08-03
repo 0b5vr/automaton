@@ -154,7 +154,7 @@ automaton.addFxDefinition( {
     resolution: { type: 'float', default: 10.0, min: 1E-3, max: 100.0 }
   },
   func: function( context ) {
-    var t = Math.floor( context.t * context.params.resolution ) / context.params.resolution;
+    var t = context.t0 + Math.floor( ( context.t - context.t0 ) * context.params.resolution ) / context.params.resolution;
     return context.getValue( t );
   }
 } );

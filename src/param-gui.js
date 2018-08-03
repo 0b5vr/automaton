@@ -58,10 +58,7 @@ const ParamWithGUI = class extends Param {
    */
   precalc() {
     super.precalc();
-
-    if ( this.__automaton.__vue ) {
-      this.__automaton.__vue.$emit( 'precalc' );
-    }
+    this.__automaton.pokeRenderer();
   }
 
   /**
@@ -324,7 +321,7 @@ const ParamWithGUI = class extends Param {
       length: _length,
       row: row,
       name: _name,
-      params: this.__automaton.__generateDefaultFxParams( _name )
+      params: this.__automaton.generateDefaultFxParams( _name )
     };
     this.__fxs.push( data );
     this.__sortFxs();
@@ -421,6 +418,42 @@ const ParamWithGUI = class extends Param {
 
     fx.row = _row;
     this.__sortFxs();
+
+    this.precalc();
+  }
+
+  /**
+   * Bypass or unbypass a fx.
+   * @param {string} _id Id of the fx you want to change
+   * @param {boolean} _bypass If true, fx will be bypassed
+   * @returns {void} void
+   */
+  bypassFx( _id, _bypass ) {
+    const index = this.__getFxIndexById( _id );
+
+    const fx = this.__fxs[ index ];
+    fx.bypass = !!_bypass;
+
+    this.precalc();
+  }
+
+  /**
+   * Change a param of a fx.
+   * @param {string} _id Id of the fx you want to change
+   * @param {string} _name Name of the param you want to change
+   * @param {any} _value Your desired value
+   * @returns {void} void
+   */
+  changeFxParam( _id, _name, _value ) {
+    const index = this.__getFxIndexById( _id );
+
+    const fx = this.__fxs[ index ];
+    const params = this.__automaton.getFxDefinitionParams( fx.name );
+
+    let value = _value;
+    if ( params[ _name ].min ) { value = Math.max( params[ _name ].min, value ); }
+    if ( params[ _name ].max ) { value = Math.min( params[ _name ].max, value ); }
+    fx.params[ _name ] = value;
 
     this.precalc();
   }

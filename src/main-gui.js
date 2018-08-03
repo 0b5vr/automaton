@@ -1,5 +1,6 @@
 import ass from './ass';
 import compat from './compat';
+import jsonCopy from './json-copy';
 
 import Param from './param-gui';
 
@@ -82,9 +83,8 @@ const AutomatonWithGUI = class extends Automaton {
    * Generate default fx params object.
    * @param {string} _name Name of fx
    * @returns {Object} Default fx params object
-   * @protected
    */
-  __generateDefaultFxParams( _name ) {
+  generateDefaultFxParams( _name ) {
     const fxDef = this.__paramFxDefs[ _name ];
     if ( !fxDef ) { throw new Error( `Fx definition called ${_name} is not defined` ); }
 
@@ -236,6 +236,26 @@ const AutomatonWithGUI = class extends Automaton {
   }
 
   /**
+   * Return list of name of fx definitions. Sorted.
+   * @returns {Array} List of name of fx definitions
+   */
+  getFxDefinitionNames() {
+    let arr = [];
+    for ( const name in this.__paramFxDefs ) { arr.push( name ); }
+    arr = arr.sort();
+    return arr;
+  }
+
+  /**
+   * Return params section of a fx definition.
+   * @param {string} _name Name of the fx definition you want to grab
+   * @returns {Object} Params section
+   */
+  getFxDefinitionParams( _name ) {
+    return jsonCopy( this.__paramFxDefs[ _name ].params );
+  }
+
+  /**
    * Return count of params.
    * @returns {number} Count of params
    */
@@ -275,6 +295,16 @@ const AutomatonWithGUI = class extends Automaton {
     }
 
     return JSON.parse( JSON.stringify( obj ) );
+  }
+
+  /**
+   * Poke the vue renderer.
+   * @returns {void} void
+   */
+  pokeRenderer() {
+    if ( this.__vue ) {
+      this.__vue.$emit( 'poke' );
+    }
   }
 };
 

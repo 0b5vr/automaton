@@ -57,6 +57,7 @@ const Param = class {
     this.__fxs = [ // 🔥
       {
         name: 'Add',
+        bypass: false,
         row: 0,
         time: 0.1,
         length: 0.5,
@@ -66,6 +67,7 @@ const Param = class {
       },
       {
         name: 'Lo-Fi',
+        bypass: false,
         row: 0,
         time: 1.0,
         length: 0.7,
@@ -107,25 +109,35 @@ const Param = class {
 
     for ( let iFx = 0; iFx < this.__fxs.length; iFx ++ ) {
       const fx = this.__fxs[ iFx ];
+      if ( fx.bypass ) { continue; }
       const fxDef = this.__automaton.__paramFxDefs[ fx.name ];
       if ( !fxDef ) { continue; }
 
       const i0 = Math.floor( this.__automaton.resolution * fx.time );
       const i1 = Math.floor( this.__automaton.resolution * ( fx.time + fx.length ) );
 
+      const tempValues = this.__values.slice( i0, i1 );
+      const tempLength = tempValues.length;
+
       let context = {
-        i: i0,
-        t: fx.time,
+        i0: i0,
+        i1: i1,
+        t0: fx.time,
+        t1: fx.time + fx.length,
+        length: fx.length,
         params: fx.params,
         array: this.__values,
         getValue: this.getValue.bind( this )
       };
 
-      for ( let i = i0; i < i1; i ++ ) {
-        context.i = i;
-        context.t = i / this.__automaton.resolution;
-        this.__values[ i ] = fxDef.func( context );
+      for ( let i = 0; i < tempLength; i ++ ) {
+        context.i = i + i0;
+        context.t = context.i / this.__automaton.resolution;
+        context.progress = ( context.t - fx.time ) / fx.length;
+        tempValues[ i ] = fxDef.func( context );
       }
+
+      this.__values.splice( i0, tempLength, ...tempValues );
     }
   }
 

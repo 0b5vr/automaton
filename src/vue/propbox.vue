@@ -3,11 +3,12 @@
   <div class="propbox">
     <div class="name">{{ name }}</div>
 
-    <div class="number"
-      v-if="type === 'number'"
+    <div class="value number"
+      v-if="type === 'float'"
       :class="{ readonly: readonly }"
     >
       <div class="valueText"
+        :class="{ readonly: readonly }"
         @mousedown="mousedown"
       >{{ value.toFixed( 3 ) }}</div>
       <input class="valueInput"
@@ -18,7 +19,7 @@
       />
     </div>
 
-    <div class="boolean"
+    <div class="value boolean"
       v-if="type === 'boolean'"
       :class="{ readonly: readonly }"
       @click="bToggle"
@@ -71,7 +72,7 @@ export default {
       }
       this.lastClick = now;
 
-      if ( this.type === 'number' ) {
+      if ( this.type === 'float' ) {
         let lastY = event.clientY;
         const v0 = Number( this.value );
 
@@ -137,6 +138,20 @@ export default {
     margin-top: 0.1em;
   }
 
+  .value {
+    background: #333;
+
+    &:active:not(.readonly) {
+      background: #111;
+    }
+
+    cursor: pointer;
+
+    &.readonly {
+      cursor: not-allowed;
+    }
+  }
+
   .number {
     position: absolute;
     right: 0;
@@ -144,25 +159,15 @@ export default {
     width: 5em;
     height: 100%;
 
-    background: #333;
-
-    &:active:not(.readonly) {
-      background: #111;
-    }
-
     .valueText {
       width: 100%;
       margin-top: 0.1em;
 
       text-align: center;
 
-      cursor: pointer;
-    }
-
-    &.readonly .valueText {
-      opacity: 0.5;
-
-      cursor: not-allowed;
+      &.readonly {
+        opacity: 0.5;
+      }
     }
 
     .valueInput {
@@ -182,21 +187,24 @@ export default {
 
   .boolean {
     position: absolute;
-    right: 34px;
-    bottom: 0;
-    width: 12px;
-    height: 12px;
-
-    background: #ddd;
+    right: 1.875em;
+    top: 0;
+    width: 1.25em;
+    height: 100%;
 
     .booleanCheck {
       position: absolute;
-      left: 2px;
-      top: 2px;
-      width: calc( 100% - 4px );
-      height: calc( 100% - 4px );
+      left: 20%;
+      top: 20%;
+      width: 60%;
+      height: 60%;
       
       background: #2af;
+
+      &.readonly {
+        background: #fff;
+        opacity: 0.5;
+      }
     }
   }
 }

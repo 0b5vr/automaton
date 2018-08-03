@@ -146,7 +146,10 @@
           :key="fx.$id"
         >
           <rect class="body"
-            :class="{ selected: selectedFxIds.some( ( id ) => id === fx.$id ) }"
+            :class="{
+              selected: selectedFxIds.some( ( id ) => id === fx.$id ),
+              bypass: fx.bypass
+            }"
             :x="t2x( fx.time )"
             :width="t2x( fx.time + fx.length ) - t2x( fx.time )"
             height="16"
@@ -181,7 +184,10 @@
             :clip-path="'url(#fxclip' + fx.$id + ')'"
           >
             <text class="text"
-              :class="{ selected: selectedFxIds.some( ( id ) => id === fx.$id ) }"
+              :class="{
+                selected: selectedFxIds.some( ( id ) => id === fx.$id ),
+                bypass: fx.bypass
+              }"
               :x="t2x( fx.time ) + 4"
               y="12"
             >{{ fx.name }}</text>
@@ -210,7 +216,7 @@ const mouseEvents = ( move, up ) => {
 
 export default {
   mounted() {
-    this.$root.$on( 'precalc', () => {
+    this.$root.$on( 'poke', () => {
       this.updateGraph();
     } );
 
@@ -857,9 +863,19 @@ export default {
         stroke: #a2f;
         stroke-width: 2;
 
+        &.bypass {
+          fill: #111;
+          stroke: #938899;
+        }
+
         &.selected {
           fill: #a2f;
           stroke: #111;
+
+          &.bypass {
+            fill: #938899;
+            stroke: #111;
+          }
         }
 
         pointer-events: auto;
@@ -868,7 +884,8 @@ export default {
 
       .text {
         fill: #a2f;
-        &.selected { fill: #fff; }
+        &.bypass { fill: #938899; }
+        &.selected { fill: #111; }
       }
 
       .side {

@@ -1,11 +1,11 @@
 <template>
 <div>
   <div class="root">
-    <div class="node-props"
+    <div class="props"
       v-if="selectedNode"
     >
-      <Propbox class="props"
-        type="number"
+      <Propbox class="prop"
+        type="float"
         name="Time"
         :value="selectedNode.time"
         :readonly="!( selectedNode.in && selectedNode.out )"
@@ -13,22 +13,22 @@
           selectedParam.moveNode( selectedNodeId, $event )
         "
         @finished="
-          automaton.pushHistory( selectedParamname + ': Change Node Time', () => {
+          automaton.pushHistory( `${selectedParamName}: Change Node Time`, () => {
             selectedParam.moveNode( selectedNodeId, $event[ 1 ] );
           }, () => {
             selectedParam.moveNode( selectedNodeId, $event[ 0 ] );
           } );
         "
       />
-      <Propbox class="props"
-        type="number"
+      <Propbox class="prop"
+        type="float"
         name="Value"
         :value="selectedNode.value"
         @changed="
           selectedParam.moveNode( selectedNodeId, undefined, $event )
         "
         @finished="
-          automaton.pushHistory( selectedParamname + ': Change Node Value', () => {
+          automaton.pushHistory( `${selectedParamName}: Change Node Value`, () => {
             selectedParam.moveNode( selectedNodeId, undefined, $event[ 1 ] );
           }, () => {
             selectedParam.moveNode( selectedNodeId, undefined, $event[ 0 ] );
@@ -36,8 +36,8 @@
         "
       />
 
-      <Propbox class="props"
-        type="number"
+      <Propbox class="prop"
+        type="float"
         name="In Time"
         :value="selectedNode.in ? selectedNode.in.time : 0"
         :readonly="!selectedNode.in"
@@ -45,15 +45,15 @@
           selectedParam.moveHandle( selectedNodeId, false, $event )
         "
         @finished="
-          automaton.pushHistory( selectedParamname + ': Change Node Time', () => {
+          automaton.pushHistory( `${selectedParamName}: Change Node Time`, () => {
             selectedParam.moveHandle( selectedNodeId, false, $event[ 1 ] );
           }, () => {
             selectedParam.moveHandle( selectedNodeId, false, $event[ 0 ] );
           } );
         "
       />
-      <Propbox class="props"
-        type="number"
+      <Propbox class="prop"
+        type="float"
         name="In Value"
         :value="selectedNode.in ? selectedNode.in.value : 0"
         :readonly="!selectedNode.in"
@@ -61,7 +61,7 @@
           selectedParam.moveHandle( selectedNodeId, false, undefined, $event )
         "
         @finished="
-          automaton.pushHistory( selectedParamname + ': Change Node Value', () => {
+          automaton.pushHistory( `${selectedParamName}: Change Node Value`, () => {
             selectedParam.moveHandle( selectedNodeId, false, undefined, $event[ 1 ] );
           }, () => {
             selectedParam.moveHandle( selectedNodeId, false, undefined, $event[ 0 ] );
@@ -69,8 +69,8 @@
         "
       />
 
-      <Propbox class="props"
-        type="number"
+      <Propbox class="prop"
+        type="float"
         name="Out Time"
         :value="selectedNode.out ? selectedNode.out.time : 0"
         :readonly="!selectedNode.out"
@@ -78,15 +78,15 @@
           selectedParam.moveHandle( selectedNodeId, true, $event )
         "
         @finished="
-          automaton.pushHistory( selectedParamname + ': Change Node Time', () => {
+          automaton.pushHistory( `${selectedParamName}: Change Node Time`, () => {
             selectedParam.moveHandle( selectedNodeId, true, $event[ 1 ] );
           }, () => {
             selectedParam.moveHandle( selectedNodeId, true, $event[ 0 ] );
           } );
         "
       />
-      <Propbox class="props"
-        type="number"
+      <Propbox class="prop"
+        type="float"
         name="Out Value"
         :value="selectedNode.out ? selectedNode.out.value : 0"
         :readonly="!selectedNode.out"
@@ -94,10 +94,43 @@
           selectedParam.moveHandle( selectedNodeId, true, undefined, $event )
         "
         @finished="
-          automaton.pushHistory( selectedParamname + ': Change Node Value', () => {
+          automaton.pushHistory( `${selectedParamName}: Change Node Value`, () => {
             selectedParam.moveHandle( selectedNodeId, true, undefined, $event[ 1 ] );
           }, () => {
             selectedParam.moveHandle( selectedNodeId, true, undefined, $event[ 0 ] );
+          } );
+        "
+      />
+    </div>
+    <div class="props"
+      v-if="selectedFx"
+    >
+      <Propbox class="prop"
+        type="boolean"
+        name="Bypass"
+        :value="selectedFx.bypass"
+        @changed="
+          automaton.pushHistory( `${selectedParamName}: Toggle Bypass Fx (${name})`, () => {
+            selectedParam.bypassFx( selectedFxId, $event );
+          }, () => {
+            selectedParam.bypassFx( selectedFxId, !$event );
+          }, true );
+        "
+      />
+      <Propbox class="prop"
+        v-for="( param, name ) in automaton.getFxDefinitionParams( selectedFx.name )"
+        :key="'fxParam-'+name"
+        :type="param.type"
+        :name="name"
+        :value="selectedFx.params[ name ]"
+        @changed="
+          selectedParam.changeFxParam( selectedFxId, name, $event )
+        "
+        @finished="
+          automaton.pushHistory( `${selectedParamName}: Change Fx Param (${name})`, () => {
+            selectedParam.changeFxParam( selectedFxId, name, $event[ 1 ] );
+          }, () => {
+            selectedParam.changeFxParam( selectedFxId, name, $event[ 0 ] );
           } );
         "
       />
@@ -115,7 +148,8 @@ export default {
   props: [
     'automaton',
     'selectedParamName',
-    'selectedNodeIds'
+    'selectedNodeIds',
+    'selectedFxIds'
   ],
 
   components: {
@@ -149,6 +183,22 @@ export default {
         ? this.selectedParam.dumpNode( this.selectedNodeId )
         : null
       );
+    },
+
+    selectedFxId() {
+      return (
+        this.selectedFxIds.length === 1
+        ? this.selectedFxIds[ 0 ]
+        : null
+      );
+    },
+
+    selectedFx() {
+      return (
+        this.selectedFxIds.length === 1
+        ? this.selectedParam.dumpFx( this.selectedFxId )
+        : null
+      );
     }
   },
 
@@ -168,7 +218,7 @@ export default {
   background: #222;
   color: #fff;
 
-  .node-props {
+  .props {
     padding: 10px 20px;
 
     font-size: 12px;
