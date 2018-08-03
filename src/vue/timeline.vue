@@ -406,6 +406,8 @@ export default {
         () => param.createNodeFromData( node ),
         true
       );
+
+      this.$emit( 'nodeSelected', [] );
     },
 
     /**
@@ -616,6 +618,8 @@ export default {
         () => param.createFxFromData( fx ),
         true
       );
+
+      this.$emit( 'fxSelected', [] );
     },
 
     /**
