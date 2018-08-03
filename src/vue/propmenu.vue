@@ -118,19 +118,19 @@
         "
       />
       <Propbox class="prop"
-        v-for="( param, name ) in automaton.getFxDefinitionParams( selectedFx.name )"
-        :key="'fxParam-'+name"
+        v-for="( param, key ) in automaton.getFxDefinitionParams( selectedFx.name )"
+        :key="'fxParam-'+key"
         :type="param.type"
-        :name="name"
-        :value="selectedFx.params[ name ]"
+        :name="param.name || key"
+        :value="selectedFx.params[ key ]"
         @changed="
-          selectedParam.changeFxParam( selectedFxId, name, $event )
+          selectedParam.changeFxParam( selectedFxId, key, $event )
         "
         @finished="
-          automaton.pushHistory( `${selectedParamName}: Change Fx Param (${name})`, () => {
-            selectedParam.changeFxParam( selectedFxId, name, $event[ 1 ] );
+          automaton.pushHistory( `${selectedParamName}: Change Fx Param (${param.name || key})`, () => {
+            selectedParam.changeFxParam( selectedFxId, key, $event[ 1 ] );
           }, () => {
-            selectedParam.changeFxParam( selectedFxId, name, $event[ 0 ] );
+            selectedParam.changeFxParam( selectedFxId, key, $event[ 0 ] );
           } );
         "
       />

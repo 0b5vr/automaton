@@ -140,7 +140,7 @@ var auto = automaton.auto;
 automaton.addFxDefinition( {
   name: 'Add',
   params: {
-    value: { type: 'float', default: 1.0, min: -10.0, max: 10.0 }
+    value: { name: 'Value', type: 'float', default: 1.0, min: -10.0, max: 10.0 }
   },
   func: function( context ) {
     var t = context.t;
@@ -151,7 +151,7 @@ automaton.addFxDefinition( {
 automaton.addFxDefinition( {
   name: 'Lo-Fi',
   params: {
-    resolution: { type: 'float', default: 10.0, min: 1E-3, max: 100.0 }
+    resolution: { name: 'Resolution', type: 'float', default: 10.0, min: 1E-3, max: 100.0 }
   },
   func: function( context ) {
     var t = context.t0 + Math.floor( ( context.t - context.t0 ) * context.params.resolution ) / context.params.resolution;
