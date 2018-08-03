@@ -141,7 +141,7 @@
         </g>
 
         <g class="fx"
-          v-for="fx in selectedParam.__fxs"
+          v-for="fx in selectedParam.dumpFxs()"
           :transform="'translate(0,' + ( height - 24 - 16 * fx.row ) + ')'"
           :key="fx.$id"
         >

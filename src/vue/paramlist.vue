@@ -2,13 +2,13 @@
 <div>
   <div class="root">
     <div class="param"
-      v-for="( param, name ) in automaton.__params"
+      v-for="name in automaton.getParamNames()"
       :key="'param' + name"
       :class="{ selected: name === selectedParamName }"
       @click="$emit( 'selected', name )"
     >
       <div class="name">{{ name }}</div>
-      <div class="value">{{ param.getValue().toFixed( 3 ) }}</div>
+      <div class="value">{{ automaton.auto( name ).toFixed( 3 ) }}</div>
     </div>
   </div>
 </div>
