@@ -3,8 +3,10 @@
   <div class="root"
     v-if="text"
     :style="{
-      'left': left ? `${ left }px` : undefined,
-      'top': top ? `${ top }px` : undefined
+      left: typeof left === 'number' ? `${ left }px` : undefined,
+      right: typeof right === 'number' ? `${ right }px` : undefined,
+      top: typeof top === 'number' ? `${ top }px` : undefined,
+      bottom: typeof bottom === 'number' ? `${ bottom }px` : undefined
     }"
   >
     {{ text }}
@@ -19,7 +21,9 @@ export default {
   data() {
     return {
       left: 0,
+      right: 0,
       top: 0,
+      bottom: 0,
       text: ''
     };
   },
@@ -34,10 +38,18 @@ export default {
 
   mounted() {
     window.addEventListener( 'mousemove', ( event ) => {
-      let x = event.clientX;
-      let y = event.clientY;
-      this.left = x + 10;
-      this.top = y + 10;
+      const x = event.clientX;
+      const y = event.clientY;
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+
+      const bLeftSide = w - 240 < x;
+      const bUpSide = h - 40 < y;
+
+      this.left = bLeftSide ? null : x + 10;
+      this.right = bLeftSide ? ( w - x ) - 10 : null;
+      this.top = bUpSide ? null : y + 10;
+      this.bottom = bUpSide ? ( h - y ) - 10 : null;
 
       this.applyStalkerText( event.target );
     } );

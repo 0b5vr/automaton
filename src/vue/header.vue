@@ -49,6 +49,13 @@ export default {
 
   methods: {
     save() {
+      const el = document.createElement( 'textarea' );
+      el.value = this.automaton.save();
+      document.body.appendChild( el );
+      el.select();
+      document.execCommand( 'copy' );
+      document.body.removeChild( el );
+
       this.saveText = 'Copied!';
       setTimeout( () => {
         this.saveText = 'Copy current state as JSON';
