@@ -109,11 +109,11 @@
         type="boolean"
         name="Bypass"
         :value="selectedFx.bypass"
-        @changed="
+        @finished="
           automaton.pushHistory( `${selectedParamName}: Toggle Bypass Fx (${name})`, () => {
-            selectedParam.bypassFx( selectedFxId, $event );
+            selectedParam.bypassFx( selectedFxId, $event[ 1 ] );
           }, () => {
-            selectedParam.bypassFx( selectedFxId, !$event );
+            selectedParam.bypassFx( selectedFxId, $event[ 0 ] );
           }, true );
         "
       />

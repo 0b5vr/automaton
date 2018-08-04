@@ -72,7 +72,8 @@ const Param = class {
         time: 1.0,
         length: 0.7,
         params: {
-          resolution: 10.0
+          resolution: 10.0,
+          relative: true
         }
       }
     ];

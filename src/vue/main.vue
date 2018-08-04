@@ -20,8 +20,8 @@
       :selectedParamName="selectedParamName"
       :selectedNodeIds="selectedNodeIds"
       :selectedFxIds="selectedFxIds"
-      @nodeSelected="selectedNodeIds = $event"
-      @fxSelected="selectedFxIds = $event"
+      @nodeSelected="selectNodes( $event )"
+      @fxSelected="selectFxs( $event )"
     />
   </div>
 </div>
@@ -59,11 +59,16 @@ export default {
   methods: {
     selectParam( name ) {
       this.selectedParamName = name;
-      this.selectNode( [] );
+      this.selectNodes( [] );
+      this.selectFxs( [] );
     },
 
-    selectNode( arr ) {
+    selectNodes( arr ) {
       this.selectedNodeIds = arr;
+    },
+
+    selectFxs( arr ) {
+      this.selectedFxIds = arr;
     }
   }
 }

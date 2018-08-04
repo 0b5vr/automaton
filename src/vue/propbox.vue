@@ -104,8 +104,8 @@ export default {
 
     enter( event ) {
       const v = parseFloat( this.$refs.valueInput.value );
-      this.$emit( 'changed', Number( this.value ) );
-      this.$emit( 'finished', [ Number( this.value ) ] );
+      this.$emit( 'changed', v );
+      this.$emit( 'finished', [ Number( this.value ), v ] );
       this.input = false;
     },
 
@@ -116,7 +116,9 @@ export default {
     bToggle( event ) {
       if ( this.readonly ) { return; }
 
-      this.$emit( 'changed', !this.value );
+      const v = !this.value;
+      this.$emit( 'changed', v );
+      this.$emit( 'finished', [ !v, v ] );
     }
   }
 }
