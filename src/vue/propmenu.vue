@@ -13,7 +13,7 @@
           selectedParam.moveNode( selectedNodeId, $event )
         "
         @finished="
-          automaton.pushHistory( `${selectedParamName}: Change Node Time`, () => {
+          automaton.pushHistory( 'Change Node Time', () => {
             selectedParam.moveNode( selectedNodeId, $event[ 1 ] );
           }, () => {
             selectedParam.moveNode( selectedNodeId, $event[ 0 ] );
@@ -28,7 +28,7 @@
           selectedParam.moveNode( selectedNodeId, undefined, $event )
         "
         @finished="
-          automaton.pushHistory( `${selectedParamName}: Change Node Value`, () => {
+          automaton.pushHistory( 'Change Node Value', () => {
             selectedParam.moveNode( selectedNodeId, undefined, $event[ 1 ] );
           }, () => {
             selectedParam.moveNode( selectedNodeId, undefined, $event[ 0 ] );
@@ -45,7 +45,7 @@
           selectedParam.moveHandle( selectedNodeId, false, $event )
         "
         @finished="
-          automaton.pushHistory( `${selectedParamName}: Change Node Time`, () => {
+          automaton.pushHistory( 'Change Node Time', () => {
             selectedParam.moveHandle( selectedNodeId, false, $event[ 1 ] );
           }, () => {
             selectedParam.moveHandle( selectedNodeId, false, $event[ 0 ] );
@@ -61,7 +61,7 @@
           selectedParam.moveHandle( selectedNodeId, false, undefined, $event )
         "
         @finished="
-          automaton.pushHistory( `${selectedParamName}: Change Node Value`, () => {
+          automaton.pushHistory( 'Change Node Value', () => {
             selectedParam.moveHandle( selectedNodeId, false, undefined, $event[ 1 ] );
           }, () => {
             selectedParam.moveHandle( selectedNodeId, false, undefined, $event[ 0 ] );
@@ -78,7 +78,7 @@
           selectedParam.moveHandle( selectedNodeId, true, $event )
         "
         @finished="
-          automaton.pushHistory( `${selectedParamName}: Change Node Time`, () => {
+          automaton.pushHistory( 'Change Node Time', () => {
             selectedParam.moveHandle( selectedNodeId, true, $event[ 1 ] );
           }, () => {
             selectedParam.moveHandle( selectedNodeId, true, $event[ 0 ] );
@@ -94,7 +94,7 @@
           selectedParam.moveHandle( selectedNodeId, true, undefined, $event )
         "
         @finished="
-          automaton.pushHistory( `${selectedParamName}: Change Node Value`, () => {
+          automaton.pushHistory( 'Change Node Value', () => {
             selectedParam.moveHandle( selectedNodeId, true, undefined, $event[ 1 ] );
           }, () => {
             selectedParam.moveHandle( selectedNodeId, true, undefined, $event[ 0 ] );
@@ -110,7 +110,7 @@
         name="Bypass"
         :value="selectedFx.bypass"
         @finished="
-          automaton.pushHistory( `${selectedParamName}: Toggle Bypass Fx (${name})`, () => {
+          automaton.pushHistory( 'Toggle Bypass Fx', () => {
             selectedParam.bypassFx( selectedFxId, $event[ 1 ] );
           }, () => {
             selectedParam.bypassFx( selectedFxId, $event[ 0 ] );
@@ -127,7 +127,7 @@
           selectedParam.changeFxParam( selectedFxId, key, $event )
         "
         @finished="
-          automaton.pushHistory( `${selectedParamName}: Change Fx Param (${param.name || key})`, () => {
+          automaton.pushHistory( 'Change Fx Param', () => {
             selectedParam.changeFxParam( selectedFxId, key, $event[ 1 ] );
           }, () => {
             selectedParam.changeFxParam( selectedFxId, key, $event[ 0 ] );

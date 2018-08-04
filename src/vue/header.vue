@@ -5,10 +5,27 @@
     <span class="version">v{{ automaton.version }}</span>
     <div class="buttons">
       <img class="button"
-        v-for="button in buttons"
-        :key="'button' + button.name"
-        :src="button.image"
-        @click="button.func"
+        :src="require( '../images/undo.svg' )"
+        :stalker-text="automaton.getUndoDesc() ? `Undo: ${automaton.getUndoDesc()}` : 'Can\'t undo'"
+        @click="automaton.undo()"
+      />
+      <img class="button"
+        :src="require( '../images/redo.svg' )"
+        :stalker-text="automaton.getRedoDesc() ? `Redo: ${automaton.getRedoDesc()}` : 'Can\'t redo'"
+        @click="automaton.redo()"
+      />
+      <img class="button"
+        :src="require( '../images/snap.svg' )"
+        stalker-text="WIP"
+      />
+      <img class="button"
+        :src="require( '../images/cog.svg' )"
+        stalker-text="WIP"
+      />
+      <img class="button"
+        :src="require( '../images/save.svg' )"
+        :stalker-text="saveText"
+        @click="save"
       />
     </div>
   </div>
@@ -26,53 +43,17 @@ export default {
 
   data() {
     return {
-      buttons: [
-        {
-          name: 'Undo',
-          image: require( '../images/undo.svg' ),
-          func: () => {
-            this.automaton.undo();
-          }
-        },
-        {
-          name: 'Redo',
-          image: require( '../images/redo.svg' ),
-          func: () => {
-            this.automaton.redo();
-          }
-        },
-        {
-          name: 'Snap',
-          image: require( '../images/snap.svg' ),
-          func: () => {
-            console.log( 'a' )
-          }
-        },
-        {
-          name: 'Config',
-          image: require( '../images/cog.svg' ),
-          func: () => {
-            console.log( 'a' )
-          }
-        },
-        {
-          name: 'Save',
-          image: require( '../images/save.svg' ),
-          func: () => {
-            const el = document.createElement( 'textarea' );
-            el.value = this.automaton.save();
-            document.body.appendChild( el );
-            el.select();
-            document.execCommand( 'copy' );
-            document.body.removeChild( el );
-          }
-        },
-      ]
+      saveText: 'Copy current state as JSON'
     }
   },
 
   methods: {
-
+    save() {
+      this.saveText = 'Copied!';
+      setTimeout( () => {
+        this.saveText = 'Copy current state as JSON';
+      }, 3000 );
+    }
   }
 }
 </script>
@@ -104,6 +85,7 @@ export default {
     position: absolute;
     right: 0.4em;
     top: 0;
+    font-size: 0;
 
     .button {
       width: 24px;

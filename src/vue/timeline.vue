@@ -34,14 +34,14 @@
           v-for="( line, index ) in grid.x"
           :key="'gridTextX'+index"
           :x="line.pos + 2"
-          y="10"
+          :y="height - 2"
           :opacity="line.op"
         >{{ line.val.toFixed( 3 ) }}</text>
         <text class="gridText"
           v-for="( line, index ) in grid.y"
           :key="'gridTextY'+index"
           x="2"
-          :y="line.pos + 10"
+          :y="line.pos - 2"
           :opacity="line.op"
         >{{ line.val.toFixed( 3 ) }}</text>
       </g>
@@ -79,6 +79,60 @@
           :cx="t2x( automaton.time )"
           :cy="v2y( selectedParam.getValue() )"
         />
+
+        <g class="fx"
+          v-for="fx in selectedParam.dumpFxs()"
+          :transform="'translate(0,' + ( 1 + 16 * fx.row ) + ')'"
+          :key="fx.$id"
+        >
+          <rect class="body"
+            :class="{
+              selected: selectedFxIds.some( ( id ) => id === fx.$id ),
+              bypass: fx.bypass
+            }"
+            :x="t2x( fx.time )"
+            :width="t2x( fx.time + fx.length ) - t2x( fx.time )"
+            height="16"
+            rx="5"
+            ry="5"
+            @mousedown="grabFxBody( fx.$id, $event )"
+            @dblclick.stop="removeFx( fx.$id )"
+          />
+          <rect class="side"
+            :x="t2x( fx.time ) - 3"
+            width="6"
+            height="16"
+            @mousedown="grabFxSide( fx.$id, false, $event )"
+          />
+          <rect class="side"
+            :x="t2x( fx.time + fx.length ) - 3"
+            width="6"
+            height="16"
+            @mousedown="grabFxSide( fx.$id, true, $event )"
+          />
+          
+          <clipPath
+            :id="'fxclip'+fx.$id"
+          >
+            <rect
+              :x="t2x( fx.time )"
+              :width="t2x( fx.time + fx.length ) - t2x( fx.time )"
+              height="16"
+            />
+          </clipPath>
+          <g
+            :clip-path="'url(#fxclip' + fx.$id + ')'"
+          >
+            <text class="text"
+              :class="{
+                selected: selectedFxIds.some( ( id ) => id === fx.$id ),
+                bypass: fx.bypass
+              }"
+              :x="t2x( fx.time ) + 4"
+              y="12"
+            >{{ fx.name }}</text>
+          </g>
+        </g>
 
         <g class="node"
           v-for="node in selectedParam.dumpNodes()"
@@ -137,60 +191,6 @@
               :transform="'translate(' + t2x( node.time ) + ',0)'"
               d="M 0 4 L -5 12 L 5 12 z"
             />
-          </g>
-        </g>
-
-        <g class="fx"
-          v-for="fx in selectedParam.dumpFxs()"
-          :transform="'translate(0,' + ( height - 24 - 16 * fx.row ) + ')'"
-          :key="fx.$id"
-        >
-          <rect class="body"
-            :class="{
-              selected: selectedFxIds.some( ( id ) => id === fx.$id ),
-              bypass: fx.bypass
-            }"
-            :x="t2x( fx.time )"
-            :width="t2x( fx.time + fx.length ) - t2x( fx.time )"
-            height="16"
-            rx="5"
-            ry="5"
-            @mousedown="grabFxBody( fx.$id, $event )"
-            @dblclick.stop="removeFx( fx.$id )"
-          />
-          <rect class="side"
-            :x="t2x( fx.time ) - 3"
-            width="6"
-            height="16"
-            @mousedown="grabFxSide( fx.$id, false, $event )"
-          />
-          <rect class="side"
-            :x="t2x( fx.time + fx.length ) - 3"
-            width="6"
-            height="16"
-            @mousedown="grabFxSide( fx.$id, true, $event )"
-          />
-          
-          <clipPath
-            :id="'fxclip'+fx.$id"
-          >
-            <rect
-              :x="t2x( fx.time )"
-              :width="t2x( fx.time + fx.length ) - t2x( fx.time )"
-              height="16"
-            />
-          </clipPath>
-          <g
-            :clip-path="'url(#fxclip' + fx.$id + ')'"
-          >
-            <text class="text"
-              :class="{
-                selected: selectedFxIds.some( ( id ) => id === fx.$id ),
-                bypass: fx.bypass
-              }"
-              :x="t2x( fx.time ) + 4"
-              y="12"
-            >{{ fx.name }}</text>
           </g>
         </g>
       </g>
@@ -382,7 +382,7 @@ export default {
       const v = this.y2v( event.offsetY );
 
       const id = this.automaton.pushHistory(
-        `${this.selectedParamName}: Create Node`,
+        'Create Node',
         () => param.createNode( t, v ),
         () => param.removeNode( id ),
         true
@@ -401,7 +401,7 @@ export default {
       if ( !( node.in && node.out ) ) { return; }
 
       this.automaton.pushHistory(
-        `${this.selectedParamName}: Remove Node`,
+        'Remove Node',
         () => param.removeNode( id ),
         () => param.createNodeFromData( node ),
         true
@@ -426,7 +426,7 @@ export default {
       param.moveHandle( id, isOut, 0.0, 0.0 );
 
       this.automaton.pushHistory(
-        `${this.selectedParamName}: Remove Handle`,
+        'Remove Handle',
         () => param.moveHandle( id, isOut, 0.0, 0.0 ),
         () => param.moveHandle( id, isOut, t0, v0 ),
         true
@@ -443,7 +443,7 @@ export default {
       const node = param.dumpNode( id );
 
       this.automaton.pushHistory(
-        `${this.selectedParamName}: Reset Handles`,
+        'Reset Handle',
         () => {
           param.resetHandle( id, false );
           param.resetHandle( id, true );
@@ -515,7 +515,7 @@ export default {
           if ( dt === 0 && dv === 0 ) { return; }
 
           this.automaton.pushHistory(
-            `${this.selectedParamName}: Move Nodes`,
+            'Move Node',
             () => param.moveNode( id, t0 + dt, v0 + dv ),
             () => param.moveNode( id, t0, v0 )
           );
@@ -568,7 +568,7 @@ export default {
           if ( dt === 0 && dv === 0 ) { return; }
 
           this.automaton.pushHistory(
-            `${this.selectedParamName}: Move Handle`,
+            'Move Handle',
             () => {
               param.moveHandle( id, isOut, t, v );
               param.moveHandle( id, !isOut, tOp, vOp );
@@ -597,7 +597,7 @@ export default {
       if ( !id ) { return; }
 
       this.automaton.pushHistory(
-        `${this.selectedParamName}: Create Fx (${name})`,
+        'Create Fx',
         () => param.createFx( t, 1.0, name ),
         () => param.removeFx( index )
       );
@@ -613,7 +613,7 @@ export default {
       const fx = param.dumpFx( id );
 
       this.automaton.pushHistory(
-        `${this.selectedParamName}: Remove Fx (${fx.name})`,
+        'Remove Fx',
         () => param.removeFx( id ),
         () => param.createFxFromData( fx ),
         true
@@ -643,7 +643,7 @@ export default {
 
       this.grabHelper( event, ( dt, dv, event, isUp ) => {
         const dy = event.clientY - y0;
-        const newRow = Math.min( Math.max( r0 + Math.round( -dy / 16.0 ), 0 ), ParamWithGUI.FX_ROW_MAX );
+        const newRow = Math.min( Math.max( r0 + Math.round( dy / 16.0 ), 0 ), ParamWithGUI.FX_ROW_MAX );
 
         param.moveFx( id, t0 + dt );
         param.changeFxRow( id, newRow );
@@ -652,7 +652,7 @@ export default {
           if ( dt === 0 && dv === 0 ) { return; }
 
           this.automaton.pushHistory(
-            `${this.selectedParamName}: Move Fx`,
+            'Move Fx',
             () => param.forceMoveFx( id, t0 + dt, newRow ),
             () => param.forceMoveFx( id, t0, r0 )
           );
@@ -679,7 +679,7 @@ export default {
 
           if ( isUp ) {
             this.automaton.pushHistory(
-              `${this.selectedParamName}: Resize Fx`,
+              'Resize Fx',
               () => param.resizeFx( id, l0 + dt ),
               () => param.resizeFx( id, l0 )
             );
@@ -691,7 +691,7 @@ export default {
             if ( dt === 0 && dv === 0 ) { return; }
 
             this.automaton.pushHistory(
-              `${this.selectedParamName}: Resize Fx`,
+              'Resize Fx',
               () => param.resizeFx( id, l0 - dt ),
               () => param.resizeFx( id, l0 )
             );

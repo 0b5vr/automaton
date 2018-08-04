@@ -116,7 +116,7 @@ const AutomatonWithGUI = class extends Automaton {
    */
   pushHistory( _desc, _do, _undo, _execute ) {
     this.__history.splice( this.__historyIndex );
-    this.__history.push( { do: _do, undo: _undo } );
+    this.__history.push( { desc: _desc, do: _do, undo: _undo } );
     this.__historyIndex ++;
 
     if ( _execute || false ) {
@@ -144,6 +144,24 @@ const AutomatonWithGUI = class extends Automaton {
     if ( this.__history.length <= this.__historyIndex ) { return; }
     this.__historyIndex ++;
     return this.__history[ this.__historyIndex - 1 ].do();
+  }
+
+  /**
+   * Return description of latest operation.
+   * If there are no operation before the current state, it will return empty string instead.
+   * @returns {string} Description of operation
+   */
+  getUndoDesc() {
+    return this.__history[ this.__historyIndex - 1 ] ? this.__history[ this.__historyIndex - 1 ].desc : '';
+  }
+
+  /**
+   * Return description of recently undo-ed operation.
+   * If there are no operation after the current state, it will return empty string instead.
+   * @returns {string} Description of operation
+   */
+  getRedoDesc() {
+    return this.__history[ this.__historyIndex ] ? this.__history[ this.__historyIndex ].desc : '';
   }
 
   /**

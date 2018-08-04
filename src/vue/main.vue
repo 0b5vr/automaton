@@ -23,30 +23,36 @@
       @nodeSelected="selectNodes( $event )"
       @fxSelected="selectFxs( $event )"
     />
+    <Stalker class="stalker"
+    >
+      Hi
+    </Stalker>
   </div>
 </div>
 </template>
 
 
 <script>
-import Header from "./header.vue";
-import ParamList from "./paramlist.vue";
-import PropMenu from "./propmenu.vue";
-import Timeline from "./timeline.vue";
+import Header from './header.vue';
+import ParamList from './paramlist.vue';
+import PropMenu from './propmenu.vue';
+import Timeline from './timeline.vue';
+import Stalker from './stalker.vue';
 
 export default {
   components: {
     Header,
     ParamList,
     PropMenu,
-    Timeline
+    Timeline,
+    Stalker
   },
   
   mounted() {},
 
   beforeDestroy() {},
 
-  props: [ "automaton" ],
+  props: [ 'automaton' ],
 
   data() {
     return {
