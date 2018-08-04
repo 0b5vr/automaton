@@ -34,7 +34,7 @@ const debugBro = browserify( './src/main-gui.js', {
     imgurify,
     [ babelify, { presets: 'env' } ],
   ]
-} ).plugin( banner, { file: 'banner' } );
+} ).plugin( banner, { file: './src/-banner' } );
 
 const minName = 'automaton.min.js';
 const minBro = browserify( './src/main-gui.js', {
@@ -46,7 +46,7 @@ const minBro = browserify( './src/main-gui.js', {
     [ babelify, { presets: 'env' } ],
     [ uglifyify, { global: true } ]
   ]
-} ).plugin( banner, { file: 'banner-min' } );
+} ).plugin( banner, { file: './src/-banner-min' } );
 
 const noguiName = 'automaton.nogui.js';
 const noguiBro = browserify( './src/main.js', {
@@ -56,7 +56,7 @@ const noguiBro = browserify( './src/main.js', {
     [ babelify, { presets: 'env' } ],
     [ uglifyify, { global: true } ]
   ]
-} ).plugin( banner, { file: 'banner-min' } );
+} ).plugin( banner, { file: './src/-banner-min' } );
 
 gulp.task( 'script-build', () => {
   debugBro.bundle()
