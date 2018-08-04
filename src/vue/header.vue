@@ -59,7 +59,12 @@ export default {
           name: 'Save',
           image: require( '../images/save.svg' ),
           func: () => {
-            console.log( 'a' )
+            const el = document.createElement( 'textarea' );
+            el.value = this.automaton.save();
+            document.body.appendChild( el );
+            el.select();
+            document.execCommand( 'copy' );
+            document.body.removeChild( el );
           }
         },
       ]

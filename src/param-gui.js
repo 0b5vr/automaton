@@ -109,6 +109,18 @@ const ParamWithGUI = class extends Param {
   }
 
   /**
+   * Dump data of nodes, without `$id`.
+   * @returns {object[]} Data of nodes
+   */
+  dumpNodesWithoutId() {
+    let nodes = this.dumpNodes();
+    return nodes.map( ( node ) => {
+      delete node.$id;
+      return node;
+    } );
+  }
+
+  /**
    * Create a node.
    * @param {number} _time Time of new node
    * @param {number} _value Value of new node
@@ -298,6 +310,18 @@ const ParamWithGUI = class extends Param {
    */
   dumpFxs() {
     return jsonCopy( this.__fxs );
+  }
+
+  /**
+   * Dump data of fxs, without `$id`.
+   * @returns {object[]} Data of fxs
+   */
+  dumpFxsWithoutId() {
+    let fxs = this.dumpFxs();
+    return fxs.map( ( fx ) => {
+      delete fx.$id;
+      return fx;
+    } );
   }
 
   /**

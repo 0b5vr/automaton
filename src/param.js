@@ -54,29 +54,6 @@ const Param = class {
      * @protected
      */
     this.__fxs = _data.fxs;
-    this.__fxs = [ // 🔥
-      {
-        name: 'Add',
-        bypass: false,
-        row: 0,
-        time: 0.1,
-        length: 0.5,
-        params: {
-          value: 1.0
-        }
-      },
-      {
-        name: 'Lo-Fi',
-        bypass: false,
-        row: 0,
-        time: 1.0,
-        length: 0.7,
-        params: {
-          resolution: 10.0,
-          relative: true
-        }
-      }
-    ];
 
     this.precalc();
   }

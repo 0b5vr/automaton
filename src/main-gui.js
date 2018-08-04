@@ -279,22 +279,30 @@ const AutomatonWithGUI = class extends Automaton {
   }
 
   /**
-   * Export current state as object.
-   * @returns {object} Saved object
+   * Export current state as JSON.
+   * @returns {string} Saved object as JSON
    * @example
    * あとでやる
    * @todo はい
    */
   save() {
-    const obj = this.data;
+    const ret = {
+      v: this.version,
+      length: this.length,
+      resolution: this.resolution,
+      params: {} // will be filled later
+    };
 
-    obj.params = {};
+    ret.params = {};
     for ( let name in this.__params ) {
       const param = this.__params[ name ];
-      obj.params[ name ] = param.nodes;
+      ret.params[ name ] = {
+        nodes: param.dumpNodesWithoutId(),
+        fxs: param.dumpFxsWithoutId()
+      };
     }
 
-    return JSON.parse( JSON.stringify( obj ) );
+    return JSON.stringify( ret );
   }
 
   /**
