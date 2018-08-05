@@ -5,6 +5,7 @@ import jsonCopy from './json-copy';
 import Param from './param-gui';
 
 import Automaton from './main';
+import fxDefinitions from './fx-definitions';
 
 import Vue from 'vue';
 import GUI from './vue/main.vue';
@@ -47,6 +48,10 @@ const AutomatonWithGUI = class extends Automaton {
      * @protected
      */
     this.__historyIndex = 0;
+
+    fxDefinitions.map( ( fxDef ) => {
+      this.addFxDefinition( fxDef );
+    } );
 
     if ( _props.gui ) { this.__prepareGUI( _props.gui ); }
   }

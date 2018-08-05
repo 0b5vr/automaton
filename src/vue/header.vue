@@ -7,12 +7,12 @@
       <img class="button"
         :src="require( '../images/undo.svg' )"
         :stalker-text="automaton.getUndoDesc() ? `Undo: ${automaton.getUndoDesc()}` : 'Can\'t undo'"
-        @click="automaton.undo()"
+        @click="undo()"
       />
       <img class="button"
         :src="require( '../images/redo.svg' )"
         :stalker-text="automaton.getRedoDesc() ? `Redo: ${automaton.getRedoDesc()}` : 'Can\'t redo'"
-        @click="automaton.redo()"
+        @click="redo()"
       />
       <img class="button"
         :src="require( '../images/snap.svg' )"
@@ -43,11 +43,29 @@ export default {
 
   data() {
     return {
-      saveText: 'Copy current state as JSON'
+      saveText: 'Copy current state as JSON',
+      cantUndoThis: 0
     }
   },
 
   methods: {
+    undo() {
+      if ( this.automaton.getUndoDesc() ) {
+        this.automaton.undo();
+        this.cantUndoThis = 0;
+      } else {
+        this.cantUndoThis ++;
+        if ( 10 === this.cantUndoThis ) {
+          window.open( 'https://youtu.be/bzY7J0Xle08', '_blank' );
+          this.cantUndoThis = 0;
+        }
+      }
+    },
+
+    redo() {
+      this.automaton.redo();
+    },
+
     save() {
       const el = document.createElement( 'textarea' );
       el.value = this.automaton.save();

@@ -475,8 +475,8 @@ const ParamWithGUI = class extends Param {
     const params = this.__automaton.getFxDefinitionParams( fx.name );
 
     let value = _value;
-    if ( params[ _name ].min ) { value = Math.max( params[ _name ].min, value ); }
-    if ( params[ _name ].max ) { value = Math.min( params[ _name ].max, value ); }
+    if ( typeof params[ _name ].min === 'number' ) { value = Math.max( params[ _name ].min, value ); }
+    if ( typeof params[ _name ].max === 'number' ) { value = Math.min( params[ _name ].max, value ); }
     fx.params[ _name ] = value;
 
     this.precalc();

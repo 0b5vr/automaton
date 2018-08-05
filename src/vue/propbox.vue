@@ -68,7 +68,7 @@ export default {
         setTimeout( () => {
           this.$refs.valueInput.focus();
           this.$refs.valueInput.select();
-        }, 10 ); // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+        }, 10 ); // 🔥
       }
       this.lastClick = now;
 

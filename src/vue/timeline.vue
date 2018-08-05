@@ -4,7 +4,7 @@
     @wheel.prevent="onWheel"
     @dragstart.prevent
     @dblclick.stop="createNode"
-    @contextmenu.stop.prevent="createFx( $event, 'Add' )"
+    @contextmenu.stop.prevent="openFxMenu( $event )"
   >
     <svg class="svg"
       :width="width"
@@ -195,12 +195,21 @@
         </g>
       </g>
     </svg>
+
+    <FxMenu
+      :automaton="automaton"
+      :show="fxmenuShow"
+      @selected="createFx( fxmenuTime, $event )"
+      @blurred="fxmenuShow = false"
+    />
   </div>
 </div>
 </template>
 
 <script>
 import ParamWithGUI from '../param-gui';
+
+import FxMenu from './timeline-fxmenu.vue';
 
 const mouseEvents = ( move, up ) => {
   const u = ( event ) => {
@@ -215,19 +224,8 @@ const mouseEvents = ( move, up ) => {
 };
 
 export default {
-  mounted() {
-    this.$root.$on( 'poke', () => {
-      this.updateGraph();
-    } );
-
-    this.$nextTick( () => {
-      this.onResize();
-    } );
-    window.addEventListener( 'resize', this.onResize );
-  },
-
-  beforeDestroy() {
-    window.removeEventListener( 'resize', this.onResize );
+  components: {
+    FxMenu
   },
 
   props: [
@@ -252,7 +250,10 @@ export default {
         y: []
       },
 
-      graphPoints: ''
+      graphPoints: '',
+
+      fxmenuShow: false,
+      fxmenuTime: 0
     }
   },
 
@@ -380,12 +381,13 @@ export default {
 
       const t = this.x2t( event.offsetX );
       const v = this.y2v( event.offsetY );
+      const id = param.createNode( t, v );
+      const data = param.dumpNode( id );
 
-      const id = this.automaton.pushHistory(
+      this.automaton.pushHistory(
         'Create Node',
-        () => param.createNode( t, v ),
-        () => param.removeNode( id ),
-        true
+        () => param.createNodeFromData( data ),
+        () => param.removeNode( id )
       );
     },
 
@@ -583,6 +585,15 @@ export default {
     },
 
     /**
+     * Open fx menu.
+     * @returns {void} void
+     */
+    openFxMenu( event ) {
+      this.fxmenuShow = true;
+      this.fxmenuTime = this.x2t( event.offsetX );
+    },
+
+    /**
      * Create a fx.
      * @param {MouseEvent} event Mouse event comes from dblclick event
      * @param {string} name Name of fx definition
@@ -591,15 +602,16 @@ export default {
     createFx( event, name ) {
       const param = this.selectedParam;
 
-      const t = this.x2t( event.offsetX );
+      const t = this.fxmenuTime;
       const id = param.createFx( t, 1.0, name );
+      const data = param.dumpFx( id );
 
       if ( !id ) { return; }
 
       this.automaton.pushHistory(
         'Create Fx',
-        () => param.createFx( t, 1.0, name ),
-        () => param.removeFx( index )
+        () => param.createFxFromData( data ),
+        () => param.removeFx( id )
       );
     },
 
@@ -783,7 +795,22 @@ export default {
     selectedParamName() {
       this.updateGraph();
     }
-  }
+  },
+
+  mounted() {
+    this.$root.$on( 'poke', () => {
+      this.updateGraph();
+    } );
+
+    this.$nextTick( () => {
+      this.onResize();
+    } );
+    window.addEventListener( 'resize', this.onResize );
+  },
+
+  beforeDestroy() {
+    window.removeEventListener( 'resize', this.onResize );
+  },
 }
 </script>
 
