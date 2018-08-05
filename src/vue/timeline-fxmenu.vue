@@ -15,7 +15,7 @@
       v-for="( name, index ) in fxDefsFiltered"
       :key="name"
       :class="{ selected: index === selectedIndex }"
-      @mousedown="select( index )"
+      @mousedown="select( name )"
     >
       {{ name }}
     </div>
@@ -46,10 +46,11 @@ export default {
       ) );
     },
 
-    select( index ) {
-      this.$emit( 'selected', this.fxDefsFiltered[ index ] );
-      const selected = this.fxDefs.splice( index, 1 )[ 0 ];
-      this.fxDefs.unshift( selected );
+    select( name ) {
+      if ( name === '( No result found )' ) { cancel(); return; }
+      this.$emit( 'selected', name );
+      this.fxDefs.splice( this.fxDefs.indexOf( name ), 1 );
+      this.fxDefs.unshift( name );
       this.$refs.searchBox.blur();
     },
 
@@ -59,7 +60,7 @@ export default {
 
     onSearchBoxKeydown( event ) {
       if ( event.which === 13 ) { // Enter
-        this.select( this.selectedIndex );
+        this.select( this.fxDefsFiltered[ this.selectedIndex ] );
       } else if ( event.which === 27 ) { // Escape
         this.cancel();
       } else if ( event.which === 38 ) { // Up
@@ -85,7 +86,7 @@ export default {
   computed: {
     fxDefsFiltered() {
       let arr = this.fxDefs.filter( ( name ) => this.filterDef( name ) );
-      return arr.length === 0 ? [ '(No result found)' ] : arr;
+      return arr.length === 0 ? [ '( No result found )' ] : arr;
     }
   },
 
@@ -103,9 +104,9 @@ export default {
 <style lang="scss" scoped>
 .root {
   position: absolute;
-  left: calc( 50% - 5em );
+  left: calc( 50% - 10em );
   top: 1em;
-  width: 10em;
+  width: 20em;
   font-size: 0.8em;
 
   background: #111;
@@ -126,6 +127,9 @@ export default {
     width: calc( 100% - 12px );
     margin: 2px;
     padding: 2px 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 
     background: #222;
 

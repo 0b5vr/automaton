@@ -1,7 +1,7 @@
 const TAU = Math.PI * 2.0;
 
 export default {
-  name: 'Sine',
+  name: 'Sinewave',
   params: {
     amp: { name: 'Amp', type: 'float', default: 0.1 },
     freq: { name: 'Frequency', type: 'float', default: 5.0 },

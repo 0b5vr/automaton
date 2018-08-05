@@ -456,7 +456,7 @@ const ParamWithGUI = class extends Param {
     const index = this.__getFxIndexById( _id );
 
     const fx = this.__fxs[ index ];
-    fx.bypass = !!_bypass;
+    Vue.set( fx, 'bypass', !!_bypass );
 
     this.precalc();
   }
@@ -477,7 +477,7 @@ const ParamWithGUI = class extends Param {
     let value = _value;
     if ( typeof params[ _name ].min === 'number' ) { value = Math.max( params[ _name ].min, value ); }
     if ( typeof params[ _name ].max === 'number' ) { value = Math.min( params[ _name ].max, value ); }
-    fx.params[ _name ] = value;
+    Vue.set( fx.params, _name, value );
 
     this.precalc();
   }

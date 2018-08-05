@@ -102,6 +102,8 @@ const Param = class {
         i1: i1,
         t0: fx.time,
         t1: fx.time + fx.length,
+        dt: 1.0 / this.__automaton.resolution,
+        resolution: this.__automaton.resolution,
         length: fx.length,
         params: fx.params,
         array: this.__values,
