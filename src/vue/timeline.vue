@@ -606,7 +606,8 @@ export default {
       const param = this.selectedParam;
 
       const t = this.fxmenuTime;
-      const id = param.createFx( t, 1.0, name );
+      const l = Math.min( 1.0, this.automaton.length - this.fxmenuTime );
+      const id = param.createFx( t, l, name );
       const data = param.dumpFx( id );
 
       if ( !id ) { return; }
