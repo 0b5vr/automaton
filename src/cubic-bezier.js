@@ -46,6 +46,7 @@ const newton = ( x, gt, x1, x2 ) => {
 };
 
 const rawCubicBezier = ( x1, y1, x2, y2, x ) => {
+  if ( isNaN( x1 ) || isNaN( y1 ) || isNaN( x2 ) || isNaN( y2 ) ) { return x; } // heh
   if ( x1 === y1 && x2 === y2 ) { return x; } // linear
   if ( x <= 0.0 ) { return 0.0; }
   if ( 1.0 <= x ) { return 1.0; }
