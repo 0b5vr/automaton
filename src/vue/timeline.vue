@@ -384,6 +384,9 @@ export default {
       const id = param.createNode( t, v );
       const data = param.dumpNode( id );
 
+      this.$emit( 'nodeSelected', [ id ] );
+      this.$emit( 'fxSelected', [] );
+
       this.automaton.pushHistory(
         'Create Node',
         () => param.createNodeFromData( data ),
@@ -607,6 +610,8 @@ export default {
       const data = param.dumpFx( id );
 
       if ( !id ) { return; }
+      this.$emit( 'nodeSelected', [] );
+      this.$emit( 'fxSelected', [ id ] );
 
       this.automaton.pushHistory(
         'Create Fx',
