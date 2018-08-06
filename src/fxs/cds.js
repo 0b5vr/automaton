@@ -2,7 +2,7 @@ export default {
   name: 'Critically Damped Spring',
   params: {
     factor: { name: 'Factor', type: 'float', default: 100.0, min: 0.0 },
-    ratio: { name: 'Ratio', type: 'float', default: 1.0 },
+    ratio: { name: 'Damp Ratio', type: 'float', default: 1.0 },
     preserve: { name: 'Preserve Velocity', type: 'boolean', default: false }
   },
   func( context ) {

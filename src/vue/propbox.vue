@@ -4,18 +4,18 @@
     <div class="name">{{ name }}</div>
 
     <div class="value number"
-      v-if="type === 'float'"
+      v-if="type === 'float' || type === 'int'"
       :class="{ readonly: readonly }"
     >
       <div class="valueText"
         :class="{ readonly: readonly }"
-        @mousedown="mousedown"
-      >{{ value.toFixed( 3 ) }}</div>
+        @mousedown="nMousedown"
+      >{{ type === 'int' ? value : value.toFixed( 3 ) }}</div>
       <input class="valueInput"
         ref="valueInput"
         v-show="input"
-        @keydown.enter="enter"
-        @blur="blur"
+        @keydown.enter="nEnter"
+        @blur="nBlur"
       />
     </div>
 
@@ -58,7 +58,7 @@ export default {
   },
 
   methods: {
-    mousedown( event ) {
+    nMousedown( event ) {
       if ( this.readonly ) { return; }
 
       const now = Date.now();
@@ -72,44 +72,49 @@ export default {
       }
       this.lastClick = now;
 
-      if ( this.type === 'float' ) {
-        let lastY = event.clientY;
-        const v0 = Number( this.value );
+      const y0 = event.clientY;
+      let lastY = y0;
+      const v0 = Number( this.value );
 
-        mouseEvents( ( event ) => {
-          let v = Number( this.value );
-          const y = event.clientY;
-          const dy = lastY - y;
-          lastY = y;
+      mouseEvents( ( event ) => {
+        let v = Number( this.value );
+        const y = event.clientY;
+        const dy = lastY - y;
+        lastY = y;
 
-          if ( event.shiftKey ) {
-            const dyAbs = Math.abs( dy );
-            const dySign = Math.sign( dy );
-            for ( let i = 0; i < dyAbs; i ++ ) {
-              const vAbs = Math.abs( v );
-              const vSign = Math.sign( v + 1E-4 * dySign );
-              const order = Math.floor( Math.log10( vAbs + 1E-4 * dySign * vSign ) ) - 1 - ( event.altKey ? 1 : 0 );
-              v += Math.max( 0.001, Math.pow( 10.0, order ) ) * dySign;
-            }
-          } else {
-            v += dy * ( event.altKey ? 0.001 : 0.01 );
+        if ( this.type === 'int' ) {
+          v = v0 - Math.floor( ( y - y0 ) / 10.0 );
+        } else if ( event.shiftKey ) {
+          const dyAbs = Math.abs( dy );
+          const dySign = Math.sign( dy );
+          for ( let i = 0; i < dyAbs; i ++ ) {
+            const vAbs = Math.abs( v );
+            const vSign = Math.sign( v + 1E-4 * dySign );
+            const order = Math.floor( Math.log10( vAbs + 1E-4 * dySign * vSign ) ) - 1 - ( event.altKey ? 1 : 0 );
+            v += Math.max( 0.001, Math.pow( 10.0, order ) ) * dySign;
           }
-          this.$emit( 'changed', Number( v.toFixed( 3 ) ) );
-        }, ( event ) => {
-          if ( v0 === Number( this.value ) ) { return; }
-          this.$emit( 'finished', [ v0, Number( this.value ) ] );
-        } );
-      }
+        } else {
+          v += dy * ( event.altKey ? 0.001 : 0.01 );
+        }
+
+        v = this.type === 'int' ? v : Number( v.toFixed( 3 ) );
+        this.$emit( 'changed', v );
+      }, ( event ) => {
+        if ( v0 === Number( this.value ) ) { return; }
+        this.$emit( 'finished', [ v0, Number( this.value ) ] );
+      } );
     },
 
-    enter( event ) {
-      const v = parseFloat( this.$refs.valueInput.value );
+    nEnter( event ) {
+      let v = parseFloat( this.$refs.valueInput.value );
+      if ( this.type === 'int' ) { v = Math.round( v ); }
+ 
       this.$emit( 'changed', v );
       this.$emit( 'finished', [ Number( this.value ), v ] );
       this.input = false;
     },
 
-    blur( event ) {
+    nBlur( event ) {
       this.input = false;
     },
 
