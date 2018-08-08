@@ -54,6 +54,15 @@ const AutomatonWithGUI = class extends Automaton {
     } );
 
     if ( _props.gui ) { this.__prepareGUI( _props.gui ); }
+
+    window.addEventListener( 'beforeunload', ( event ) => {
+      if ( this.__historyIndex !== 0 ) {
+        var confirmationMessage = 'Automaton: Did you saved your progress?';
+
+        event.returnValue = confirmationMessage;
+        return confirmationMessage;
+      }
+    } );
   }
 
   /**
