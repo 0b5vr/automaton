@@ -12,12 +12,12 @@
       @blur="onSearchBoxBlur"
     />
     <div class="fx-name"
-      v-for="( name, index ) in fxDefsFiltered"
-      :key="name"
+      v-for="( id, index ) in fxDefsFiltered"
+      :key="id"
       :class="{ selected: index === selectedIndex }"
-      @mousedown="select( name )"
+      @mousedown="select( id )"
     >
-      {{ name }}
+      {{ id ? automaton.getFxDefinitionName( id ) : '(No result found)' }}
     </div>
   </div>
 </div>
@@ -39,18 +39,20 @@ export default {
   },
 
   methods: {
-    filterDef( name ) {
+    filterDef( id ) {
       const queries = this.searchText.split( /\s+/ );
+      const name = this.automaton.getFxDefinitionName( id );
       return queries.every( ( query ) => (
-        name.toLowerCase().includes( query.toLowerCase() )
+        name.toLowerCase().includes( query.toLowerCase() ) ||
+        id.toLowerCase().includes( query.toLowerCase() )
       ) );
     },
 
-    select( name ) {
-      if ( name === '( No result found )' ) { cancel(); return; }
-      this.$emit( 'selected', name );
-      this.fxDefs.splice( this.fxDefs.indexOf( name ), 1 );
-      this.fxDefs.unshift( name );
+    select( id ) {
+      if ( id === '' ) { cancel(); return; }
+      this.$emit( 'selected', id );
+      this.fxDefs.splice( this.fxDefs.indexOf( id ), 1 );
+      this.fxDefs.unshift( id );
       this.$refs.searchBox.blur();
     },
 
@@ -80,13 +82,13 @@ export default {
   },
 
   mounted() {
-    this.fxDefs = this.automaton.getFxDefinitionNames();
+    this.fxDefs = this.automaton.getFxDefinitionIds();
   },
 
   computed: {
     fxDefsFiltered() {
-      let arr = this.fxDefs.filter( ( name ) => this.filterDef( name ) );
-      return arr.length === 0 ? [ '( No result found )' ] : arr;
+      let arr = this.fxDefs.filter( ( id ) => this.filterDef( id ) );
+      return arr.length === 0 ? [ '' ] : arr;
     }
   },
 

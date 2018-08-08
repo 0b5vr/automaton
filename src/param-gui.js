@@ -329,10 +329,10 @@ const ParamWithGUI = class extends Param {
    * If it couldn't create param, it will return empty string instead.
    * @param {number} _time Beginning time of new fx
    * @param {number} _length Length of new fx
-   * @param {string} _name Name (kind) of new fx
+   * @param {string} _def Definition id (kind) of new fx
    * @returns {string} Id of the new fx
    */
-  createFx( _time, _length, _name ) {
+  createFx( _time, _length, _def ) {
     let row = this.__getFreeRow( _time, _length );
     if ( ParamWithGUI.FX_ROW_MAX < row ) {
       console.error( 'Too many fx stacks at here!' );
@@ -344,8 +344,8 @@ const ParamWithGUI = class extends Param {
       time: _time,
       length: _length,
       row: row,
-      name: _name,
-      params: this.__automaton.generateDefaultFxParams( _name )
+      def: _def,
+      params: this.__automaton.generateDefaultFxParams( _def )
     };
     this.__fxs.push( data );
     this.__sortFxs();
@@ -472,7 +472,7 @@ const ParamWithGUI = class extends Param {
     const index = this.__getFxIndexById( _id );
 
     const fx = this.__fxs[ index ];
-    const params = this.__automaton.getFxDefinitionParams( fx.name );
+    const params = this.__automaton.getFxDefinitionParams( fx.def );
 
     let value = _value;
     if ( typeof params[ _name ].min === 'number' ) { value = Math.max( params[ _name ].min, value ); }

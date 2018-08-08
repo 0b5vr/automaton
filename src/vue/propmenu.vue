@@ -110,7 +110,7 @@
       <div class="props"
         v-if="selectedFx"
       >
-        <div class="title">Fx: {{ selectedFx.name }}</div>
+        <div class="title">Fx: {{ automaton.getFxDefinitionName( selectedFx.def ) }}</div>
         <hr />
         <Propbox class="prop"
           type="float"
@@ -156,7 +156,7 @@
         />
         <hr />
         <Propbox class="prop"
-          v-for="( param, key ) in automaton.getFxDefinitionParams( selectedFx.name )"
+          v-for="( param, key ) in automaton.getFxDefinitionParams( selectedFx.def )"
           :key="'fxParam-'+key"
           :type="param.type"
           :name="param.name || key"

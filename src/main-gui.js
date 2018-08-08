@@ -50,7 +50,7 @@ const AutomatonWithGUI = class extends Automaton {
     this.__historyIndex = 0;
 
     fxDefinitions.map( ( fxDef ) => {
-      this.addFxDefinition( fxDef );
+      this.addFxDefinition( ...fxDef );
     } );
 
     if ( _props.gui ) { this.__prepareGUI( _props.gui ); }
@@ -86,12 +86,12 @@ const AutomatonWithGUI = class extends Automaton {
 
   /**
    * Generate default fx params object.
-   * @param {string} _name Name of fx
+   * @param {string} _id Id of the fx
    * @returns {Object} Default fx params object
    */
-  generateDefaultFxParams( _name ) {
-    const fxDef = this.__paramFxDefs[ _name ];
-    if ( !fxDef ) { throw new Error( `Fx definition called ${_name} is not defined` ); }
+  generateDefaultFxParams( _id ) {
+    const fxDef = this.__paramFxDefs[ _id ];
+    if ( !fxDef ) { throw new Error( `Fx definition called ${_id} is not defined` ); }
 
     const ret = {};
     for ( let key in fxDef.params ) {
@@ -259,23 +259,32 @@ const AutomatonWithGUI = class extends Automaton {
   }
 
   /**
-   * Return list of name of fx definitions. Sorted.
-   * @returns {Array} List of name of fx definitions
+   * Return list of id of fx definitions. Sorted.
+   * @returns {Array} List of id of fx definitions
    */
-  getFxDefinitionNames() {
+  getFxDefinitionIds() {
     let arr = [];
-    for ( const name in this.__paramFxDefs ) { arr.push( name ); }
+    for ( const id in this.__paramFxDefs ) { arr.push( id ); }
     arr = arr.sort();
     return arr;
   }
 
   /**
+   * Return display name of a fx definition.
+   * @param {string} _id Id of the fx definition you want to grab
+   * @returns {string} Name of the fx definition
+   */
+  getFxDefinitionName( _id ) {
+    return this.__paramFxDefs[ _id ].name;
+  }
+
+  /**
    * Return params section of a fx definition.
-   * @param {string} _name Name of the fx definition you want to grab
+   * @param {string} _id Id of the fx definition you want to grab
    * @returns {Object} Params section
    */
-  getFxDefinitionParams( _name ) {
-    return jsonCopy( this.__paramFxDefs[ _name ].params );
+  getFxDefinitionParams( _id ) {
+    return jsonCopy( this.__paramFxDefs[ _id ].params );
   }
 
   /**

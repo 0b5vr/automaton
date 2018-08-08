@@ -1,4 +1,4 @@
-export default {
+export default [ 'gravity', {
   name: 'Gravity',
   params: {
     a: { name: 'Acceleration', type: 'float', default: 9.8 },
@@ -31,4 +31,4 @@ export default {
 
     return context.pos;
   }
-};
+} ];

@@ -1,4 +1,4 @@
-export default {
+export default [ 'cds', {
   name: 'Critically Damped Spring',
   params: {
     factor: { name: 'Factor', type: 'float', default: 100.0, min: 0.0 },
@@ -25,4 +25,4 @@ export default {
     context.pos += context.vel * dt;
     return context.pos;
   }
-};
+} ];

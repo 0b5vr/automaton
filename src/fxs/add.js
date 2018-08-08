@@ -1,4 +1,4 @@
-export default {
+export default [ 'add', {
   name: 'Add',
   params: {
     value: { name: 'Value', type: 'float', default: 1.0 }
@@ -8,4 +8,4 @@ export default {
     const v = context.getValue( t );
     return v + context.params.value;
   }
-};
+} ];

@@ -1,6 +1,6 @@
 const TAU = Math.PI * 2.0;
 
-export default {
+export default [ 'sine', {
   name: 'Sinewave',
   params: {
     amp: { name: 'Amp', type: 'float', default: 0.1 },
@@ -13,4 +13,4 @@ export default {
     const p = context.progress * context.params.freq + context.params.phase;
     return v + context.params.amp * Math.sin( p * TAU );
   }
-};
+} ];

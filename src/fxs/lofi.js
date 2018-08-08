@@ -1,4 +1,4 @@
-export default {
+export default [ 'lofi', {
   name: 'Lo-Fi',
   params: {
     resolution: { name: 'Resolution', type: 'float', default: 10.0, min: 1E-3, max: 100.0 },
@@ -13,4 +13,4 @@ export default {
     }
     return context.getValue( t );
   }
-};
+} ];

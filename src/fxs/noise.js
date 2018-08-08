@@ -45,7 +45,7 @@ const genNoise = ( _params ) => {
   return arr;
 };
 
-export default {
+export default [ 'noise', {
   name: 'Fractal Noise',
   params: {
     recursion: { name: 'Recursion', type: 'int', default: 4, min: 0 },
@@ -69,4 +69,4 @@ export default {
     const i = context.i - context.i0;
     return v + context.params.amp * context.noise[ i ];
   }
-};
+} ];

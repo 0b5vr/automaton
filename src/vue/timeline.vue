@@ -130,7 +130,7 @@
               }"
               :x="t2x( fx.time ) + 4"
               y="12"
-            >{{ fx.name }}</text>
+            >{{ automaton.getFxDefinitionName( fx.def ) }}</text>
           </g>
         </g>
 

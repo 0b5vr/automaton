@@ -205,11 +205,12 @@ const Automaton = class {
 
   /**
    * Add a fx definition.
+   * @param {string} _id Unique id for the Fx definition
    * @param {FxDefinition} _fxDef Fx definition object
    * @returns {void} void
    */
-  addFxDefinition( _fxDef ) {
-    this.__paramFxDefs[ _fxDef.name ] = _fxDef;
+  addFxDefinition( _id, _fxDef ) {
+    this.__paramFxDefs[ _id ] = _fxDef;
 
     this.precalcAll();
   }
