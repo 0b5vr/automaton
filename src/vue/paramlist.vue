@@ -1,24 +1,30 @@
 <template>
 <div>
   <div class="root">
-    <div class="param"
-      v-for="name in automaton.getParamNames()"
-      :key="'param' + name"
-      :class="{ selected: name === selectedParamName }"
-      @click="$emit( 'selected', name )"
+    <Scrollable
+      bar="left"
     >
-      <div class="name">{{ name }}</div>
-      <div class="value">{{ automaton.auto( name ).toFixed( 3 ) }}</div>
-    </div>
+      <div class="param"
+        v-for="name in automaton.getParamNames()"
+        :key="'param' + name"
+        :class="{ selected: name === selectedParamName }"
+        @click="$emit( 'selected', name )"
+      >
+        <div class="name">{{ name }}</div>
+        <div class="value">{{ automaton.auto( name ).toFixed( 3 ) }}</div>
+      </div>
+    </Scrollable>
   </div>
 </div>
 </template>
 
 <script>
-export default {
-  mounted() {},
+import Scrollable from './scrollable.vue';
 
-  beforeDestroy() {},
+export default {
+  components: {
+    Scrollable
+  },
 
   props: [ "automaton", "selectedParamName" ],
 
@@ -38,7 +44,6 @@ export default {
   top: 0;
   width: 100%;
   height: 100%;
-  padding-right: 20px; // hide scrollbar!
 
   background: #222;
   color: #fff;
