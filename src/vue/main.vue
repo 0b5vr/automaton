@@ -3,6 +3,7 @@
   <div class="automaton root">
     <Header class="header"
       :automaton="automaton"
+      @historyMoved="onHistoryMoved"
     />
     <ParamList class="paramlist"
       :automaton="automaton"
@@ -75,6 +76,11 @@ export default {
 
     selectFxs( arr ) {
       this.selectedFxIds = arr;
+    },
+
+    onHistoryMoved() {
+      this.selectNodes( [] );
+      this.selectFxs( [] );
     }
   }
 }

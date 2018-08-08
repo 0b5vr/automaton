@@ -60,10 +60,14 @@ export default {
           this.cantUndoThis = 0;
         }
       }
+
+      this.$emit( 'historyMoved' );
     },
 
     redo() {
       this.automaton.redo();
+
+      this.$emit( 'historyMoved' );
     },
 
     save() {
