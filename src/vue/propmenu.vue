@@ -107,6 +107,7 @@
           "
         />
       </div>
+
       <div class="props"
         v-if="selectedFx"
       >
@@ -173,6 +174,39 @@
           "
         />
       </div>
+
+      <div class="props"
+        v-if="config === 'snap'"
+      >
+        <div class="title">Snap Settings</div>
+        <hr />
+        <Propbox class="prop"
+          name="Enable Snap"
+          type="boolean"
+          :value="automaton.guiSettings.snapActive"
+          @changed="automaton.guiSettings.snapActive = $event"
+        />
+        <Propbox class="prop"
+          name="Interval (Time)"
+          min="0.0"
+          type="float"
+          :value="automaton.guiSettings.snapTime"
+          @changed="automaton.guiSettings.snapTime = $event"
+        />
+        <Propbox class="prop"
+          name="Interval (Value)"
+          min="0.0"
+          type="float"
+          :value="automaton.guiSettings.snapValue"
+          @changed="automaton.guiSettings.snapValue = $event"
+        />
+      </div>
+
+      <div class="props"
+        v-if="config === 'general'"
+      >
+        <div class="title">General Config</div>
+      </div>
     </Scrollable>
   </div>
 </div>
@@ -189,7 +223,8 @@ export default {
     'automaton',
     'selectedParamName',
     'selectedNodeIds',
-    'selectedFxIds'
+    'selectedFxIds',
+    'config'
   ],
 
   components: {

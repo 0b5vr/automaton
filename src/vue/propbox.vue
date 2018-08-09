@@ -48,7 +48,14 @@ const mouseEvents = ( move, up ) => {
 export default {
   name: 'propbox',
 
-  props: [ 'name', 'value', 'type', 'readonly' ],
+  props: [
+    'name',
+    'value',
+    'type',
+    'min',
+    'max',
+    'readonly'
+  ],
 
   data() {
     return {
@@ -97,6 +104,8 @@ export default {
           v += dy * ( event.altKey ? 0.001 : 0.01 );
         }
 
+        if ( this.max ) { v = Math.min( v, parseFloat( this.max ) ); }
+        if ( this.min ) { v = Math.max( v, parseFloat( this.min ) ); }
         v = this.type === 'int' ? v : Number( v.toFixed( 3 ) );
         this.$emit( 'changed', v );
       }, ( event ) => {

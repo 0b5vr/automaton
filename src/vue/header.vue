@@ -16,11 +16,13 @@
       />
       <img class="button"
         :src="require( '../images/snap.svg' )"
-        stalker-text="WIP"
+        stalker-text="Snap Settings"
+        @click="$emit( 'configSelected', 'snap' )"
       />
       <img class="button"
         :src="require( '../images/cog.svg' )"
-        stalker-text="WIP"
+        stalker-text="General Config"
+        @click="$emit( 'configSelected', 'general' )"
       />
       <img class="button"
         :src="require( '../images/save.svg' )"

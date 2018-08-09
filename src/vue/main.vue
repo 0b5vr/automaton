@@ -4,6 +4,7 @@
     <Header class="header"
       :automaton="automaton"
       @historyMoved="onHistoryMoved"
+      @configSelected="onConfigSelected"
     />
     <ParamList class="paramlist"
       :automaton="automaton"
@@ -15,6 +16,7 @@
       :selectedParamName="selectedParamName"
       :selectedNodeIds="selectedNodeIds"
       :selectedFxIds="selectedFxIds"
+      :config="config"
     />
     <Timeline class="timeline"
       :automaton="automaton"
@@ -59,7 +61,8 @@ export default {
     return {
       selectedParamName: null,
       selectedNodeIds: [],
-      selectedFxIds: []
+      selectedFxIds: [],
+      config: ''
     }
   },
 
@@ -72,15 +75,23 @@ export default {
 
     selectNodes( arr ) {
       this.selectedNodeIds = arr;
+      this.config = '';
     },
 
     selectFxs( arr ) {
       this.selectedFxIds = arr;
+      this.config = '';
     },
 
     onHistoryMoved() {
       this.selectNodes( [] );
       this.selectFxs( [] );
+    },
+
+    onConfigSelected( config ) {
+      this.selectNodes( [] );
+      this.selectFxs( [] );
+      this.config = config;
     }
   }
 }

@@ -11,40 +11,38 @@
       :height="height"
       :viewBox="`0 0 ${width} ${height}`"
     >
-      <g>
-        <line class="grid"
-          v-for="( line, index ) in grid.x"
-          :key="'gridX'+index"
-          :x1="line.pos"
-          :y1="0"
-          :x2="line.pos"
-          :y2="height"
-          :opacity="line.op"
-        />
-        <line class="grid"
-          v-for="( line, index ) in grid.y"
-          :key="'gridY'+index"
-          :x1="0"
-          :y1="line.pos"
-          :x2="width"
-          :y2="line.pos"
-          :opacity="line.op"
-        />
-        <text class="gridText"
-          v-for="( line, index ) in grid.x"
-          :key="'gridTextX'+index"
-          :x="line.pos + 2"
-          :y="height - 2"
-          :opacity="line.op"
-        >{{ line.val.toFixed( 3 ) }}</text>
-        <text class="gridText"
-          v-for="( line, index ) in grid.y"
-          :key="'gridTextY'+index"
-          x="2"
-          :y="line.pos - 2"
-          :opacity="line.op"
-        >{{ line.val.toFixed( 3 ) }}</text>
-      </g>
+      <line class="grid"
+        v-for="( line, index ) in grid.x"
+        :key="'grid-x'+index"
+        :x1="line.pos"
+        :y1="0"
+        :x2="line.pos"
+        :y2="height"
+        :opacity="line.op"
+      />
+      <line class="grid"
+        v-for="( line, index ) in grid.y"
+        :key="'grid-y'+index"
+        :x1="0"
+        :y1="line.pos"
+        :x2="width"
+        :y2="line.pos"
+        :opacity="line.op"
+      />
+      <text class="grid-text"
+        v-for="( line, index ) in grid.x"
+        :key="'grid-text-x'+index"
+        :x="line.pos + 2"
+        :y="height - 2"
+        :opacity="line.op"
+      >{{ line.val.toFixed( 3 ) }}</text>
+      <text class="grid-text"
+        v-for="( line, index ) in grid.y"
+        :key="'grid-text-y'+index"
+        x="2"
+        :y="line.pos - 2"
+        :opacity="line.op"
+      >{{ line.val.toFixed( 3 ) }}</text>
 
       <polyline class="graph"
         v-if="selectedParam"
@@ -99,16 +97,16 @@
             @dblclick.stop="removeFx( fx.$id )"
           />
           <rect class="side"
-            :x="t2x( fx.time ) - 3"
+            :x="t2x( fx.time ) - 1"
             width="6"
             height="16"
-            @mousedown="grabFxSide( fx.$id, false, $event )"
+            @mousedown="grabFxLeft( fx.$id, $event )"
           />
           <rect class="side"
-            :x="t2x( fx.time + fx.length ) - 3"
+            :x="t2x( fx.time + fx.length ) - 5"
             width="6"
             height="16"
-            @mousedown="grabFxSide( fx.$id, true, $event )"
+            @mousedown="grabFxRight( fx.$id, $event )"
           />
           
           <clipPath
@@ -319,23 +317,6 @@ export default {
           accent100 = ( accent100 + 1 ) % 100;
         }
       }
-
-      // {
-      //   let deltaBeat = 60.0 / this.automaton.data.gui.snap.bpm;
-      //   let delta = ( this.t1 - this.t0 );
-      //   let logDelta = Math.log( delta / deltaBeat ) / Math.log( 4.0 );
-      //   let scale = Math.pow( 4.0, Math.floor( logDelta - 0.5 ) ) * deltaBeat;
-      //   let begin = Math.floor( ( this.t0 ) / scale ) * scale + ( this.automaton.data.gui.snap.offset % scale );
-
-      //   this.snapLines = [];
-      //   for ( let v = begin; v < this.t1; v += scale ) {
-      //     this.snapLines.push( {
-      //       beat: ( ( v - this.automaton.data.gui.snap.offset ) / deltaBeat ),
-      //       time: v,
-      //       pos: this.t2x( v )
-      //     } );
-      //   }
-      // }
     },
 
     updateGraph() {
@@ -495,6 +476,34 @@ export default {
     },
 
     /**
+     * Snap given time.
+     * @param {number} time Time
+     * @returns {number} Snapped time
+     */
+    snapTime( time ) {
+      if ( !this.automaton.guiSettings.snapActive ) { return time; }
+
+      const interval = this.automaton.guiSettings.snapTime;
+      const width = 5.0 / this.width * ( this.t1 - this.t0 );
+      const nearest = Math.round( time / interval ) * interval;
+      return Math.abs( time - nearest ) < width ? nearest : time;
+    },
+
+    /**
+     * Snap given value.
+     * @param {number} value Value
+     * @returns {number} Snapped value
+     */
+    snapValue( value ) {
+      if ( !this.automaton.guiSettings.snapActive ) { return value; }
+
+      const interval = this.automaton.guiSettings.snapValue;
+      const width = 5.0 / this.height * ( this.v1 - this.v0 );
+      const nearest = Math.round( value / interval ) * interval;
+      return Math.abs( value - nearest ) < width ? nearest : value;
+    },
+
+    /**
      * Grab a node.
      * @param {number} id Id of a node
      * @param {MouseEvent} event Mouse event
@@ -512,16 +521,23 @@ export default {
 
       this.grabHelper( event, ( dt, dv, event, isUp ) => {
         if ( event.shiftKey ) { dv = 0.0; }
-        else if ( event.altKey ) { dt = 0.0; }
+        else if ( event.ctrlKey || event.metaKey ) { dt = 0.0; }
 
-        param.moveNode( id, t0 + dt, v0 + dv );
+        let t = t0 + dt;
+        let v = v0 + dv;
+        if ( !event.altKey ) {
+          t = this.snapTime( t );
+          v = this.snapValue( v );
+        }
+
+        param.moveNode( id, t, v );
 
         if ( isUp ) {
-          if ( dt === 0 && dv === 0 ) { return; }
+          if ( t0 === t && v0 === v ) { return; }
 
           this.automaton.pushHistory(
             'Move Node',
-            () => param.moveNode( id, t0 + dt, v0 + dv ),
+            () => param.moveNode( id, t, v ),
             () => param.moveNode( id, t0, v0 )
           );
         }
@@ -561,7 +577,7 @@ export default {
           const dot = t * nt0 + v * nv0;
           t = dot * nt0;
           v = dot * nv0;
-        } else if ( event.altKey ) {
+        } else if ( event.ctrlKey || event.metaKey ) {
           tOp = -t;
           vOp = -v;
         }
@@ -663,15 +679,20 @@ export default {
         const dy = event.clientY - y0;
         const newRow = Math.min( Math.max( r0 + Math.round( dy / 16.0 ), 0 ), ParamWithGUI.FX_ROW_MAX );
 
-        param.moveFx( id, t0 + dt );
+        let t = t0 + dt;
+        if ( !event.altKey ) {
+          t = this.snapTime( t );
+        }
+
+        param.moveFx( id, t );
         param.changeFxRow( id, newRow );
 
         if ( isUp ) {
-          if ( dt === 0 && dv === 0 ) { return; }
+          if ( t0 === t && r0 === newRow ) { return; }
 
           this.automaton.pushHistory(
             'Move Fx',
-            () => param.forceMoveFx( id, t0 + dt, newRow ),
+            () => param.forceMoveFx( id, t, newRow ),
             () => param.forceMoveFx( id, t0, r0 )
           );
         }
@@ -679,41 +700,73 @@ export default {
     },
 
     /**
-     * Grab a side of fx.
+     * Grab a left side of fx.
      * @param {string} id Id of fx
-     * @param {boolean} isprevent false if left, true if right
      * @param {MouseEvent} event Mouse event
      * @returns {void} void
      */
-    grabFxSide( id, isRight, event ) {
+    grabFxLeft( id, event ) {
       const param = this.selectedParam;
+
+      this.$emit( 'nodeSelected', [] );
+      this.$emit( 'fxSelected', [ id ] );
+
       const fx = param.dumpFx( id );
 
       const l0 = fx.length;
+      const end0 = fx.time + l0;
 
       this.grabHelper( event, ( dt, dv, event, isUp ) => {
-        if ( isRight ) {
-          param.resizeFx( id, l0 + dt );
+        let l = l0 - dt;
+        if ( !event.altKey ) {
+          l = this.snapTime( l - end0 ) + end0;
+        }
 
-          if ( isUp ) {
-            this.automaton.pushHistory(
-              'Resize Fx',
-              () => param.resizeFx( id, l0 + dt ),
-              () => param.resizeFx( id, l0 )
-            );
-          }
-        } else {
-          param.resizeFxByLeft( id, l0 - dt );
+        param.resizeFxByLeft( id, l );
 
-          if ( isUp ) {
-            if ( dt === 0 && dv === 0 ) { return; }
+        if ( isUp ) {
+          if ( dt === 0 && dv === 0 ) { return; }
 
-            this.automaton.pushHistory(
-              'Resize Fx',
-              () => param.resizeFx( id, l0 - dt ),
-              () => param.resizeFx( id, l0 )
-            );
-          }
+          this.automaton.pushHistory(
+            'Resize Fx',
+            () => param.resizeFxByLeft( id, l ),
+            () => param.resizeFxByLeft( id, l0 )
+          );
+        }
+      } );
+    },
+
+    /**
+     * Grab a right side of fx.
+     * @param {string} id Id of fx
+     * @param {MouseEvent} event Mouse event
+     * @returns {void} void
+     */
+    grabFxRight( id, event ) {
+      const param = this.selectedParam;
+
+      this.$emit( 'nodeSelected', [] );
+      this.$emit( 'fxSelected', [ id ] );
+
+      const fx = param.dumpFx( id );
+
+      const l0 = fx.length;
+      const t0 = fx.time;
+
+      this.grabHelper( event, ( dt, dv, event, isUp ) => {
+        let l = l0 + dt;
+        if ( !event.altKey ) {
+          l = this.snapTime( l + t0 ) - t0;
+        }
+
+        param.resizeFx( id, l );
+
+        if ( isUp ) {
+          this.automaton.pushHistory(
+            'Resize Fx',
+            () => param.resizeFx( id, l ),
+            () => param.resizeFx( id, l0 )
+          );
         }
       } );
     },
@@ -741,7 +794,7 @@ export default {
         if ( this.automaton.length < this.t1 ) {
           this.t1 = this.automaton.length;
         }
-      } else if ( event.altKey ) { // zoom vertically
+      } else if ( event.ctrlKey || event.metaKey ) { // zoom vertically
         const cursorV = this.y2v( event.offsetY );
 
         const d = this.v1 - this.v0;
@@ -842,7 +895,7 @@ export default {
       stroke-width: 1;
     }
 
-    .gridText {
+    .grid-text {
       fill: #fff;
     }
 

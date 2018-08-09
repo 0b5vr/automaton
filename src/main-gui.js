@@ -41,6 +41,16 @@ const AutomatonWithGUI = class extends Automaton {
      */
     this.__history = [];
 
+    /**
+     * GUI settings.
+     * Feel free to get / set these values.
+     * @type {Object}
+     */
+    this.guiSettings = {
+      snapActive: false,
+      snapTime: 0.1,
+      snapValue: 0.1
+    };
 
     /**
      * Current position of history stack.
