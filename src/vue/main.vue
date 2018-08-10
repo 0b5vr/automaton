@@ -26,10 +26,7 @@
       @nodeSelected="selectNodes( $event )"
       @fxSelected="selectFxs( $event )"
     />
-    <Stalker class="stalker"
-    >
-      Hi
-    </Stalker>
+    <Stalker class="stalker" />
   </div>
 </div>
 </template>
