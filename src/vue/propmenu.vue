@@ -206,6 +206,28 @@
         v-if="config === 'general'"
       >
         <div class="title">General Config</div>
+        <hr />
+        <Propbox class="prop"
+          name="Length"
+          type="float"
+          min="0"
+          :value="generalConfigs.length"
+          @changed="generalConfigs.length = $event"
+        />
+        <Propbox class="prop"
+          name="Resolution"
+          type="int"
+          min="1"
+          :value="generalConfigs.resolution"
+          @changed="generalConfigs.resolution = $event"
+        />
+        <hr />
+        <div class="centering">
+          This cannot be undone!
+          <div class="button-confirm"
+            @click="confirmGeneralConfigs"
+          >Apply</div>
+        </div>
       </div>
     </Scrollable>
   </div>
@@ -234,10 +256,18 @@ export default {
 
   data() {
     return {
+      generalConfigs: {
+        length: 0,
+        resolution: 0
+      }
     }
   },
 
   methods: {
+    confirmGeneralConfigs() {
+      this.automaton.setLength( this.generalConfigs.length );
+      this.automaton.setResolution( this.generalConfigs.resolution );
+    }
   },
 
   computed: {
@@ -278,7 +308,14 @@ export default {
     }
   },
 
-  methods: {}
+  watch: {
+    config() {
+      if ( this.config === 'general' ) {
+        this.generalConfigs.length = this.automaton.length;
+        this.generalConfigs.resolution = this.automaton.resolution;
+      }
+    }
+  }
 }
 </script>
 
@@ -309,6 +346,22 @@ export default {
 
     hr {
       border: solid 1px #666;
+    }
+
+    .centering {
+      text-align: center;
+
+      .button-confirm {
+        display: inline-block;
+        width: 4em;
+        padding: 0.25em;
+
+        background: #444;
+
+        cursor: pointer;
+
+        &:hover { background: #111; }
+      }
     }
   }
 }

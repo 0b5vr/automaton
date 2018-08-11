@@ -197,41 +197,44 @@ const AutomatonWithGUI = class extends Automaton {
   }
 
   /**
-   * Set new length.
-   * **Some nodes might be automatically removed.**
+   * Set new length for this automaton instance.
+   * **Some nodes / fxs might be automatically removed / changed.**
    * Can be performed via GUI.
-   * @param {number} _len new length
+   * @param {number} _length New length for the automaton
    * @returns {void} void
    */
-  setLength( _len ) {
-    // if len is invalid then throw error
-    if ( isNaN( _len ) ) {
-      throw 'Automaton.setLength: _len is invalid';
+  setLength( _length ) {
+    // if length is invalid then throw error
+    if ( isNaN( _length ) ) {
+      throw new Error( 'Automaton.setLength: _length is invalid' );
     }
 
-    for ( let paramName in this.params ) {
-      const param = this.params[ paramName ];
+    // if length is not changed then do fast-return
+    if ( _length === this.length ) { return; }
 
-      // remove loose ends
-      for ( let iNode = param.nodes.length - 1; 0 < iNode; iNode -- ) {
-        const node = param.nodes[ iNode ];
-        if ( _len < node.time ) {
-          param.nodes.splice( iNode, 1 );
-        }
-      }
-
-      // generate a new end
-      const lastNode = param.nodes[ param.nodes.length - 1 ];
-      if ( lastNode.time !== _len ) {
-        param.addNode( _len, lastNode.value );
-      }
+    // changeLength is a good method
+    for ( let paramName in this.__params ) {
+      const param = this.__params[ paramName ];
+      param.changeLength( _length );
     }
 
     // finally set the length
-    this.data.length = _len;
+    this.__length = _length;
 
     // It's irreversible operation, sorry.
-    this.__dropHistory();
+    this.dropHistory();
+
+    // Poke vue
+    this.__vue.$emit( 'changedLength' );
+  }
+
+  /**
+   * Set new resolution for this automaton instance.
+   * @param {number} _resolultion New resolution for the automaton lul
+   * @returns {void} void
+   */
+  setResolution( _resolultion ) { // lul
+    this.__resolution = _resolultion; // lul
   }
 
   /**

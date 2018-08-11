@@ -239,7 +239,7 @@ export default {
       height: 100,
 
       t0: 0.0,
-      t1: 1.0,
+      t1: this.automaton.length,
       v0: 0.0,
       v1: 1.0,
 
@@ -857,6 +857,13 @@ export default {
   },
 
   mounted() {
+    this.$root.$on( 'changedLength', () => {
+      this.t0 = 0.0;
+      this.t1 = this.automaton.length;
+
+      this.updateGraph();
+    } );
+
     this.$root.$on( 'poke', () => {
       this.updateGraph();
     } );

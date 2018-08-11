@@ -548,6 +548,47 @@ const ParamWithGUI = class extends Param {
 
     this.precalc();
   }
+
+  /**
+   * Call when you need to change automaton length.
+   * This is very hardcore method. Should not be called by anywhere except {@link AutomatonWithGUI#setLength}.
+   * @param {number} _length Desired length
+   * @returns {void} void
+   */
+  changeLength( _length ) {
+    for ( let i = this.__nodes.length - 1; 0 <= i; i -- ) {
+      const node = this.__nodes[ i ];
+      if ( _length < node.time ) {
+        this.__nodes.splice( i, 1 );
+      } else if ( node.time === _length ) {
+        delete node.out;
+        break;
+      } else {
+        const lastNode = this.__nodes[ this.__nodes.length - 1 ];
+        if ( lastNode ) {
+          lastNode.out = { time: ParamWithGUI.DEFAULT_HANDLE_LENGTH, value: 0.0 };
+        }
+
+        this.__nodes.push( {
+          time: _length,
+          value: 0.0,
+          in: { time: -ParamWithGUI.DEFAULT_HANDLE_LENGTH, value: 0.0 }
+        } );
+        break;
+      }
+    }
+
+    for ( let i = this.__fxs.length - 1; 0 <= i; i -- ) {
+      const fx = this.__fxs[ i ];
+      if ( _length < fx.time ) {
+        this.__fxs.splice( i, 1 );
+      } else if ( _length < fx.time + fx.length ) {
+        fx.length = _length - fx.time;
+      }
+    }
+
+    this.precalc();
+  }
 };
 
 /**

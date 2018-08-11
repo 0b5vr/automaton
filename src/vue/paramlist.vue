@@ -51,7 +51,7 @@ export default {
   .param {
     position: relative;
     width: calc( 100% - 4px );
-    height: 24px;
+    height: 1.5em;
     margin: 2px;
 
     background: #333;
@@ -66,8 +66,8 @@ export default {
 
     .name {
       position: absolute;
-      left: 5px;
-      top: 3px;
+      left: 0.2em;
+      top: 0.1em;
 
       font-size: 1.1em;
 
@@ -76,8 +76,8 @@ export default {
 
     .value {
       position: absolute;
-      right: 2px;
-      bottom: 1px;
+      right: 0.2em;
+      bottom: 0.1em;
 
       font-size: 0.6em;
       opacity: 0.7;
