@@ -94,20 +94,20 @@
             height="16"
             rx="5"
             ry="5"
-            @mousedown="grabFxBody( fx.$id, $event )"
+            @mousedown.stop="grabFxBody( fx.$id, $event )"
             @dblclick.stop="removeFx( fx.$id )"
           />
           <rect class="side"
             :x="t2x( fx.time ) - 1"
             width="6"
             height="16"
-            @mousedown="grabFxLeft( fx.$id, $event )"
+            @mousedown.stop="grabFxLeft( fx.$id, $event )"
           />
           <rect class="side"
             :x="t2x( fx.time + fx.length ) - 5"
             width="6"
             height="16"
-            @mousedown="grabFxRight( fx.$id, $event )"
+            @mousedown.stop="grabFxRight( fx.$id, $event )"
           />
           
           <clipPath
@@ -149,7 +149,7 @@
               v-if="node.in"
               r="4"
               :transform="'translate(' + t2x( node.time + node.in.time ) + ',' + v2y( node.value + node.in.value ) + ')'"
-              @mousedown="grabHandle( node.$id, false, $event )"
+              @mousedown.stop="grabHandle( node.$id, false, $event )"
               @dblclick.stop="removeHandle( node.$id, false )"
             />
 
@@ -164,7 +164,7 @@
               v-if="node.out"
               r="4"
               :transform="'translate(' + t2x( node.time + node.out.time ) + ',' + v2y( node.value + node.out.value ) + ')'"
-              @mousedown="grabHandle( node.$id, true, $event )"
+              @mousedown.stop="grabHandle( node.$id, true, $event )"
               @dblclick.stop="removeHandle( node.$id, true )"
             />
           </g>
@@ -173,7 +173,7 @@
             :class="{ selected: selectedNodeIds.some( ( id ) => id === node.$id ) }"
             @dblclick.stop="removeNode( node.$id )"
             @mousedown.shift.stop="resetHandles( node.$id )"
-            @mousedown="grabNode( node.$id, $event )"
+            @mousedown.stop="grabNode( node.$id, $event )"
           >
             <circle class="circle"
               v-if="v0 <= node.value && node.value <= v1"
