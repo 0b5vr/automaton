@@ -1,7 +1,11 @@
 <template>
 <div>
+  <div class="blur-layer"
+    v-if="active"
+    @mousedown="blur"
+  />
   <div class="root"
-    v-if="text"
+    v-if="active"
     :style="{
       left: typeof left === 'number' ? `${ left }px` : undefined,
       right: typeof right === 'number' ? `${ right }px` : undefined,
@@ -9,37 +13,43 @@
       bottom: typeof bottom === 'number' ? `${ bottom }px` : undefined
     }"
   >
-    {{ text }}
+    <div class="command"
+      v-for="( command, index ) in commands"
+      :key="'command'+index"
+      @mouseup="selectCommand( index )"
+    >{{ command.text }}</div>
   </div>
 </div>
 </template>
 
 <script>
 export default {
-  name: 'stalker',
+  name: 'context-menu',
+
+  props: [
+    'active',
+    'x',
+    'y',
+    'commands'
+  ],
 
   data() {
     return {
       left: 0,
       right: 0,
       top: 0,
-      bottom: 0,
-      text: ''
+      bottom: 0
     };
   },
 
   methods: {
-    applyStalkerText( el ) {
-      setTimeout( () => {
-        this.text = el.getAttribute( 'stalker-text' );
-      }, 10 ); // 🔥🔥🔥🔥🔥🔥
-    }
-  },
+    blur() {
+      this.$emit( 'blur' );
+    },
 
-  mounted() {
-    window.addEventListener( 'mousemove', ( event ) => {
-      const x = event.clientX;
-      const y = event.clientY;
+    moveRoot() {
+      const x = this.x;
+      const y = this.y;
       const w = document.documentElement.clientWidth;
       const h = document.documentElement.clientHeight;
 
@@ -50,30 +60,45 @@ export default {
       this.right = bLeftSide ? ( w - x ) : null;
       this.top = bUpSide ? null : y;
       this.bottom = bUpSide ? ( h - y ) : null;
+    },
 
-      this.applyStalkerText( event.target );
-    } );
-
-    window.addEventListener( 'mousedown', ( event ) => {
-      this.applyStalkerText( event.target );
-    } );
-
-    window.addEventListener( 'mouseup', ( event ) => {
-      this.applyStalkerText( event.target );
-    } );
+    selectCommand( index ) {
+      this.commands[ index ].func();
+      this.$emit( 'blur' );
+    }
   },
+
+  watch: {
+    x() { this.moveRoot() },
+    y() { this.moveRoot() }
+  }
 };
 </script>
 
 <style lang="scss" scoped>
+.blur-layer {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+
 .root {
   position: fixed;
-  pointer-events: none;
   white-space: nowrap;
   padding: 0.2em 0.4em;
-  margin: 10px;
+  font-size: 0.8em;
 
   background: rgba( 0, 0, 0, 0.5 );
   border-radius: 0.2em;
+
+  .command {
+    border-radius: 0.2em;
+
+    cursor: pointer;
+
+    &:hover { background: #444; }
+  }
 }
 </style>

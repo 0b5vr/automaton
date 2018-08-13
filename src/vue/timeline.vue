@@ -4,8 +4,8 @@
     @wheel.prevent="onWheel"
     @dragstart.prevent
     @mousedown.prevent.stop="dragBg"
-    @dblclick.stop="createNode"
-    @contextmenu.stop.prevent="openFxMenu( $event )"
+    @dblclick.left.stop="createNode( x2t( $event.offsetX ), y2v( $event.offsetY ) )"
+    @contextmenu.stop.prevent="contextBg"
   >
     <svg class="svg"
       :width="width"
@@ -94,20 +94,20 @@
             height="16"
             rx="5"
             ry="5"
-            @mousedown.stop="grabFxBody( fx.$id, $event )"
+            @mousedown.left.stop="grabFxBody( fx.$id, $event )"
             @dblclick.stop="removeFx( fx.$id )"
           />
           <rect class="side"
             :x="t2x( fx.time ) - 1"
             width="6"
             height="16"
-            @mousedown.stop="grabFxLeft( fx.$id, $event )"
+            @mousedown.left.stop="grabFxLeft( fx.$id, $event )"
           />
           <rect class="side"
             :x="t2x( fx.time + fx.length ) - 5"
             width="6"
             height="16"
-            @mousedown.stop="grabFxRight( fx.$id, $event )"
+            @mousedown.left.stop="grabFxRight( fx.$id, $event )"
           />
           
           <clipPath
@@ -149,7 +149,7 @@
               v-if="node.in"
               r="4"
               :transform="'translate(' + t2x( node.time + node.in.time ) + ',' + v2y( node.value + node.in.value ) + ')'"
-              @mousedown.stop="grabHandle( node.$id, false, $event )"
+              @mousedown.left.stop="grabHandle( node.$id, false, $event )"
               @dblclick.stop="removeHandle( node.$id, false )"
             />
 
@@ -164,7 +164,7 @@
               v-if="node.out"
               r="4"
               :transform="'translate(' + t2x( node.time + node.out.time ) + ',' + v2y( node.value + node.out.value ) + ')'"
-              @mousedown.stop="grabHandle( node.$id, true, $event )"
+              @mousedown.left.stop="grabHandle( node.$id, true, $event )"
               @dblclick.stop="removeHandle( node.$id, true )"
             />
           </g>
@@ -172,8 +172,8 @@
           <g class="body"
             :class="{ selected: selectedNodeIds.some( ( id ) => id === node.$id ) }"
             @dblclick.stop="removeNode( node.$id )"
-            @mousedown.shift.stop="resetHandles( node.$id )"
-            @mousedown.stop="grabNode( node.$id, $event )"
+            @mousedown.left.shift.stop="resetHandles( node.$id )"
+            @mousedown.left.stop="grabNode( node.$id, $event )"
           >
             <circle class="circle"
               v-if="v0 <= node.value && node.value <= v1"
@@ -197,9 +197,9 @@
 
     <FxMenu
       :automaton="automaton"
-      :show="fxmenuShow"
+      :active="fxmenuActive"
       @selected="createFx( fxmenuTime, $event )"
-      @blurred="fxmenuShow = false"
+      @blur="fxmenuActive = false"
     />
   </div>
 </div>
@@ -251,7 +251,7 @@ export default {
 
       graphPoints: '',
 
-      fxmenuShow: false,
+      fxmenuActive: false,
       fxmenuTime: 0
     }
   },
@@ -416,14 +416,13 @@ export default {
 
     /**
      * Create a node.
-     * @param {MouseEvent} event Mouse event comes from dblclick event
+     * @param {number} t Time point where you want to create a node
+     * @param {number} v Value point where you want to create a node
      * @returns {void} void
      */
-    createNode( event ) {
+    createNode( t, v ) {
       const param = this.selectedParam;
 
-      const t = this.x2t( event.offsetX );
-      const v = this.y2v( event.offsetY );
       const id = param.createNode( t, v );
       const data = param.dumpNode( id );
 
@@ -667,11 +666,12 @@ export default {
 
     /**
      * Open fx menu.
+     * @param {number} time Fx will be created on this time
      * @returns {void} void
      */
-    openFxMenu( event ) {
-      this.fxmenuShow = true;
-      this.fxmenuTime = this.x2t( event.offsetX );
+    openFxMenu( time ) {
+      this.fxmenuActive = true;
+      this.fxmenuTime = time;
     },
 
     /**
@@ -863,6 +863,30 @@ export default {
 
       window.addEventListener( 'mousemove', move );
       window.addEventListener( 'mouseup', up );
+    },
+
+    contextBg( event ) {
+      const t = this.x2t( event.offsetX );
+      const v = this.y2v( event.offsetY );
+
+      this.$emit( 'context', {
+        clientX: event.clientX,
+        clientY: event.clientY,
+        commands: [
+          {
+            text: 'Add Node',
+            func: () => {
+              this.createNode( t, v );
+            }
+          },
+          {
+            text: 'Add Fx',
+            func: () => {
+              this.openFxMenu( t );
+            }
+          }
+        ]
+      } );
     },
 
     onWheel( event ) {

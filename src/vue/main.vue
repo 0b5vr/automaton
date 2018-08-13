@@ -25,6 +25,14 @@
       :selectedFxIds="selectedFxIds"
       @nodeSelected="selectNodes( $event )"
       @fxSelected="selectFxs( $event )"
+      @context="openContextMenu"
+    />
+    <ContextMenu class="context-menu"
+      :active="contextMenuActive"
+      :x="contextMenuX"
+      :y="contextMenuY"
+      :commands="contextMenuCommands"
+      @blur="contextMenuActive = false"
     />
     <Stalker class="stalker" />
   </div>
@@ -37,6 +45,7 @@ import Header from './header.vue';
 import ParamList from './paramlist.vue';
 import PropMenu from './propmenu.vue';
 import Timeline from './timeline.vue';
+import ContextMenu from './context-menu.vue';
 import Stalker from './stalker.vue';
 
 export default {
@@ -45,6 +54,7 @@ export default {
     ParamList,
     PropMenu,
     Timeline,
+    ContextMenu,
     Stalker
   },
   
@@ -59,7 +69,11 @@ export default {
       selectedParamName: null,
       selectedNodeIds: [],
       selectedFxIds: [],
-      config: ''
+      config: '',
+      contextMenuActive: false,
+      contextMenuX: 0,
+      contextMenuY: 0,
+      contextMenuCommands: []
     }
   },
 
@@ -89,6 +103,13 @@ export default {
       this.selectNodes( [] );
       this.selectFxs( [] );
       this.config = config;
+    },
+
+    openContextMenu( event ) {
+      this.contextMenuActive = true;
+      this.contextMenuX = event.clientX;
+      this.contextMenuY = event.clientY;
+      this.contextMenuCommands = event.commands;
     }
   }
 }

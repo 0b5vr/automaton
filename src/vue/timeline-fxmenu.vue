@@ -1,7 +1,11 @@
 <template>
 <div>
+  <div class="blur-layer"
+    v-if="active"
+    @mousedown="blur"
+  />
   <div class="root"
-    v-if="show"
+    v-if="active"
   >
     <input class="search-box"
       ref="searchBox"
@@ -9,7 +13,6 @@
       v-model="searchText"
       placeholder="Add a fx..."
       @keydown="onSearchBoxKeydown"
-      @blur="onSearchBoxBlur"
     />
     <div class="fx-name"
       v-for="( id, index ) in fxDefsFiltered"
@@ -27,7 +30,7 @@
 export default {
   props: [
     'automaton',
-    'show'
+    'active'
   ],
 
   data() {
@@ -49,22 +52,24 @@ export default {
     },
 
     select( id ) {
-      if ( id === '' ) { cancel(); return; }
+      if ( id === '' ) { this.blur(); return; }
       this.$emit( 'selected', id );
       this.fxDefs.splice( this.fxDefs.indexOf( id ), 1 );
       this.fxDefs.unshift( id );
-      this.$refs.searchBox.blur();
+      this.blur();
     },
 
-    cancel() {
-      this.$refs.searchBox.blur();
+    blur() {
+      this.$emit( 'blur' );
+      this.searchText = '';
+      this.selectedIndex = 0;
     },
 
     onSearchBoxKeydown( event ) {
       if ( event.which === 13 ) { // Enter
         this.select( this.fxDefsFiltered[ this.selectedIndex ] );
       } else if ( event.which === 27 ) { // Escape
-        this.cancel();
+        this.blur();
       } else if ( event.which === 38 ) { // Up
         this.selectedIndex = ( this.selectedIndex - 1 + this.fxDefsFiltered.length ) % this.fxDefsFiltered.length;
       } else if ( event.which === 40 ) { // Down
@@ -72,12 +77,6 @@ export default {
       } else {
         this.selectedIndex = 0;
       }
-    },
-
-    onSearchBoxBlur() {
-      this.$emit( 'blurred' );
-      this.searchText = '';
-      this.selectedIndex = 0;
     }
   },
 
@@ -93,7 +92,7 @@ export default {
   },
 
   watch: {
-    show( v ) {
+    active( v ) {
       if ( !v ) { return; }
       setTimeout( () => {
         this.$refs.searchBox.focus();
@@ -104,6 +103,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.blur-layer {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+
 .root {
   position: absolute;
   left: calc( 50% - 10em );
