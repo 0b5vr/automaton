@@ -3,6 +3,7 @@
   <div class="root" ref="root"
     @wheel.prevent="onWheel"
     @dragstart.prevent
+    @mousedown.prevent.stop="dragBg"
     @dblclick.stop="createNode"
     @contextmenu.stop.prevent="openFxMenu( $event )"
   >
@@ -350,6 +351,67 @@ export default {
     v2y( v ) {
       const u = 1.0 - ( v - this.v0 ) / ( this.v1 - this.v0 );
       return u * this.height;
+    },
+
+    /**
+     * Move the timeline view.
+     * @param {number} dx Delta of X
+     * @param {number} dy Delta of Y
+     * @returns {void} void
+     */
+    moveView( dx, dy ) {
+      let dt = this.x2t( 0.0 ) - this.x2t( dx );
+      let dv = this.y2v( 0.0 ) - this.y2v( dy );
+
+      dt = Math.min( Math.max( dt, -this.t0 ), this.automaton.length - this.t1 );
+
+      this.t0 += dt; this.t1 += dt;
+      this.v0 += dv; this.v1 += dv;
+
+      this.updateGrid();
+      this.updateGraph();
+    },
+
+    /**
+     * Zoom the timeline view.
+     * @param {number} ct Center of T
+     * @param {number} cv Center of V
+     * @param {number} dx Delta of X
+     * @param {number} dy Delta of Y
+     * @returns {void} void
+     */
+    zoomView( ct, cv, dx, dy ) {
+      const rt = ( ct - this.t0 ) / ( this.t1 - this.t0 );
+      const rv = ( cv - this.v0 ) / ( this.v1 - this.v0 );
+
+      let dt = this.t1 - this.t0;
+      dt *= Math.pow( ( this.width + 1.0 ) / this.width, dx * 2.0 );
+      dt = Math.min( Math.max( dt, 0.01 ), 1000.0 );
+
+      let dv = this.v1 - this.v0;
+      dv *= Math.pow( ( this.width + 1.0 ) / this.width, dy * 2.0 );
+      dv = Math.min( Math.max( dv, 0.01 ), 1000.0 );
+
+      this.t0 = ct - rt * dt;
+      this.t1 = ct + ( 1.0 - rt ) * dt;
+      this.v0 = cv - rv * dv;
+      this.v1 = cv + ( 1.0 - rv ) * dv;
+
+      if (this.t0 < 0.0 ) {
+        this.t1 = Math.max( this.t1 - this.t0, this.t1 );
+      }
+      if ( this.automaton.length < this.t1 ) {
+        this.t0 += this.automaton.length - this.t1;
+      }
+      if ( this.t0 < 0.0 ) {
+        this.t0 = 0.0;
+      }
+      if ( this.automaton.length < this.t1 ) {
+        this.t1 = this.automaton.length;
+      }
+
+      this.updateGrid();
+      this.updateGraph();
     },
 
     /**
@@ -771,61 +833,48 @@ export default {
       } );
     },
 
+    dragBg( event ) {
+      const t0 = this.x2t( event.offsetX );
+      const v0 = this.y2v( event.offsetY );
+      let xPrev = event.clientX;
+      let yPrev = event.clientY;
+      const which = event.which;
+
+      const move = ( event ) => {
+        const x = event.clientX;
+        const y = event.clientY;
+        const dx = event.clientX - xPrev;
+        const dy = event.clientY - yPrev;
+
+        if ( which === 1 ) {
+          this.moveView( dx, dy );
+        } else if ( which === 2 ) {
+          this.zoomView( t0, v0, dx, dy );
+        }
+
+        xPrev = x;
+        yPrev = y;
+      };
+
+      const up = ( event ) => {
+        window.removeEventListener( 'mousemove', move );
+        window.removeEventListener( 'mouseup', up );
+      };
+
+      window.addEventListener( 'mousemove', move );
+      window.addEventListener( 'mouseup', up );
+    },
+
     onWheel( event ) {
+      const t0 = this.x2t( event.offsetX );
+      const v0 = this.y2v( event.offsetY );
+
       if ( event.shiftKey ) { // zoom horizontally
-        const cursorT = this.x2t( event.offsetX );
-
-        const d = this.t1 - this.t0;
-        const min = 0.02;
-        const z = Math.max( 0.005 * event.deltaY, min / d - 1.0 );
-
-        this.t0 -= ( cursorT - this.t0 ) * z;
-        this.t1 += ( this.t1 - cursorT ) * z;
-
-        if (this.t0 < 0.0 ) {
-          this.t1 = Math.max( this.t1 - this.t0, this.t1 );
-        }
-        if ( this.automaton.length < this.t1 ) {
-          this.t0 += this.automaton.length - this.t1;
-        }
-        if ( this.t0 < 0.0 ) {
-          this.t0 = 0.0;
-        }
-        if ( this.automaton.length < this.t1 ) {
-          this.t1 = this.automaton.length;
-        }
+        this.zoomView( t0, v0, event.deltaY, 0 );
       } else if ( event.ctrlKey || event.metaKey ) { // zoom vertically
-        const cursorV = this.y2v( event.offsetY );
-
-        const d = this.v1 - this.v0;
-        const min = 0.02;
-        const max = 200.0;
-        const z = Math.max( Math.min( 0.005 * event.deltaY, max / d - 1.0 ), min / d - 1.0 );
-
-        this.v0 -= ( cursorV - this.v0 ) * z;
-        this.v1 += ( this.v1 - cursorV ) * z;
+        this.zoomView( t0, v0, 0, event.deltaY );
       } else { // move
-        const deltaT = this.t1 - this.t0;
-        const deltaV = this.v1 - this.v0;
-
-        this.t0 += event.deltaX * deltaT / this.width;
-        this.t1 += event.deltaX * deltaT / this.width;
-        
-        if ( this.t0 < 0.0 ) {
-          this.t1 += 0.0 - this.t0;
-        }
-        if ( this.automaton.length < this.t1 ) {
-          this.t0 += this.automaton.length - this.t1;
-        }
-        if ( this.t0 < 0.0 ) {
-          this.t0 = 0.0;
-        }
-        if ( this.automaton.length < this.t1 ) {
-          this.t1 = this.automaton.length;
-        }
-
-        this.v0 -= event.deltaY * deltaV / this.height;
-        this.v1 -= event.deltaY * deltaV / this.height;
+        this.moveView( event.deltaX, -event.deltaY );
       }
 
       this.updateGrid();
