@@ -866,6 +866,8 @@ export default {
     },
 
     contextBg( event ) {
+      if ( !this.selectedParam ) { return; }
+
       const t = this.x2t( event.offsetX );
       const v = this.y2v( event.offsetY );
 

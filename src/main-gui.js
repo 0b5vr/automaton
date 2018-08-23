@@ -317,7 +317,7 @@ const AutomatonWithGUI = class extends Automaton {
   __auto( _name ) {
     let param = this.__params[ _name ];
     if ( !param ) { param = this.createParam( _name ); }
-    param.__used = true;
+    param.markAsUsed();
     return param.getValue();
   }
 

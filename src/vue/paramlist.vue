@@ -12,7 +12,14 @@
         @contextmenu.stop.prevent="contextParam( $event, name )"
       >
         <div class="name">{{ name }}</div>
-        <div class="value">{{ automaton.auto( name ).toFixed( 3 ) }}</div>
+        <div class="value"
+          v-if="automaton.getParam( name ).isUsed()"
+        >{{ automaton.auto( name ).toFixed( 3 ) }}</div>
+        <img class="warning"
+          v-if="!automaton.getParam( name ).isUsed()"
+          :src="require( '../images/warning.svg' )"
+          stalker-text="This param has not been used yet"
+        />
       </div>
     </Scrollable>
   </div>
@@ -50,6 +57,7 @@ export default {
             text: 'Remove Param',
             func: () => {
               this.automaton.removeParam( name );
+              this.$emit( 'selected', null );
             }
           }
         ]
@@ -105,6 +113,13 @@ export default {
       opacity: 0.7;
 
       user-select: none;
+    }
+
+    .warning {
+      position: absolute;
+      right: 0.1em;
+      bottom: 0.1em;
+      height: calc( 100% - 0.2em );
     }
   }
 }

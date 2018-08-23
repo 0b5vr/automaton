@@ -72,6 +72,7 @@ export default {
   white-space: nowrap;
   padding: 0.2em 0.4em;
   margin: 10px;
+  font-size: 0.8em;
 
   background: rgba( 0, 0, 0, 0.5 );
   border-radius: 0.2em;

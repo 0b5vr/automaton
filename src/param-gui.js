@@ -37,6 +37,14 @@ const ParamWithGUI = class extends Param {
     };
 
     super( props );
+
+    /**
+     * True if the param is used once at least in current session.
+     * Can be operated by {@link ParamWithGUI#markAsUsed}.
+     * @type {boolean}
+     * @protected
+     */
+    this.__isUsed = false;
   }
 
   /**
@@ -59,6 +67,22 @@ const ParamWithGUI = class extends Param {
   precalc() {
     super.precalc();
     this.__automaton.pokeRenderer();
+  }
+
+  /**
+   * Mark this param as used.
+   * @returns {void} void
+   */
+  markAsUsed() {
+    this.__isUsed = true;
+  }
+
+  /**
+   * Return whether this is used param or not.
+   * @returns {bool} True if the param is used at least once in current session
+   */
+  isUsed() {
+    return this.__isUsed;
   }
 
   /**
