@@ -76,6 +76,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "./colors.scss";
+
 .blur-layer {
   position: fixed;
   left: 0;
@@ -87,20 +89,26 @@ export default {
 .root {
   position: fixed;
   white-space: nowrap;
-  padding: 0.2em 0.4em;
+  padding: 0.4em;
   font-size: 0.8em;
 
   background: rgba( 0, 0, 0, 0.5 );
+  border: solid 1px $color-back4;
+  color: $color-foresub;
   border-radius: 0.2em;
 
   .command {
-    padding: 0 0.2em;
+    padding-left: 0.2em;
+    padding-right: 2em;
 
     border-radius: 0.2em;
 
     cursor: pointer;
 
-    &:hover { background: #444; }
+    &:hover {
+      background: $color-back4;
+      color: $color-fore;
+    }
   }
 }
 </style>

@@ -103,6 +103,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "./colors.scss";
+
 .blur-layer {
   position: fixed;
   left: 0;
@@ -118,7 +120,7 @@ export default {
   width: 20em;
   font-size: 0.8em;
 
-  background: #111;
+  background: $color-back1;
 
   .search-box {
     position: relative;
@@ -127,8 +129,8 @@ export default {
     padding: 2px 4px;
     border: none;
 
-    background: #444;
-    color: #fff;
+    background: $color-back4;
+    color: $color-fore;
   }
 
   .fx-name {
@@ -140,12 +142,12 @@ export default {
     overflow: hidden;
     text-overflow: ellipsis;
 
-    background: #222;
+    background: $color-back2;
 
     cursor: pointer;
 
-    &:hover { background: #333; }
-    &.selected { background: #333; }
+    &:hover { background: $color-back3; }
+    &.selected { background: $color-back3; }
   }
 }
 </style>

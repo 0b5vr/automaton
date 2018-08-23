@@ -66,6 +66,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "./colors.scss";
+
 .root {
   position: fixed;
   pointer-events: none;
@@ -75,6 +77,7 @@ export default {
   font-size: 0.8em;
 
   background: rgba( 0, 0, 0, 0.5 );
+  color: $color-fore;
   border-radius: 0.2em;
 }
 </style>

@@ -68,6 +68,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "./colors.scss";
+
 .root {
   position: absolute;
   left: 0;
@@ -75,8 +77,8 @@ export default {
   width: 100%;
   height: 100%;
 
-  background: #222;
-  color: #fff;
+  background: $color-back2;
+  color: $color-fore;
 
   .param {
     position: relative;
@@ -84,14 +86,14 @@ export default {
     height: 1.5em;
     margin: 2px;
 
-    background: #333;
-    color: #ddd;
+    background: $color-back3;
+    color: $color-foresub;
 
     cursor: pointer;
 
     &.selected {
-      background: #555;
-      color: #fff;
+      background: $color-back4;
+      color: $color-fore;
     }
 
     .name {

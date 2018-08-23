@@ -990,6 +990,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "./colors.scss";
+
 .root {
   position: absolute;
   left: 0;
@@ -1006,7 +1008,7 @@ export default {
     width: 100%;
     height: 4px;
 
-    background: #000;
+    background: $color-black;
     
     .vision {
       position: absolute;
@@ -1014,54 +1016,55 @@ export default {
       height: 100%;
 
       border-radius: 2px;
-      background: #2af;
+
+      background: $color-accent;
     }
   }
 
   .svg {
-    background: #111;
+    background: $color-back1;
 
     font-size: 10px;
 
     pointer-events: none;
 
     .grid {
-      stroke: #fff;
+      stroke: $color-fore;
       stroke-width: 1;
     }
 
     .grid-text {
-      fill: #fff;
+      fill: $color-fore;
     }
 
     .graph {
       fill: none;
-      stroke: #fff;
+      stroke: $color-fore;
       stroke-width: 2;
     }
 
     .currentLine {
-      stroke: #2af;
+      stroke: $color-accent;
       stroke-width: 2;
     }
 
     .currentText {
-      fill: #2af;
+      fill: $color-accent;
     }
 
     .currentPoint {
-      fill: #2af;
+      fill: $color-accent;
     }
 
     .node {
       .handle {
         .line {
-          stroke: #2af;
+          stroke: $color-accent;
           stroke-width: 1;
         }
 
         .circle {
-          fill: #2af;
+          fill: $color-accent;
 
           pointer-events: auto;
           cursor: pointer;
@@ -1069,47 +1072,48 @@ export default {
       }
 
       .body {
-        fill: #111;
-        stroke: #2af;
+        fill: $color-back1;
+        stroke: $color-accent;
         stroke-width: 2;
 
         pointer-events: auto;
         cursor: pointer;
 
         &.selected {
-          fill: #2af;
+          fill: $color-accent;
         }
       }
     }
 
     .fx {
       .line {
-        stroke: #a2f;
+        stroke: $color-fx;
         stroke-width: 1;
         stroke-dasharray: 4;
       }
 
       .fill {
-        fill: #a2f2;
+        fill: $color-fx;
+        opacity: 0.1;
       }
 
       .body {
-        fill: #111;
-        stroke: #a2f;
+        fill: $color-back1;
+        stroke: $color-fx;
         stroke-width: 2;
 
         &.bypass {
-          fill: #111;
-          stroke: #938899;
+          fill: $color-back1;
+          stroke: $color-gray;
         }
 
         &.selected {
-          fill: #a2f;
-          stroke: #111;
+          fill: $color-fx;
+          stroke: $color-back1;
 
           &.bypass {
-            fill: #938899;
-            stroke: #111;
+            fill: $color-gray;
+            stroke: $color-back1;
           }
         }
 
@@ -1118,9 +1122,9 @@ export default {
       }
 
       .text {
-        fill: #a2f;
-        &.bypass { fill: #938899; }
-        &.selected { fill: #111; }
+        fill: $color-fx;
+        &.bypass { fill: $color-gray; }
+        &.selected { fill: $color-back1; }
       }
 
       .side {

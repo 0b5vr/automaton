@@ -1,6 +1,6 @@
 <template>
 <div>
-  <div class="automaton root">
+  <div class="root automaton color-theme-dark">
     <Header class="header"
       :automaton="automaton"
       @historyMoved="onHistoryMoved"
@@ -129,6 +129,8 @@ export default {
 </style>
 
 <style lang="scss" scoped>
+@import "./colors.scss";
+
 .root {
   user-select: none;
 

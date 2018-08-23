@@ -320,6 +320,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "./colors.scss";
+
 .root {
   position: absolute;
   left: 0;
@@ -327,8 +329,8 @@ export default {
   width: 100%;
   height: 100%;
 
-  background: #222;
-  color: #fff;
+  background: $color-back2;
+  color: $color-fore;
 
   .props {
     padding: 10px 20px;
@@ -341,11 +343,11 @@ export default {
       white-space: nowrap;
 
       font-size: 16px;
-      color: #2af;
+      color: $color-accent;
     }
 
     hr {
-      border: solid 1px #666;
+      border: solid 1px $color-back3;
     }
 
     .centering {
@@ -356,11 +358,11 @@ export default {
         width: 4em;
         padding: 0.25em;
 
-        background: #444;
+        background: $color-back3;
 
         cursor: pointer;
 
-        &:hover { background: #111; }
+        &:hover { background: $color-back1; }
       }
     }
   }

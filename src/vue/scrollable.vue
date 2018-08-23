@@ -69,6 +69,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "./colors.scss";
+
 .root {
   position: relative;
   width: 100%;
@@ -84,7 +86,7 @@ export default {
     position: absolute;
     width: 4px;
 
-    background: #2af;
+    background: $color-accent;
     border-radius: 2px;
   }
 }

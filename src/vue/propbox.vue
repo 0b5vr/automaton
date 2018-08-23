@@ -139,6 +139,8 @@ export default {
 </script>
 
 <style lang="scss">
+@import "./colors.scss";
+
 .propbox {
   position: relative;
   width: 100%;
@@ -155,10 +157,10 @@ export default {
   }
 
   .value {
-    background: #333;
+    background: $color-back3;
 
     &:active:not(.readonly) {
-      background: #111;
+      background: $color-back1;
     }
 
     cursor: pointer;
@@ -196,8 +198,8 @@ export default {
       padding: 0;
 
       text-align: center;
-      background: #666;
-      color: #fff;
+      background: $color-back5;
+      color: $color-fore;
     }
   }
 
@@ -215,10 +217,10 @@ export default {
       width: 60%;
       height: 60%;
       
-      background: #2af;
+      background: $color-accent;
 
       &.readonly {
-        background: #fff;
+        background: $color-gray;
         opacity: 0.5;
       }
     }

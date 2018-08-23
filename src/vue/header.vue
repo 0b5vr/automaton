@@ -1,6 +1,6 @@
 <template>
 <div>
-  <div class="root">
+  <div class="root bgcolor-back2">
     <span class="title">Automaton</span>
     <span class="version">v{{ automaton.version }}</span>
     <div class="buttons">
@@ -90,6 +90,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "./colors.scss";
+
 .root {
   position: absolute;
   left: 0;
@@ -98,12 +100,12 @@ export default {
   height: calc( 100% - 0.4em );
   padding: 0.2em;
 
-  background: #333;
-  color: #fff;
+  background: $color-back4;
+  color: $color-fore;
 
   .title {
-    margin-left: 0.4em;
-    margin-right: 0.4em;
+    margin-left: 0.2em;
+    margin-right: 0.2em;
 
     font-size: 1.6em;
   }
