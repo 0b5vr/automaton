@@ -135,7 +135,7 @@
           :points="graphPoints"
         />
 
-        <line class="line"
+        <line class="currentLine"
           :x1="t2x( automaton.time )"
           y1="0"
           :x2="t2x( automaton.time )"
