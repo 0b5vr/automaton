@@ -45,45 +45,32 @@
         :opacity="line.op"
       >{{ line.val.toFixed( 3 ) }}</text>
 
-      <polyline class="graph"
-        v-if="selectedParam"
-        :points="graphPoints"
-      />
-
-      <line class="currentLine"
-        :x1="t2x( automaton.time )"
-        y1="0"
-        :x2="t2x( automaton.time )"
-        :y2="height"
-      />
-      <text class="currentText"
-        :x="t2x( automaton.time ) + 2"
-        :y="height - 2"
-      >{{ automaton.time.toFixed( 3 ) }}</text>
-      <g
-        v-if="selectedParam"
-      >
-        <line class="currentLine"
-          x1="0"
-          :y1="v2y( selectedParam.getValue() )"
-          :x2="width"
-          :y2="v2y( selectedParam.getValue() )"
-        />
-        <text class="currentText"
-          x="2"
-          :y="v2y( selectedParam.getValue() ) - 2"
-        >{{ selectedParam.getValue().toFixed( 3 ) }}</text>
-        <circle class="currentPoint"
-          r="5"
-          :cx="t2x( automaton.time )"
-          :cy="v2y( selectedParam.getValue() )"
-        />
-
+      <g v-if="selectedParam">
         <g class="fx"
           v-for="fx in selectedParam.dumpFxs()"
           :transform="'translate(0,' + ( 1 + 16 * fx.row ) + ')'"
           :key="fx.$id"
         >
+          <line class="line"
+            :x1="t2x( fx.time )"
+            y1="0"
+            :x2="t2x( fx.time )"
+            :y2="height"
+          />
+          <line class="line"
+            :x1="t2x( fx.time + fx.length )"
+            y1="0"
+            :x2="t2x( fx.time + fx.length )"
+            :y2="height"
+          />
+
+          <rect class="fill"
+            :x="t2x( fx.time )"
+            y="0"
+            :width="t2x( fx.time + fx.length ) - t2x( fx.time )"
+            :height="height"
+          />
+
           <rect class="body"
             :class="{
               selected: selectedFxIds.some( ( id ) => id === fx.$id ),
@@ -133,6 +120,43 @@
           </g>
         </g>
 
+        <polyline class="graph"
+          v-if="selectedParam"
+          :points="graphPoints"
+        />
+
+        <line class="line"
+          :x1="t2x( automaton.time )"
+          y1="0"
+          :x2="t2x( automaton.time )"
+          :y2="height"
+        />
+        <text class="currentText"
+          :x="t2x( automaton.time ) + 2"
+          :y="height - 2"
+        >{{ automaton.time.toFixed( 3 ) }}</text>
+        <g
+          v-if="selectedParam"
+        >
+          <line class="currentLine"
+            x1="0"
+            :y1="v2y( selectedParam.getValue() )"
+            :x2="width"
+            :y2="v2y( selectedParam.getValue() )"
+          />
+          <text class="currentText"
+            x="2"
+            :y="v2y( selectedParam.getValue() ) - 2"
+          >{{ selectedParam.getValue().toFixed( 3 ) }}</text>
+          <circle class="currentPoint"
+            r="5"
+            :cx="t2x( automaton.time )"
+            :cy="v2y( selectedParam.getValue() )"
+          />
+        </g>
+      </g>
+
+      <g v-if="selectedParam">
         <g class="node"
           v-for="node in selectedParam.dumpNodes()"
           :key="node.$id"
@@ -1030,6 +1054,16 @@ export default {
     }
 
     .fx {
+      .line {
+        stroke: #a2f;
+        stroke-width: 1;
+        stroke-dasharray: 4;
+      }
+
+      .fill {
+        fill: #a2f2;
+      }
+
       .body {
         fill: #111;
         stroke: #a2f;
