@@ -7,6 +7,15 @@
     @dblclick.left.stop="createNode( x2t( $event.offsetX ), y2v( $event.offsetY ) )"
     @contextmenu.stop.prevent="contextBg"
   >
+    <div class="hbar">
+      <div class="vision"
+        :style="{
+          left: `${ t0 / automaton.length * width }px`,
+          width: `${ ( t1 - t0 ) / automaton.length * width }px`
+        }"
+      ></div>
+    </div>
+
     <svg class="svg"
       :width="width"
       :height="height"
@@ -48,18 +57,17 @@
       <g v-if="selectedParam">
         <g class="fx"
           v-for="fx in selectedParam.dumpFxs()"
-          :transform="'translate(0,' + ( 1 + 16 * fx.row ) + ')'"
           :key="fx.$id"
         >
           <line class="line"
             :x1="t2x( fx.time )"
-            y1="0"
+            y1="4"
             :x2="t2x( fx.time )"
             :y2="height"
           />
           <line class="line"
             :x1="t2x( fx.time + fx.length )"
-            y1="0"
+            y1="4"
             :x2="t2x( fx.time + fx.length )"
             :y2="height"
           />
@@ -71,52 +79,54 @@
             :height="height"
           />
 
-          <rect class="body"
-            :class="{
-              selected: selectedFxIds.some( ( id ) => id === fx.$id ),
-              bypass: fx.bypass
-            }"
-            :x="t2x( fx.time )"
-            :width="t2x( fx.time + fx.length ) - t2x( fx.time )"
-            height="16"
-            rx="5"
-            ry="5"
-            @mousedown.left.stop="grabFxBody( fx.$id, $event )"
-            @dblclick.stop="removeFx( fx.$id )"
-          />
-          <rect class="side"
-            :x="t2x( fx.time ) - 1"
-            width="6"
-            height="16"
-            @mousedown.left.stop="grabFxLeft( fx.$id, $event )"
-          />
-          <rect class="side"
-            :x="t2x( fx.time + fx.length ) - 5"
-            width="6"
-            height="16"
-            @mousedown.left.stop="grabFxRight( fx.$id, $event )"
-          />
-          
-          <clipPath
-            :id="'fxclip'+fx.$id"
-          >
-            <rect
-              :x="t2x( fx.time )"
-              :width="t2x( fx.time + fx.length ) - t2x( fx.time )"
-              height="16"
-            />
-          </clipPath>
-          <g
-            :clip-path="'url(#fxclip' + fx.$id + ')'"
-          >
-            <text class="text"
+          <g :transform="'translate(0,' + ( 1 + 16 * fx.row ) + ')'">
+            <rect class="body"
               :class="{
                 selected: selectedFxIds.some( ( id ) => id === fx.$id ),
                 bypass: fx.bypass
               }"
-              :x="t2x( fx.time ) + 4"
-              y="12"
-            >{{ automaton.getFxDefinitionName( fx.def ) }}</text>
+              :x="t2x( fx.time )"
+              :width="t2x( fx.time + fx.length ) - t2x( fx.time )"
+              height="16"
+              rx="5"
+              ry="5"
+              @mousedown.left.stop="grabFxBody( fx.$id, $event )"
+              @dblclick.stop="removeFx( fx.$id )"
+            />
+            <rect class="side"
+              :x="t2x( fx.time ) - 1"
+              width="6"
+              height="16"
+              @mousedown.left.stop="grabFxLeft( fx.$id, $event )"
+            />
+            <rect class="side"
+              :x="t2x( fx.time + fx.length ) - 5"
+              width="6"
+              height="16"
+              @mousedown.left.stop="grabFxRight( fx.$id, $event )"
+            />
+            
+            <clipPath
+              :id="'fxclip'+fx.$id"
+            >
+              <rect
+                :x="t2x( fx.time )"
+                :width="t2x( fx.time + fx.length ) - t2x( fx.time )"
+                height="16"
+              />
+            </clipPath>
+            <g
+              :clip-path="'url(#fxclip' + fx.$id + ')'"
+            >
+              <text class="text"
+                :class="{
+                  selected: selectedFxIds.some( ( id ) => id === fx.$id ),
+                  bypass: fx.bypass
+                }"
+                :x="t2x( fx.time ) + 4"
+                y="12"
+              >{{ automaton.getFxDefinitionName( fx.def ) }}</text>
+            </g>
           </g>
         </g>
 
@@ -934,7 +944,7 @@ export default {
     onResize() {
       const el = this.$refs.root;
       this.width = el.clientWidth;
-      this.height = el.clientHeight;
+      this.height = el.clientHeight - 4;
 
       this.$nextTick( () => {
         this.updateGrid();
@@ -988,6 +998,25 @@ export default {
   height: 100%;
 
   color: #fff;
+
+  .hbar {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 4px;
+
+    background: #000;
+    
+    .vision {
+      position: absolute;
+      bottom: 0;
+      height: 100%;
+
+      border-radius: 2px;
+      background: #2af;
+    }
+  }
 
   .svg {
     background: #111;
