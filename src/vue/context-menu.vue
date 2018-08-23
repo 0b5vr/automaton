@@ -94,6 +94,8 @@ export default {
   border-radius: 0.2em;
 
   .command {
+    padding: 0 0.2em;
+
     border-radius: 0.2em;
 
     cursor: pointer;

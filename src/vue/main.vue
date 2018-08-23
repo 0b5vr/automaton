@@ -5,11 +5,13 @@
       :automaton="automaton"
       @historyMoved="onHistoryMoved"
       @configSelected="onConfigSelected"
+      @context="openContextMenu"
     />
     <ParamList class="paramlist"
       :automaton="automaton"
       :selectedParamName="selectedParamName"
       @selected="selectParam( $event )"
+      @context="openContextMenu"
     />
     <PropMenu class="propmenu"
       :automaton="automaton"
@@ -17,6 +19,7 @@
       :selectedNodeIds="selectedNodeIds"
       :selectedFxIds="selectedFxIds"
       :config="config"
+      @context="openContextMenu"
     />
     <Timeline class="timeline"
       :automaton="automaton"

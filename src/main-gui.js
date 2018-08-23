@@ -241,11 +241,11 @@ const AutomatonWithGUI = class extends Automaton {
   }
 
   /**
-   * Delete a param.
+   * Remove a param.
    * @param {string} _name Name of param
    * @returns {void} void
    */
-  deleteParam( _name ) {
+  removeParam( _name ) {
     Vue.delete( this.__params, _name );
   }
 

@@ -9,6 +9,7 @@
         :key="'param' + name"
         :class="{ selected: name === selectedParamName }"
         @click="$emit( 'selected', name )"
+        @contextmenu.stop.prevent="contextParam( $event, name )"
       >
         <div class="name">{{ name }}</div>
         <div class="value">{{ automaton.auto( name ).toFixed( 3 ) }}</div>
@@ -33,7 +34,28 @@ export default {
     }
   },
 
-  methods: {}
+  methods: {
+    contextParam( event, name ) {
+      this.$emit( 'context', {
+        clientX: event.clientX,
+        clientY: event.clientY,
+        commands: [
+          {
+            text: 'Select Param',
+            func: () => {
+              this.$emit( 'selected', name );
+            }
+          },
+          {
+            text: 'Remove Param',
+            func: () => {
+              this.automaton.removeParam( name );
+            }
+          }
+        ]
+      } );
+    }
+  }
 }
 </script>
 
