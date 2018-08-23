@@ -5,14 +5,12 @@ const defaultData = {
 
   length: 1.0,
   resolution: 1000.0,
-  params: [],
+  params: {},
 
-  gui: {
-    snap: {
-      enable: false,
-      bpm: 120,
-      offset: 0
-    }
+  guiSettings: {
+    snapActive: false,
+    snapTime: 0.1,
+    snapValue: 0.1
   }
 };
 
@@ -42,7 +40,7 @@ const compat = ( _data ) => {
     if ( data.gui ) { // "Shift" version of automaton, has incompatible gui params
       delete data.gui;
       data.gui = Object.assign( {}, defaultData.gui );
-    } else {
+    } else { // wtf is this
       console.error( 'Loaded data is not compatible with this revision' );
       return Object.assign( {}, defaultData );
     }
@@ -182,6 +180,12 @@ const compat = ( _data ) => {
       }
       data.params[ name ] = newParam;
     }
+
+    data.guiSettings = {
+      snapActive: false,
+      snapTime: 0.1,
+      snapValue: 0.1
+    };
   }
 
   data.v = process.env.VERSION;

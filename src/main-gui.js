@@ -42,17 +42,6 @@ const AutomatonWithGUI = class extends Automaton {
     this.__history = [];
 
     /**
-     * GUI settings.
-     * Feel free to get / set these values.
-     * @type {Object}
-     */
-    this.guiSettings = {
-      snapActive: false,
-      snapTime: 0.1,
-      snapValue: 0.1
-    };
-
-    /**
      * Current position of history stack.
      * @type {number}
      * @protected
@@ -333,6 +322,22 @@ const AutomatonWithGUI = class extends Automaton {
   }
 
   /**
+   * Load automaton state data.
+   * @param {Object} _data Object contains automaton data.
+   * @returns {void} void
+   */
+  load( _data ) {
+    super.load( _data );
+
+    /**
+     * GUI settings.
+     * Feel free to get / set these values.
+     * @type {Object}
+     */
+    this.guiSettings = _data.guiSettings;
+  }
+
+  /**
    * Export current state as JSON.
    * @returns {string} Saved object as JSON
    * @example
@@ -344,7 +349,8 @@ const AutomatonWithGUI = class extends Automaton {
       v: this.version,
       length: this.length,
       resolution: this.resolution,
-      params: {} // will be filled later
+      params: {}, // will be filled later
+      guiSettings: this.guiSettings
     };
 
     ret.params = {};
