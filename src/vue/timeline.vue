@@ -315,7 +315,7 @@ export default {
           );
           if ( 0.0 < op ) {
             this.grid.x.push( {
-              val: v,
+              val: v + 1E-9, // trick: to prevent -0.000
               pos: this.t2x( v ),
               op: op
             } );
@@ -343,7 +343,7 @@ export default {
           );
           if ( 0.0 < op ) {
             this.grid.y.push( {
-              val: v,
+              val: v + 1E-9, // trick: to prevent -0.000
               pos: this.v2y( v ),
               op: op
             } );
