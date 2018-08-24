@@ -870,9 +870,20 @@ export default {
     dragBg( event ) {
       const t0 = this.x2t( event.offsetX );
       const v0 = this.y2v( event.offsetY );
-      let xPrev = event.clientX;
-      let yPrev = event.clientY;
       const which = event.which;
+      const shiftKey = event.shiftKey;
+      const altKey = event.altKey;
+
+      const x0 = event.clientX;
+      const y0 = event.clientY;
+      let xPrev = x0;
+      let yPrev = y0;
+
+      const isPlaying0 = this.automaton.isPlaying;
+      if ( altKey && isPlaying0 ) {
+        this.automaton.pause();
+        this.automaton.seek( t0 );
+      }
 
       const move = ( event ) => {
         const x = event.clientX;
@@ -881,9 +892,15 @@ export default {
         const dy = event.clientY - yPrev;
 
         if ( which === 1 ) {
-          this.moveView( dx, dy );
+          if ( altKey ) {
+            this.automaton.seek( t0 + this.x2t( x - x0 ) );
+          }
         } else if ( which === 2 ) {
-          this.zoomView( t0, v0, dx, dy );
+          if ( shiftKey ) {
+            this.zoomView( t0, v0, -dx, dy );
+          } else {
+            this.moveView( dx, dy );
+          }
         }
 
         xPrev = x;
@@ -891,6 +908,10 @@ export default {
       };
 
       const up = ( event ) => {
+        if ( altKey && isPlaying0 ) {
+          this.automaton.play();
+        }
+
         window.removeEventListener( 'mousemove', move );
         window.removeEventListener( 'mouseup', up );
       };
@@ -930,9 +951,9 @@ export default {
       const v0 = this.y2v( event.offsetY );
 
       if ( event.shiftKey ) { // zoom horizontally
-        this.zoomView( t0, v0, event.deltaY, 0 );
+        this.zoomView( t0, v0, -event.deltaY, 0 );
       } else if ( event.ctrlKey || event.metaKey ) { // zoom vertically
-        this.zoomView( t0, v0, 0, event.deltaY );
+        this.zoomView( t0, v0, 0, -event.deltaY );
       } else { // move
         this.moveView( event.deltaX, -event.deltaY );
       }
