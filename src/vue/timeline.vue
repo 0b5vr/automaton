@@ -275,8 +275,8 @@ export default {
 
       t0: 0.0,
       t1: this.automaton.length,
-      v0: 0.0,
-      v1: 1.0,
+      v0: -0.25,
+      v1: 1.25,
 
       grid: {
         x: [],
