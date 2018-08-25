@@ -18,6 +18,14 @@ const Param = class {
      */
     this.__automaton = _props.automaton;
 
+    /**
+     * An array of precalculated value.
+     * Its length is same as `param.__automaton.resolution * param.__automaton.length + 1`.
+     * @type {number[]}
+     * @protected
+     */
+    this.__values = new Float32Array( this.__automaton.resolution * this.__automaton.length + 1 );
+
     this.load( _props.data );
 
     /**
@@ -59,18 +67,10 @@ const Param = class {
   }
 
   /**
-   * Precalculate values.
+   * Precalculate value of a sample.
    * @returns {void} void
    */
   precalc() {
-    /**
-     * An array of precalculated value.
-     * Its length is same as `param.automaton.data.resolution * param.automaton.data.length + 1`.
-     * @type {number[]}
-     * @protected
-     */
-    this.__values = [];
-
     for ( let iNode = 0; iNode < this.__nodes.length - 1; iNode ++ ) {
       const node0 = this.__nodes[ iNode ];
       const node1 = this.__nodes[ iNode + 1 ];
@@ -117,7 +117,7 @@ const Param = class {
         tempValues[ i ] = fxDef.func( context );
       }
 
-      this.__values.splice( i0, tempLength, ...tempValues );
+      this.__values.set( tempValues, i0 );
     }
   }
 

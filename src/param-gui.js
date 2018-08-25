@@ -611,6 +611,7 @@ const ParamWithGUI = class extends Param {
       }
     }
 
+    this.__values = new Float32Array( this.__automaton.resolution * _length + 1 );
     this.precalc();
   }
 };
