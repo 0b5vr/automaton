@@ -1,9 +1,20 @@
 <template>
 <div>
-  <div class="root bgcolor-back2">
-    <span class="title">Automaton</span>
-    <span class="version">v{{ automaton.version }}</span>
-    <div class="buttons">
+  <div class="root">
+    <div class="row row-left">
+      <img class="button"
+        :src="automaton.isPlaying ? require( '../images/pause.svg' ) : require( '../images/play.svg' )"
+        :stalker-text="automaton.isPlaying ? 'Pause' : 'Play'"
+        @click="automaton.togglePlay()"
+      />
+      <div class="time">
+        {{ automaton.time.toFixed( 3 ) }}
+      </div>
+      <div class="length">
+        / {{ automaton.length.toFixed( 3 ) }}
+      </div>
+    </div>
+    <div class="row row-right">
       <img class="button"
         :src="require( '../images/undo.svg' )"
         :stalker-text="automaton.getUndoDesc() ? `Undo: ${automaton.getUndoDesc()}` : 'Can\'t undo'"
@@ -96,38 +107,52 @@ export default {
   position: absolute;
   left: 0;
   top: 0;
-  width: calc( 100% - 0.4em );
-  height: calc( 100% - 0.4em );
-  padding: 0.2em;
+  width: calc( 100% - 6px );
+  height: calc( 100% - 6px );
+  padding: 3px;
 
   background: $color-back4;
-  color: $color-fore;
 
-  .title {
-    margin-left: 0.2em;
-    margin-right: 0.2em;
-
-    font-size: 1.6em;
-  }
-
-  .version {
-    font-size: 0.8em;
-  }
-
-  .buttons {
+  .row {
     position: absolute;
-    right: 0.4em;
-    top: 0;
+    top: 3px;
+    height: calc( 100% - 6px );
     font-size: 0;
+
+    &.row-left { left: 3px; }
+    &.row-right { right: 3px; }
+
+    * {
+      margin: 0 3px;
+    }
 
     .button {
       width: 24px;
       height: 24px;
-      margin: 3px;
+      margin: 0 3px;
 
       cursor: pointer;
 
       &:hover { opacity: 0.7; }
+    }
+
+    .time {
+      display: inline-block;
+      position: relative;
+      bottom: 2px;
+      font-size: 14px;
+
+      color: $color-fore;
+    }
+
+    .length {
+      display: inline-block;
+      position: relative;
+      bottom: 2px;
+      font-size: 10px;
+      margin-left: 0;
+
+      color: $color-foresub;
     }
   }
 }

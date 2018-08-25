@@ -124,7 +124,7 @@ export default {
 .automaton {
   font-family: 'Roboto', sans-serif;
   font-weight: 300;
-  font-size: 14px;
+  font-size: 16px;
 }
 </style>
 
