@@ -1,6 +1,12 @@
 <template>
 <div>
   <div class="root">
+    <div class="row row-center">
+      <img class="logo"
+        :src="require( '../images/automaton.svg' )"
+      />
+      <div class="version">{{ automaton.version }}</div>
+    </div>
     <div class="row row-left">
       <img class="button"
         :src="automaton.isPlaying ? require( '../images/pause.svg' ) : require( '../images/play.svg' )"
@@ -8,10 +14,18 @@
         @click="automaton.togglePlay()"
       />
       <div class="time">
-        {{ automaton.time.toFixed( 3 ) }}
-      </div>
-      <div class="length">
-        / {{ automaton.length.toFixed( 3 ) }}
+        <div class="current">
+          {{ automaton.time.toFixed( 3 ) }}
+        </div>
+        <div class="length">
+          / {{ automaton.length.toFixed( 3 ) }}
+        </div>
+        <div class="bar bar-bg"
+          :style="{ width: '100%' }"
+        ></div>
+        <div class="bar bar-fg"
+          :style="{ width: `${ automaton.progress * 100 }%` }"
+        ></div>
       </div>
     </div>
     <div class="row row-right">
@@ -121,9 +135,32 @@ export default {
 
     &.row-left { left: 3px; }
     &.row-right { right: 3px; }
+    &.row-center {
+      width: 100%;
+      text-align: center;
+    }
 
     * {
       margin: 0 3px;
+    }
+
+    .logo {
+      position: relative;
+      height: 20px;
+      bottom: 2px;
+      top: 10%;
+
+      opacity: 0.5;
+    }
+
+    .version {
+      display: inline-block;
+      position: relative;
+      bottom: 2px;
+      font-size: 10px;
+
+      color: $color-fore;
+      opacity: 0.5;
     }
 
     .button {
@@ -139,20 +176,42 @@ export default {
     .time {
       display: inline-block;
       position: relative;
-      bottom: 2px;
-      font-size: 14px;
+      bottom: 5%;
+      vertical-align: bottom;
+      width: 100px;
+      height: 90%;
 
-      color: $color-fore;
-    }
+      text-align: right;
 
-    .length {
-      display: inline-block;
-      position: relative;
-      bottom: 2px;
-      font-size: 10px;
-      margin-left: 0;
+      .current {
+        display: inline-block;
+        position: relative;
+        font-size: 14px;
 
-      color: $color-foresub;
+        color: $color-fore;
+
+      }
+
+      .length {
+        display: inline-block;
+        position: relative;
+        font-size: 10px;
+        margin-left: 0;
+
+        color: $color-foresub;
+      }
+
+      .bar {
+        display: block;
+        position: absolute;
+        bottom: 2px;
+        left: 0px;
+        height: 2px;
+        margin: 0;
+
+        &.bar-bg { background: $color-black; }
+        &.bar-fg { background: $color-accent; }
+      }
     }
   }
 }
