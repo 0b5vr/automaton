@@ -224,6 +224,7 @@ const AutomatonWithGUI = class extends Automaton {
    */
   setResolution( _resolultion ) { // lul
     this.__resolution = _resolultion; // lul
+    this.precalcAll();
   }
 
   /**
