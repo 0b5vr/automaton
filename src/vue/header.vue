@@ -8,7 +8,6 @@
         <img class="logo"
           :src="require( '../images/automaton.svg' )"
         />
-        <div class="version">{{ automaton.version }}</div>
       </div>
     </div>
     <div class="row row-left">
@@ -20,12 +19,8 @@
         :class="{ seeking: seeking }"
         @mousedown.stop="seek"
       >
-        <div class="current">
-          {{ automaton.time.toFixed( 3 ) }}
-        </div>
-        <div class="length">
-          / {{ automaton.length.toFixed( 3 ) }}
-        </div>
+        <span class="current">{{ automaton.time.toFixed( 3 ) }}</span>
+        <span class="length"> / {{ automaton.length.toFixed( 3 ) }}</span>
         <div class="bar bar-bg"
           :style="{ width: '100%' }"
         ></div>
@@ -161,35 +156,32 @@ export default {
   position: absolute;
   left: 0;
   top: 0;
-  width: calc( 100% - 6px );
-  height: calc( 100% - 6px );
-  padding: 3px;
+  width: 100%;
+  height: 100%;
 
   background: $color-back4;
 
   .row {
     position: absolute;
-    top: 3px;
-    height: calc( 100% - 6px );
-    font-size: 0;
+    height: calc( 100% - 0.25em );
+    margin: 0.125em;
 
-    &.row-left { left: 3px; }
-    &.row-right { right: 3px; }
     &.row-center {
-      width: 100%;
+      width: calc( 100% - 0.25em );
       text-align: center;
     }
+    &.row-left { left: 0.125em; }
+    &.row-right { right: 0.125em; }
 
-    * {
-      margin: 0 3px;
+    & > * {
+      display: inline-block;
+      position: relative;
+      vertical-align: bottom;
+      margin: 0 0.125em;
+      height: 100%;
     }
 
     .logobox {
-      display: inline-block;
-      vertical-align: bottom;
-      position: relative;
-      height: 16px;
-      padding: 4px 0;
       color: $color-fore;
       opacity: 0.5;
 
@@ -198,20 +190,15 @@ export default {
       &:hover { opacity: 0.8; }
 
       .logo {
-        height: 100%;
-      }
-
-      .version {
         display: inline-block;
-        margin-left: 4px;
-        font-size: 10px;
+        position: relative;
+        height: 60%;
+        top: 20%;
       }
     }
 
     .button {
-      width: 24px;
-      height: 24px;
-      margin: 0 3px;
+      height: 100%;
 
       cursor: pointer;
 
@@ -219,13 +206,9 @@ export default {
     }
 
     .time {
-      display: inline-block;
-      position: relative;
-      bottom: 5%;
-      vertical-align: bottom;
-      width: 100px;
-      height: 90%;
+      width: 8em;
 
+      white-space: nowrap;
       text-align: right;
 
       cursor: pointer;
@@ -235,18 +218,17 @@ export default {
       }
 
       .current {
-        display: inline-block;
         position: relative;
-        font-size: 14px;
+        font-size: 0.8em;
+        margin-right: 0;
 
         color: $color-fore;
 
       }
 
       .length {
-        display: inline-block;
         position: relative;
-        font-size: 10px;
+        font-size: 0.6em;
         margin-left: 0;
 
         color: $color-foresub;
@@ -255,7 +237,7 @@ export default {
       .bar {
         display: block;
         position: absolute;
-        bottom: 2px;
+        bottom: 0.25em;
         left: 0px;
         height: 2px;
         margin: 0;

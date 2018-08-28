@@ -129,6 +129,7 @@ export default {
   left: calc( 50% - 10em );
   top: 1em;
   width: 20em;
+  height: calc( 100% - 2em );
   overflow: hidden;
 
   background: $color-back1;
@@ -138,6 +139,7 @@ export default {
 
   .search-box {
     position: relative;
+    font-size: 1em;
     width: calc( 100% - 12px );
     margin: 2px;
     padding: 2px 4px;
@@ -150,7 +152,7 @@ export default {
   .fx-names {
     position: relative;
     width: 100%;
-    height: 10em;
+    height: calc( 100% - 1em - 12px );
 
     .fx-name {
       position: relative;

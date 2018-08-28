@@ -145,7 +145,7 @@ export default {
 .root {
   user-select: none;
 
-  $header-height: 30px;
+  $header-height: 2em;
   .header {
     position: absolute;
     left: 0;
@@ -154,7 +154,7 @@ export default {
     height: $header-height;
   }
 
-  $paramlist-width: 120px;
+  $paramlist-width: 8em;
   .paramlist {
     position: absolute;
     left: 0;
@@ -163,7 +163,7 @@ export default {
     height: calc( 100% - #{$header-height} );
   }
 
-  $propmenu-width: 200px;
+  $propmenu-width: 12em;
   .propmenu {
     position: absolute;
     right: 0;

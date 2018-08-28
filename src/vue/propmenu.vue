@@ -230,10 +230,13 @@
     </div>
   </Scrollable>
 
-  <img class="logo"
+  <div class="logobox"
     v-if="!selectedNode && !selectedFx && !config"
-    :src="require( '../images/automaton-a.svg' )"
   >
+    <img class="logo"
+      :src="require( '../images/automaton-a.svg' )"
+    />
+  </div>
 </div>
 </template>
 
@@ -336,16 +339,15 @@ export default {
   color: $color-fore;
 
   .props {
-    padding: 10px 20px;
-
-    font-size: 12px;
+    padding: 0.5em 1em;
+    font-size: 0.75em;
 
     .title {
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
 
-      font-size: 16px;
+      font-size: 1.5em;
       color: $color-accent;
     }
 
@@ -370,13 +372,22 @@ export default {
     }
   }
 
-  .logo {
+  .logobox {
     position: absolute;
-    width: 8em;
-    left: calc( 50% - 4em );
-    top: calc( 50% - 4em );
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
 
-    opacity: 0.1;
+    .logo {
+      position: absolute;
+      width: 8em;
+      left: calc( 50% - 4em );
+      top: calc( 50% - 4em );
+
+      opacity: 0.1;
+    }
   }
 }
 </style>
