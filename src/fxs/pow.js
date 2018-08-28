@@ -1,5 +1,6 @@
 export default [ 'pow', {
   name: 'Power',
+  description: 'You got boost power!',
   params: {
     pow: { name: 'Power', type: 'float', default: 2.0 },
     bias: { name: 'Bias', type: 'float', default: 0.0 },

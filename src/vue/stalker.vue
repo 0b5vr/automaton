@@ -76,7 +76,7 @@ export default {
   margin: 10px;
   font-size: 0.8em;
 
-  background: rgba( 0, 0, 0, 0.5 );
+  background: rgba( 0, 0, 0, 0.8 );
   color: $color-fore;
   border-radius: 0.2em;
 }

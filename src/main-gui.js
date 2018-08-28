@@ -290,6 +290,15 @@ const AutomatonWithGUI = class extends Automaton {
   }
 
   /**
+   * Return description of a fx definition.
+   * @param {string} _id Id of the fx definition you want to grab
+   * @returns {string} Description of the fx definition
+   */
+  getFxDefinitionDescription( _id ) {
+    return this.__paramFxDefs[ _id ].description;
+  }
+
+  /**
    * Return params section of a fx definition.
    * @param {string} _id Id of the fx definition you want to grab
    * @returns {Object} Params section

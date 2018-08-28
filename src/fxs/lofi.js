@@ -1,5 +1,6 @@
 export default [ 'lofi', {
   name: 'Lo-Fi',
+  description: 'Make curve more crunchy.',
   params: {
     rate: { name: 'Frame Rate', type: 'float', default: 10.0, min: 0.0, max: 1000.0 },
     relative: { name: 'Relative', type: 'boolean', default: false },

@@ -2,6 +2,7 @@ const TAU = Math.PI * 2.0;
 
 export default [ 'sine', {
   name: 'Sinewave',
+  description: 'Overlay a sinewave to the curve.',
   params: {
     amp: { name: 'Amp', type: 'float', default: 0.1 },
     freq: { name: 'Frequency', type: 'float', default: 5.0 },

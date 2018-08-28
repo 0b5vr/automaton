@@ -21,6 +21,7 @@
         v-for="( id, index ) in fxDefsFiltered"
         :key="id"
         :class="{ selected: index === selectedIndex }"
+        :stalker-text="automaton.getFxDefinitionDescription( id ) || '(no description provided)'"
         @mousedown="select( id )"
       >
         {{ id ? automaton.getFxDefinitionName( id ) : '(No result found)' }}

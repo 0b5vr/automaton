@@ -1,5 +1,6 @@
 export default [ 'exp', {
   name: 'Exponential Smoothing',
+  description: 'Smooth the curve. Simple but good.',
   params: {
     factor: { name: 'Factor', type: 'float', default: 10.0, min: 0.0 }
   },

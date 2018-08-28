@@ -9,6 +9,7 @@ const smoothstep = ( _a, _b, _k ) => {
 
 export default [ 'noise', {
   name: 'Fractal Noise',
+  description: 'wiggle()',
   params: {
     recursion: { name: 'Recursion', type: 'int', default: 4, min: 1, max: 99 },
     freq: { name: 'Frequency', type: 'float', default: 1.0, min: 0.0 },

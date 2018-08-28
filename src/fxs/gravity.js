@@ -1,5 +1,6 @@
 export default [ 'gravity', {
   name: 'Gravity',
+  description: 'Accelerate and bounce the curve.',
   params: {
     a: { name: 'Acceleration', type: 'float', default: 9.8 },
     e: { name: 'Restitution', type: 'float', default: 0.5, min: 0.0 },

@@ -7,6 +7,7 @@ const smin = ( a, b, k ) => {
 
 export default [ 'clamp', {
   name: 'Clamp',
+  description: 'Constrain the curve between two values, featuring smooth minimum.',
   params: {
     min: { name: 'Min', type: 'float', default: 0.0 },
     max: { name: 'Max', type: 'float', default: 1.0 },

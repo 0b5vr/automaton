@@ -1,5 +1,6 @@
 export default [ 'cds', {
   name: 'Critically Damped Spring',
+  description: 'Basically the best smoothing method. Shoutouts to Keijiro Takahashi',
   params: {
     factor: { name: 'Factor', type: 'float', default: 100.0, min: 0.0 },
     ratio: { name: 'Damp Ratio', type: 'float', default: 1.0 },
