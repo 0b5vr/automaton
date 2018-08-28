@@ -8,8 +8,7 @@ export default [ 'sine', {
     phase: { name: 'Phase', type: 'float', default: 0.0, min: 0.0, max: 1.0 }
   },
   func( context ) {
-    const t = context.t;
-    const v = context.getValue( t );
+    const v = context.v;
     const p = context.progress * context.params.freq + context.params.phase;
     return v + context.params.amp * Math.sin( p * TAU );
   }

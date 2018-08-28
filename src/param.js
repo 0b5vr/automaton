@@ -91,10 +91,10 @@ const Param = class {
       const fxDef = this.__automaton.__paramFxDefs[ fx.def ];
       if ( !fxDef ) { continue; }
 
-      const i0 = Math.floor( this.__automaton.resolution * fx.time );
+      const i0 = Math.floor( this.__automaton.resolution * fx.time + 1 );
       const i1 = Math.floor( this.__automaton.resolution * ( fx.time + fx.length ) );
 
-      const tempValues = this.__values.slice( i0, i1 );
+      const tempValues = new Float32Array( i1 - i0 );
       const tempLength = tempValues.length;
 
       let context = {
@@ -107,14 +107,18 @@ const Param = class {
         length: fx.length,
         params: fx.params,
         array: this.__values,
-        getValue: this.getValue.bind( this )
+        getValue: this.getValue.bind( this ),
+        init: true
       };
 
       for ( let i = 0; i < tempLength; i ++ ) {
         context.i = i + i0;
         context.t = context.i / this.__automaton.resolution;
+        context.v = this.__values[ i + i0 ];
         context.progress = ( context.t - fx.time ) / fx.length;
         tempValues[ i ] = fxDef.func( context );
+
+        context.init = false;
       }
 
       this.__values.set( tempValues, i0 );

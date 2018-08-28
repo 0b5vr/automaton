@@ -4,10 +4,9 @@ export default [ 'exp', {
     factor: { name: 'Factor', type: 'float', default: 10.0, min: 0.0 }
   },
   func( context ) {
-    const t = context.t;
-    const v = context.getValue( t );
+    const v = context.v;
 
-    if ( typeof context.pos !== 'number' ) {
+    if ( context.init ) {
       context.pos = v;
     }
 
