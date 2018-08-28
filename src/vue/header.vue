@@ -14,7 +14,6 @@
     <div class="row row-left">
       <img class="button"
         :src="automaton.isPlaying ? require( '../images/pause.svg' ) : require( '../images/play.svg' )"
-        :stalker-text="automaton.isPlaying ? 'Pause' : 'Play'"
         @click.stop="automaton.togglePlay()"
       />
       <div class="time"
@@ -257,7 +256,11 @@ export default {
         margin: 0;
 
         &.bar-bg { background: $color-black; }
-        &.bar-fg { background: $color-accent; }
+        &.bar-fg { background: $color-fore; }
+      }
+
+      &:hover {
+        .bar-fg { background: $color-accent; }
       }
     }
   }
