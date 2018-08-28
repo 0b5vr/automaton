@@ -69,7 +69,7 @@ export default {
   padding: 1em;
   overflow: hidden;
 
-  background: $color-back4;
+  background: $color-back3;
   border-radius: 0.5em;
   color: $color-fore;
   font-size: 0.8em;
@@ -90,7 +90,7 @@ export default {
     bottom: -1em;
     width: 14em;
 
-    opacity: 0.1;
+    opacity: 0.07;
   }
 
   .logo {
