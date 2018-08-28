@@ -52,7 +52,7 @@ export default {
 @import "./colors.scss";
 
 .blur-layer {
-  position: fixed;
+  position: absolute;
   left: 0;
   top: 0;
   width: 100%;
