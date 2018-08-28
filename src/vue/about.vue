@@ -12,7 +12,7 @@
       :src="require( '../images/automaton.svg' )"
     />
     <div class="version">{{ automaton.version }}</div><br />
-    Animation manager with Timeline GUI for creative coding
+    Animation engine with Timeline GUI for creative coding
 
     <div class="logo-hr"></div>
 
