@@ -3,13 +3,14 @@
 <meta charset="UTF-8">
 <title></title>
 
-
-
 <style>
+@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900');
+@import url('https://fonts.googleapis.com/css?family=Roboto+Mono');
+
 body {
   background: #222;
-  color: #ddd;
-  font: 500 16px/1.2 "Helvetica Neue", "ヒラギノ角ゴ ProN", sans-serif;
+  color: #fff;
+  font: 300 16px/1.2 "Roboto", sans-serif;
 }
 
 #divAutomatonContainer {
@@ -30,7 +31,7 @@ body {
   white-space: pre-wrap;
   width: 60%;
 
-  padding-top: 250px;
+  padding-top: 260px;
   padding-bottom: 250px;
 }
 
@@ -50,10 +51,21 @@ h1 {
   margin-bottom: 0;
 }
 
+b {
+  padding: 0 4px;
+  background: #903;
+  border-radius: 2px;
+}
+
 code {
-  padding: 4px;
+  font: 300 12px/1.2 'Roboto Mono', monospace;
+  padding: 0 4px;
   background: #444;
-  border-radius: 4px;
+  border-radius: 2px;
+}
+
+b code {
+  background: #903;
 }
 </style>
 
@@ -72,52 +84,44 @@ You can code anything (not dangerous) on editor and tweak parameters on Automato
 GitHub (Download): <a href="https://github.com/fms-cat/automaton">https://github.com/fms-cat/automaton</a>
 
 <h1>What is Automaton?</h1>
-Automaton is animation tool with Timeline GUI for art coding.
+Automaton is <b>animation engine with Timeline GUI for creative coding</b>.
 I hope it helps your creative coding!
-Automaton is under development so some features will be added / changed in future.
+Automaton is still under development so some features will be added / changed in future.
 
-I defined the function named <code>auto</code> like <code>let auto = automaton.auto</code> .
-You can use <code>auto</code> as numeric parameter which is tweakable on Automaton GUI.
-When you use <code>auto</code> like <code>auto( "rectX" )</code>, new parameter named "rectX" created on Automaton, and it appears on GUI.
-Then, you can tweak the parameter using timeline on GUI.
+First you might want to define a function named <code>auto</code> like <code>var auto = automaton.auto</code> .
+<code>auto</code> is magical function, it pours cool animation into your code!
+When you use <code>auto</code> like <b><code>auto( "rectX" )</code></b> for the first time, new parameter named "rectX" will be created on Automaton, and it appears on GUI.
+Then, you can tweak the parameter using timeline!
 
 Be careful that you cannot use Automaton parameter outside the update loop.
-It will create the new parameter on Automaton, but not updated.
-If you want to define tweakable parameters outside the update loop, you need to assign the parameter inside the update loop via <code>auto</code>.
+Doing that will create your parameter on Automaton, but not updated.
+Also, don't forget to call <code>automaton.update()</code> !
 
 <h1>How to use GUI</h1>
 The Automaton GUI has a lot of feature!
 
 First, choose the parameter you want to tweak by left menu.
-Then the GUI will be show parameter animation curve on timeline.
+Then the GUI will be show animation curve on the timeline.
 
-When you <code>doubleclick</code> inside the timeline, new "node" will be created.
+When you <code>doubleclick</code> inside the timeline, new <b>node</b> will be created.
 The animation curve will transform to pass through nodes.
 You can grab and move around the node by <code>drag</code>ging.
 And you <code>doubleclick</code> the node, the node will be removed.
 
+You also can put cutting-edge <b>Fx</b>s on this timeline.
+<code>Right-click</code> on the timeline will show you a context menu, then <code>click</code>ing <code>Add Fx</code> will show you a list of Fx definition.
+Fxs deforms your animation curve into various form. Try various!
+Or do you still want to do something wacky? Call <code>automaton.addFxDefinition()</code> to define your own Fx definition!
+
 You can scroll around the timeline using mouse <code>wheel</code>.
 <code>Shift-Scroll</code> lets the timeline horizontal zoom.
-<code>Alt-Scroll</code> lets the timeline vertical zoom.
+<code>Ctrl-Scroll</code> lets the timeline vertical zoom.
 
-Shape of animation curve can be changed by menu on the right side.
-You can use various curve such as Linear, ExpSmooth, Spring, etc...
-Or, you can apply some "mods" to the curve such as SineCurve, PerlinNoise, Lo-Fi, etc...
-Let's try various!
-
-<h1>Other Features</h1>
-I'll explain about icons above timeline.
-
-First, you click magnet icon, you can configure BeatSnap.
-BeatSnap lets nodes snaps to beat.
-It is very useful to making audio-syncing animations.
-
-Next, you click cog icon, it will show global setting.
-You can change the length and resolution.
-Less resolution, less memory consumption and less curve generating time, but also it will make the curve rough.
-
-Finally, you click save icon, it will show (very long) JSON contains all of Automaton parameters.
-You can load this JSON by adding parameter named <code>data</code> when you instantiate Automaton.
+<h1>Saving GUI changes</h1>
+Once you tweaked animations using GUI, you might want to save your changes.
+Saving can be performed by <code>click</code>ing floppy icon at rightmost of GUI.
+It will send very long JSON string to your clipboard.
+You can load this JSON savedata by adding parameter named <code>data</code> when you initialize Automaton.
     </div>
 
     <div id="editor">// Press Ctrl+S (Cmd+S on MacOS) to run script
@@ -139,29 +143,29 @@ var auto = automaton.auto;
 var width = canvas.width = 300;
 var height = canvas.height = 300;
 
-var context = canvas.getContext( "2d" );
+var ctx = canvas.getContext( "2d" );
 
 var stop = false;
 function update() {
   if ( stop ) { return; }
   
-  // pass time to automaton and update it
+  // update it
   automaton.update();
 
-  context.fillStyle = "#fff";
-  context.fillRect( 0, 0, width, height );
+  ctx.fillStyle = "#fff";
+  ctx.fillRect( 0, 0, width, height );
   
-  context.fillStyle = "#f00";
+  ctx.fillStyle = "#f00";
 
   // here's the auto function!
-  context.fillRect(
+  ctx.fillRect(
     auto( "rectX" ) * 100,
     auto( "rectY" ) * 100,
     100,
     100
   );
   
-  requestAnimationFrame( update ); // rAF fps = 60
+  requestAnimationFrame( update );
 }
 update();
 
