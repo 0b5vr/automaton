@@ -17,6 +17,7 @@
         @click.stop="automaton.togglePlay()"
       />
       <div class="time"
+        :class="{ seeking: seeking }"
         @mousedown.stop="seek"
       >
         <div class="current">
@@ -76,6 +77,7 @@ export default {
   data() {
     return {
       saveText: 'Copy current state as JSON',
+      seeking: false,
       cantUndoThis: 0
     }
   },
@@ -93,6 +95,8 @@ export default {
         this.automaton.seek( this.automaton.length * xOffset0 / width );
       }
 
+      this.seeking = true;
+
       const move = ( event ) => {
         const x = xOffset0 + event.clientX - xClient0;
         this.automaton.seek( this.automaton.length * x / width );
@@ -101,10 +105,11 @@ export default {
       const up = ( event ) => {
         if ( isPlaying0 ) {
           this.automaton.play();
-
-          window.removeEventListener( 'mousemove', move );
-          window.removeEventListener( 'mouseup', up );
         }
+        this.seeking = false;
+
+        window.removeEventListener( 'mousemove', move );
+        window.removeEventListener( 'mouseup', up );
       };
 
       window.addEventListener( 'mousemove', move );
@@ -260,6 +265,10 @@ export default {
       }
 
       &:hover {
+        .bar-fg { background: $color-accent; }
+      }
+
+      &.seeking {
         .bar-fg { background: $color-accent; }
       }
     }
