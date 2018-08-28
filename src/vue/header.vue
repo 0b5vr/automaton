@@ -3,7 +3,7 @@
   <div class="root">
     <div class="row row-center">
       <div class="logobox"
-        @click="$emit( 'logoClicked' )"
+        @click.stop="$emit( 'logoClicked' )"
       >
         <img class="logo"
           :src="require( '../images/automaton.svg' )"
@@ -15,9 +15,11 @@
       <img class="button"
         :src="automaton.isPlaying ? require( '../images/pause.svg' ) : require( '../images/play.svg' )"
         :stalker-text="automaton.isPlaying ? 'Pause' : 'Play'"
-        @click="automaton.togglePlay()"
+        @click.stop="automaton.togglePlay()"
       />
-      <div class="time">
+      <div class="time"
+        @mousedown.stop="seek"
+      >
         <div class="current">
           {{ automaton.time.toFixed( 3 ) }}
         </div>
@@ -36,27 +38,27 @@
       <img class="button"
         :src="require( '../images/undo.svg' )"
         :stalker-text="automaton.getUndoDesc() ? `Undo: ${automaton.getUndoDesc()}` : 'Can\'t undo'"
-        @click="undo()"
+        @click.stop="undo()"
       />
       <img class="button"
         :src="require( '../images/redo.svg' )"
         :stalker-text="automaton.getRedoDesc() ? `Redo: ${automaton.getRedoDesc()}` : 'Can\'t redo'"
-        @click="redo()"
+        @click.stop="redo()"
       />
       <img class="button"
         :src="require( '../images/snap.svg' )"
         stalker-text="Snap Settings"
-        @click="$emit( 'configSelected', 'snap' )"
+        @click.stop="$emit( 'configSelected', 'snap' )"
       />
       <img class="button"
         :src="require( '../images/cog.svg' )"
         stalker-text="General Config"
-        @click="$emit( 'configSelected', 'general' )"
+        @click.stop="$emit( 'configSelected', 'general' )"
       />
       <img class="button"
         :src="require( '../images/save.svg' )"
         :stalker-text="saveText"
-        @click="save"
+        @click.stop="save"
       />
     </div>
   </div>
@@ -80,6 +82,36 @@ export default {
   },
 
   methods: {
+    seek( event ) {
+      const width = event.target.offsetWidth;
+      const xOffset0 = event.offsetX;
+      const xClient0 = event.clientX;
+
+      const isPlaying0 = this.automaton.isPlaying;
+
+      if ( isPlaying0 ) {
+        this.automaton.pause();
+        this.automaton.seek( this.automaton.length * xOffset0 / width );
+      }
+
+      const move = ( event ) => {
+        const x = xOffset0 + event.clientX - xClient0;
+        this.automaton.seek( this.automaton.length * x / width );
+      };
+
+      const up = ( event ) => {
+        if ( isPlaying0 ) {
+          this.automaton.play();
+
+          window.removeEventListener( 'mousemove', move );
+          window.removeEventListener( 'mouseup', up );
+        }
+      };
+
+      window.addEventListener( 'mousemove', move );
+      window.addEventListener( 'mouseup', up );
+    },
+
     undo() {
       if ( this.automaton.getUndoDesc() ) {
         this.automaton.undo();
@@ -191,6 +223,12 @@ export default {
       height: 90%;
 
       text-align: right;
+
+      cursor: pointer;
+
+      * {
+        pointer-events: none;
+      }
 
       .current {
         display: inline-block;

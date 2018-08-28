@@ -261,7 +261,7 @@ const Automaton = class {
     this.__clock.update( _time );
 
     // if loop is enabled, loop the time
-    if ( this.loop && this.length < this.time ) {
+    if ( this.loop && ( this.time < 0 || this.length < this.time ) ) {
       this.__clock.setTime( this.time - Math.floor( this.time / this.length ) * this.length );
     }
 
