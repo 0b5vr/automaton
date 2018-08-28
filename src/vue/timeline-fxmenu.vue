@@ -122,6 +122,8 @@ export default {
 
   background: $color-back1;
 
+  filter: drop-shadow( 0 0 4px #000000 );
+
   .search-box {
     position: relative;
     width: calc( 100% - 12px );

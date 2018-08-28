@@ -6,6 +6,7 @@
       @historyMoved="onHistoryMoved"
       @configSelected="onConfigSelected"
       @context="openContextMenu"
+      @logoClicked="aboutActive = true"
     />
     <ParamList class="paramlist"
       :automaton="automaton"
@@ -30,6 +31,13 @@
       @fxSelected="selectFxs( $event )"
       @context="openContextMenu"
     />
+
+    <About class="about"
+      v-if="aboutActive"
+      :automaton="automaton"
+      @blur="aboutActive = false"
+    />
+
     <ContextMenu class="context-menu"
       :active="contextMenuActive"
       :x="contextMenuX"
@@ -44,6 +52,7 @@
 
 
 <script>
+import About from './about.vue';
 import Header from './header.vue';
 import ParamList from './paramlist.vue';
 import PropMenu from './propmenu.vue';
@@ -53,6 +62,7 @@ import Stalker from './stalker.vue';
 
 export default {
   components: {
+    About,
     Header,
     ParamList,
     PropMenu,
@@ -69,6 +79,7 @@ export default {
 
   data() {
     return {
+      aboutActive: false,
       selectedParamName: null,
       selectedNodeIds: [],
       selectedFxIds: [],

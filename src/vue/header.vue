@@ -2,10 +2,14 @@
 <div>
   <div class="root">
     <div class="row row-center">
-      <img class="logo"
-        :src="require( '../images/automaton.svg' )"
-      />
-      <div class="version">{{ automaton.version }}</div>
+      <div class="logobox"
+        @click="$emit( 'logoClicked' )"
+      >
+        <img class="logo"
+          :src="require( '../images/automaton.svg' )"
+        />
+        <div class="version">{{ automaton.version }}</div>
+      </div>
     </div>
     <div class="row row-left">
       <img class="button"
@@ -144,23 +148,28 @@ export default {
       margin: 0 3px;
     }
 
-    .logo {
-      position: relative;
-      height: 20px;
-      bottom: 2px;
-      top: 10%;
-
-      opacity: 0.5;
-    }
-
-    .version {
+    .logobox {
       display: inline-block;
+      vertical-align: bottom;
       position: relative;
-      bottom: 2px;
-      font-size: 10px;
-
+      height: 16px;
+      padding: 4px 0;
       color: $color-fore;
       opacity: 0.5;
+
+      cursor: pointer;
+
+      &:hover { opacity: 0.8; }
+
+      .logo {
+        height: 100%;
+      }
+
+      .version {
+        display: inline-block;
+        margin-left: 4px;
+        font-size: 10px;
+      }
     }
 
     .button {

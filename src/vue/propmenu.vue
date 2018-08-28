@@ -230,6 +230,11 @@
         </div>
       </div>
     </Scrollable>
+
+    <img class="logo"
+      v-if="!selectedNode && !selectedFx && !config"
+      :src="require( '../images/automaton-a.svg' )"
+    >
   </div>
 </div>
 </template>
@@ -365,6 +370,15 @@ export default {
         &:hover { background: $color-back1; }
       }
     }
+  }
+
+  .logo {
+    position: absolute;
+    width: 8em;
+    left: calc( 50% - 4em );
+    top: calc( 50% - 4em );
+
+    opacity: 0.1;
   }
 }
 </style>
