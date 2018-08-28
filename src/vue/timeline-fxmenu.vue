@@ -14,24 +14,34 @@
       placeholder="Add a fx..."
       @keydown="onSearchBoxKeydown"
     />
-    <div class="fx-name"
-      v-for="( id, index ) in fxDefsFiltered"
-      :key="id"
-      :class="{ selected: index === selectedIndex }"
-      @mousedown="select( id )"
+    <Scrollable class="fx-names"
+      bar="right"
     >
-      {{ id ? automaton.getFxDefinitionName( id ) : '(No result found)' }}
-    </div>
+      <div class="fx-name"
+        v-for="( id, index ) in fxDefsFiltered"
+        :key="id"
+        :class="{ selected: index === selectedIndex }"
+        @mousedown="select( id )"
+      >
+        {{ id ? automaton.getFxDefinitionName( id ) : '(No result found)' }}
+      </div>
+    </Scrollable>
   </div>
 </div>
 </template>
 
 <script>
+import Scrollable from './scrollable.vue';
+
 export default {
   props: [
     'automaton',
     'active'
   ],
+
+  components: {
+    Scrollable
+  },
 
   data() {
     return {
@@ -118,9 +128,10 @@ export default {
   left: calc( 50% - 10em );
   top: 1em;
   width: 20em;
-  font-size: 0.8em;
+  overflow: hidden;
 
   background: $color-back1;
+  font-size: 0.8em;
 
   filter: drop-shadow( 0 0 4px #000000 );
 
@@ -135,21 +146,27 @@ export default {
     color: $color-fore;
   }
 
-  .fx-name {
+  .fx-names {
     position: relative;
-    width: calc( 100% - 12px );
-    margin: 2px;
-    padding: 2px 4px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    width: 100%;
+    height: 10em;
 
-    background: $color-back2;
+    .fx-name {
+      position: relative;
+      width: calc( 100% - 12px );
+      margin: 2px;
+      padding: 2px 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
 
-    cursor: pointer;
+      background: $color-back2;
 
-    &:hover { background: $color-back3; }
-    &.selected { background: $color-back3; }
+      cursor: pointer;
+
+      &:hover { background: $color-back3; }
+      &.selected { background: $color-back3; }
+    }
   }
 }
 </style>

@@ -1,28 +1,26 @@
 <template>
 <div>
-  <div class="root">
-    <Scrollable
-      bar="left"
+  <Scrollable class="root"
+    bar="left"
+  >
+    <div class="param"
+      v-for="name in automaton.getParamNames()"
+      :key="'param' + name"
+      :class="{ selected: name === selectedParamName }"
+      @click="$emit( 'selected', name )"
+      @contextmenu.stop.prevent="contextParam( $event, name )"
     >
-      <div class="param"
-        v-for="name in automaton.getParamNames()"
-        :key="'param' + name"
-        :class="{ selected: name === selectedParamName }"
-        @click="$emit( 'selected', name )"
-        @contextmenu.stop.prevent="contextParam( $event, name )"
-      >
-        <div class="name">{{ name }}</div>
-        <div class="value"
-          v-if="automaton.getParam( name ).isUsed()"
-        >{{ automaton.auto( name ).toFixed( 3 ) }}</div>
-        <img class="warning"
-          v-if="!automaton.getParam( name ).isUsed()"
-          :src="require( '../images/warning.svg' )"
-          stalker-text="This param has not been used yet"
-        />
-      </div>
-    </Scrollable>
-  </div>
+      <div class="name">{{ name }}</div>
+      <div class="value"
+        v-if="automaton.getParam( name ).isUsed()"
+      >{{ automaton.auto( name ).toFixed( 3 ) }}</div>
+      <img class="warning"
+        v-if="!automaton.getParam( name ).isUsed()"
+        :src="require( '../images/warning.svg' )"
+        stalker-text="This param has not been used yet"
+      />
+    </div>
+  </Scrollable>
 </div>
 </template>
 

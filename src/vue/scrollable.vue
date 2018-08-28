@@ -1,20 +1,23 @@
 <template>
-<div class="root" ref="root">
-  <div class="inside" ref="inside"
-    :style="{ top: top + 'px' }"
-    @wheel="onWheel"
+<div>
+  <div class="root" ref="root"
+    @wheel.stop="onWheel"
   >
-    <slot />
+    <div class="inside" ref="inside"
+      :style="{ top: top + 'px' }"
+    >
+      <slot />
+    </div>
+    <div class="bar"
+      :style="{
+        top: barTop + '%',
+        height: barHeight + '%',
+        left: bar === 'left' ? 0 : undefined,
+        right: bar === 'right' ? 0 : undefined,
+        opacity: barOpacity
+      }"
+    />
   </div>
-  <div class="bar"
-    :style="{
-      top: barTop + '%',
-      height: barHeight + '%',
-      left: bar === 'left' ? 0 : undefined,
-      right: bar === 'right' ? 0 : undefined,
-      opacity: barOpacity
-    }"
-  />
 </div>
 </template>
 
@@ -74,6 +77,7 @@ export default {
 .root {
   position: relative;
   width: 100%;
+  height: 100%;
   overflow: hidden;
 
   .inside {
