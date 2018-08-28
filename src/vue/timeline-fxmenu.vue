@@ -134,7 +134,7 @@ export default {
   background: $color-back1;
   font-size: 0.8em;
 
-  filter: drop-shadow( 0 0 4px #000000 );
+  filter: drop-shadow( 0 0 2px #000000 );
 
   .search-box {
     position: relative;

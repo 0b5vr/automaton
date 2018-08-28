@@ -97,7 +97,7 @@ export default {
   color: $color-foresub;
   border-radius: 0.2em;
 
-  filter: drop-shadow( 0 0 4px #000000 );
+  filter: drop-shadow( 0 0 2px #000000 );
 
   .command {
     padding-left: 0.2em;

@@ -75,7 +75,7 @@ export default {
   font-size: 0.8em;
   line-height: 1.2;
 
-  filter: drop-shadow( 0 0 4px #000000 );
+  filter: drop-shadow( 0 0 2px #000000 );
 
   a {
     color: $color-accent;
