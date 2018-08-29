@@ -127,25 +127,27 @@ You can load this JSON savedata by adding parameter named <code>data</code> when
     <div id="editor">// Press Ctrl+S (Cmd+S on MacOS) to run script
 // The script will be run under 🔥 eval() 🔥. be calm, safety first.
 
-// generate automaton instance
-var automaton = new Automaton( {
-  gui: divAutomatonContainer,
-  realtime: true,
-  loop: true,
-  data: `
-  {"v":"2.0.0","length":5,"resolution":100,"params":{"rectX":{"nodes":[{"time":0,"value":0.2,"out":{"time":0.5,"value":0}},{"time":1,"value":0.6,"in":{"time":-0.5,"value":0},"out":{"time":0,"value":0}},{"time":1.1,"value":0,"in":{"time":0,"value":0},"out":{"time":0,"value":0}},{"time":2.2,"value":0,"in":{"time":0,"value":0},"out":{"time":0.2029702970297027,"value":0}},{"time":2.683168316831683,"value":0.2,"in":{"time":-0.0058960808318827985,"value":-0.16171574263249228},"out":{"time":0.029151407919009283,"value":0.7995551137822344}},{"time":3.0792079207920793,"value":0.8,"in":{"time":-0.26237623762376217,"value":0},"out":{"time":0,"value":0}},{"time":4,"value":0.8,"in":{"time":0,"value":0},"out":{"time":0.5,"value":0}},{"time":5,"value":0.2,"in":{"time":-0.22277227722772253,"value":0.46032643646145566}}],"fxs":[{"time":1,"length":1.2,"row":0,"def":"gravity","params":{"a":20,"e":0.5,"preserve":false},"bypass":false},{"time":2.2,"length":1.8,"row":0,"def":"cds","params":{"factor":1000,"ratio":0.15,"preserve":true},"bypass":false},{"time":4,"length":1,"row":0,"def":"sine","params":{"amp":0.2,"freq":2,"phase":0}},{"def":"lofi","bypass":false,"row":1,"time":4.5,"length":0.5,"params":{"reso":10,"relative":true,"rate":20,"round":true}}]},"rectY":{"nodes":[{"time":0,"value":0,"out":{"time":0,"value":0}},{"time":5,"value":1,"in":{"time":0,"value":0}}],"fxs":[]}},"guiSettings":{"snapActive":false,"snapTime":0.1,"snapValue":0.1}}
-  `
-} );
-
-// define an auto function
-var auto = automaton.auto;
-
 var width = canvas.width = 300;
 var height = canvas.height = 300;
 
 var ctx = canvas.getContext( "2d" );
 
 var stop = false;
+
+// initialize automaton instance
+var automaton = new Automaton( {
+  gui: divAutomatonContainer, // where you want to put entire automaton GUI
+  realtime: true, // using this option will make it "Realtime-mode"
+  // fps: 30, /// using this option will make it "Frame-mode"
+  loop: true, // make it loop
+  data: `
+  {"v":"2.0.0","length":5,"resolution":100,"params":{"rectX":{"nodes":[{"time":0,"value":0.2,"out":{"time":0.5,"value":0}},{"time":1,"value":0.6,"in":{"time":-0.5,"value":0},"out":{"time":0,"value":0}},{"time":1.1,"value":0,"in":{"time":0,"value":0},"out":{"time":0,"value":0}},{"time":2.2,"value":0,"in":{"time":0,"value":0},"out":{"time":0.2029702970297027,"value":0}},{"time":2.683168316831683,"value":0.2,"in":{"time":-0.0058960808318827985,"value":-0.16171574263249228},"out":{"time":0.029151407919009283,"value":0.7995551137822344}},{"time":3.0792079207920793,"value":0.8,"in":{"time":-0.26237623762376217,"value":0},"out":{"time":0,"value":0}},{"time":4,"value":0.8,"in":{"time":0,"value":0},"out":{"time":0.5,"value":0}},{"time":5,"value":0.2,"in":{"time":-0.22277227722772253,"value":0.46032643646145566}}],"fxs":[{"time":1,"length":1.2,"row":0,"def":"gravity","params":{"a":20,"e":0.5,"preserve":false},"bypass":false},{"time":2.2,"length":1.8,"row":0,"def":"cds","params":{"factor":1000,"ratio":0.15,"preserve":true},"bypass":false},{"time":4,"length":1,"row":0,"def":"sine","params":{"amp":0.2,"freq":2,"phase":0}},{"def":"lofi","bypass":false,"row":1,"time":4.5,"length":0.5,"params":{"reso":10,"relative":true,"rate":20,"round":true}}]},"rectY":{"nodes":[{"time":0,"value":0,"out":{"time":0,"value":0}},{"time":5,"value":1,"in":{"time":0,"value":0}}],"fxs":[]}},"guiSettings":{"snapActive":false,"snapTime":0.1,"snapValue":0.1}}
+  ` // put your automaton savedata here
+} );
+
+// define an auto function
+var auto = automaton.auto;
+
 function update() {
   if ( stop ) { return; }
   
@@ -168,6 +170,24 @@ function update() {
   requestAnimationFrame( update );
 }
 update();
+
+// automaton the hard way: example of user-defined fx
+automaton.addFxDefinition( 'sawtooth', {
+  name: 'Sawtooth', // display name
+  description: 'Example of user-defined fx definition', // description of the fx definition
+  params: { // params. can be float, int or boolean
+    freq: { name: 'Frequency', type: 'float', default: 10.0, min: 0.0, max: 100.0 },
+    amp: { name: 'Amp', type: 'float', default: 0.1 }
+  },
+  func( context ) { // define your procedure here
+    if ( context.init ) {
+      context.saw = 0.0;
+    }
+    context.saw += context.params.freq * context.dt;
+    context.saw = context.saw % 1.0;
+    return context.v + context.params.amp * context.saw;
+  }
+} );
 
 playground.unload = function() {
   stop = true;
