@@ -1,12 +1,9 @@
 {
   "name": "automaton",
   "version": "2.0.0",
-  "description": "",
-  "main": "gulpfile.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
+  "description": "Animation engine with Timeline GUI for creative coding",
+  "main": "dist/automaton.js",
+  "author": "FMS-Cat",
   "license": "MIT",
   "devDependencies": {
     "babel-plugin-transform-runtime": "^6.23.0",
