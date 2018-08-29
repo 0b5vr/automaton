@@ -339,7 +339,7 @@ export default {
   color: $color-fore;
 
   .props {
-    padding: 0.5em 1em;
+    padding: 0.75em 1.5em;
     font-size: 0.75em;
 
     .title {
