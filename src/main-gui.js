@@ -287,7 +287,11 @@ const AutomatonWithGUI = class extends Automaton {
    * @returns {string} Name of the fx definition
    */
   getFxDefinitionName( _id ) {
-    return this.__paramFxDefs[ _id ].name;
+    if ( this.__paramFxDefs[ _id ] ) {
+      return this.__paramFxDefs[ _id ].name || _id;
+    } else {
+      return undefined;
+    }
   }
 
   /**
@@ -296,7 +300,11 @@ const AutomatonWithGUI = class extends Automaton {
    * @returns {string} Description of the fx definition
    */
   getFxDefinitionDescription( _id ) {
-    return this.__paramFxDefs[ _id ].description;
+    if ( this.__paramFxDefs[ _id ] ) {
+      return this.__paramFxDefs[ _id ].description || '';
+    } else {
+      return undefined;
+    }
   }
 
   /**
@@ -305,7 +313,11 @@ const AutomatonWithGUI = class extends Automaton {
    * @returns {Object} Params section
    */
   getFxDefinitionParams( _id ) {
-    return jsonCopy( this.__paramFxDefs[ _id ].params );
+    if ( this.__paramFxDefs[ _id ] ) {
+      return jsonCopy( this.__paramFxDefs[ _id ].params || {} );
+    } else {
+      return undefined;
+    }
   }
 
   /**
