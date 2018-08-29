@@ -87,8 +87,8 @@ export default {
 
       if ( isPlaying0 ) {
         this.automaton.pause();
-        this.automaton.seek( this.automaton.length * xOffset0 / width );
       }
+      this.automaton.seek( this.automaton.length * xOffset0 / width );
 
       this.seeking = true;
 

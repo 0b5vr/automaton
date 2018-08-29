@@ -882,8 +882,8 @@ export default {
       const isPlaying0 = this.automaton.isPlaying;
       if ( altKey && isPlaying0 ) {
         this.automaton.pause();
-        this.automaton.seek( t0 );
       }
+      this.automaton.seek( t0 );
 
       const move = ( event ) => {
         const x = event.clientX;
