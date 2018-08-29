@@ -1,5 +1,5 @@
 {
-  "name": "automaton",
+  "name": "automaton-js",
   "version": "2.0.0",
   "description": "Animation engine with Timeline GUI for creative coding",
   "main": "dist/automaton.js",
