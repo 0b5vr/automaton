@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>main-gui.js - Documentation</title>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <span class="navicon"></span>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Automaton.html">Automaton</a><ul class='members'><li class='list-title'>Members</li><li data-type='member'><a href="Automaton.html#__clock">__clock</a></li><li data-type='member'><a href="Automaton.html#__length">__length</a></li><li data-type='member'><a href="Automaton.html#__listeners">__listeners</a></li><li data-type='member'><a href="Automaton.html#__paramFxDefs">__paramFxDefs</a></li><li data-type='member'><a href="Automaton.html#__params">__params</a></li><li data-type='member'><a href="Automaton.html#__resolution">__resolution</a></li><li data-type='member'><a href="Automaton.html#__version">__version</a></li><li data-type='member'><a href="Automaton.html#deltaTime">deltaTime</a></li><li data-type='member'><a href="Automaton.html#fps">fps</a></li><li data-type='member'><a href="Automaton.html#isPlaying">isPlaying</a></li><li data-type='member'><a href="Automaton.html#length">length</a></li><li data-type='member'><a href="Automaton.html#loop">loop</a></li><li data-type='member'><a href="Automaton.html#progress">progress</a></li><li data-type='member'><a href="Automaton.html#realtime">realtime</a></li><li data-type='member'><a href="Automaton.html#resolution">resolution</a></li><li data-type='member'><a href="Automaton.html#time">time</a></li><li data-type='member'><a href="Automaton.html#version">version</a></li></ul><ul class='methods'><li class='list-title'>Methods</li><li data-type='method'><a href="Automaton.html#__auto">__auto</a></li><li data-type='method'><a href="Automaton.html#__emit">__emit</a></li><li data-type='method'><a href="Automaton.html#addFxDefinition">addFxDefinition</a></li><li data-type='method'><a href="Automaton.html#auto">auto</a></li><li data-type='method'><a href="Automaton.html#createParam">createParam</a></li><li data-type='method'><a href="Automaton.html#load">load</a></li><li data-type='method'><a href="Automaton.html#on">on</a></li><li data-type='method'><a href="Automaton.html#pause">pause</a></li><li data-type='method'><a href="Automaton.html#play">play</a></li><li data-type='method'><a href="Automaton.html#precalcAll">precalcAll</a></li><li data-type='method'><a href="Automaton.html#seek">seek</a></li><li data-type='method'><a href="Automaton.html#update">update</a></li></ul></li><li><a href="AutomatonWithGUI.html">AutomatonWithGUI</a><ul class='members'><li class='list-title'>Members</li><li data-type='member'><a href="AutomatonWithGUI.html#__clock">__clock</a></li><li data-type='member'><a href="AutomatonWithGUI.html#__history">__history</a></li><li data-type='member'><a href="AutomatonWithGUI.html#__historyIndex">__historyIndex</a></li><li data-type='member'><a href="AutomatonWithGUI.html#__length">__length</a></li><li data-type='member'><a href="AutomatonWithGUI.html#__listeners">__listeners</a></li><li data-type='member'><a href="AutomatonWithGUI.html#__paramFxDefs">__paramFxDefs</a></li><li data-type='member'><a href="AutomatonWithGUI.html#__params">__params</a></li><li data-type='member'><a href="AutomatonWithGUI.html#__resolution">__resolution</a></li><li data-type='member'><a href="AutomatonWithGUI.html#__version">__version</a></li><li data-type='member'><a href="AutomatonWithGUI.html#__vue">__vue</a></li><li data-type='member'><a href="AutomatonWithGUI.html#deltaTime">deltaTime</a></li><li data-type='member'><a href="AutomatonWithGUI.html#fps">fps</a></li><li data-type='member'><a href="AutomatonWithGUI.html#guiSettings">guiSettings</a></li><li data-type='member'><a href="AutomatonWithGUI.html#isPlaying">isPlaying</a></li><li data-type='member'><a href="AutomatonWithGUI.html#length">length</a></li><li data-type='member'><a href="AutomatonWithGUI.html#loop">loop</a></li><li data-type='member'><a href="AutomatonWithGUI.html#progress">progress</a></li><li data-type='member'><a href="AutomatonWithGUI.html#realtime">realtime</a></li><li data-type='member'><a href="AutomatonWithGUI.html#resolution">resolution</a></li><li data-type='member'><a href="AutomatonWithGUI.html#time">time</a></li><li data-type='member'><a href="AutomatonWithGUI.html#version">version</a></li></ul><ul class='methods'><li class='list-title'>Methods</li><li data-type='method'><a href="AutomatonWithGUI.html#__auto">__auto</a></li><li data-type='method'><a href="AutomatonWithGUI.html#__emit">__emit</a></li><li data-type='method'><a href="AutomatonWithGUI.html#__prepareGUI">__prepareGUI</a></li><li data-type='method'><a href="AutomatonWithGUI.html#addFxDefinition">addFxDefinition</a></li><li data-type='method'><a href="AutomatonWithGUI.html#auto">auto</a></li><li data-type='method'><a href="AutomatonWithGUI.html#countParams">countParams</a></li><li data-type='method'><a href="AutomatonWithGUI.html#createParam">createParam</a></li><li data-type='method'><a href="AutomatonWithGUI.html#dropHistory">dropHistory</a></li><li data-type='method'><a href="AutomatonWithGUI.html#generateDefaultFxParams">generateDefaultFxParams</a></li><li data-type='method'><a href="AutomatonWithGUI.html#getFxDefinitionDescription">getFxDefinitionDescription</a></li><li data-type='method'><a href="AutomatonWithGUI.html#getFxDefinitionIds">getFxDefinitionIds</a></li><li data-type='method'><a href="AutomatonWithGUI.html#getFxDefinitionName">getFxDefinitionName</a></li><li data-type='method'><a href="AutomatonWithGUI.html#getFxDefinitionParams">getFxDefinitionParams</a></li><li data-type='method'><a href="AutomatonWithGUI.html#getParam">getParam</a></li><li data-type='method'><a href="AutomatonWithGUI.html#getParamNames">getParamNames</a></li><li data-type='method'><a href="AutomatonWithGUI.html#getRedoDesc">getRedoDesc</a></li><li data-type='method'><a href="AutomatonWithGUI.html#getUndoDesc">getUndoDesc</a></li><li data-type='method'><a href="AutomatonWithGUI.html#load">load</a></li><li data-type='method'><a href="AutomatonWithGUI.html#on">on</a></li><li data-type='method'><a href="AutomatonWithGUI.html#pause">pause</a></li><li data-type='method'><a href="AutomatonWithGUI.html#play">play</a></li><li data-type='method'><a href="AutomatonWithGUI.html#pokeRenderer">pokeRenderer</a></li><li data-type='method'><a href="AutomatonWithGUI.html#precalcAll">precalcAll</a></li><li data-type='method'><a href="AutomatonWithGUI.html#pushHistory">pushHistory</a></li><li data-type='method'><a href="AutomatonWithGUI.html#redo">redo</a></li><li data-type='method'><a href="AutomatonWithGUI.html#removeParam">removeParam</a></li><li data-type='method'><a href="AutomatonWithGUI.html#save">save</a></li><li data-type='method'><a href="AutomatonWithGUI.html#seek">seek</a></li><li data-type='method'><a href="AutomatonWithGUI.html#setLength">setLength</a></li><li data-type='method'><a href="AutomatonWithGUI.html#setResolution">setResolution</a></li><li data-type='method'><a href="AutomatonWithGUI.html#togglePlay">togglePlay</a></li><li data-type='method'><a href="AutomatonWithGUI.html#undo">undo</a></li><li data-type='method'><a href="AutomatonWithGUI.html#update">update</a></li></ul></li><li><a href="Clock.html">Clock</a><ul class='methods'><li class='list-title'>Methods</li><li data-type='method'><a href="Clock.html#pause">pause</a></li><li data-type='method'><a href="Clock.html#play">play</a></li><li data-type='method'><a href="Clock.html#setTime">setTime</a></li><li data-type='method'><a href="Clock.html#update">update</a></li></ul></li><li><a href="ClockFrame.html">ClockFrame</a><ul class='methods'><li class='list-title'>Methods</li><li data-type='method'><a href="ClockFrame.html#pause">pause</a></li><li data-type='method'><a href="ClockFrame.html#play">play</a></li><li data-type='method'><a href="ClockFrame.html#setTime">setTime</a></li><li data-type='method'><a href="ClockFrame.html#update">update</a></li></ul></li><li><a href="ClockRealtime.html">ClockRealtime</a><ul class='methods'><li class='list-title'>Methods</li><li data-type='method'><a href="ClockRealtime.html#pause">pause</a></li><li data-type='method'><a href="ClockRealtime.html#play">play</a></li><li data-type='method'><a href="ClockRealtime.html#setTime">setTime</a></li><li data-type='method'><a href="ClockRealtime.html#update">update</a></li></ul></li><li><a href="Param.html">Param</a><ul class='members'><li class='list-title'>Members</li><li data-type='member'><a href="Param.html#__automaton">__automaton</a></li><li data-type='member'><a href="Param.html#__fxs">__fxs</a></li><li data-type='member'><a href="Param.html#__lastTime">__lastTime</a></li><li data-type='member'><a href="Param.html#__lastValue">__lastValue</a></li><li data-type='member'><a href="Param.html#__nodes">__nodes</a></li><li data-type='member'><a href="Param.html#__values">__values</a></li></ul><ul class='methods'><li class='list-title'>Methods</li><li data-type='method'><a href="Param.html#getValue">getValue</a></li><li data-type='method'><a href="Param.html#load">load</a></li><li data-type='method'><a href="Param.html#precalc">precalc</a></li></ul></li><li><a href="ParamWithGUI.html">ParamWithGUI</a><ul class='members'><li class='list-title'>Members</li><li data-type='member'><a href="ParamWithGUI.html#.DEFAULT_HANDLE_LENGTH">DEFAULT_HANDLE_LENGTH</a></li><li data-type='member'><a href="ParamWithGUI.html#__isUsed">__isUsed</a></li></ul><ul class='methods'><li class='list-title'>Methods</li><li data-type='method'><a href="ParamWithGUI.html#__getFreeRow">__getFreeRow</a></li><li data-type='method'><a href="ParamWithGUI.html#__getFxIndexById">__getFxIndexById</a></li><li data-type='method'><a href="ParamWithGUI.html#__getNodeIndexById">__getNodeIndexById</a></li><li data-type='method'><a href="ParamWithGUI.html#__sortFxs">__sortFxs</a></li><li data-type='method'><a href="ParamWithGUI.html#__sortNodes">__sortNodes</a></li><li data-type='method'><a href="ParamWithGUI.html#bypassFx">bypassFx</a></li><li data-type='method'><a href="ParamWithGUI.html#changeFxParam">changeFxParam</a></li><li data-type='method'><a href="ParamWithGUI.html#changeFxRow">changeFxRow</a></li><li data-type='method'><a href="ParamWithGUI.html#changeLength">changeLength</a></li><li data-type='method'><a href="ParamWithGUI.html#createFx">createFx</a></li><li data-type='method'><a href="ParamWithGUI.html#createFxFromData">createFxFromData</a></li><li data-type='method'><a href="ParamWithGUI.html#createNode">createNode</a></li><li data-type='method'><a href="ParamWithGUI.html#createNodeFromData">createNodeFromData</a></li><li data-type='method'><a href="ParamWithGUI.html#dumpFx">dumpFx</a></li><li data-type='method'><a href="ParamWithGUI.html#dumpFxs">dumpFxs</a></li><li data-type='method'><a href="ParamWithGUI.html#dumpFxsWithoutId">dumpFxsWithoutId</a></li><li data-type='method'><a href="ParamWithGUI.html#dumpNode">dumpNode</a></li><li data-type='method'><a href="ParamWithGUI.html#dumpNodes">dumpNodes</a></li><li data-type='method'><a href="ParamWithGUI.html#dumpNodesWithoutId">dumpNodesWithoutId</a></li><li data-type='method'><a href="ParamWithGUI.html#forceMoveFx">forceMoveFx</a></li><li data-type='method'><a href="ParamWithGUI.html#getNumNode">getNumNode</a></li><li data-type='method'><a href="ParamWithGUI.html#isUsed">isUsed</a></li><li data-type='method'><a href="ParamWithGUI.html#load">load</a></li><li data-type='method'><a href="ParamWithGUI.html#markAsUsed">markAsUsed</a></li><li data-type='method'><a href="ParamWithGUI.html#moveFx">moveFx</a></li><li data-type='method'><a href="ParamWithGUI.html#moveHandle">moveHandle</a></li><li data-type='method'><a href="ParamWithGUI.html#moveNode">moveNode</a></li><li data-type='method'><a href="ParamWithGUI.html#precalc">precalc</a></li><li data-type='method'><a href="ParamWithGUI.html#removeFx">removeFx</a></li><li data-type='method'><a href="ParamWithGUI.html#removeNode">removeNode</a></li><li data-type='method'><a href="ParamWithGUI.html#resetHandle">resetHandle</a></li><li data-type='method'><a href="ParamWithGUI.html#resizeFx">resizeFx</a></li><li data-type='method'><a href="ParamWithGUI.html#resizeFxByLeft">resizeFxByLeft</a></li></ul></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">main-gui.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import ass from './ass';
+import compat from './compat';
+import jsonCopy from './json-copy';
+
+import Param from './param-gui';
+
+import Automaton from './main';
+import fxDefinitions from './fx-definitions';
+
+import Vue from 'vue';
+import GUI from './vue/main.vue';
+
+/**
+ * IT'S AUTOMATON!
+ * It's `automaton.js` and `automaton.min.js` version.
+ * Since GUI stuff is pretty big for intro heh
+ * @extends Automaton
+ * @param {Object} [_props]
+ * @param {boolean} [_props.loop] Whether let the time loop or not
+ * @param {number} [_props.fps] If this is set, the clock will become frame mode
+ * @param {boolean} [_props.realtime] If this is true, the clock will become realtime mode
+ * @param {DOM} [_props.gui] DOM element where you want to attach the Automaton GUI
+ * @param {string|Object} [_props.data] Data of the automaton. Don't worry, I can generate an initial data for you!
+ */
+const AutomatonWithGUI = class extends Automaton {
+  constructor( _props ) {
+    const props = Object.assign( {}, _props );
+    props.data = compat( props.data );
+
+    ass( !_props.onseek, 'The handler "onseek" is no longer supported. Use Automaton.on( "seek", ... ) instead.' );
+    ass( !_props.onplay, 'The handler "onplay" is no longer supported. Use Automaton.on( "play", ... ) instead.' );
+    ass( !_props.onpause, 'The handler "onpause" is no longer supported. Use Automaton.on( "pause", ... ) instead.' );
+
+    super( props );
+
+    /**
+     * History stack.
+     * Will be managed from {@link AutomatonWithGUI#pushHistory|pushHistory()}, navigated from {@link AutomatonWithGUI#undo|undo()} and {@link AutomatonWithGUI#redo|redo()}.
+     * @type {Object[]}
+     * @protected
+     */
+    this.__history = [];
+
+    /**
+     * Current position of history stack.
+     * @type {number}
+     * @protected
+     */
+    this.__historyIndex = 0;
+
+    fxDefinitions.map( ( fxDef ) => {
+      this.addFxDefinition( ...fxDef );
+    } );
+
+    if ( _props.gui ) { this.__prepareGUI( _props.gui ); }
+
+    window.addEventListener( 'beforeunload', ( event ) => {
+      if ( this.__historyIndex !== 0 ) {
+        var confirmationMessage = 'Automaton: Did you saved your progress?';
+
+        event.returnValue = confirmationMessage;
+        return confirmationMessage;
+      }
+    } );
+  }
+
+  /**
+   * Prepare GUI.
+   * @param {DOM} _target DOM element where you want to attach the Automaton GUI
+   * @returns {void} void
+   * @protected
+   */
+  __prepareGUI( _target ) {
+    const el = document.createElement( 'div' );
+    _target.appendChild( el );
+
+    /**
+     * Vue instance that manages automaton gui.
+     * @type {Vue}
+     */
+    this.__vue = new Vue( {
+      el: el,
+      data: {
+        automaton: this
+      },
+      render: function( createElement ) {
+        return createElement(
+          GUI,
+          { props: { automaton: this.automaton } }
+        );
+      }
+    } );
+  }
+
+  /**
+   * Generate default fx params object.
+   * @param {string} _id Id of the fx
+   * @returns {Object} Default fx params object
+   */
+  generateDefaultFxParams( _id ) {
+    const fxDef = this.__paramFxDefs[ _id ];
+    if ( !fxDef ) { throw new Error( `Fx definition called ${_id} is not defined` ); }
+
+    const ret = {};
+    for ( let key in fxDef.params ) {
+      ret[ key ] = fxDef.params[ key ].default;
+    }
+
+    return ret;
+  }
+
+  /**
+   * Toggle play / pause.
+   * @returns {void} void
+   */
+  togglePlay() {
+    if ( this.isPlaying ) { this.pause(); }
+    else { this.play(); }
+  }
+
+  /**
+   * Put some operation into the history stack.
+   * Since it should accessible from GUI this function is public, basically `-- DON'T TOUCH IT KIDDO --`
+   * @param {string} _desc Description of the operation
+   * @param {function} _do Operation
+   * @param {function} _undo Operation that undoes the `_do`
+   * @param {boolean} [_execute=false] _do will be executed instantly if true
+   * @returns {any} any if `_execute` is true, void otherwise
+   */
+  pushHistory( _desc, _do, _undo, _execute ) {
+    this.__history.splice( this.__historyIndex );
+    this.__history.push( { desc: _desc, do: _do, undo: _undo } );
+    this.__historyIndex ++;
+
+    if ( _execute || false ) {
+      return _do();
+    }
+  }
+
+  /**
+   * Undo the operation based on history stack.
+   * Can be performed via GUI.
+   * @returns {any} Result of _undo
+   */
+  undo() {
+    if ( this.__historyIndex &lt;= 0 ) { return; }
+    this.__historyIndex --;
+    return this.__history[ this.__historyIndex ].undo();
+  }
+
+  /**
+   * Redo the operation based on history stack.
+   * Can be performed via GUI.
+   * @returns {any} Result of _do
+   */
+  redo() {
+    if ( this.__history.length &lt;= this.__historyIndex ) { return; }
+    this.__historyIndex ++;
+    return this.__history[ this.__historyIndex - 1 ].do();
+  }
+
+  /**
+   * Return description of latest operation.
+   * If there are no operation before the current state, it will return empty string instead.
+   * @returns {string} Description of operation
+   */
+  getUndoDesc() {
+    return this.__history[ this.__historyIndex - 1 ] ? this.__history[ this.__historyIndex - 1 ].desc : '';
+  }
+
+  /**
+   * Return description of recently undo-ed operation.
+   * If there are no operation after the current state, it will return empty string instead.
+   * @returns {string} Description of operation
+   */
+  getRedoDesc() {
+    return this.__history[ this.__historyIndex ] ? this.__history[ this.__historyIndex ].desc : '';
+  }
+
+  /**
+   * Drop all the history. YABAI.
+   */
+  dropHistory() {
+    this.__history.splice( 0 );
+    this.__historyIndex = 0;
+  }
+
+  /**
+   * Set new length for this automaton instance.
+   * **Some nodes / fxs might be automatically removed / changed.**
+   * Can be performed via GUI.
+   * @param {number} _length New length for the automaton
+   * @returns {void} void
+   */
+  setLength( _length ) {
+    // if length is invalid then throw error
+    if ( isNaN( _length ) ) {
+      throw new Error( 'Automaton.setLength: _length is invalid' );
+    }
+
+    // if length is not changed then do fast-return
+    if ( _length === this.length ) { return; }
+
+    // changeLength is a good method
+    for ( let paramName in this.__params ) {
+      const param = this.__params[ paramName ];
+      param.changeLength( _length );
+    }
+
+    // finally set the length
+    this.__length = _length;
+
+    // It's irreversible operation, sorry.
+    this.dropHistory();
+
+    // Poke vue
+    this.__vue.$emit( 'changedLength' );
+  }
+
+  /**
+   * Set new resolution for this automaton instance.
+   * @param {number} _resolultion New resolution for the automaton lul
+   * @returns {void} void
+   */
+  setResolution( _resolultion ) { // lul
+    this.__resolution = _resolultion; // lul
+    this.precalcAll();
+  }
+
+  /**
+   * Create a new param.
+   * @param {string} _name Name of param
+   * @returns {Param} Created param
+   */
+  createParam( _name, _data ) {
+    const param = new Param( {
+      automaton: this,
+      data: _data
+    } );
+    Vue.set( this.__params, _name, param );
+    return param;
+  }
+
+  /**
+   * Remove a param.
+   * @param {string} _name Name of param
+   * @returns {void} void
+   */
+  removeParam( _name ) {
+    Vue.delete( this.__params, _name );
+  }
+
+  /**
+   * Get a param.
+   * @param {string} _name Name of the param
+   * @returns {Param} Param object
+   */
+  getParam( _name ) {
+    return this.__params[ _name ] || null;
+  }
+
+  /**
+   * Return list of name of params. Sorted.
+   * @returns {Array} List of name of params
+   */
+  getParamNames() {
+    let arr = [];
+    for ( const name in this.__params ) { arr.push( name ); }
+    arr = arr.sort();
+    return arr;
+  }
+
+  /**
+   * Return list of id of fx definitions. Sorted.
+   * @returns {Array} List of id of fx definitions
+   */
+  getFxDefinitionIds() {
+    let arr = [];
+    for ( const id in this.__paramFxDefs ) { arr.push( id ); }
+    arr = arr.sort();
+    return arr;
+  }
+
+  /**
+   * Return display name of a fx definition.
+   * @param {string} _id Id of the fx definition you want to grab
+   * @returns {string} Name of the fx definition
+   */
+  getFxDefinitionName( _id ) {
+    if ( this.__paramFxDefs[ _id ] ) {
+      return this.__paramFxDefs[ _id ].name || _id;
+    } else {
+      return undefined;
+    }
+  }
+
+  /**
+   * Return description of a fx definition.
+   * @param {string} _id Id of the fx definition you want to grab
+   * @returns {string} Description of the fx definition
+   */
+  getFxDefinitionDescription( _id ) {
+    if ( this.__paramFxDefs[ _id ] ) {
+      return this.__paramFxDefs[ _id ].description || '';
+    } else {
+      return undefined;
+    }
+  }
+
+  /**
+   * Return params section of a fx definition.
+   * @param {string} _id Id of the fx definition you want to grab
+   * @returns {Object} Params section
+   */
+  getFxDefinitionParams( _id ) {
+    if ( this.__paramFxDefs[ _id ] ) {
+      return jsonCopy( this.__paramFxDefs[ _id ].params || {} );
+    } else {
+      return undefined;
+    }
+  }
+
+  /**
+   * Return count of params.
+   * @returns {number} Count of params
+   */
+  countParams() {
+    let sum = 0;
+    for ( const name in this.__params ) { sum ++; }
+    return sum;
+  }
+
+  /**
+   * Assigned to `Automaton.auto` at constructor.
+   * @param {string} _name name of the param
+   * @returns {number} Current value of the param
+   * @protected
+   */
+  __auto( _name ) {
+    let param = this.__params[ _name ];
+    if ( !param ) { param = this.createParam( _name ); }
+    param.markAsUsed();
+    return param.getValue();
+  }
+
+  /**
+   * Load automaton state data.
+   * @param {Object} _data Object contains automaton data.
+   * @returns {void} void
+   */
+  load( _data ) {
+    super.load( _data );
+
+    /**
+     * GUI settings.
+     * Feel free to get / set these values.
+     * @type {Object}
+     */
+    this.guiSettings = _data.guiSettings;
+  }
+
+  /**
+   * Export current state as JSON.
+   * @returns {string} Saved object as JSON
+   * @example
+   * あとでやる
+   * @todo はい
+   */
+  save() {
+    const ret = {
+      v: this.version,
+      length: this.length,
+      resolution: this.resolution,
+      params: {}, // will be filled later
+      guiSettings: this.guiSettings
+    };
+
+    ret.params = {};
+    for ( let name in this.__params ) {
+      const param = this.__params[ name ];
+      ret.params[ name ] = {
+        nodes: param.dumpNodesWithoutId(),
+        fxs: param.dumpFxsWithoutId()
+      };
+    }
+
+    return JSON.stringify( ret );
+  }
+
+  /**
+   * Poke the vue renderer.
+   * @returns {void} void
+   */
+  pokeRenderer() {
+    if ( this.__vue ) {
+      this.__vue.$emit( 'poke' );
+    }
+  }
+};
+
+module.exports = AutomatonWithGUI;
+AutomatonWithGUI.default = AutomatonWithGUI;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc" target="_blank">JSDoc 3.5.5</a> on 8/29/2018 using the <a href="https://github.com/Grafluxe/boxy-jsdoc-template" target="_blank">boxy-jsdoc-template</a> theme.
+</footer>
+
+<script src="scripts/prettify/prettify.js"></script>
+<script src="scripts/prettify/lang-css.js"></script>
+<script src="scripts/script.js"></script>
+
+</body>
+</html>
