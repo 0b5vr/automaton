@@ -91,7 +91,7 @@ const Param = class {
       const fxDef = this.__automaton.__paramFxDefs[ fx.def ];
       if ( !fxDef ) { continue; }
 
-      const i0 = Math.floor( this.__automaton.resolution * fx.time + 1 );
+      const i0 = Math.ceil( this.__automaton.resolution * fx.time );
       const i1 = Math.floor( this.__automaton.resolution * ( fx.time + fx.length ) );
 
       const tempValues = new Float32Array( i1 - i0 );
