@@ -97,6 +97,12 @@ export default {
 
   computed: {
     fxDefsFiltered() {
+      this.fxDefs.push(
+        ...this.automaton.getFxDefinitionIds().filter(
+          ( id ) => this.fxDefs.indexOf( id ) === -1
+        )
+      );
+
       let arr = this.fxDefs.filter( ( id ) => this.filterDef( id ) );
       return arr.length === 0 ? [ '' ] : arr;
     }
