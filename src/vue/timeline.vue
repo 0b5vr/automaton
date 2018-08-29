@@ -880,10 +880,12 @@ export default {
       let yPrev = y0;
 
       const isPlaying0 = this.automaton.isPlaying;
-      if ( altKey && isPlaying0 ) {
-        this.automaton.pause();
+      if ( altKey ) {
+        this.automaton.seek( t0 );
+        if ( isPlaying0 ) {
+          this.automaton.pause();
+        }
       }
-      this.automaton.seek( t0 );
 
       const move = ( event ) => {
         const x = event.clientX;
