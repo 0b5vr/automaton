@@ -7,12 +7,16 @@
       v-for="name in automaton.getParamNames()"
       :key="'param' + name"
       :class="{ selected: name === selectedParamName }"
+      :stalker-text="name"
       @click="$emit( 'selected', name )"
       @contextmenu.stop.prevent="contextParam( $event, name )"
     >
-      <div class="name">{{ name }}</div>
+      <div class="name"
+        :stalker-text="name"
+      >{{ name }}</div>
       <div class="value"
         v-if="automaton.getParam( name ).isUsed()"
+        :stalker-text="name"
       >{{ automaton.auto( name ).toFixed( 3 ) }}</div>
       <img class="warning"
         v-if="!automaton.getParam( name ).isUsed()"
@@ -81,7 +85,7 @@ export default {
   .param {
     position: relative;
     width: calc( 100% - 4px );
-    height: 1.5em;
+    height: 1.25em;
     margin: 2px;
 
     background: $color-back3;
@@ -97,9 +101,11 @@ export default {
     .name {
       position: absolute;
       left: 0.2em;
-      top: 0.1em;
-
-      font-size: 1.1em;
+      top: 0;
+      width: calc( 100% - 2em );
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
 
       user-select: none;
     }
