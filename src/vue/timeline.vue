@@ -615,15 +615,15 @@ export default {
       const v0 = node.value;
 
       this.grabHelper( event, ( dt, dv, event, isUp ) => {
-        if ( event.shiftKey ) { dv = 0.0; }
-        else if ( event.ctrlKey || event.metaKey ) { dt = 0.0; }
-
         let t = t0 + dt;
         let v = v0 + dv;
         if ( !event.altKey ) {
           t = this.snapTime( t );
           v = this.snapValue( v );
         }
+
+        if ( event.shiftKey ) { v = v0; }
+        else if ( event.ctrlKey || event.metaKey ) { t = t0; }
 
         param.moveNode( id, t, v );
 
