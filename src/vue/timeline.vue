@@ -549,18 +549,24 @@ export default {
       const t0 = this.x2t( x0 );
       const v0 = this.y2v( y0 );
 
+      let moved = false;
+
       const move = ( event ) => {
         const dt = this.x2t( event.clientX ) - t0;
         const dv = this.y2v( event.clientY ) - v0;
+
+        moved = true;
 
         callback( dt, dv, event );
       };
 
       const up = ( event ) => {
-        const dt = this.x2t( event.clientX ) - t0;
-        const dv = this.y2v( event.clientY ) - v0;
+        if ( moved ) {
+          const dt = this.x2t( event.clientX ) - t0;
+          const dv = this.y2v( event.clientY ) - v0;
 
-        callback( dt, dv, event, true );
+          callback( dt, dv, event, true );
+        }
 
         window.removeEventListener( 'mousemove', move );
         window.removeEventListener( 'mouseup', up );
@@ -628,8 +634,6 @@ export default {
         param.moveNode( id, t, v );
 
         if ( isUp ) {
-          if ( t0 === t && v0 === v ) { return; }
-
           this.automaton.pushHistory(
             'Move Node',
             () => param.moveNode( id, t, v ),
@@ -681,8 +685,6 @@ export default {
         param.moveHandle( id, !isOut, tOp, vOp );
 
         if ( isUp ) {
-          if ( dt === 0 && dv === 0 ) { return; }
-
           this.automaton.pushHistory(
             'Move Handle',
             () => {
@@ -784,8 +786,6 @@ export default {
         param.changeFxRow( id, newRow );
 
         if ( isUp ) {
-          if ( t0 === t && r0 === newRow ) { return; }
-
           this.automaton.pushHistory(
             'Move Fx',
             () => param.forceMoveFx( id, t, newRow ),
@@ -821,8 +821,6 @@ export default {
         param.resizeFxByLeft( id, l );
 
         if ( isUp ) {
-          if ( dt === 0 && dv === 0 ) { return; }
-
           this.automaton.pushHistory(
             'Resize Fx',
             () => param.resizeFxByLeft( id, l ),
