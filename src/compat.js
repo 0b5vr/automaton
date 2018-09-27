@@ -1,5 +1,3 @@
-import ParamWithGUI from './param-gui';
-
 const defaultData = {
   v: process.env.VERSION,
 

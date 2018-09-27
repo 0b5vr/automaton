@@ -62,7 +62,6 @@ import GUI from './vue/main.vue';
 const AutomatonWithGUI = class extends Automaton {
   constructor( _props ) {
     const props = Object.assign( {}, _props );
-    props.data = compat( props.data );
 
     ass( !_props.onseek, 'The handler "onseek" is no longer supported. Use Automaton.on( "seek", ... ) instead.' );
     ass( !_props.onplay, 'The handler "onplay" is no longer supported. Use Automaton.on( "play", ... ) instead.' );
@@ -386,14 +385,25 @@ const AutomatonWithGUI = class extends Automaton {
    * @returns {void} void
    */
   load( _data ) {
-    super.load( _data );
+    let data = compat( _data );
+    super.load( data );
 
     /**
      * GUI settings.
      * Feel free to get / set these values.
      * @type {Object}
      */
-    this.guiSettings = _data.guiSettings;
+    this.guiSettings = data.guiSettings;
+
+    // Poke vue
+    if ( this.__vue ) {
+      this.__vue.$emit( 'loaded' );
+    }
+
+    // Bye history
+    if ( this.__history ) {
+      this.dropHistory();
+    }
   }
 
   /**

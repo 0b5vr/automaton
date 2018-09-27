@@ -70,10 +70,6 @@ export default {
     ContextMenu,
     Stalker
   },
-  
-  mounted() {},
-
-  beforeDestroy() {},
 
   props: [ 'automaton' ],
 
@@ -125,7 +121,18 @@ export default {
       this.contextMenuY = event.clientY;
       this.contextMenuCommands = event.commands;
     }
-  }
+  },
+  
+  mounted() {
+    this.$root.$on( 'loaded', () => {
+      this.selectParam( null );
+      this.selectNodes( [] );
+      this.selectFxs( [] );
+      this.config = '';
+    } );
+  },
+
+  beforeDestroy() {}
 }
 </script>
 

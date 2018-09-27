@@ -1002,6 +1002,11 @@ export default {
   },
 
   mounted() {
+    this.$root.$on( 'loaded', () => {
+      this.t0 = 0.0;
+      this.t1 = this.automaton.length;
+    } );
+
     this.$root.$on( 'changedLength', () => {
       this.t0 = 0.0;
       this.t1 = this.automaton.length;
