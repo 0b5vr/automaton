@@ -456,6 +456,7 @@ export default {
      */
     createNode( t, v ) {
       const param = this.selectedParam;
+      if ( !param ) { return; }
 
       const id = param.createNode( t, v );
       const data = param.dumpNode( id );
@@ -477,6 +478,7 @@ export default {
      */
     removeNode( id ) {
       const param = this.selectedParam;
+      if ( !param ) { return; }
 
       const node = param.dumpNode( id );
       if ( !( node.in && node.out ) ) { return; }
@@ -499,6 +501,8 @@ export default {
      */
     removeHandle( id, isOut ) {
       const param = this.selectedParam;
+      if ( !param ) { return; }
+
       const node = param.dumpNode( id );
 
       const t0 = isOut ? node.out.time : node.in.time;
@@ -521,6 +525,8 @@ export default {
      */
     resetHandles( id ) {
       const param = this.selectedParam;
+      if ( !param ) { return; }
+
       const node = param.dumpNode( id );
 
       this.automaton.pushHistory(
@@ -612,6 +618,7 @@ export default {
      */
     grabNode( id, event ) {
       const param = this.selectedParam;
+      if ( !param ) { return; }
 
       this.$emit( 'nodeSelected', [ id ] );
       this.$emit( 'fxSelected', [] );
@@ -652,6 +659,8 @@ export default {
      */
     grabHandle( id, isOut, event ) {
       const param = this.selectedParam;
+      if ( !param ) { return; }
+
       const node = param.dumpNode( id );
       const handle = isOut ? node.out : node.in;
 
@@ -718,6 +727,7 @@ export default {
      */
     createFx( event, name ) {
       const param = this.selectedParam;
+      if ( !param ) { return; }
 
       const t = this.fxmenuTime;
       const l = Math.min( 1.0, this.automaton.length - this.fxmenuTime );
@@ -742,6 +752,8 @@ export default {
      */
     removeFx( id ) {
       const param = this.selectedParam;
+      if ( !param ) { return; }
+
       const fx = param.dumpFx( id );
 
       this.automaton.pushHistory(
@@ -762,6 +774,7 @@ export default {
      */
     grabFxBody( id, event ) {
       const param = this.selectedParam;
+      if ( !param ) { return; }
 
       this.$emit( 'nodeSelected', [] );
       this.$emit( 'fxSelected', [ id ] );
@@ -803,6 +816,7 @@ export default {
      */
     grabFxLeft( id, event ) {
       const param = this.selectedParam;
+      if ( !param ) { return; }
 
       this.$emit( 'nodeSelected', [] );
       this.$emit( 'fxSelected', [ id ] );
@@ -838,6 +852,7 @@ export default {
      */
     grabFxRight( id, event ) {
       const param = this.selectedParam;
+      if ( !param ) { return; }
 
       this.$emit( 'nodeSelected', [] );
       this.$emit( 'fxSelected', [ id ] );
