@@ -27,6 +27,8 @@ Including these files will set `window.Automaton`.
 
 ### npm
 
+[https://www.npmjs.com/package/@fms-cat/automaton](https://www.npmjs.com/package/@fms-cat/automaton)
+
 ```sh
 # npm install @fms-cat/automaton
 yarn add @fms-cat/automaton
