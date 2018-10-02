@@ -102,6 +102,7 @@ const Param = class {
         i1: i1,
         t0: fx.time,
         t1: fx.time + fx.length,
+        deltaTime: 1.0 / this.__automaton.resolution,
         dt: 1.0 / this.__automaton.resolution,
         resolution: this.__automaton.resolution,
         length: fx.length,
@@ -112,10 +113,10 @@ const Param = class {
       };
 
       for ( let i = 0; i < tempLength; i ++ ) {
-        context.i = i + i0;
-        context.t = context.i / this.__automaton.resolution;
-        context.v = this.__values[ i + i0 ];
-        context.progress = ( context.t - fx.time ) / fx.length;
+        context.i = context.index = i + i0;
+        context.t = context.time = context.i / this.__automaton.resolution;
+        context.v = context.value = this.__values[ i + i0 ];
+        context.p = context.progress = ( context.t - fx.time ) / fx.length;
         tempValues[ i ] = fxDef.func( context );
 
         context.init = false;
