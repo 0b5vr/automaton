@@ -14,21 +14,28 @@
       <div class="name"
         :stalker-text="name"
       >{{ name }}</div>
-      <div class="value"
-        v-if="automaton.getParam( name ).isUsed()"
-        :stalker-text="name"
-      >{{ automaton.auto( name ).toFixed( 3 ) }}</div>
-      <img class="warning"
-        v-if="!automaton.getParam( name ).isUsed()"
+
+      <img class="icon"
+        v-if="automaton.getParam( name ).status.level === Param.STATUS_LEVEL_ERROR"
+        :src="require( '../images/error.svg' )"
+        stalker-text="This param has NaN value"
+      />
+      <img class="icon"
+        v-if="automaton.getParam( name ).status.level === Param.STATUS_LEVEL_WARNING"
         :src="require( '../images/warning.svg' )"
         stalker-text="This param has not been used yet"
       />
+      <div class="value"
+        v-if="automaton.getParam( name ).status.level === Param.STATUS_LEVEL_OK"
+        :stalker-text="name"
+      >{{ automaton.auto( name ).toFixed( 3 ) }}</div>
     </div>
   </Scrollable>
 </div>
 </template>
 
 <script>
+import Param from '../param-gui';
 import Scrollable from './scrollable.vue';
 
 export default {
@@ -40,6 +47,7 @@ export default {
 
   data() {
     return {
+      Param
     }
   },
 
@@ -121,7 +129,7 @@ export default {
       user-select: none;
     }
 
-    .warning {
+    .icon {
       position: absolute;
       right: 0.1em;
       bottom: 0.1em;

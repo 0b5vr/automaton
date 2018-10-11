@@ -7,6 +7,7 @@ import Automaton from './main-gui';
 import Param from './param';
 
 import Vue from 'vue';
+import { Iterable } from 'immutable';
 
 /**
  * It represents a param of Automaton.
@@ -39,12 +40,57 @@ const ParamWithGUI = class extends Param {
     super( props );
 
     /**
-     * True if the param is used once at least in current session.
-     * Can be operated by {@link ParamWithGUI#markAsUsed}.
-     * @type {boolean}
+     * List of boolean statuses (warning / error).
+     * The array is empty = you're cool
+     * @type {Array}
      * @protected
      */
-    this.__isUsed = false;
+    this.__statuses = [
+      {
+        id: ParamWithGUI.STATUS_ID_ISNOTUSED,
+        level: ParamWithGUI.STATUS_LEVEL_WARNING,
+        message: 'This param has not been used yet'
+      }
+    ];
+  }
+
+  /**
+   * Its current status (warning / error).
+   * @type {Object}
+   * @readonly
+   */
+  get status() {
+    if ( this.__statuses.length === 0 ) {
+      return {
+        id: ParamWithGUI.STATUS_ID_OK,
+        level: ParamWithGUI.STATUS_LEVEL_OK,
+        message: null
+      };
+    }
+
+    return this.__statuses[ 0 ];
+  }
+
+  /**
+   * Set a status.
+   * @param {boolean} _bool Boolean whether the status is currently active or not
+   * @param {Object} _obj Object describes the status
+   */
+  __setStatus( _bool, _obj ) {
+    if ( !this.__statuses ) { return; }
+
+    // search for old entry, then delete it
+    for ( let i = 0; i < this.__statuses.length; i ++ ) {
+      if ( this.__statuses[ i ].id === _obj.id ) {
+        this.__statuses.splice( i, 1 );
+        break;
+      }
+    }
+
+    if ( _bool ) {
+      this.__statuses.push( _obj );
+      this.__statuses.sort( ( a, b ) => a.level < b.level );
+    }
   }
 
   /**
@@ -66,6 +112,20 @@ const ParamWithGUI = class extends Param {
    */
   precalc() {
     super.precalc();
+
+    let b = false;
+    this.__values.forEach( ( v, i ) => {
+      if ( isNaN( v ) ) {
+        this.__values[ i ] = 0.0;
+        b = true;
+      }
+    } );
+    this.__setStatus( b, {
+      id: ParamWithGUI.STATUS_ID_NANDETECTED,
+      level: ParamWithGUI.STATUS_LEVEL_ERROR,
+      message: 'This param has NaN value'
+    } );
+
     this.__automaton.pokeRenderer();
   }
 
@@ -74,15 +134,11 @@ const ParamWithGUI = class extends Param {
    * @returns {void} void
    */
   markAsUsed() {
-    this.__isUsed = true;
-  }
-
-  /**
-   * Return whether this is used param or not.
-   * @returns {bool} True if the param is used at least once in current session
-   */
-  isUsed() {
-    return this.__isUsed;
+    this.__setStatus( false, {
+      id: ParamWithGUI.STATUS_ID_ISNOTUSED,
+      level: ParamWithGUI.STATUS_LEVEL_WARNING,
+      message: 'This param has not been used yet'
+    } );
   }
 
   /**
@@ -622,6 +678,37 @@ const ParamWithGUI = class extends Param {
  * @constant
  */
 ParamWithGUI.DEFAULT_HANDLE_LENGTH = 0.5;
+
+/**
+ * Maximum limit of fx rows.
+ * @type {number}
+ * @constant
+ */
 ParamWithGUI.FX_ROW_MAX = 4;
+
+/**
+ * Status level code indicates it's nothing wrong.
+ * @type {number}
+ * @constant
+ */
+ParamWithGUI.STATUS_LEVEL_OK = 0;
+
+/**
+ * Status level code indicates it's warning.
+ * @type {number}
+ * @constant
+ */
+ParamWithGUI.STATUS_LEVEL_WARNING = 1;
+
+/**
+ * Status level code indicates it's error.
+ * @type {number}
+ * @constant
+ */
+ParamWithGUI.STATUS_LEVEL_ERROR = 2;
+
+ParamWithGUI.STATUS_ID_OK = 0;
+ParamWithGUI.STATUS_ID_ISNOTUSED = 1;
+ParamWithGUI.STATUS_ID_NANDETECTED = 2;
 
 export default ParamWithGUI;
