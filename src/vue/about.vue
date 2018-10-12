@@ -8,23 +8,25 @@
       :src="require( '../images/automaton-a.svg' )"
     />
 
-    <img class="logo"
-      :src="require( '../images/automaton.svg' )"
-    />
-    <div class="version">{{ automaton.version }}</div><br />
-    Animation engine with Timeline GUI for creative coding
-
-    <div class="logo-hr"></div>
-
-    Author: <a href="https://github.com/fms-cat/" target="_blank">@FMS_Cat</a><br />
-    Repository: <a href="https://github.com/fms-cat/automaton/" target="_blank">https://github.com/fms-cat/automaton/</a><br />
-    Automaton is distributed under permissive <a href="https://opensource.org/licenses/MIT" target="_blank">MIT License</a>.<br />
-    Shoutouts to <a href="https://www.image-line.com/flstudio/" target="_blank">Image Line Software</a> &lt;3
-
     <img class="close"
       :src="require( '../images/about-close.svg' )"
       @mousedown="blur"
     />
+
+    <div class="content">
+      <img class="logo"
+        :src="require( '../images/automaton.svg' )"
+      />
+      <div class="version">{{ automaton.version }}</div><br />
+      Animation engine with Timeline GUI for creative coding
+
+      <div class="logo-hr"></div>
+      
+      Author: <a href="https://github.com/fms-cat/" target="_blank">@FMS_Cat</a><br />
+      Repository: <a href="https://github.com/fms-cat/automaton/" target="_blank">https://github.com/fms-cat/automaton/</a><br />
+      Automaton is distributed under permissive <a href="https://opensource.org/licenses/MIT" target="_blank">MIT License</a>.<br />
+      Shoutouts to <a href="https://www.image-line.com/flstudio/" target="_blank">Image Line Software</a> &lt;3
+    </div>
   </div>
 </div>
 </template>
@@ -93,24 +95,28 @@ export default {
     opacity: 0.07;
   }
 
-  .logo {
-    width: 20em;
-    margin-bottom: 0.3em;
-  }
+  .content {
+    position: relative;
 
-  .version {
-    display: inline-block;
-    vertical-align: bottom;
-    margin-left: 4px;
-    margin-bottom: 0.3em;
-  }
+    .logo {
+      width: 20em;
+      margin-bottom: 0.3em;
+    }
 
-  .logo-hr {
-    width: 100%;
-    height: 1px;
-    margin: 0.5em 0;
+    .version {
+      display: inline-block;
+      vertical-align: bottom;
+      margin-left: 4px;
+      margin-bottom: 0.3em;
+    }
 
-    background: $color-foresub;
+    .logo-hr {
+      width: 100%;
+      height: 1px;
+      margin: 0.5em 0;
+
+      background: $color-foresub;
+    }
   }
 
   .close {
