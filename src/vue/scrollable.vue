@@ -4,7 +4,7 @@
     @wheel.stop="onWheel"
   >
     <div class="inside" ref="inside"
-      :style="{ top: top + 'px' }"
+      :style="{ top: topAni + 'px' }"
     >
       <slot />
     </div>
@@ -30,6 +30,7 @@ export default {
   data() {
     return {
       top: 0,
+      topAni: 0,
       barOpacity: 0.0
     }
   },
@@ -43,7 +44,7 @@ export default {
       const scrollMax = this.$refs.inside.clientHeight - this.$refs.root.clientHeight;
       if ( this.top < -scrollMax ) {
         const overrun = -scrollMax - this.top;
-        this.top = -scrollMax;
+        this.top = Math.min( -scrollMax, 0.0 );
       }
 
       if ( 0 < this.top ) {
@@ -52,12 +53,21 @@ export default {
       }
 
       this.barHeight = 100.0 * this.$refs.root.clientHeight / this.$refs.inside.clientHeight;
-      this.barTop = -100.0 * this.top / this.$refs.inside.clientHeight;
-      this.barOpacity += Math.min( this.barOpacity + 0.1 * Math.abs( event.deltaY ), 1.0 );
+      if ( this.barHeight < 100.0 ) {
+        this.barOpacity += Math.min( this.barOpacity + 0.1 * Math.abs( event.deltaY ), 1.0 );
+      }
     },
 
     update() {
       this.barOpacity *= 0.9;
+      this.topAni += ( this.top - this.topAni ) * 0.3;
+      this.barTop = -100.0 * this.topAni / this.$refs.inside.clientHeight;
+
+      const scrollMax = this.$refs.inside.clientHeight - this.$refs.root.clientHeight;
+      if ( this.top < -scrollMax ) {
+        const overrun = -scrollMax - this.top;
+        this.top = Math.min( -scrollMax, 0.0 );
+      }
     }
   },
 
