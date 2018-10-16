@@ -4,7 +4,7 @@
     @wheel.stop="onWheel"
   >
     <div class="inside" ref="inside"
-      :style="{ top: topAni + 'px' }"
+      :style="{ top: top + 'px' }"
     >
       <slot />
     </div>
@@ -30,8 +30,8 @@ export default {
   data() {
     return {
       top: 0,
-      topAni: 0,
-      barOpacity: 0.0
+      barOpacity: 0.0,
+      observer: null
     }
   },
 
@@ -43,40 +43,40 @@ export default {
 
       const scrollMax = this.$refs.inside.clientHeight - this.$refs.root.clientHeight;
       if ( this.top < -scrollMax ) {
-        const overrun = -scrollMax - this.top;
-        this.top = Math.min( -scrollMax, 0.0 );
+        this.top = Math.min( 0.0, -scrollMax );
       }
 
       if ( 0 < this.top ) {
-        const overrun = this.top;
-        this.top = 0;
+        this.top = 0.0;
       }
 
       this.barHeight = 100.0 * this.$refs.root.clientHeight / this.$refs.inside.clientHeight;
-      if ( this.barHeight < 100.0 ) {
-        this.barOpacity += Math.min( this.barOpacity + 0.1 * Math.abs( event.deltaY ), 1.0 );
-      }
-    },
-
-    update() {
-      this.barOpacity *= 0.9;
-      this.topAni += ( this.top - this.topAni ) * 0.3;
-      this.barTop = -100.0 * this.topAni / this.$refs.inside.clientHeight;
-
-      const scrollMax = this.$refs.inside.clientHeight - this.$refs.root.clientHeight;
-      if ( this.top < -scrollMax ) {
-        const overrun = -scrollMax - this.top;
-        this.top = Math.min( -scrollMax, 0.0 );
-      }
+      this.barTop = -100.0 * this.top / this.$refs.inside.clientHeight;
+      this.barOpacity += Math.min( this.barOpacity + 0.1 * Math.abs( event.deltaY ), 1.0 );
     }
   },
 
   mounted() {
+    this.observer = new MutationObserver( ( mutations, observer ) => {
+      const scrollMax = this.$refs.inside.clientHeight - this.$refs.root.clientHeight;
+      if ( this.top < -scrollMax ) {
+        this.top = Math.min( 0.0, -scrollMax );
+      }
+    } );
+    this.observer.observe( this.$refs.inside, {
+      childList: true,
+      subtree: true
+    } );
+
     const update = () => {
-      this.update();
+      this.barOpacity *= 0.9;
       requestAnimationFrame( update );
     }
     update();
+  },
+
+  beforeDestroy() {
+    this.observer.disconnect();
   }
 }
 </script>
