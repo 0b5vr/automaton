@@ -115,11 +115,20 @@ const Automaton = class {
   get progress() { return this.time / this.length; }
 
   /**
-   * Frame per second. If the clock type is not fps, it will return `0` instead.
-   * @type {number}
+   * Current frame.
+   * If the clock type is not frame mode, it will return `undefined` instead.
+   * @type {number|undefined}
    * @readonly
    */
-  get fps() { return this.__clock.fps ? this.__clock.fps : 0; }
+  get frame() { return this.__clock.frame ? this.__clock.frame : undefined; }
+
+  /**
+   * Frame per second.
+   * If the clock type is not frame mode, it will return `undefined` instead.
+   * @type {number|undefined}
+   * @readonly
+   */
+  get fps() { return this.__clock.fps ? this.__clock.fps : undefined; }
 
   /**
    * Boolean that represents whether the clock is based on realtime or not.

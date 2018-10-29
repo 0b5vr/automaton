@@ -29,6 +29,16 @@ const ClockFrame = class extends Clock {
       this.deltaTime = 0.0;
     }
   }
+
+  /**
+   * Set the time manually.
+   * @param {number} _time Time
+   * @returns {void} void
+   */
+  setTime( _time ) {
+    this.frame = Math.floor( this.fps * _time );
+    this.time = this.frame / this.fps;
+  }
 };
 
 export default ClockFrame;
