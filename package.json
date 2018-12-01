@@ -5,6 +5,13 @@
   "main": "dist/automaton.js",
   "author": "FMS-Cat",
   "license": "MIT",
+  "files": [
+    "dist",
+    "src",
+    "LICENSE",
+    "package.json",
+    "README.md"
+  ],
   "devDependencies": {
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-env": "^1.6.1",
