@@ -908,7 +908,7 @@ export default {
 
         if ( which === 1 ) {
           if ( altKey ) {
-            this.automaton.seek( t0 + this.x2t( x - x0 ) );
+            this.automaton.seek( t0 + this.x2t( x ) - this.x2t( x0 ) );
           }
         } else if ( which === 2 ) {
           if ( shiftKey ) {
