@@ -11,7 +11,7 @@ import Param from './param';
  * @param {boolean} [_props.loop] Whether let the time loop or not
  * @param {number} [_props.fps] If this is set, the clock will become frame mode
  * @param {boolean} [_props.realtime] If this is true, the clock will become realtime mode
- * @param {Object} _props.data Data of the automaton. **Required in noGUI mode**
+ * @param {Object} _props.data Data of the automaton. **Required in noGUI mode, MUST BE PARSED JSON**
  */
 const Automaton = class {
   constructor( _props ) {
@@ -144,7 +144,7 @@ const Automaton = class {
    * @returns {void} void
    */
   createParam( _name, _data ) {
-    this.__params[ name ] = new Param( {
+    this.__params[ _name ] = new Param( {
       automaton: this,
       data: _data
     } );
@@ -287,7 +287,7 @@ const Automaton = class {
    * @protected
    */
   __auto( _name ) {
-    return this.params[ _name ].__currentValue;
+    return this.__params[ _name ].getValue();
   }
 };
 
