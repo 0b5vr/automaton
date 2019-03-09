@@ -1,24 +1,5 @@
+import { AutomatonGUISettings } from '../AutomatonWithGUI';
 import { SerializedParam } from './SerializedParam';
-
-/**
- * GUI settings section of the {#SerializedData}.
- */
-export interface SerializedGUISettings {
-  /**
-   * Whether snap is activeted or not.
-   */
-  snapActive: boolean;
-
-  /**
-   * Interval of snap, in time axis.
-   */
-  snapTime: number;
-
-  /**
-   * Interval of snap, in value axis.
-   */
-  snapValue: number;
-}
 
 /**
  * Interface of serialized automaton data.
@@ -47,7 +28,7 @@ export interface SerializedData {
   /**
    * GUI settings.
    */
-  guiSettings: SerializedGUISettings
+  guiSettings: AutomatonGUISettings;
 }
 
 export const defaultData: SerializedData = Object.freeze( {

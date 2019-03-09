@@ -88,7 +88,7 @@ export const Param = class {
     for ( let iFx = 0; iFx < this.__fxs.length; iFx ++ ) {
       const fx = this.__fxs[ iFx ];
       if ( fx.bypass ) { continue; }
-      const fxDef = this.__automaton.__paramFxDefs[ fx.def ];
+      const fxDef = this.__automaton.getFxDefinition( fx.def );
       if ( !fxDef ) { continue; }
 
       const i0 = Math.ceil( this.__automaton.resolution * fx.time );
