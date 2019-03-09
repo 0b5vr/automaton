@@ -1,5 +1,5 @@
 import { jsonCopy } from './json-copy';
-import genId from './gen-id';
+import { genID } from './genID';
 import { hasOverwrap } from './has-overwrap';
 
 import Automaton from './AutomatonWithGUI';
@@ -100,8 +100,8 @@ export const ParamWithGUI = class extends Param {
     const data = jsonCopy( _data );
     super.load( data );
 
-    this.__nodes.forEach( ( node ) => node.$id = genId() );
-    this.__fxs.forEach( ( fx ) => fx.$id = genId() );
+    this.__nodes.forEach( ( node ) => node.$id = genID() );
+    this.__fxs.forEach( ( fx ) => fx.$id = genID() );
   }
 
   /**
@@ -206,7 +206,7 @@ export const ParamWithGUI = class extends Param {
    */
   createNode( _time, _value ) {
     const data = {
-      $id: genId(),
+      $id: genID(),
       time: _time,
       value: _value,
       in: { time: -ParamWithGUI.DEFAULT_HANDLE_LENGTH, value: 0.0 },
@@ -418,7 +418,7 @@ export const ParamWithGUI = class extends Param {
     }
 
     const data = {
-      $id: genId(),
+      $id: genID(),
       time: _time,
       length: _length,
       row: row,
