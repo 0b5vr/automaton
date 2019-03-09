@@ -512,7 +512,7 @@ export class ParamWithGUI extends Param {
     if ( params[ name ].min !== undefined ) {
       newValue = Math.max( params[ name ].min!, newValue );
     }
-    if ( typeof params[ name ].max !== undefined ) {
+    if ( params[ name ].max !== undefined ) {
       newValue = Math.min( params[ name ].max!, newValue );
     }
     Vue.set( fx.params, name, newValue );
