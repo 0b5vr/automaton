@@ -1,9 +1,15 @@
 module.exports = {
+    "root": true,
+
+    "plugins": [ "@typescript-eslint" ],
+
     "env": {
         "es6": true,
         "browser": true,
         "commonjs": true
     },
+
+    "parser": "@typescript-eslint/parser",
 
     "parserOptions": {
         "sourceType": "module",
@@ -25,6 +31,7 @@ module.exports = {
         "linebreak-style": [ "error", "unix" ], // fuck you, CRLF
         "quotes": [ "error", "single" ], // quotes must be single
         "eqeqeq": [ "error", "always" ], // fuck you, `==`
+        "sort-imports": [ "error" ], // imports have to be ordered
 
         // variables
         "no-unused-vars": [ "off" ], // unused vars are okay
@@ -61,5 +68,9 @@ module.exports = {
         "no-eval": [ "warn" ], // wow, are you really going to use `eval()`? are you mad lol
         "no-implied-eval": [ "warn" ], // ok don't
         "no-console": [ "off" ], // here is nodejs, console.log is innocent
+
+        // typescript-specifics
+        "@typescript-eslint/explicit-function-return-type": [ "error" ], // return type is required
+        "@typescript-eslint/explicit-member-accessibility": [ "error" ], // `public` / `private` for members and methods are required
     }
 };
