@@ -1,4 +1,4 @@
-import jsonCopy from './json-copy';
+import { jsonCopy } from './json-copy';
 import genId from './gen-id';
 import hasOverwrap from './has-overwrap';
 

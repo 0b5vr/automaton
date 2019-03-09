@@ -1,6 +1,6 @@
 import ass from './ass';
-import compat from './compat';
-import jsonCopy from './json-copy';
+import compat from './compat/compat';
+import { jsonCopy } from './json-copy';
 
 import Param from './param-gui';
 

@@ -1,6 +1,6 @@
-import Clock from './clock';
-import ClockFrame from './clock-frame';
-import ClockRealtime from './clock-realtime';
+import { Clock } from './clock';
+import { ClockFrame } from './clock-frame';
+import { ClockRealtime } from './clock-realtime';
 
 import Param from './param';
 
@@ -135,7 +135,7 @@ export const Automaton = class {
    * @type {boolean}
    * @readonly
    */
-  get realtime() { return Boolean( this.__clock.realtime ); }
+  get isRealtime() { return Boolean( this.__clock.isRealtime ); }
 
   /**
    * Create a new param.

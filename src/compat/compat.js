@@ -12,7 +12,7 @@ const defaultData = {
   }
 };
 
-export const compat = ( _data ) => {
+export function compat( _data ) {
   if ( !_data ) {
     return Object.assign( {}, defaultData );
   }
