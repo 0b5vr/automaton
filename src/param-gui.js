@@ -1,13 +1,11 @@
 import jsonCopy from './json-copy';
-import ass from './ass';
 import genId from './gen-id';
 import hasOverwrap from './has-overwrap';
 
-import Automaton from './main-gui';
+import Automaton from './AutomatonWithGUI';
 import Param from './param';
 
 import Vue from 'vue';
-import { Iterable } from 'immutable';
 
 /**
  * It represents a param of Automaton.
@@ -17,7 +15,7 @@ import { Iterable } from 'immutable';
  * @param {Automaton} _props.automaton Parent automaton
  * @param {Object} [_props.data] Data of the param. Don't worry, I can generate an initial data for you!
  */
-const ParamWithGUI = class extends Param {
+export const ParamWithGUI = class extends Param {
   constructor( _props ) {
     const props = Object.assign( {}, _props );
     const len = _props.automaton.length;

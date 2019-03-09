@@ -13,11 +13,11 @@ import Param from './param';
  * @param {boolean} [_props.realtime] If this is true, the clock will become realtime mode
  * @param {Object} _props.data Data of the automaton. **Required in noGUI mode, MUST BE PARSED JSON**
  */
-const Automaton = class {
+export const Automaton = class {
   constructor( _props ) {
     /**
      * Version of the automaton.
-     * @type {number}
+     * @type {string}
      * @protected
      */
     this.__version = process.env.VERSION;
@@ -291,5 +291,4 @@ const Automaton = class {
   }
 };
 
-module.exports = Automaton;
-Automaton.default = Automaton;
+export default Automaton;

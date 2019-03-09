@@ -1,6 +1,6 @@
 import cubicBezier from './cubic-bezier';
 
-import Automaton from './main';
+import Automaton from './Automaton';
 
 /**
  * It represents a param of Automaton.
@@ -9,7 +9,7 @@ import Automaton from './main';
  * @param {Automaton} _props.automaton Parent automaton
  * @param {Object} [_props.data] Data of the param. **Required in noGUI mode**
  */
-const Param = class {
+export const Param = class {
   constructor( _props ) {
     /**
      * The parent automaton.
@@ -171,7 +171,5 @@ const Param = class {
     }
   }
 };
-
-// ------
 
 export default Param;

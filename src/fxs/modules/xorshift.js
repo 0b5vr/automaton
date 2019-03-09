@@ -1,4 +1,4 @@
-let Xorshift = class {
+export class Xorshift {
   constructor( _seed ) {
     this.set( _seed );
   }
@@ -14,6 +14,6 @@ let Xorshift = class {
   set( _seed ) {
     this.seed = _seed || this.seed || 1;
   }
-};
+}
 
-module.exports = Xorshift;
+export default Xorshift;

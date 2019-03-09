@@ -45,7 +45,7 @@ const newton = ( x, gt, x1, x2 ) => {
   return gt;
 };
 
-const rawCubicBezier = ( x1, y1, x2, y2, x ) => {
+export const rawCubicBezier = ( x1, y1, x2, y2, x ) => {
   if ( isNaN( x1 ) || isNaN( y1 ) || isNaN( x2 ) || isNaN( y2 ) ) { return x; } // heh
   if ( x1 === y1 && x2 === y2 ) { return x; } // linear
   if ( x <= 0.0 ) { return 0.0; }
@@ -76,7 +76,7 @@ const rawCubicBezier = ( x1, y1, x2, y2, x ) => {
   return calc( t, y1, y2 );
 };
 
-const cubicBezier = ( node0, node1, time ) => {
+export const cubicBezier = ( node0, node1, time ) => {
   const tL = node1.time - node0.time;
   const vL = node1.value - node0.value;
   const x1 = node0.out.time / tL;

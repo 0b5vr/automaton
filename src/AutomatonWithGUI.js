@@ -4,7 +4,7 @@ import jsonCopy from './json-copy';
 
 import Param from './param-gui';
 
-import Automaton from './main';
+import Automaton from './Automaton';
 import fxDefinitions from './fx-definitions';
 
 import Vue from 'vue';
@@ -22,7 +22,7 @@ import GUI from './vue/main.vue';
  * @param {DOM} [_props.gui] DOM element where you want to attach the Automaton GUI
  * @param {string|Object} [_props.data] Data of the automaton. Don't worry, I can generate an initial data for you!
  */
-const AutomatonWithGUI = class extends Automaton {
+export const AutomatonWithGUI = class extends Automaton {
   constructor( _props ) {
     const props = Object.assign( {}, _props );
 
@@ -408,5 +408,4 @@ const AutomatonWithGUI = class extends Automaton {
   }
 };
 
-module.exports = AutomatonWithGUI;
-AutomatonWithGUI.default = AutomatonWithGUI;
+export default AutomatonWithGUI;

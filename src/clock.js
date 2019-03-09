@@ -5,7 +5,7 @@
  * Best for sync with external clock stuff.
  * @param {Automaton} _automaton Parent automaton object
  */
-const Clock = class {
+export const Clock = class {
   constructor( _automaton ) {
     this.automaton = _automaton;
 

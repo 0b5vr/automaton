@@ -7,7 +7,7 @@ import Clock from './clock';
  * @extends Clock
  * @param {Automaton} _automaton Parent automaton object
  */
-const ClockRealtime = class extends Clock {
+export const ClockRealtime = class extends Clock {
   constructor( _automaton ) {
     super( _automaton );
 
