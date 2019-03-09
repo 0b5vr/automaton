@@ -30,6 +30,8 @@ export default {
   data() {
     return {
       top: 0,
+      barHeight: 0.0,
+      barTop: 0.0,
       barOpacity: 0.0,
       observer: null
     }
