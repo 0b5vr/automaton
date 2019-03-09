@@ -1,4 +1,4 @@
-import { Clock } from './clock';
+import { Clock } from './Clock';
 
 /**
  * Class that deals with time.

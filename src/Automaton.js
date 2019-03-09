@@ -1,6 +1,6 @@
-import { Clock } from './clock';
-import { ClockFrame } from './clock-frame';
-import { ClockRealtime } from './clock-realtime';
+import { Clock } from './Clock';
+import { ClockFrame } from './ClockFrame';
+import { ClockRealtime } from './ClockRealtime';
 
 import Param from './param';
 
