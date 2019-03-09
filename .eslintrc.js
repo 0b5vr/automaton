@@ -31,11 +31,20 @@ module.exports = {
         "linebreak-style": [ "error", "unix" ], // fuck you, CRLF
         "quotes": [ "error", "single" ], // quotes must be single
         "eqeqeq": [ "error", "always" ], // fuck you, `==`
+        "max-len": [ "error", { // don't be too long, code
+            "code": 100,
+            "ignoreComments": true, // comments are okay
+            "ignoreStrings": true, // strings are okay
+            "ignoreTemplateLiterals": true, // templates are also okay
+            "ignoreRegExpLiterals": true, // regexs are also okay too
+        } ],
         "sort-imports": [ "error" ], // imports have to be ordered
 
         // variables
-        "no-unused-vars": [ "off" ], // unused vars are okay
-        "no-undef": [ "warn" ], // draws yellow line below undefined vars
+        "no-unused-vars": [ "warn" ], // draw yellow line under unused vars
+        "no-undef": [ "warn" ], // draws yellow line under undefined vars
+        "no-var": [ "error" ], // fuck you, var
+        "prefer-const": [ "error" ], // const is better than let
 
         // omittables
         "semi": [ "error", "always" ], // semicolon is required
@@ -65,9 +74,9 @@ module.exports = {
         "space-before-function-paren": [ "error", { "anonymous": "never", "named": "never", "asyncArrow": "always" } ], // it kills `func ()`
 
         // others
-        "no-eval": [ "warn" ], // wow, are you really going to use `eval()`? are you mad lol
+        "no-eval": [ "warn" ], // nope
         "no-implied-eval": [ "warn" ], // ok don't
-        "no-console": [ "off" ], // here is nodejs, console.log is innocent
+        "no-console": [ "error", { allow: [ "info", "warn", "error" ] } ], // don't forget to remove `console.log` !
 
         // typescript-specifics
         "@typescript-eslint/explicit-function-return-type": [ "error" ], // return type is required

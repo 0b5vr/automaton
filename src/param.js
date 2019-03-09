@@ -1,4 +1,4 @@
-import cubicBezier from './cubic-bezier';
+import { cubicBezier } from './cubic-bezier';
 
 import Automaton from './Automaton';
 
