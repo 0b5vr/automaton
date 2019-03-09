@@ -181,11 +181,11 @@ automaton.addFxDefinition( 'sawtooth', {
   },
   func( context ) { // define your procedure here
     if ( context.init ) {
-      context.saw = 0.0;
+      context.state.saw = 0.0;
     }
-    context.saw += context.params.freq * context.dt;
-    context.saw = context.saw % 1.0;
-    return context.v + context.params.amp * context.saw;
+    context.state.saw += context.params.freq * context.dt;
+    context.state.saw = context.state.saw % 1.0;
+    return context.v + context.params.amp * context.state.saw;
   }
 } );
 
