@@ -1,2 +1,4 @@
+/dist
+/docs
 /node_modules
 **/*.log
