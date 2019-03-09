@@ -1,16 +1,18 @@
+/* eslint-env node */
+
+import 'webpack-dev-server';
+import Fiber from 'fibers';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
+import Sass from 'sass';
+import { VueLoaderPlugin } from 'vue-loader';
+import packageJson from './package.json';
 import path from 'path';
 import webpack from 'webpack';
-import 'webpack-dev-server';
-import Sass from 'sass';
-import Fiber from 'fibers';
-import packageJson from './package.json';
-import { VueLoaderPlugin } from 'vue-loader';
 
-export default (env: any, argv: any): webpack.Configuration => {
+export default ( env: any, argv: any ): webpack.Configuration => {
   const VERSION = packageJson.version;
   const AUTOMATON_BUILD = process.env.AUTOMATON_BUILD;
-  console.log(`Webpack: Building Automaton ${VERSION} under ${AUTOMATON_BUILD} settings...`);
+  console.log( `Webpack: Building Automaton ${VERSION} under ${AUTOMATON_BUILD} settings...` );
 
   const banner = argv.mode === 'production'
     ? `Automaton v${VERSION} - (c) FMS_Cat, MIT License`
@@ -26,7 +28,7 @@ Repository: https://github.com/FMS-Cat/automaton`;
   return {
     entry: path.resolve( __dirname, AUTOMATON_BUILD === 'nogui' ? 'src/index.nogui.js' : 'src/index.js' ),
     output: {
-      path: path.join(__dirname, 'dist'),
+      path: path.join( __dirname, 'dist' ),
       filename: AUTOMATON_BUILD === 'dev' ? 'automaton.js' : `automaton.${AUTOMATON_BUILD}.js`,
       library: 'Automaton',
       libraryExport: 'default',
@@ -79,7 +81,7 @@ Repository: https://github.com/FMS-Cat/automaton`;
       minimize: argv.mode === 'production'
     },
     devServer: {
-      contentBase: path.resolve(__dirname, './'),
+      contentBase: path.resolve( __dirname, './' ),
       publicPath: '/dist/',
       openPage: 'index.html',
       watchContentBase: true,
