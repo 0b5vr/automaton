@@ -1,11 +1,11 @@
 export default [
-  require( './add' ),
-  require( './cds' ),
-  require( './clamp' ),
-  require( './exp' ),
-  require( './gravity' ),
-  require( './lofi' ),
-  require( './noise' ),
-  require( './pow' ),
-  require( './sine' )
+  require( './add' ).default,
+  require( './cds' ).default,
+  require( './clamp' ).default,
+  require( './exp' ).default,
+  require( './gravity' ).default,
+  require( './lofi' ).default,
+  require( './noise' ).default,
+  require( './pow' ).default,
+  require( './sine' ).default
 ];
