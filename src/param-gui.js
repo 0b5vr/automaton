@@ -1,6 +1,6 @@
 import { jsonCopy } from './json-copy';
 import genId from './gen-id';
-import hasOverwrap from './has-overwrap';
+import { hasOverwrap } from './has-overwrap';
 
 import Automaton from './AutomatonWithGUI';
 import Param from './param';
