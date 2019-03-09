@@ -1,4 +1,4 @@
-import { BezierNode } from "./types/BezierNode";
+import { BezierNode } from './types/BezierNode';
 
 // ref: https://github.com/gre/bezier-easing/blob/master/src/index.js
 
@@ -89,10 +89,10 @@ export function rawCubicBezier(
 export function cubicBezier( node0: BezierNode, node1: BezierNode, time: number ): number {
   const tL = node1.time - node0.time;
   const vL = node1.value - node0.value;
-  const x1 = node0.out.time / tL;
-  const y1 = node0.out.value / vL;
-  const x2 = ( node1.time + node1.in.time - node0.time ) / tL;
-  const y2 = ( node1.value + node1.in.value - node0.value ) / vL;
+  const x1 = ( node0.out ? node0.out.time : 0.0 ) / tL;
+  const y1 = ( node0.out ? node0.out.value : 0.0 ) / vL;
+  const x2 = ( node1.time + ( node1.in ? node1.in.time : 0.0 ) - node0.time ) / tL;
+  const y2 = ( node1.value + ( node1.in ? node1.in.value : 0.0 ) - node0.value ) / vL;
   const x = ( time - node0.time ) / tL;
   return node0.value + rawCubicBezier( x1, y1, x2, y2, x ) * vL;
 }

@@ -13,6 +13,11 @@ export interface FxSection {
   length: number;
 
   /**
+   * Row of the section.
+   */
+  row: number;
+
+  /**
    * Whether the section would be bypassed or not.
    * Can be undefined.
    */
@@ -28,3 +33,14 @@ export interface FxSection {
    */
   params: any;
 }
+
+/**
+ * {@link FxSection} + `$id`
+ */
+export interface FxSectionPlusID extends FxSection {
+  /**
+   * Its unique id.
+   */
+  $id: string;
+}
+

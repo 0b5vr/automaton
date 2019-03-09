@@ -3,7 +3,7 @@ import { ClockFrame } from './ClockFrame';
 import { ClockRealtime } from './ClockRealtime';
 import { EventEmitter } from 'eventemitter3';
 import { FxDefinition } from './FxDefinition';
-import Param from './param';
+import { Param } from './Param';
 import { SerializedData } from './types/SerializedData';
 import { SerializedParam } from './types/SerializedParam';
 
@@ -66,7 +66,7 @@ export class Automaton extends EventEmitter {
   /**
    * Whether the animation will be looped or not.
    */
-  protected __loop: boolean;
+  protected __isLoop: boolean;
 
   /**
    * Clock of the automaton.
@@ -86,7 +86,7 @@ export class Automaton extends EventEmitter {
   public constructor( options: AutomatonOptions ) {
     super();
 
-    this.__loop = options.loop || false;
+    this.__isLoop = options.loop || false;
 
     this.__clock = (
       options.fps ? new ClockFrame( options.fps ) :
@@ -159,15 +159,17 @@ export class Automaton extends EventEmitter {
   }
 
   /**
+   * Whether the animation will be looped or not.
+   */
+  public get isLoop(): boolean { return this.__isLoop; }
+
+  /**
    * Create a new param.
    * @param name Name of the param
    * @param data Data for the param
    */
   public createParam( name: string, data: SerializedParam ): void {
-    this.__params[ name ] = new Param( {
-      automaton: this,
-      data: data
-    } );
+    this.__params[ name ] = new Param( this, data );
   }
 
   /**
@@ -248,7 +250,7 @@ export class Automaton extends EventEmitter {
     this.__clock.update( time );
 
     // if loop is enabled, loop the time
-    if ( this.__loop && ( this.time < 0 || this.length < this.time ) ) {
+    if ( this.__isLoop && ( this.time < 0 || this.length < this.time ) ) {
       this.__clock.setTime( this.time - Math.floor( this.time / this.length ) * this.length );
     }
 
@@ -265,5 +267,3 @@ export class Automaton extends EventEmitter {
     return this.__params[ name ].getValue();
   }
 }
-
-export default Automaton;

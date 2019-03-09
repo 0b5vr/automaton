@@ -1,14 +1,14 @@
-import Automaton, { AutomatonOptions } from './Automaton';
+import { Automaton, AutomatonOptions } from './Automaton';
+import { FxDefinition, FxParam } from './FxDefinition';
+import GUI from './vue/main.vue';
+import { ParamWithGUI } from './ParamWithGUI';
+import { SerializedData } from './types/SerializedData';
+import { SerializedParam } from './types/SerializedParam';
+import Vue from 'vue';
 import { ass } from './ass';
 import compat from './compat/compat';
 import fxDefinitions from './fx-definitions';
-import { FxDefinition, FxParam } from './FxDefinition';
 import { jsonCopy } from './jsonCopy';
-import Param from './param-gui';
-import { SerializedData } from './types/SerializedData';
-import Vue from 'vue';
-import GUI from './vue/main.vue';
-import { SerializedParam } from './types/SerializedParam';
 
 /**
  * History entry represents an operation on GUI.
@@ -67,20 +67,29 @@ export interface AutomatonGUISettings {
  */
 export class AutomatonWithGUI extends Automaton {
   /**
+   * Params of the timeline.
+   */
+  protected __params!: { [ name: string ]: ParamWithGUI };
+
+  /**
    * GUI settings for this automaton.
    */
-  public guiSettings: AutomatonGUISettings;
+  public guiSettings: AutomatonGUISettings = {
+    snapActive: false,
+    snapTime: 0.1,
+    snapValue: 0.1
+  };
 
   /**
    * History stack.
    * Will be managed from {@link AutomatonWithGUI#pushHistory|pushHistory()}, navigated from {@link AutomatonWithGUI#undo|undo()} and {@link AutomatonWithGUI#redo|redo()}.
    */
-  private __history: HistoryEntry[];
+  private __history: HistoryEntry[] = [];
 
   /**
    * Current position of history stack.
    */
-  private __historyIndex: number;
+  private __historyIndex: number = 0;
 
   /**
    * Vue instance that manages automaton gui.
@@ -88,20 +97,11 @@ export class AutomatonWithGUI extends Automaton {
   private __vue?: Vue;
 
   public constructor( options: AutomatonWithGUIOptions ) {
+    super( options );
+
     ass( !( options as any ).onseek, 'The handler "onseek" is no longer supported. Use Automaton.on( "seek", ... ) instead.' );
     ass( !( options as any ).onplay, 'The handler "onplay" is no longer supported. Use Automaton.on( "play", ... ) instead.' );
     ass( !( options as any ).onpause, 'The handler "onpause" is no longer supported. Use Automaton.on( "pause", ... ) instead.' );
-
-    super( options );
-
-    this.guiSettings = {
-      snapActive: false,
-      snapTime: 0.1,
-      snapValue: 0.1
-    };
-
-    this.__history = [];
-    this.__historyIndex = 0;
 
     fxDefinitions.map( ( fxDef: [ string, FxDefinition ] /* TODO */ ) => {
       this.addFxDefinition( ...fxDef );
@@ -263,11 +263,8 @@ export class AutomatonWithGUI extends Automaton {
    * @param name Name of param
    * @returns Created param
    */
-  public createParam( name: string, data?: SerializedParam ): Param {
-    const param = new Param( {
-      automaton: this,
-      data: data
-    } );
+  public createParam( name: string, data?: SerializedParam ): ParamWithGUI {
+    const param = new ParamWithGUI( this, data );
     Vue.set( this.__params, name, param );
     return param;
   }
@@ -285,7 +282,7 @@ export class AutomatonWithGUI extends Automaton {
    * @param name Name of the param
    * @returns Param object
    */
-  public getParam( name: string ): Param | null {
+  public getParam( name: string ): ParamWithGUI | null {
     return this.__params[ name ] || null;
   }
 
@@ -446,5 +443,3 @@ export class AutomatonWithGUI extends Automaton {
     return param.getValue();
   }
 }
-
-export default AutomatonWithGUI;

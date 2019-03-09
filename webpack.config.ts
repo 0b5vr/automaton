@@ -12,7 +12,7 @@ import webpack from 'webpack';
 export default ( env: any, argv: any ): webpack.Configuration => {
   const VERSION = packageJson.version;
   const AUTOMATON_BUILD = process.env.AUTOMATON_BUILD;
-  console.log( `Webpack: Building Automaton ${VERSION} under ${AUTOMATON_BUILD} settings...` );
+  console.info( `Webpack: Building Automaton ${VERSION} under ${AUTOMATON_BUILD} settings...` );
 
   const banner = argv.mode === 'production'
     ? `Automaton v${VERSION} - (c) FMS_Cat, MIT License`
@@ -26,7 +26,10 @@ https://opensource.org/licenses/MIT
 Repository: https://github.com/FMS-Cat/automaton`;
 
   return {
-    entry: path.resolve( __dirname, AUTOMATON_BUILD === 'nogui' ? 'src/index.nogui.js' : 'src/index.js' ),
+    entry: path.resolve(
+      __dirname,
+      AUTOMATON_BUILD === 'nogui' ? 'src/index.nogui.ts' : 'src/index.ts'
+    ),
     output: {
       path: path.join( __dirname, 'dist' ),
       filename: AUTOMATON_BUILD === 'dev' ? 'automaton.js' : `automaton.${AUTOMATON_BUILD}.js`,
