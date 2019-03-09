@@ -1,9 +1,13 @@
-const clamp = ( x, a, b ) => Math.min( Math.max( x, a ), b );
+import { FxDefinition } from '../types/FxDefinition';
 
-const smin = ( a, b, k ) => {
+function clamp( x: number, a: number, b: number ): number {
+  return Math.min( Math.max( x, a ), b );
+}
+
+function smin( a: number, b: number, k: number ): number {
   const h = Math.max( k - Math.abs( a - b ), 0.0 );
   return Math.min( a, b ) - h * h * h / ( 6.0 * k * k );
-};
+}
 
 export default [ 'clamp', {
   name: 'Clamp',
@@ -18,7 +22,7 @@ export default [ 'clamp', {
       return clamp( context.v, context.params.min, context.params.max );
     }
 
-    let v = -smin( -context.params.min, -context.v, context.params.smooth );
+    const v = -smin( -context.params.min, -context.v, context.params.smooth );
     return smin( context.params.max, v, context.params.smooth );
   }
-} ];
+} as FxDefinition ];

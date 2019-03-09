@@ -2,7 +2,7 @@ import { Clock } from './Clock';
 import { ClockFrame } from './ClockFrame';
 import { ClockRealtime } from './ClockRealtime';
 import { EventEmitter } from 'eventemitter3';
-import { FxDefinition } from './FxDefinition';
+import { FxDefinition } from './types/FxDefinition';
 import { Param } from './Param';
 import { SerializedData } from './types/SerializedData';
 import { SerializedParam } from './types/SerializedParam';

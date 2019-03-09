@@ -1,3 +1,5 @@
+import { FxDefinition } from '../types/FxDefinition';
+
 export default [ 'lofi', {
   name: 'Lo-Fi',
   description: 'Make curve more crunchy.',
@@ -12,15 +14,19 @@ export default [ 'lofi', {
     if ( context.params.rate === 0.0 ) {
       t = context.t;
     } else if ( context.params.relative ) {
-      t = context.t0 + Math.floor( ( context.t - context.t0 ) * context.params.rate ) / context.params.rate;
+      t = context.t0 + Math.floor(
+        ( context.t - context.t0 ) * context.params.rate
+      ) / context.params.rate;
     } else {
       t = Math.floor( ( context.t ) * context.params.rate ) / context.params.rate;
     }
 
     let v = context.getValue( t );
     if ( context.params.reso !== 0.0 ) {
-      v = Math.floor( v * context.params.reso + ( context.params.round ? 0.5 : 0.0 ) ) / context.params.reso;
+      v = Math.floor(
+        v * context.params.reso + ( context.params.round ? 0.5 : 0.0 )
+      ) / context.params.reso;
     }
     return v;
   }
-} ];
+} as FxDefinition ];

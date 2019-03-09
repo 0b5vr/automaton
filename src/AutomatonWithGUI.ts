@@ -1,5 +1,5 @@
 import { Automaton, AutomatonOptions } from './Automaton';
-import { FxDefinition, FxParam } from './FxDefinition';
+import { FxDefinition, FxParam } from './types/FxDefinition';
 import GUI from './vue/main.vue';
 import { ParamWithGUI } from './ParamWithGUI';
 import { SerializedData } from './types/SerializedData';
@@ -7,7 +7,7 @@ import { SerializedParam } from './types/SerializedParam';
 import Vue from 'vue';
 import { ass } from './ass';
 import compat from './compat/compat';
-import fxDefinitions from './fx-definitions';
+import fxDefinitions from './fxs';
 import { jsonCopy } from './jsonCopy';
 
 /**

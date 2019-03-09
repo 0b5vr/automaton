@@ -1,3 +1,5 @@
+import { FxDefinition } from '../types/FxDefinition';
+
 export default [ 'pow', {
   name: 'Power',
   description: 'You got boost power!',
@@ -14,4 +16,4 @@ export default [ 'pow', {
       context.params.pow
     ) * sign + context.params.bias;
   }
-} ];
+} as FxDefinition ];

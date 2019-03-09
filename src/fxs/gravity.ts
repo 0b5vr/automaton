@@ -1,3 +1,5 @@
+import { FxDefinition } from '../types/FxDefinition';
+
 export default [ 'gravity', {
   name: 'Gravity',
   description: 'Accelerate and bounce the curve.',
@@ -11,24 +13,24 @@ export default [ 'gravity', {
     const v = context.v;
 
     if ( context.init ) {
-      context.pos = v;
+      context.state.pos = v;
       if ( context.params.preserve ) {
         const dv = v - context.getValue( context.t - dt );
-        context.vel = dv / dt;
+        context.state.vel = dv / dt;
       } else {
-        context.vel = 0.0;
+        context.state.vel = 0.0;
       }
     }
 
-    const a = Math.sign( v - context.pos ) * context.params.a;
-    context.vel += a * dt;
-    context.pos += context.vel * dt;
+    const a = Math.sign( v - context.state.pos ) * context.params.a;
+    context.state.vel += a * dt;
+    context.state.pos += context.state.vel * dt;
 
-    if ( Math.sign( a ) !== Math.sign( v - context.pos ) ) {
-      context.vel *= -context.params.e;
-      context.pos = v + context.params.e * ( v - context.pos );
+    if ( Math.sign( a ) !== Math.sign( v - context.state.pos ) ) {
+      context.state.vel *= -context.params.e;
+      context.state.pos = v + context.params.e * ( v - context.state.pos );
     }
 
-    return context.pos;
+    return context.state.pos;
   }
-} ];
+} as FxDefinition ];

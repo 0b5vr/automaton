@@ -1,3 +1,5 @@
+import { FxDefinition } from '../types/FxDefinition';
+
 export default [ 'add', {
   name: 'Add',
   description: 'The simplest fx ever. Just add a constant value to the curve.',
@@ -7,4 +9,4 @@ export default [ 'add', {
   func( context ) {
     return context.v + context.params.value;
   }
-} ];
+} as FxDefinition ];

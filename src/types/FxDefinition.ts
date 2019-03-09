@@ -106,6 +106,11 @@ export interface FxContext {
    * Current input value.
    */
   value: number;
+
+  /**
+   * You can store anything in the field.
+   */
+  state: { [ key: string]: any };
 }
 
 export interface FxDefinition {

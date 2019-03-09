@@ -1,6 +1,6 @@
 import { Automaton } from './Automaton';
 import { BezierNode } from './types/BezierNode';
-import { FxContext } from './FxDefinition';
+import { FxContext } from './types/FxDefinition';
 import { FxSection } from './types/FxSection';
 import { SerializedParam } from './types/SerializedParam';
 import { cubicBezier } from './cubic-bezier';
@@ -112,7 +112,8 @@ export class Param {
         params: fx.params,
         array: this.__values,
         getValue: this.getValue.bind( this ),
-        init: true
+        init: true,
+        state: {}
       };
 
       for ( let i = 0; i < tempLength; i ++ ) {

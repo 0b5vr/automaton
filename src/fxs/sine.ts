@@ -1,3 +1,5 @@
+import { FxDefinition } from '../types/FxDefinition';
+
 const TAU = Math.PI * 2.0;
 
 export default [ 'sine', {
@@ -13,4 +15,4 @@ export default [ 'sine', {
     const p = context.progress * context.params.freq + context.params.phase;
     return v + context.params.amp * Math.sin( p * TAU );
   }
-} ];
+} as FxDefinition ];

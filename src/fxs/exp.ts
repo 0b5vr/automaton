@@ -1,3 +1,5 @@
+import { FxDefinition } from '../types/FxDefinition';
+
 export default [ 'exp', {
   name: 'Exponential Smoothing',
   description: 'Smooth the curve. Simple but good.',
@@ -8,11 +10,11 @@ export default [ 'exp', {
     const v = context.v;
 
     if ( context.init ) {
-      context.pos = v;
+      context.state.pos = v;
     }
 
     const k = Math.exp( -context.dt * context.params.factor );
-    context.pos = context.pos * k + v * ( 1.0 - k );
-    return context.pos;
+    context.state.pos = context.state.pos * k + v * ( 1.0 - k );
+    return context.state.pos;
   }
-} ];
+} as FxDefinition ];

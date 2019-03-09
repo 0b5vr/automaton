@@ -1,3 +1,5 @@
+import { FxDefinition } from '../types/FxDefinition';
+
 export default [ 'cds', {
   name: 'Critically Damped Spring',
   description: 'Basically the best smoothing method. Shoutouts to Keijiro Takahashi',
@@ -12,17 +14,20 @@ export default [ 'cds', {
     const k = context.params.factor;
 
     if ( context.init ) {
-      context.pos = context.v;
+      context.state.pos = context.v;
       if ( context.params.preserve ) {
         const dv = v - context.getValue( context.t - dt );
-        context.vel = dv / dt;
+        context.state.vel = dv / dt;
       } else {
-        context.vel = 0.0;
+        context.state.vel = 0.0;
       }
     }
 
-    context.vel += ( -k * ( context.pos - v ) - 2.0 * context.vel * Math.sqrt( k ) * context.params.ratio ) * dt;
-    context.pos += context.vel * dt;
-    return context.pos;
+    context.state.vel += (
+      -k * ( context.state.pos - v )
+      - 2.0 * context.state.vel * Math.sqrt( k ) * context.params.ratio
+    ) * dt;
+    context.state.pos += context.state.vel * dt;
+    return context.state.pos;
   }
-} ];
+} as FxDefinition ];

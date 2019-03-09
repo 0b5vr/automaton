@@ -1,11 +1,12 @@
+import { FxDefinition } from '../types/FxDefinition';
 import Xorshift from './modules/xorshift';
 
 const xorshift = new Xorshift();
 
-const smoothstep = ( _a, _b, _k ) => {
-  const smooth = _k * _k * ( 3.0 - 2.0 * _k );
-  return _a + ( _b - _a ) * smooth;
-};
+function smoothstep( a: number, b: number, k: number ): number {
+  const smooth = k * k * ( 3.0 - 2.0 * k );
+  return a + ( b - a ) * smooth;
+}
 
 export default [ 'noise', {
   name: 'Fractal Noise',
@@ -21,9 +22,9 @@ export default [ 'noise', {
     if ( context.init ) {
       xorshift.gen( context.params.seed );
 
-      context.table = new Float32Array( Math.floor( context.params.reso ) + 2 );
+      context.state.table = new Float32Array( Math.floor( context.params.reso ) + 2 );
       for ( let i = 1; i < context.params.reso; i ++ ) {
-        context.table[ i ] = xorshift.gen() * 2.0 - 1.0;
+        context.state.table[ i ] = xorshift.gen() * 2.0 - 1.0;
       }
     }
 
@@ -31,17 +32,19 @@ export default [ 'noise', {
     const p = context.progress;
 
     for ( let i = 0; i < context.params.recursion; i ++ ) {
-      const index = ( p * context.params.freq * context.params.reso * Math.pow( 2.0, i ) ) % context.params.reso;
+      const index = (
+        p * context.params.freq * context.params.reso * Math.pow( 2.0, i )
+      ) % context.params.reso;
       const indexi = Math.floor( index );
       const indexf = index - indexi;
       const factor = Math.pow( 0.5, i + 1.0 );
 
       v += context.params.amp * factor * smoothstep(
-        context.table[ indexi ],
-        context.table[ indexi + 1 ],
+        context.state.table[ indexi ],
+        context.state.table[ indexi + 1 ],
         indexf
       );
     }
     return v;
   }
-} ];
+} as FxDefinition ];
