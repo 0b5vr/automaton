@@ -240,7 +240,7 @@
 </template>
 
 <script>
-import ParamWithGUI from '../param-gui';
+import { PARAM_FX_ROW_MAX } from '../ParamWithGUI';
 
 import FxMenu from './timeline-fxmenu.vue';
 
@@ -778,7 +778,7 @@ export default {
 
       this.$emit( 'nodeSelected', [] );
       this.$emit( 'fxSelected', [ id ] );
-      
+
       const fx = param.dumpFx( id );
 
       const t0 = fx.time;
@@ -788,7 +788,7 @@ export default {
 
       this.grabHelper( event, ( dt, dv, event, isUp ) => {
         const dy = event.clientY - y0;
-        const newRow = Math.min( Math.max( r0 + Math.round( dy / 16.0 ), 0 ), ParamWithGUI.FX_ROW_MAX );
+        const newRow = Math.min( Math.max( r0 + Math.round( dy / 16.0 ), 0 ), PARAM_FX_ROW_MAX );
 
         let t = t0 + dt;
         if ( !event.altKey ) {

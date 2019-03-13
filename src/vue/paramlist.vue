@@ -16,17 +16,17 @@
       >{{ name }}</div>
 
       <img class="icon"
-        v-if="automaton.getParam( name ).status.level === Param.STATUS_LEVEL_ERROR"
+        v-if="automaton.getParam( name ).status.level === ParamStatusLevel.ERROR"
         :src="require( '../images/error.svg' )"
         stalker-text="This param has NaN value"
       />
       <img class="icon"
-        v-if="automaton.getParam( name ).status.level === Param.STATUS_LEVEL_WARNING"
+        v-if="automaton.getParam( name ).status.level === ParamStatusLevel.WARNING"
         :src="require( '../images/warning.svg' )"
         stalker-text="This param has not been used yet"
       />
       <div class="value"
-        v-if="automaton.getParam( name ).status.level === Param.STATUS_LEVEL_OK"
+        v-if="automaton.getParam( name ).status.level === ParamStatusLevel.OK"
         :stalker-text="name"
       >{{ automaton.auto( name ).toFixed( 3 ) }}</div>
     </div>
@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import Param from '../param-gui';
+import { ParamStatusLevel } from '../ParamWithGUI';
 import Scrollable from './scrollable.vue';
 
 export default {
@@ -47,7 +47,7 @@ export default {
 
   data() {
     return {
-      Param
+      ParamStatusLevel
     }
   },
 
