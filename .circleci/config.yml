@@ -12,9 +12,9 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-        keys:
-          - deps-{{ checksum "package.json" }}
-          - deps-
+          keys:
+            - deps-{{ checksum "package.json" }}
+            - deps-
       - run:
           name: Node version
           command: node -v
