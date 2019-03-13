@@ -1,6 +1,6 @@
-# Automaton
+# ![Automaton](https://i.imgur.com/c4XRwNS.png)
 
-![](https://i.imgur.com/c4XRwNS.png)
+[![Latest NPM release](https://img.shields.io/npm/v/@fms-cat/automaton.svg)](https://www.npmjs.com/package/@fms-cat/automaton) [![CircleCI](https://circleci.com/gh/FMS-Cat/automaton.svg?style=svg)](https://circleci.com/gh/FMS-Cat/automaton)
 
 Animation engine with Timeline GUI for creative coding
 
