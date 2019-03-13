@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "cross-env AUTOMATON_BUILD=dev webpack-dev-server --hot --mode development",
-    "all": "yarn build && yarn types && yarn docs",
+    "prepare": "yarn build && yarn types && yarn docs",
     "build": "yarn build-dev && yarn build-min && yarn build-nogui",
     "build-dev": "cross-env AUTOMATON_BUILD=dev webpack --mode development",
     "build-min": "cross-env AUTOMATON_BUILD=min webpack --mode production",
