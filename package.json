@@ -19,6 +19,7 @@
   "files": [
     "dist",
     "src",
+    "types",
     "LICENSE",
     "package.json",
     "README.md"
