@@ -40,11 +40,28 @@ jobs:
       - store_artifacts:
           path: dist
 
+  docs:
+    docker: *docker
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - deps-{{ checksum "package.json" }}
+            - deps-
+      - run:
+          name: Generate docs
+          command: yarn docs
+      - store_artifacts:
+          path: docs
+
 workflows:
   version: 2
   fuckery:
     jobs:
       - fetch
       - build:
+          requires:
+            - fetch
+      - docs:
           requires:
             - fetch
