@@ -54,6 +54,20 @@ jobs:
       - store_artifacts:
           path: docs
 
+  types:
+    docker: *docker
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - deps-{{ checksum "package.json" }}
+            - deps-
+      - run:
+          name: Generate type definitions
+          command: yarn types
+      - store_artifacts:
+          path: types
+
 workflows:
   version: 2
   fuckery:
@@ -63,5 +77,8 @@ workflows:
           requires:
             - fetch
       - docs:
+          requires:
+            - fetch
+      - types:
           requires:
             - fetch
