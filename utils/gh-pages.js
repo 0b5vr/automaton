@@ -11,7 +11,7 @@ ghPages.publish( path.resolve( __dirname, '..' ), {
     'types/**/*',
     'index.html'
   ],
-  message: `gh-pages v${version}`
+  message: `gh-pages v${version} [ci skip]`
 }, ( error ) => {
   if ( error ) { throw error; }
 } );
