@@ -17,6 +17,7 @@
     "build-nogui": "cross-env AUTOMATON_BUILD=nogui webpack --mode production",
     "types": "tsc --emitDeclarationOnly",
     "docs": "typedoc",
+    "lint": "eslint src",
     "gh-pages": "node ./utils/gh-pages.js"
   },
   "files": [
