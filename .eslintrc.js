@@ -41,7 +41,7 @@ module.exports = {
         "sort-imports": [ "error" ], // imports have to be ordered
 
         // variables
-        "no-unused-vars": [ "warn" ], // draw yellow line under unused vars
+        "@typescript-eslint/no-unused-vars": [ "warn" ], // draw yellow line under unused vars
         "no-undef": [ "warn" ], // draws yellow line under undefined vars
         "no-var": [ "error" ], // fuck you, var
         "prefer-const": [ "error" ], // const is better than let
