@@ -39,6 +39,7 @@ module.exports = {
             "ignoreRegExpLiterals": true, // regexs are also okay too
         } ],
         "sort-imports": [ "error" ], // imports have to be ordered
+        "eol-last": [ "error", "always" ], // eof newline is cool
 
         // variables
         "@typescript-eslint/no-unused-vars": [ "warn" ], // draw yellow line under unused vars
