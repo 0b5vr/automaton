@@ -68,6 +68,18 @@ jobs:
       - store_artifacts:
           path: types
 
+  lint:
+    docker: *docker
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - deps-{{ checksum "package.json" }}
+            - deps-
+      - run:
+          name: Linting
+          command: yarn lint
+
 workflows:
   version: 2
   fuckery:
@@ -80,5 +92,8 @@ workflows:
           requires:
             - fetch
       - types:
+          requires:
+            - fetch
+      - lint:
           requires:
             - fetch
