@@ -3,7 +3,7 @@ import { BezierNode } from './types/BezierNode';
 import { FxContext } from './types/FxDefinition';
 import { FxSection } from './types/FxSection';
 import { SerializedParam } from './types/SerializedParam';
-import { cubicBezier } from './cubic-bezier';
+import { bezierEasing } from './bezierEasing';
 
 /**
  * It represents a param of Automaton.
@@ -75,7 +75,7 @@ export class Param {
       this.__values[ i0 ] = node0.value;
       for ( let i = i0 + 1; i <= i1; i ++ ) {
         const time = i / this.__automaton.resolution;
-        const value = cubicBezier( node0, node1, time );
+        const value = bezierEasing( node0, node1, time );
         this.__values[ i ] = value;
       }
     }
