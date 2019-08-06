@@ -16,7 +16,7 @@
     "build-min": "cross-env AUTOMATON_BUILD=min webpack --mode production",
     "build-nogui": "cross-env AUTOMATON_BUILD=nogui webpack --mode production",
     "types": "tsc --emitDeclarationOnly",
-    "docs": "typedoc",
+    "docs": "typedoc --out docs --mode file --excludeNotExported",
     "lint": "eslint src",
     "gh-pages": "node ./utils/gh-pages.js"
   },
@@ -50,7 +50,7 @@
     "sass-loader": "^7.1.0",
     "ts-loader": "^5.3.3",
     "ts-node": "^8.0.3",
-    "typedoc": "^0.14.2",
+    "typedoc": "^0.15.0",
     "typescript": "^3.3.3333",
     "url-loader": "^1.1.2",
     "vue": "^2.6.8",
