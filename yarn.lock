@@ -1401,6 +1401,11 @@ commander@^2.18.0:
   version "2.19.0"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.19.0.tgz#f6198aa84e5b83c46054b94ddedbfed5ee9ff12a"
 
+commander@^2.9.0:
+  version "2.20.0"
+  resolved "https://registry.yarnpkg.com/commander/-/commander-2.20.0.tgz#d58bb2b5c1ee8f87b0d340027e9e94e222c5a422"
+  integrity sha512-7j2y+40w61zy6YC2iRNpUe/NwhNyoXrYpHMrSunaMG64nRnaf96zO/KMQR4OyN/UnE5KLyEBnKHd4aG3rskjpQ==
+
 commander@~2.17.1:
   version "2.17.1"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.17.1.tgz#bd77ab7de6de94205ceacc72f1716d29f20a77bf"
@@ -2349,6 +2354,13 @@ gh-pages@^2.0.1:
     globby "^6.1.0"
     graceful-fs "^4.1.11"
     rimraf "^2.6.2"
+
+git-branch-is@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/git-branch-is/-/git-branch-is-2.1.0.tgz#06bd3760905cc7218bec4b89595840b6b0a1b31b"
+  integrity sha512-qUwr2jRn5nBN/DAPosK9VQxaedVhiPyZmGYQdA9UNOsec+hfZIOyCX4bB/WnlEHLa1fjsNscHoCvWLs0EcQXAg==
+  dependencies:
+    commander "^2.9.0"
 
 glob-parent@^3.1.0:
   version "3.1.0"
