@@ -1,6 +1,6 @@
 {
   "name": "@fms-cat/automaton",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Animation engine with Timeline GUI for creative coding",
   "main": "dist/automaton.js",
   "author": "FMS-Cat",
