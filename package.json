@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "cross-env AUTOMATON_BUILD=dev webpack-dev-server --hot --mode development",
-    "all": "clean && yarn build && yarn types && yarn docs",
+    "all": "yarn clean && yarn build && yarn types && yarn docs",
     "version": "yarn all",
     "postpublish": "yarn gh-pages",
     "clean": "rimraf dist docs types",
