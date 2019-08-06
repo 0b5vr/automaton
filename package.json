@@ -8,6 +8,7 @@
   "scripts": {
     "dev": "cross-env AUTOMATON_BUILD=dev webpack-dev-server --hot --mode development",
     "all": "yarn clean && yarn build && yarn types && yarn docs",
+    "preversion": "git-branch-is master",
     "version": "yarn all",
     "postpublish": "yarn gh-pages",
     "clean": "rimraf dist docs types",
@@ -45,6 +46,7 @@
     "fibers": "^3.1.1",
     "fork-ts-checker-webpack-plugin": "^1.0.0",
     "gh-pages": "^2.0.1",
+    "git-branch-is": "^2.1.0",
     "rimraf": "^2.6.3",
     "sass": "^1.17.2",
     "sass-loader": "^7.1.0",
