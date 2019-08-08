@@ -80,7 +80,6 @@ module.exports = {
         "no-console": [ "error", { allow: [ "info", "warn", "error" ] } ], // don't forget to remove `console.log` !
 
         // typescript-specifics
-        "@typescript-eslint/explicit-function-return-type": [ "error" ], // return type is required
         "@typescript-eslint/explicit-member-accessibility": [ "error" ], // `public` / `private` for members and methods are required
     }
 };
