@@ -75,7 +75,7 @@ module.exports = {
         "space-before-function-paren": [ "error", { "anonymous": "never", "named": "never", "asyncArrow": "always" } ], // it kills `func ()`
 
         // others
-        "no-eval": [ "warn" ], // nope
+        "no-eval": [ "off" ], // we need to go the evil way
         "no-implied-eval": [ "warn" ], // ok don't
         "no-console": [ "error", { allow: [ "info", "warn", "error" ] } ], // don't forget to remove `console.log` !
 
