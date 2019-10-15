@@ -1,0 +1,65 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 100 100"
+>
+  <path
+    fill="none"
+    stroke="#222"
+    stroke-width="20"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    d="
+      M 50 50
+      m -6 -32
+      l 12 0
+      l 30 50
+      l -8 12
+      l -56 0
+      l -8 -12
+      l 30 -50
+      z
+    "
+  />
+
+  <path
+    fill="#f92"
+    stroke="#f92"
+    stroke-width="5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    d="
+      M 50 50
+      m -6 -32
+      l 12 0
+      l 30 50
+      l -8 12
+      l -56 0
+      l -8 -12
+      l 30 -50
+      z
+    "
+  />
+
+  <path
+    fill="#222"
+    stroke="#222"
+    stroke-width="5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    d="
+      M 50 30
+      m -6 0
+      l 12 0
+      l 0 27
+      l -12 0
+      z
+
+      M 50 66
+      m -6 0
+      l 12 0
+      l 0 8
+      l -12 0
+      z
+    "
+  />
+</svg>

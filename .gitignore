@@ -1,0 +1,5 @@
+/dist
+/docs
+/types
+/node_modules
+**/*.log

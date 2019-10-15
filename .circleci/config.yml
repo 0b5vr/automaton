@@ -1,0 +1,99 @@
+# Javascript Node CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-javascript/ for more details
+#
+
+version: 2
+
+jobs:
+  fetch:
+    docker: &docker
+      - image: circleci/node:12.11.1
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - deps-{{ checksum "package.json" }}
+            - deps-
+      - run:
+          name: Node version
+          command: node -v
+      - run:
+          name: Fetch deps
+          command: yarn
+      - save_cache:
+          key: deps-{{ checksum "package.json" }}
+          paths:
+            - node_modules
+
+  build:
+    docker: *docker
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - deps-{{ checksum "package.json" }}
+            - deps-
+      - run:
+          name: Build
+          command: yarn build
+      - store_artifacts:
+          path: dist
+
+  docs:
+    docker: *docker
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - deps-{{ checksum "package.json" }}
+            - deps-
+      - run:
+          name: Generate docs
+          command: yarn docs
+      - store_artifacts:
+          path: docs
+
+  types:
+    docker: *docker
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - deps-{{ checksum "package.json" }}
+            - deps-
+      - run:
+          name: Generate type definitions
+          command: yarn types
+      - store_artifacts:
+          path: types
+
+  lint:
+    docker: *docker
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - deps-{{ checksum "package.json" }}
+            - deps-
+      - run:
+          name: Linting
+          command: yarn lint
+
+workflows:
+  version: 2
+  fuckery:
+    jobs:
+      - fetch
+      - build:
+          requires:
+            - fetch
+      - docs:
+          requires:
+            - fetch
+      - types:
+          requires:
+            - fetch
+      - lint:
+          requires:
+            - fetch

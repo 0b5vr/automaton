@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "strict": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "removeComments": false,
+    "noUnusedLocals": true,
+    "jsx": "react",
+    "lib": [ "dom", "es2017" ],
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declaration": true,
+    "declarationDir": "./types"
+  },
+  "include": [ "src" ],
+  "exclude": [ "node_modules" ]
+}
