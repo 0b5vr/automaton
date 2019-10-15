@@ -82,9 +82,15 @@ export interface AboutProps {
 
 export const About = ( { className }: AboutProps ): JSX.Element => {
   const context = useContext( Context.Store );
+  const automaton = context.state.automaton.instance;
+  const { selectedParam } = context.state.curveEditor;
+  const param = automaton && selectedParam && automaton.getParam( selectedParam )!;
+  const value = param ? ( 360.0 * param.getValue() ) : 0.0;
 
   return <Root className={ className }>
-    <LargeA />
+    <LargeA
+      style={{ transform: `rotate(${ value }deg)` }}
+    />
     <SubRoot>
       <LogoAndVersion>
         <Logo as={ Icons.Automaton } />
