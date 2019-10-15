@@ -1,10 +1,9 @@
+import { SerializedData, defaultData } from './types/SerializedData';
 import { Clock } from './Clock';
 import { ClockFrame } from './ClockFrame';
 import { ClockRealtime } from './ClockRealtime';
-import { EventEmitter } from 'eventemitter3';
 import { FxDefinition } from './types/FxDefinition';
 import { Param } from './Param';
-import { SerializedData } from './types/SerializedData';
 import { SerializedParam } from './types/SerializedParam';
 
 /**
@@ -28,7 +27,6 @@ export interface AutomatonOptions {
 
   /**
    * Serialized data of the automaton.
-   * **MUST BE PARSED JSON**
    */
   data?: SerializedData;
 }
@@ -38,7 +36,7 @@ export interface AutomatonOptions {
  * It's `automaton.nogui.js` version and also base class for {@link AutomatonWithGUI}.
  * @param options Options for this Automaton instance
  */
-export class Automaton extends EventEmitter {
+export class Automaton {
   /**
    * **THE MIGHTY `auto()` FUNCTION!! GRAB IT**
    * It creates a new param automatically if there are no param called `_name` (GUI mode only).
@@ -84,8 +82,6 @@ export class Automaton extends EventEmitter {
   protected __fxDefs: { [ name: string ]: FxDefinition } = {};
 
   public constructor( options: AutomatonOptions ) {
-    super();
-
     this.__isLoop = options.loop || false;
 
     this.__clock = (
@@ -94,7 +90,7 @@ export class Automaton extends EventEmitter {
       new Clock()
     );
 
-    options.data && this.load( options.data );
+    this.deserialize( options.data || defaultData );
   }
 
   /**
@@ -176,7 +172,7 @@ export class Automaton extends EventEmitter {
    * Load serialized automaton data.
    * @param data Serialized object contains automaton data.
    */
-  public load( data: SerializedData ): void {
+  public deserialize( data: SerializedData ): void {
     this.__length = data.length;
     this.__resolution = data.resolution;
 
@@ -187,30 +183,24 @@ export class Automaton extends EventEmitter {
 
   /**
    * Seek the timeline.
-   * Can be performed via GUI.
    * @param time Time
    */
   public seek( time: number ): void {
     this.__clock.setTime( time );
-    this.emit( 'seek' );
   }
 
   /**
    * Play the timeline.
-   * @todo SHOULD be performed via GUI.
    */
   public play(): void {
     this.__clock.play();
-    this.emit( 'play' );
   }
 
   /**
    * Pause the timeline.
-   * @todo SHOULD be performed via GUI.
    */
   public pause(): void {
     this.__clock.pause();
-    this.emit( 'pause' );
   }
 
   /**

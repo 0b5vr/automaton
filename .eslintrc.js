@@ -16,7 +16,11 @@ module.exports = {
         "ecmaVersion": 2017
     },
 
-    "extends": "eslint:recommended",
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/eslint-recommended",
+        "plugin:@typescript-eslint/recommended"
+    ],
 
     "globals": {
         "process": true // since gulp has envify
@@ -24,7 +28,7 @@ module.exports = {
 
     "rules": {
         // basics
-        "indent": [ "error", 2, { // indentation should be 2 spaces
+        "@typescript-eslint/indent": [ "error", 2, { // indentation should be 2 spaces
             "flatTernaryExpressions": true, // ternary should be performed in flat
             "MemberExpression": 0 // member chain should be performed in flat
         } ], // it forces 2 spaces indentation
@@ -80,6 +84,10 @@ module.exports = {
         "no-console": [ "error", { allow: [ "info", "warn", "error" ] } ], // don't forget to remove `console.log` !
 
         // typescript-specifics
+        "@typescript-eslint/no-explicit-any": [ "off" ], // yea
+        "@typescript-eslint/no-inferrable-types": [ "off" ], // it's ok
+        "@typescript-eslint/no-non-null-assertion": [ "off" ], // bang is sometimes required
+        "@typescript-eslint/explicit-function-return-type": [ "error", { "allowExpressions": true } ], // return type is required
         "@typescript-eslint/explicit-member-accessibility": [ "error" ], // `public` / `private` for members and methods are required
     }
 };

@@ -3,7 +3,7 @@ import { BezierNode } from './types/BezierNode';
 import { FxContext } from './types/FxDefinition';
 import { FxSection } from './types/FxSection';
 import { SerializedParam } from './types/SerializedParam';
-import { bezierEasing } from './bezierEasing';
+import { bezierEasing } from './utils/bezierEasing';
 
 /**
  * It represents a param of Automaton.
@@ -48,14 +48,14 @@ export class Param {
 
     this.__values = new Float32Array( this.__automaton.resolution * this.__automaton.length + 1 );
 
-    data && this.load( data );
+    data && this.deserialize( data );
   }
 
   /**
    * Load a param data.
    * @param data Data of param
    */
-  public load( data: SerializedParam ): void {
+  public deserialize( data: SerializedParam ): void {
     this.__nodes = data.nodes;
     this.__fxs = data.fxs;
 

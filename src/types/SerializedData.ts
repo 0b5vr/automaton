@@ -1,4 +1,3 @@
-import { AutomatonGUISettings } from '../AutomatonWithGUI';
 import { SerializedParam } from './SerializedParam';
 
 /**
@@ -8,7 +7,7 @@ export interface SerializedData {
   /**
    * Version of the Automaton.
    */
-  v: string;
+  version: string;
 
   /**
    * Length of the timeline.
@@ -24,23 +23,12 @@ export interface SerializedData {
    * Params in the timeline.
    */
   params: { [ name: string ]: SerializedParam };
-
-  /**
-   * GUI settings.
-   */
-  guiSettings: AutomatonGUISettings;
 }
 
-export const defaultData: SerializedData = Object.freeze( {
-  v: process.env.VERSION!,
+export const defaultData: Readonly<SerializedData> = {
+  version: process.env.VERSION!,
 
   length: 1.0,
   resolution: 1000.0,
-  params: {},
-
-  guiSettings: {
-    snapActive: false,
-    snapTime: 0.1,
-    snapValue: 0.1
-  }
-} );
+  params: {}
+};
