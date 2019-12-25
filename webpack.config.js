@@ -69,6 +69,7 @@ Repository: ${ packageJson.repository }`
       minimize: !DEV
     },
     devServer: {
+      port: 4000,
       contentBase: path.resolve( __dirname, './' ),
       publicPath: '/dist/',
       openPage: 'index.html',
