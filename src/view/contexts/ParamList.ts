@@ -2,11 +2,11 @@ import { produce } from 'immer';
 
 // == state ========================================================================================
 export interface State {
-  params: { [ name: string ]: true };
+  params: Set<string>;
 }
 
 export const initialState: Readonly<State> = {
-  params: {}
+  params: new Set()
 };
 
 // == action =======================================================================================
@@ -16,10 +16,16 @@ export enum ActionType {
   SetParams = 'ParamList/SetParams',
 }
 
-interface Action {
-  type: ActionType;
-  [ key: string ]: any;
-}
+type Action = {
+  type: ActionType.AddParam;
+  param: string;
+} | {
+  type: ActionType.DeleteParam;
+  param: string;
+} | {
+  type: ActionType.SetParams;
+  params: string[];
+};
 
 // == reducer ======================================================================================
 export function reducer(
@@ -28,12 +34,12 @@ export function reducer(
 ): State {
   return produce( state, ( newState: State ) => {
     if ( action.type === ActionType.AddParam ) {
-      newState.params[ action.param ] = true;
+      newState.params.add( action.param );
     } else if ( action.type === ActionType.DeleteParam ) {
-      delete newState.params[ action.param ];
+      newState.params.delete( action.param );
     } else if ( action.type === ActionType.SetParams ) {
-      newState.params = {};
-      action.params.forEach( ( param: string ) => newState.params[ param ] = true );
+      newState.params.clear();
+      action.params.forEach( ( param: string ) => newState.params.add( param ) );
     }
   } );
 }

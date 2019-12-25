@@ -23,10 +23,16 @@ export enum ActionType {
   UpdateLength = 'Automaton/UpdateLength',
 }
 
-interface Action {
-  type: ActionType;
-  [ key: string ]: any;
-}
+type Action = {
+  type: ActionType.SetInstance;
+  automaton: AutomatonWithGUI;
+} | {
+  type: ActionType.UpdateIsPlaying;
+} | {
+  type: ActionType.UpdateTime;
+} | {
+  type: ActionType.UpdateLength;
+};
 
 // == reducer ======================================================================================
 export function reducer(

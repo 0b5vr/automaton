@@ -1,4 +1,5 @@
 import { CurveEditorRange, x2t, y2v } from '../utils/CurveEditorUtils';
+import { ParamWithGUI } from '../../ParamWithGUI';
 import { SerializedParam } from '@fms-cat/automaton';
 import { produce } from 'immer';
 
@@ -37,10 +38,31 @@ export enum ActionType {
   SetSize = 'CurveEditor/SetSize',
 }
 
-interface Action {
-  type: ActionType;
-  [ key: string ]: any;
-}
+type Action = {
+  type: ActionType.UpdateSerializedParam;
+  param: ParamWithGUI;
+} | {
+  type: ActionType.SelectParam;
+  param: string | null;
+} | {
+  type: ActionType.MoveRange;
+  dx: number;
+  dy: number;
+  tmax: number;
+} | {
+  type: ActionType.ZoomRange;
+  cx: number;
+  cy: number;
+  dx: number;
+  dy: number;
+  tmax: number;
+} | {
+  type: ActionType.SetSize;
+  size: {
+    width: number;
+    height: number;
+  };
+};
 
 // == reducer ======================================================================================
 export function reducer(

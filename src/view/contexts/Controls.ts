@@ -14,9 +14,9 @@ export enum ActionType {
   SetLastClick = 'Controls/SetLastClick'
 }
 
-interface Action {
-  type: ActionType;
-  [ key: string ]: any;
+type Action = {
+  type: ActionType.SetLastClick;
+  date: number;
 }
 
 // == reducer ======================================================================================

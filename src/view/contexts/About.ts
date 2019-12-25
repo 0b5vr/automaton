@@ -15,10 +15,11 @@ export enum ActionType {
   Close = 'About/Close'
 }
 
-interface Action {
-  type: ActionType;
-  [ key: string ]: any;
-}
+type Action = {
+  type: ActionType.Open;
+} | {
+  type: ActionType.Close;
+};
 
 // == reducer ======================================================================================
 export function reducer(

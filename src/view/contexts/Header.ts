@@ -19,10 +19,15 @@ export enum ActionType {
   SeekbarLeave = 'Header/SeekbarLeave',
 }
 
-interface Action {
-  type: ActionType;
-  [ key: string ]: any;
-}
+type Action = {
+  type: ActionType.SeekDown;
+} | {
+  type: ActionType.SeekUp;
+} | {
+  type: ActionType.SeekbarEnter;
+} | {
+  type: ActionType.SeekbarLeave;
+};
 
 // == reducer ======================================================================================
 export function reducer(

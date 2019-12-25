@@ -25,10 +25,16 @@ export enum ActionType {
   Redo = 'History/Redo'
 }
 
-interface Action {
-  type: ActionType;
-  [ key: string ]: any;
-}
+type Action = {
+  type: ActionType.Push;
+  entry: HistoryEntry;
+} | {
+  type: ActionType.Drop;
+} | {
+  type: ActionType.Undo;
+} | {
+  type: ActionType.Redo;
+};
 
 // == reducer ======================================================================================
 export function reducer(
