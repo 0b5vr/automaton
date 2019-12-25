@@ -1,12 +1,9 @@
 import { CurveEditorRange, x2t, y2v } from '../utils/CurveEditorUtils';
-import { ParamWithGUI } from '../../ParamWithGUI';
-import { SerializedParam } from '@fms-cat/automaton';
 import { produce } from 'immer';
 
 // == state ========================================================================================
 export interface State {
   selectedParam: string | null;
-  serializedParam: SerializedParam | null;
   range: CurveEditorRange;
   size: {
     width: number;
@@ -16,7 +13,6 @@ export interface State {
 
 export const initialState: State = {
   selectedParam: null,
-  serializedParam: null,
   range: {
     t0: 0.0,
     v0: -0.2,
@@ -30,34 +26,23 @@ export const initialState: State = {
 };
 
 // == action =======================================================================================
-export enum ActionType {
-  UpdateSerializedParam = 'CurveEditor/UpdateSerializedParam',
-  SelectParam = 'CurveEditor/SelectParam',
-  MoveRange = 'CurveEditor/MoveRange',
-  ZoomRange = 'CurveEditor/ZoomRange',
-  SetSize = 'CurveEditor/SetSize',
-}
-
-type Action = {
-  type: ActionType.UpdateSerializedParam;
-  param: ParamWithGUI;
-} | {
-  type: ActionType.SelectParam;
+export type Action = {
+  type: 'CurveEditor/SelectParam';
   param: string | null;
 } | {
-  type: ActionType.MoveRange;
+  type: 'CurveEditor/MoveRange';
   dx: number;
   dy: number;
   tmax: number;
 } | {
-  type: ActionType.ZoomRange;
+  type: 'CurveEditor/ZoomRange';
   cx: number;
   cy: number;
   dx: number;
   dy: number;
   tmax: number;
 } | {
-  type: ActionType.SetSize;
+  type: 'CurveEditor/SetSize';
   size: {
     width: number;
     height: number;
@@ -70,11 +55,9 @@ export function reducer(
   action: Action
 ): State {
   return produce( state, ( newState: State ) => {
-    if ( action.type === ActionType.UpdateSerializedParam ) {
-      newState.serializedParam = action.param.serialize();
-    } else if ( action.type === ActionType.SelectParam ) {
+    if ( action.type === 'CurveEditor/SelectParam' ) {
       newState.selectedParam = action.param;
-    } else if ( action.type === ActionType.MoveRange ) {
+    } else if ( action.type === 'CurveEditor/MoveRange' ) {
       const { range, size } = state;
       const length = action.tmax;
 
@@ -87,7 +70,7 @@ export function reducer(
       newState.range.t1 += dt;
       newState.range.v0 += dv;
       newState.range.v1 += dv;
-    } else if ( action.type === ActionType.ZoomRange ) {
+    } else if ( action.type === 'CurveEditor/ZoomRange' ) {
       const { range, size } = state;
       const length = action.tmax;
 
@@ -121,7 +104,7 @@ export function reducer(
       if ( length < newState.range.t1 ) {
         newState.range.t1 = length;
       }
-    } else if ( action.type === ActionType.SetSize ) {
+    } else if ( action.type === 'CurveEditor/SetSize' ) {
       newState.size = action.size;
     }
   } );

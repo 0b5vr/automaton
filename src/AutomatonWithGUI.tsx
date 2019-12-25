@@ -22,51 +22,6 @@ export interface AutomatonWithGUIOptions extends AutomatonOptions {
 }
 
 /**
- * Events that will be emitted from [[AutomatonWithGUI]].
- */
-export enum AutomatonWithGUIEvent {
-  /**
-   * Will be emitted when the automaton has been played.
-   */
-  Play = 'play',
-
-  /**
-   * Will be emitted when the automaton has been paused.
-   */
-  Pause = 'pause',
-
-  /**
-   * Will be emitted when the automaton has been seeked.
-   */
-  Seek = 'seek',
-
-  /**
-   * Will be emitted when it completes its deserialization.
-   */
-  Load = 'load',
-
-  /**
-   * Will be emitted when the automaton has been updated.
-   */
-  Update = 'update',
-
-  /**
-   * Will be emitted when a new param is added.
-   */
-  CreateParam = 'createparam',
-
-  /**
-   * Will be emitted when a param is removed.
-   */
-  RemoveParam = 'removeparam',
-
-  /**
-   * Will be emitted when its total length has changed.
-   */
-  ChangeLength = 'changelength',
-}
-
-/**
  * IT'S AUTOMATON!
  * It's `automaton.js` and `automaton.min.js` version.
  * @param {Object} options Options for this Automaton instance
@@ -122,7 +77,7 @@ export class AutomatonWithGUI extends Automaton
    */
   public seek( time: number ): void {
     super.seek( time );
-    this.__emit( AutomatonWithGUIEvent.Seek );
+    this.__emit( 'seek' );
   }
 
   /**
@@ -131,7 +86,7 @@ export class AutomatonWithGUI extends Automaton
    */
   public play(): void {
     super.play();
-    this.__emit( AutomatonWithGUIEvent.Play );
+    this.__emit( 'play' );
   }
 
   /**
@@ -140,7 +95,7 @@ export class AutomatonWithGUI extends Automaton
    */
   public pause(): void {
     super.pause();
-    this.__emit( AutomatonWithGUIEvent.Pause );
+    this.__emit( 'pause' );
   }
 
   /**
@@ -150,7 +105,7 @@ export class AutomatonWithGUI extends Automaton
    */
   public update( time: number ): void {
     super.update( time );
-    this.__emit( AutomatonWithGUIEvent.Update );
+    this.__emit( 'update' );
   }
 
   /**
@@ -200,7 +155,7 @@ export class AutomatonWithGUI extends Automaton
     this.__length = length;
 
     // emit an event
-    this.__emit( AutomatonWithGUIEvent.ChangeLength );
+    this.__emit( 'changeLength' );
 
     // It's irreversible operation, sorry
     // this.dropHistory();
@@ -229,7 +184,7 @@ export class AutomatonWithGUI extends Automaton
     const param = new ParamWithGUI( this, data );
     // Vue.set( this.__params, name, param ); 🔥
     this.__params[ name ] = param;
-    this.__emit( AutomatonWithGUIEvent.CreateParam, { name, param } );
+    this.__emit( 'createParam', { name, param } );
     return param;
   }
 
@@ -240,7 +195,7 @@ export class AutomatonWithGUI extends Automaton
   public removeParam( name: string ): void {
     // Vue.delete( this.__params, name ); 🔥
     delete this.__params[ name ];
-    this.__emit( AutomatonWithGUIEvent.RemoveParam, { name } );
+    this.__emit( 'removeParam', { name } );
   }
 
   /**
@@ -328,7 +283,7 @@ export class AutomatonWithGUI extends Automaton
 
     this.guiSettings = convertedData.guiSettings;
 
-    this.__emit( AutomatonWithGUIEvent.Load );
+    this.__emit( 'load' );
 
     // Poke vue 🔥
     // if ( this.__vue ) {
@@ -399,5 +354,14 @@ export class AutomatonWithGUI extends Automaton
   }
 }
 
-export interface AutomatonWithGUI extends EventEmittable<AutomatonWithGUIEvent> {}
+export interface AutomatonWithGUI extends EventEmittable<{
+  play: void;
+  pause: void;
+  seek: void;
+  load: void;
+  update: void;
+  createParam: { name: string; param: ParamWithGUI };
+  removeParam: { name: string };
+  changeLength: void;
+}> {}
 applyMixins( AutomatonWithGUI, [ EventEmittable ] );

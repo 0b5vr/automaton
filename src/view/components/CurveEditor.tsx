@@ -1,14 +1,12 @@
 import React, { useCallback, useContext, useEffect, useRef } from 'react';
 import { x2t, y2v } from '../utils/CurveEditorUtils';
-import { Colors } from '../style-constants/Colors';
+import { Colors } from '../constants/Colors';
 import { Contexts } from '../contexts/Context';
-import { ActionType as ControlsActionType } from '../contexts/Controls';
-import { ActionType as CurveEditorActionType } from '../contexts/CurveEditor';
+import { CurveEditorFxs } from './CurveEditorFxs';
 import { CurveEditorGraph } from './CurveEditorGraph';
 import { CurveEditorGrid } from './CurveEditorGrid';
 import { CurveEditorLine } from './CurveEditorLine';
 import { CurveEditorNodes } from './CurveEditorNodes';
-import { ActionType as HistoryActionType } from '../contexts/History';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
 import styled from 'styled-components';
 
@@ -46,7 +44,7 @@ export const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
         if ( !refSvgRoot.current ) { return; }
 
         context.dispatch( {
-          type: CurveEditorActionType.SetSize,
+          type: 'CurveEditor/SetSize',
           size: {
             width: refSvgRoot.current.clientWidth,
             height: refSvgRoot.current.clientHeight,
@@ -63,10 +61,10 @@ export const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
   const move = useCallback(
     ( dx: number, dy: number ): void => {
       context.dispatch( {
-        type: CurveEditorActionType.MoveRange,
+        type: 'CurveEditor/MoveRange',
         dx,
         dy,
-        tmax: refLength.current // 🔥
+        tmax: refLength.current! // 🔥
       } );
     },
     []
@@ -75,12 +73,12 @@ export const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
   const zoom = useCallback(
     ( cx: number, cy: number, dx: number, dy: number ): void => {
       context.dispatch( {
-        type: CurveEditorActionType.ZoomRange,
+        type: 'CurveEditor/ZoomRange',
         cx,
         cy,
         dx,
         dy,
-        tmax: refLength.current // 🔥
+        tmax: refLength.current! // 🔥
       } );
     },
     []
@@ -119,7 +117,7 @@ export const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
           data.value = v;
 
           context.dispatch( {
-            type: HistoryActionType.Push,
+            type: 'History/Push',
             entry: {
               description: 'Add Node',
               redo: () => param.createNodeFromData( data ),
@@ -138,7 +136,7 @@ export const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
 
       const now = Date.now();
       const isDoubleClick = ( now - context.state.controls.lastClick ) < 250;
-      context.dispatch( { type: ControlsActionType.SetLastClick, date: now } );
+      context.dispatch( { type: 'Controls/SetLastClick', date: now } );
 
       if ( event.buttons === 1 ) {
         if ( isDoubleClick ) {
@@ -185,6 +183,7 @@ export const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
     <Root className={ className }>
       <SVGRoot ref={ refSvgRoot } onMouseDown={ handleMouseDown }>
         <CurveEditorGrid />
+        <CurveEditorFxs />
         <CurveEditorGraph />
         <CurveEditorLine />
         <CurveEditorNodes />

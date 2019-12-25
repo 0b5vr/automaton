@@ -1,11 +1,9 @@
 import React, { useCallback, useContext, useMemo, useState } from 'react';
-import { ActionType as AboutActionType } from '../contexts/About';
-import { Colors } from '../style-constants/Colors';
+import { Colors } from '../constants/Colors';
 import { Contexts } from '../contexts/Context';
 import { HeaderSeekbar } from './HeaderSeekbar';
-import { ActionType as HistoryActionType } from '../contexts/History';
 import { Icons } from '../icons/Icons';
-import { Metrics } from '../style-constants/Metrics';
+import { Metrics } from '../constants/Metrics';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
@@ -78,7 +76,7 @@ export const Header = ( { className }: HeaderProps ): JSX.Element => {
     (): void => {
       if ( context.state.history.index !== 0 ) {
         context.state.history.entries[ context.state.history.index - 1 ].undo();
-        context.dispatch( { type: HistoryActionType.Undo } );
+        context.dispatch( { type: 'History/Undo' } );
       } else {
         if ( cantUndoThis === 9 ) {
           window.open( 'https://youtu.be/bzY7J0Xle08', '_blank' );
@@ -95,7 +93,7 @@ export const Header = ( { className }: HeaderProps ): JSX.Element => {
     (): void => {
       if ( context.state.history.index !== context.state.history.entries.length ) {
         context.state.history.entries[ context.state.history.index ].redo();
-        context.dispatch( { type: HistoryActionType.Redo } );
+        context.dispatch( { type: 'History/Redo' } );
       }
     },
     [ context.state.history ]
@@ -130,7 +128,7 @@ export const Header = ( { className }: HeaderProps ): JSX.Element => {
         <StyledHeaderSeekbar />
       </Section>
       <Logo as={ Icons.Automaton }
-        onClick={ () => context.dispatch( { type: AboutActionType.Open } ) }
+        onClick={ () => context.dispatch( { type: 'About/Open' } ) }
       />
       <Section>
         <Button

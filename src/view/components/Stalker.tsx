@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Colors } from '../style-constants/Colors';
+import { Colors } from '../constants/Colors';
 import styled from 'styled-components';
 
 // == styles =======================================================================================

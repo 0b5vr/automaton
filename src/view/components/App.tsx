@@ -1,14 +1,13 @@
 import React, { useContext } from 'react';
 import styled, { createGlobalStyle } from 'styled-components';
 import { About } from './About';
-import { ActionType as AboutActionType } from '../contexts/About';
 import { AutomatonStateListener } from './AutomatonStateListener';
 import { AutomatonWithGUI } from '../../AutomatonWithGUI';
-import { Colors } from '../style-constants/Colors';
+import { Colors } from '../constants/Colors';
 import { Contexts } from '../contexts/Context';
 import { CurveEditor } from './CurveEditor';
 import { Header } from './Header';
-import { Metrics } from '../style-constants/Metrics';
+import { Metrics } from '../constants/Metrics';
 import { ParamList } from './ParamList';
 import { Stalker } from './Stalker';
 
@@ -87,7 +86,7 @@ const Fuck = ( { automaton }: AppProps ): JSX.Element => {
 
       { context.state.about.isVisible && <>
         <OverlayBG
-          onClick={ () => context.dispatch( { type: AboutActionType.Close } ) }
+          onClick={ () => context.dispatch( { type: 'About/Close' } ) }
         />
         <StyledAbout />
       </> }

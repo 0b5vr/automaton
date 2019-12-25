@@ -12,21 +12,14 @@ export const initialState: Readonly<State> = {
 };
 
 // == action =======================================================================================
-export enum ActionType {
-  SeekDown = 'Header/SeekDown',
-  SeekUp = 'Header/SeekUp',
-  SeekbarEnter = 'Header/SeekbarEnter',
-  SeekbarLeave = 'Header/SeekbarLeave',
-}
-
-type Action = {
-  type: ActionType.SeekDown;
+export type Action = {
+  type: 'Header/SeekDown';
 } | {
-  type: ActionType.SeekUp;
+  type: 'Header/SeekUp';
 } | {
-  type: ActionType.SeekbarEnter;
+  type: 'Header/SeekbarEnter';
 } | {
-  type: ActionType.SeekbarLeave;
+  type: 'Header/SeekbarLeave';
 };
 
 // == reducer ======================================================================================
@@ -35,14 +28,14 @@ export function reducer(
   action: Action
 ): State {
   return produce( state, ( newState: State ) => {
-    if ( action.type === ActionType.SeekDown ) {
+    if ( action.type === 'Header/SeekDown' ) {
       newState.isSeeking = true;
       newState.isSeekbarHovered = true; // just in case
-    } else if ( action.type === ActionType.SeekUp ) {
+    } else if ( action.type === 'Header/SeekUp' ) {
       newState.isSeeking = false;
-    } else if ( action.type === ActionType.SeekbarEnter ) {
+    } else if ( action.type === 'Header/SeekbarEnter' ) {
       newState.isSeekbarHovered = true;
-    } else if ( action.type === ActionType.SeekbarLeave ) {
+    } else if ( action.type === 'Header/SeekbarLeave' ) {
       newState.isSeekbarHovered = false;
     }
   } );

@@ -1,7 +1,6 @@
 import React, { useContext } from 'react';
-import { Colors } from '../style-constants/Colors';
+import { Colors } from '../constants/Colors';
 import { Contexts } from '../contexts/Context';
-import { ActionType as HeaderActionType } from '../contexts/Header';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
 import styled from 'styled-components';
 
@@ -60,7 +59,7 @@ export const HeaderSeekbar = ( { className }: HeaderSeekbarProps ): JSX.Element 
 
       automaton.pause();
       automaton.seek( ( event.clientX - x ) / width * context.state.automaton.length );
-      context.dispatch( { type: HeaderActionType.SeekDown } );
+      context.dispatch( { type: 'Header/SeekDown' } );
 
       registerMouseEvent(
         ( event ) => {
@@ -69,18 +68,18 @@ export const HeaderSeekbar = ( { className }: HeaderSeekbarProps ): JSX.Element 
         ( event ) => {
           automaton.seek( ( event.clientX - x ) / width * context.state.automaton.length );
           if ( isPlaying ) { automaton.play(); }
-          context.dispatch( { type: HeaderActionType.SeekUp } );
+          context.dispatch( { type: 'Header/SeekUp' } );
         }
       );
     }
   }
 
   function handleMouseEnter(): void {
-    context.dispatch( { type: HeaderActionType.SeekbarEnter } );
+    context.dispatch( { type: 'Header/SeekbarEnter' } );
   }
 
   function handleMouseLeave(): void {
-    context.dispatch( { type: HeaderActionType.SeekbarLeave } );
+    context.dispatch( { type: 'Header/SeekbarLeave' } );
   }
 
   const progress = context.state.automaton.time / context.state.automaton.length;

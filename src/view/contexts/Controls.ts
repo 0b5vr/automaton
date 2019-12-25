@@ -10,12 +10,8 @@ export const initialState: Readonly<State> = {
 };
 
 // == action =======================================================================================
-export enum ActionType {
-  SetLastClick = 'Controls/SetLastClick'
-}
-
-type Action = {
-  type: ActionType.SetLastClick;
+export type Action = {
+  type: 'Controls/SetLastClick';
   date: number;
 }
 
@@ -25,7 +21,7 @@ export function reducer(
   action: Action
 ): State {
   return produce( state, ( newState: State ) => {
-    if ( action.type === ActionType.SetLastClick ) {
+    if ( action.type === 'Controls/SetLastClick' ) {
       newState.lastClick = action.date;
     }
   } );

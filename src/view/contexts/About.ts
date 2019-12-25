@@ -10,15 +10,10 @@ export const initialState: Readonly<State> = {
 };
 
 // == action =======================================================================================
-export enum ActionType {
-  Open = 'About/Open',
-  Close = 'About/Close'
-}
-
-type Action = {
-  type: ActionType.Open;
+export type Action = {
+  type: 'About/Open';
 } | {
-  type: ActionType.Close;
+  type: 'About/Close';
 };
 
 // == reducer ======================================================================================
@@ -27,9 +22,9 @@ export function reducer(
   action: Action
 ): State {
   return produce( state, ( newState: State ) => {
-    if ( action.type === ActionType.Open ) {
+    if ( action.type === 'About/Open' ) {
       newState.isVisible = true;
-    } else if ( action.type === ActionType.Close ) {
+    } else if ( action.type === 'About/Close' ) {
       newState.isVisible = false;
     }
   } );

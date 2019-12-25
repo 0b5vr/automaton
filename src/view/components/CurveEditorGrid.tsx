@@ -1,6 +1,6 @@
 import React, { useContext, useMemo } from 'react';
 import { t2x, v2y } from '../utils/CurveEditorUtils';
-import { Colors } from '../style-constants/Colors';
+import { Colors } from '../constants/Colors';
 import { Contexts } from '../contexts/Context';
 import styled from 'styled-components';
 

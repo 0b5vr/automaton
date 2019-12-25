@@ -1,11 +1,7 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext } from 'react';
 import { dt2dx, dv2dy, dx2dt, dy2dv, t2x, v2y, x2t, y2v } from '../utils/CurveEditorUtils';
-import { Colors } from '../style-constants/Colors';
+import { Colors } from '../constants/Colors';
 import { Contexts } from '../contexts/Context';
-import { ActionType as ControlsActionType } from '../contexts/Controls';
-import { ActionType as CurveEditorActionType } from '../contexts/CurveEditor';
-import { ActionType as HistoryActionType } from '../contexts/History';
-import { ParamWithGUIEvent } from '../../ParamWithGUI';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
 import styled from 'styled-components';
 
@@ -42,38 +38,12 @@ export const CurveEditorNodes = ( props: CurveEditorNodesProps ): JSX.Element =>
   const context = useContext( Contexts.Store );
   const { range, size, selectedParam } = context.state.curveEditor;
   const automaton = context.state.automaton.instance;
-
-  useEffect( // update nodes
-    () => {
-      if ( !automaton || !selectedParam ) { return; }
-      const param = automaton.getParam( selectedParam )!;
-      context.dispatch( {
-        type: CurveEditorActionType.UpdateSerializedParam,
-        param
-      } );
-    },
-    [ automaton, selectedParam ]
-  );
-
-  useEffect( // update points when precalc happened
-    () => {
-      if ( !automaton || !selectedParam ) { return; }
-      const param = automaton.getParam( selectedParam )!;
-
-      const handlePrecalc = (): void => context.dispatch( {
-        type: CurveEditorActionType.UpdateSerializedParam,
-        param
-      } );
-
-      param.on( ParamWithGUIEvent.Precalc, handlePrecalc );
-      return () => param.off( ParamWithGUIEvent.Precalc, handlePrecalc );
-    },
-    [ automaton, selectedParam ]
-  );
+  const param = selectedParam && automaton?.getParam( selectedParam ) || null;
+  const serializedParam = selectedParam && context.state.automaton.params[ selectedParam ] || null;
 
   const grabNode = ( index: number ): void => {
-    if ( !automaton || !selectedParam ) { return; }
-    const param = automaton.getParam( selectedParam )!;
+    if ( !param ) { return; }
+
     const node = param.getNodeByIndex( index );
     const tPrev = node.time;
     const vPrev = node.value;
@@ -103,7 +73,7 @@ export const CurveEditorNodes = ( props: CurveEditorNodesProps ): JSX.Element =>
         const redo = (): void => param.moveNode( node.$id, t, v );
 
         context.dispatch( {
-          type: HistoryActionType.Push,
+          type: 'History/Push',
           entry: {
             description: 'Move Node',
             redo,
@@ -116,14 +86,14 @@ export const CurveEditorNodes = ( props: CurveEditorNodesProps ): JSX.Element =>
   };
 
   const removeNode = ( index: number ): void => {
-    if ( !automaton || !selectedParam ) { return; }
-    const param = automaton.getParam( selectedParam )!;
+    if ( !param ) { return; }
+
     const node = param.getNodeByIndex( index );
 
     const redo = (): void => param.removeNode( node.$id );
 
     context.dispatch( {
-      type: HistoryActionType.Push,
+      type: 'History/Push',
       entry: {
         description: 'Remove Node',
         redo,
@@ -140,7 +110,7 @@ export const CurveEditorNodes = ( props: CurveEditorNodesProps ): JSX.Element =>
     if ( event.buttons === 1 ) {
       const now = Date.now();
       const isDoubleClick = ( now - context.state.controls.lastClick ) < 250;
-      context.dispatch( { type: ControlsActionType.SetLastClick, date: now } );
+      context.dispatch( { type: 'Controls/SetLastClick', date: now } );
 
       if ( isDoubleClick ) {
         removeNode( index );
@@ -151,8 +121,8 @@ export const CurveEditorNodes = ( props: CurveEditorNodesProps ): JSX.Element =>
   };
 
   const grabHandle = ( index: number, dir: 'in' | 'out' ): void => {
-    if ( !automaton || !selectedParam ) { return; }
-    const param = automaton.getParam( selectedParam )!;
+    if ( !param ) { return; }
+
     const node = param.getNodeByIndex( index );
     const tPrev = node[ dir ]!.time;
     const vPrev = node[ dir ]!.value;
@@ -208,7 +178,7 @@ export const CurveEditorNodes = ( props: CurveEditorNodesProps ): JSX.Element =>
         };
 
         context.dispatch( {
-          type: HistoryActionType.Push,
+          type: 'History/Push',
           entry: {
             description: 'Move Handle',
             redo,
@@ -224,8 +194,8 @@ export const CurveEditorNodes = ( props: CurveEditorNodesProps ): JSX.Element =>
   };
 
   const removeHandle = ( index: number, dir: 'in' | 'out' ): void => {
-    if ( !automaton || !selectedParam ) { return; }
-    const param = automaton.getParam( selectedParam )!;
+    if ( !param ) { return; }
+
     const node = param.getNodeByIndex( index );
     const tPrev = node[ dir ]!.time;
     const vPrev = node[ dir ]!.value;
@@ -233,7 +203,7 @@ export const CurveEditorNodes = ( props: CurveEditorNodesProps ): JSX.Element =>
     const redo = (): void => param.moveHandle( node.$id, dir, 0.0, 0.0 );
 
     context.dispatch( {
-      type: HistoryActionType.Push,
+      type: 'History/Push',
       entry: {
         description: 'Remove Handle',
         redo,
@@ -250,7 +220,7 @@ export const CurveEditorNodes = ( props: CurveEditorNodesProps ): JSX.Element =>
     if ( event.buttons === 1 ) {
       const now = Date.now();
       const isDoubleClick = ( now - context.state.controls.lastClick ) < 250;
-      context.dispatch( { type: ControlsActionType.SetLastClick, date: now } );
+      context.dispatch( { type: 'Controls/SetLastClick', date: now } );
 
       if ( isDoubleClick ) {
         removeHandle( index, dir );
@@ -263,8 +233,7 @@ export const CurveEditorNodes = ( props: CurveEditorNodesProps ): JSX.Element =>
   return (
     <Root className={ props.className }>
       {
-        context.state.curveEditor.serializedParam &&
-        context.state.curveEditor.serializedParam.nodes.map( ( node, i ) => (
+        serializedParam?.nodes.map( ( node, i ) => (
           <g key={ i }
             transform={ `translate(${
               t2x( node.time, range, size.width )

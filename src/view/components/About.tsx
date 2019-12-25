@@ -1,7 +1,6 @@
 import React, { useContext } from 'react';
-import { ActionType as AboutActionType } from '../contexts/About';
 import { Anchor } from './Anchor';
-import { Colors } from '../style-constants/Colors';
+import { Colors } from '../constants/Colors';
 import { Contexts } from '../contexts/Context';
 import { Icons } from '../icons/Icons';
 import styled from 'styled-components';
@@ -106,7 +105,7 @@ export const About = ( { className }: AboutProps ): JSX.Element => {
       Shoutouts to <Anchor href="https://www.image-line.com/flstudio/">Image Line Software</Anchor> &lt;3
     </SubRoot>
     <Close onClick={
-      () => context.dispatch( { type: AboutActionType.Close } )
+      () => context.dispatch( { type: 'About/Close' } )
     } />
   </Root>;
 };

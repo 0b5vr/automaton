@@ -1,9 +1,7 @@
-import React, { useContext, useEffect, useMemo } from 'react';
-import { AutomatonWithGUIEvent } from '../../AutomatonWithGUI';
-import { Colors } from '../style-constants/Colors';
+import React, { useContext, useMemo } from 'react';
+import { Colors } from '../constants/Colors';
 import { Contexts } from '../contexts/Context';
 import { ParamEntry } from './ParamEntry';
-import { ActionType as ParamListActionType } from '../contexts/ParamList';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
@@ -26,34 +24,9 @@ export const ParamList = ( { className }: ParamListProps ): JSX.Element => {
   const context = useContext( Contexts.Store );
   const automaton = context.state.automaton.instance;
 
-  useEffect(
-    () => {
-      if ( !automaton ) { return; }
-      context.dispatch( {
-        type: ParamListActionType.SetParams,
-        params: automaton.getParamNames()
-      } );
-
-      function handleCreateParam( { name }: any ): void {
-        context.dispatch( { type: ParamListActionType.AddParam, param: name } );
-      }
-      function handleRemoveParam( { name }: any ): void {
-        context.dispatch( { type: ParamListActionType.DeleteParam, param: name } );
-      }
-
-      automaton.on( AutomatonWithGUIEvent.CreateParam, handleCreateParam );
-      automaton.on( AutomatonWithGUIEvent.RemoveParam, handleRemoveParam );
-      return () => {
-        automaton.off( AutomatonWithGUIEvent.CreateParam, handleCreateParam );
-        automaton.off( AutomatonWithGUIEvent.RemoveParam, handleRemoveParam );
-      };
-    },
-    [ automaton ]
-  );
-
   const arrayOfParams = useMemo(
-    () => Object.keys( context.state.paramList.params ),
-    [ context.state.paramList.params ]
+    () => Object.keys( context.state.automaton.params ),
+    [ context.state.automaton.params ]
   );
 
   return (

@@ -1,8 +1,8 @@
 import { CurveEditorRange, v2y, x2t } from '../utils/CurveEditorUtils';
-import { ParamWithGUI, ParamWithGUIEvent } from '../../ParamWithGUI';
 import React, { useContext, useEffect, useState } from 'react';
-import { Colors } from '../style-constants/Colors';
+import { Colors } from '../constants/Colors';
 import { Contexts } from '../contexts/Context';
+import { ParamWithGUI } from '../../ParamWithGUI';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
@@ -58,8 +58,8 @@ export const CurveEditorGraph = ( { className }: CurveEditorGraphProps ): JSX.El
 
       const handlePrecalc = (): void => setPoints( calcPoints( param, range, size ) );
 
-      param.on( ParamWithGUIEvent.Precalc, handlePrecalc );
-      return () => param.off( ParamWithGUIEvent.Precalc, handlePrecalc );
+      param.on( 'precalc', handlePrecalc );
+      return () => param.off( 'precalc', handlePrecalc );
     },
     [ automaton, selectedParam, range, size ]
   );

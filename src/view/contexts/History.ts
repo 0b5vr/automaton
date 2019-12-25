@@ -18,22 +18,15 @@ export const initialState: Readonly<State> = {
 };
 
 // == action =======================================================================================
-export enum ActionType {
-  Push = 'History/Push',
-  Drop = 'History/Drop',
-  Undo = 'History/Undo',
-  Redo = 'History/Redo'
-}
-
-type Action = {
-  type: ActionType.Push;
+export type Action = {
+  type: 'History/Push';
   entry: HistoryEntry;
 } | {
-  type: ActionType.Drop;
+  type: 'History/Drop';
 } | {
-  type: ActionType.Undo;
+  type: 'History/Undo';
 } | {
-  type: ActionType.Redo;
+  type: 'History/Redo';
 };
 
 // == reducer ======================================================================================
@@ -42,16 +35,16 @@ export function reducer(
   action: Action
 ): State {
   return produce( state, ( newState: State ) => {
-    if ( action.type === ActionType.Push ) {
+    if ( action.type === 'History/Push' ) {
       newState.entries.splice( state.index );
       newState.entries.push( action.entry );
       newState.index ++;
-    } else if ( action.type === ActionType.Drop ) {
+    } else if ( action.type === 'History/Drop' ) {
       newState.entries.splice( 0 );
       newState.index = 0;
-    } else if ( action.type === ActionType.Undo ) {
+    } else if ( action.type === 'History/Undo' ) {
       newState.index --;
-    } else if ( action.type === ActionType.Redo ) {
+    } else if ( action.type === 'History/Redo' ) {
       newState.index ++;
     }
   } );

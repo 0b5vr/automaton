@@ -14,7 +14,7 @@ import { removeID } from './utils/removeID';
  */
 export const PARAM_DEFAULT_HANDLE_LENGTH = 0.5;
 
-export const PARAM_FX_ROW_MAX = 4;
+export const PARAM_FX_ROW_MAX = 5;
 
 /**
  * Represents "Status code" of a {@link ParamStatus}.
@@ -54,21 +54,6 @@ export interface ParamStatus {
    * Message of the status.
    */
   message?: string;
-}
-
-/**
- * Events that will be emitted from [[ParamWithGUI]].
- */
-export enum ParamWithGUIEvent {
-  /**
-   * Will be emitted when precalculation has completed.
-   */
-  Precalc = 'precalc',
-
-  /**
-   * Will be emitted when status has been changed.
-   */
-  Status = 'status'
 }
 
 /**
@@ -170,7 +155,7 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
       message: 'This param has NaN value'
     } );
 
-    this.__emit( ParamWithGUIEvent.Precalc );
+    this.__emit( 'precalc' );
     this.__automaton.pokeRenderer();
   }
 
@@ -386,7 +371,7 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
    */
   public createFx( time: number, length: number, def: string ): string | null {
     const row = this.__getFreeRow( time, length );
-    if ( PARAM_FX_ROW_MAX < row ) {
+    if ( PARAM_FX_ROW_MAX <= row ) {
       console.error( 'Too many fx stacks at here!' );
       return null;
     }
@@ -415,7 +400,7 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
    */
   public createFxFromData( fx: FxSection & WithID ): string {
     const row = this.__getFreeRow( fx.time, fx.length, fx.row );
-    if ( PARAM_FX_ROW_MAX < row ) {
+    if ( PARAM_FX_ROW_MAX <= row ) {
       console.error( 'Too many fx stacks at here!' );
       return '';
     }
@@ -472,7 +457,7 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
   public changeFxRow( id: string, row: number ): void {
     const index = this.__getFxIndexById( id );
 
-    if ( row < 0 || PARAM_FX_ROW_MAX < row ) {
+    if ( row < 0 || PARAM_FX_ROW_MAX <= row ) {
       throw new Error( `Row number ${row} is invalid` );
     }
 
@@ -676,7 +661,7 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
       this.__statusList.sort( ( a, b ) => b.level - a.level );
     }
 
-    this.__emit( ParamWithGUIEvent.Status );
+    this.__emit( 'status' );
   }
 
   /**
@@ -738,5 +723,8 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
   }
 }
 
-export interface ParamWithGUI extends EventEmittable<ParamWithGUIEvent> {}
+export interface ParamWithGUI extends EventEmittable<{
+  precalc: void;
+  status: void;
+}> {}
 applyMixins( ParamWithGUI, [ EventEmittable ] );

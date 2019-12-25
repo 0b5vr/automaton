@@ -1,7 +1,7 @@
-import { AutomatonWithGUI, AutomatonWithGUIEvent } from '../../AutomatonWithGUI';
 import React, { useContext, useEffect } from 'react';
-import { ActionType as AutomatonActionType } from '../contexts/Automaton';
+import { AutomatonWithGUI } from '../../AutomatonWithGUI';
 import { Contexts } from '../contexts/Context';
+import { ParamWithGUI } from '../../ParamWithGUI';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
@@ -18,31 +18,63 @@ export const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JS
   const context = useContext( Contexts.Store );
   const automaton = props.automaton;
 
+  function createParam( name: string, param: ParamWithGUI ): void {
+    context.dispatch( {
+      type: 'Automaton/UpdateParam',
+      name: name,
+      serializedParam: param.serialize()
+    } );
+
+    param.on( 'precalc', () => {
+      context.dispatch( {
+        type: 'Automaton/UpdateParam',
+        name: name,
+        serializedParam: param.serialize()
+      } );
+    } );
+  }
+
   useEffect(
     () => {
       context.dispatch( {
-        type: AutomatonActionType.SetInstance,
+        type: 'Automaton/SetInstance',
         automaton
       } );
 
-      context.dispatch( { type: AutomatonActionType.UpdateTime } );
-      context.dispatch( { type: AutomatonActionType.UpdateLength } );
-      context.dispatch( { type: AutomatonActionType.UpdateIsPlaying } );
-
-      automaton.on( AutomatonWithGUIEvent.Update, () => {
-        context.dispatch( { type: AutomatonActionType.UpdateTime } );
+      context.dispatch( {
+        type: 'Automaton/UpdateTime'
       } );
 
-      automaton.on( AutomatonWithGUIEvent.ChangeLength, () => {
-        context.dispatch( { type: AutomatonActionType.UpdateLength } );
+      context.dispatch( {
+        type: 'Automaton/UpdateLength'
       } );
 
-      automaton.on( AutomatonWithGUIEvent.Play, () => {
-        context.dispatch( { type: AutomatonActionType.UpdateIsPlaying } );
+      context.dispatch( {
+        type: 'Automaton/UpdateIsPlaying'
       } );
 
-      automaton.on( AutomatonWithGUIEvent.Pause, () => {
-        context.dispatch( { type: AutomatonActionType.UpdateIsPlaying } );
+      automaton.getParamNames().forEach( ( name ) => {
+        createParam( name, automaton.getParam( name )! );
+      } );
+
+      automaton.on( 'update', () => {
+        context.dispatch( { type: 'Automaton/UpdateTime' } );
+      } );
+
+      automaton.on( 'changeLength', () => {
+        context.dispatch( { type: 'Automaton/UpdateLength' } );
+      } );
+
+      automaton.on( 'play', () => {
+        context.dispatch( { type: 'Automaton/UpdateIsPlaying' } );
+      } );
+
+      automaton.on( 'pause', () => {
+        context.dispatch( { type: 'Automaton/UpdateIsPlaying' } );
+      } );
+
+      automaton.on( 'createParam', ( event ) => {
+        createParam( event.name, event.param );
       } );
     },
     [ automaton ]

@@ -1,26 +1,45 @@
-export type EventListener = ( event?: any ) => void;
+// Ref: https://github.com/andywer/typed-emitter/blob/master/index.d.ts
 
-export class EventEmittable<T extends string> {
-  protected __eventListeners?: { [ event: string ]: EventListener[] };
+export type EventListener<T> = ( event: T ) => void;
 
-  public on( event: T, listener: EventListener ): void {
-    this.__eventListeners = this.__eventListeners || {};
-    this.__eventListeners[ event ] = this.__eventListeners[ event ] || [];
-    this.__eventListeners[ event ].push( listener );
+export class EventEmittable<TEvents extends { [ type: string ]: any }> {
+  protected __eventListeners?: Map<keyof TEvents, EventListener<any>[]>;
+
+  public on<TType extends keyof TEvents & string>(
+    type: TType,
+    listener: EventListener<TEvents[ TType ]>
+  ): void {
+    this.__eventListeners = this.__eventListeners || new Map();
+    let array = this.__eventListeners.get( type );
+    if ( !array ) {
+      array = [];
+      this.__eventListeners.set( type, array );
+    }
+
+    array.push( listener );
   }
 
-  public off( event: T, listener: EventListener ): void {
-    this.__eventListeners = this.__eventListeners || {};
-    this.__eventListeners[ event ] = this.__eventListeners[ event ] || [];
-    const index = this.__eventListeners[ event ].indexOf( listener );
+  public off<TType extends keyof TEvents & string>(
+    type: TType,
+    listener: EventListener<TEvents[ TType ]>
+  ): void {
+    this.__eventListeners = this.__eventListeners || new Map();
+    let array = this.__eventListeners.get( type );
+    if ( !array ) {
+      array = [];
+      this.__eventListeners.set( type, array );
+    }
+
+    const index = array.indexOf( listener );
     if ( index !== -1 ) {
-      this.__eventListeners[ event ].splice( index, 1 );
+      array.splice( index, 1 );
     }
   }
 
-  protected __emit( event: T, args?: any ): void {
-    this.__eventListeners &&
-    this.__eventListeners[ event ] &&
-    this.__eventListeners[ event ].forEach( ( listener ) => listener( args ) );
+  protected __emit<TType extends keyof TEvents>(
+    ...[ type, event ]: TEvents[ TType ] extends void ? [ TType ] : [ TType, TEvents[ TType ] ]
+  ): void {
+    this.__eventListeners = this.__eventListeners || new Map();
+    this.__eventListeners.get( type )?.forEach( ( listener ) => listener( event ) );
   }
 }

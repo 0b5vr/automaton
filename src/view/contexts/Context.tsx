@@ -4,7 +4,6 @@ import * as Controls from './Controls';
 import * as CurveEditor from './CurveEditor';
 import * as Header from './Header';
 import * as History from './History';
-import * as ParamList from './ParamList';
 import React, { createContext, useReducer } from 'react';
 
 // == utils ========================================================================================
@@ -28,7 +27,6 @@ export interface ContextsState {
   curveEditor: CurveEditor.State;
   header: Header.State;
   history: History.State;
-  paramList: ParamList.State;
 }
 
 const initialState: Readonly<ContextsState> = {
@@ -38,8 +36,17 @@ const initialState: Readonly<ContextsState> = {
   curveEditor: CurveEditor.initialState,
   header: Header.initialState,
   history: History.initialState,
-  paramList: ParamList.initialState
 };
+
+// == action =======================================================================================
+type Action = (
+  About.Action |
+  Automaton.Action |
+  Controls.Action |
+  CurveEditor.Action |
+  Header.Action |
+  History.Action
+);
 
 // == reducer ======================================================================================
 const reducer = combineReducers<ContextsState>( {
@@ -49,13 +56,12 @@ const reducer = combineReducers<ContextsState>( {
   curveEditor: CurveEditor.reducer,
   header: Header.reducer,
   history: History.reducer,
-  paramList: ParamList.reducer
 } );
 
 // == context ======================================================================================
 interface StoreType {
   state: ContextsState;
-  dispatch: React.Dispatch<any>;
+  dispatch: React.Dispatch<Action>;
 }
 
 const Store = createContext<StoreType>( undefined as any as StoreType );

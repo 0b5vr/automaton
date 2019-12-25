@@ -1,8 +1,7 @@
 import { ParamStatus, ParamStatusLevel } from '../../ParamWithGUI';
 import React, { useContext } from 'react';
-import { Colors } from '../style-constants/Colors';
+import { Colors } from '../constants/Colors';
 import { Contexts } from '../contexts/Context';
-import { ActionType as CurveEditorActionType } from '../contexts/CurveEditor';
 import { Icons } from '../icons/Icons';
 import styled from 'styled-components';
 
@@ -51,7 +50,7 @@ export const ParamEntry = ( { className, name, value, status }: ParamEntryProps 
 
   function handleClick(): void {
     context.dispatch( {
-      type: CurveEditorActionType.SelectParam,
+      type: 'CurveEditor/SelectParam',
       param: name
     } );
   }
