@@ -1,10 +1,10 @@
 import React, { useContext, useEffect } from 'react';
 import { dt2dx, dv2dy, dx2dt, dy2dv, t2x, v2y, x2t, y2v } from '../utils/CurveEditorUtils';
 import { Colors } from '../style-constants/Colors';
-import { Context } from '../contexts/Context';
-import { ControlsActionType } from '../contexts/Controls';
-import { CurveEditorActionType } from '../contexts/CurveEditor';
-import { HistoryActionType } from '../contexts/History';
+import { Contexts } from '../contexts/Context';
+import { ActionType as ControlsActionType } from '../contexts/Controls';
+import { ActionType as CurveEditorActionType } from '../contexts/CurveEditor';
+import { ActionType as HistoryActionType } from '../contexts/History';
 import { ParamWithGUIEvent } from '../../ParamWithGUI';
 import { registerMouseEvent } from '../utils/MouseUtils';
 import styled from 'styled-components';
@@ -39,7 +39,7 @@ export interface CurveEditorNodesProps {
 }
 
 export const CurveEditorNodes = ( props: CurveEditorNodesProps ): JSX.Element => {
-  const context = useContext( Context.Store );
+  const context = useContext( Contexts.Store );
   const { range, size, selectedParam } = context.state.curveEditor;
   const automaton = context.state.automaton.instance;
 

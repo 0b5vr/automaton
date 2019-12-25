@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { Colors } from '../style-constants/Colors';
-import { Context } from '../contexts/Context';
-import { HeaderActionType } from '../contexts/Header';
+import { Contexts } from '../contexts/Context';
+import { ActionType as HeaderActionType } from '../contexts/Header';
 import { registerMouseEvent } from '../utils/MouseUtils';
 import styled from 'styled-components';
 
@@ -47,7 +47,7 @@ export interface HeaderSeekbarProps {
 }
 
 export const HeaderSeekbar = ( { className }: HeaderSeekbarProps ): JSX.Element => {
-  const context = useContext( Context.Store );
+  const context = useContext( Contexts.Store );
   const automaton = context.state.automaton.instance!;
 
   function handleMouseDown( event: React.MouseEvent ): void {

@@ -1,7 +1,7 @@
 import { AutomatonWithGUI, AutomatonWithGUIEvent } from '../../AutomatonWithGUI';
 import React, { useContext, useEffect } from 'react';
-import { AutomatonActionType } from '../contexts/Automaton';
-import { Context } from '../contexts/Context';
+import { ActionType as AutomatonActionType } from '../contexts/Automaton';
+import { Contexts } from '../contexts/Context';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
@@ -15,7 +15,7 @@ export interface AutomatonStateListenerProps {
 }
 
 export const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Element => {
-  const context = useContext( Context.Store );
+  const context = useContext( Contexts.Store );
   const automaton = props.automaton;
 
   useEffect(

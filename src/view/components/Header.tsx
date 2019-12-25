@@ -1,9 +1,9 @@
 import React, { useCallback, useContext, useMemo, useState } from 'react';
-import { AboutActionType } from '../contexts/About';
+import { ActionType as AboutActionType } from '../contexts/About';
 import { Colors } from '../style-constants/Colors';
-import { Context } from '../contexts/Context';
+import { Contexts } from '../contexts/Context';
 import { HeaderSeekbar } from './HeaderSeekbar';
-import { HistoryActionType } from '../contexts/History';
+import { ActionType as HistoryActionType } from '../contexts/History';
 import { Icons } from '../icons/Icons';
 import { Metrics } from '../style-constants/Metrics';
 import styled from 'styled-components';
@@ -62,7 +62,7 @@ export interface HeaderProps {
 }
 
 export const Header = ( { className }: HeaderProps ): JSX.Element => {
-  const context = useContext( Context.Store );
+  const context = useContext( Contexts.Store );
   const [ cantUndoThis, setCantUndoThis ] = useState( 0 );
   const automaton = context.state.automaton.instance;
 

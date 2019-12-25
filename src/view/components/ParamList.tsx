@@ -1,9 +1,9 @@
 import React, { useContext, useEffect, useMemo } from 'react';
 import { AutomatonWithGUIEvent } from '../../AutomatonWithGUI';
 import { Colors } from '../style-constants/Colors';
-import { Context } from '../contexts/Context';
+import { Contexts } from '../contexts/Context';
 import { ParamEntry } from './ParamEntry';
-import { ParamListActionType } from '../contexts/ParamList';
+import { ActionType as ParamListActionType } from '../contexts/ParamList';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
@@ -23,7 +23,7 @@ export interface ParamListProps {
 }
 
 export const ParamList = ( { className }: ParamListProps ): JSX.Element => {
-  const context = useContext( Context.Store );
+  const context = useContext( Contexts.Store );
   const automaton = context.state.automaton.instance;
 
   useEffect(

@@ -1,8 +1,8 @@
 import React, { useContext } from 'react';
-import { AboutActionType } from '../contexts/About';
+import { ActionType as AboutActionType } from '../contexts/About';
 import { Anchor } from './Anchor';
 import { Colors } from '../style-constants/Colors';
-import { Context } from '../contexts/Context';
+import { Contexts } from '../contexts/Context';
 import { Icons } from '../icons/Icons';
 import styled from 'styled-components';
 
@@ -81,7 +81,7 @@ export interface AboutProps {
 }
 
 export const About = ( { className }: AboutProps ): JSX.Element => {
-  const context = useContext( Context.Store );
+  const context = useContext( Contexts.Store );
   const automaton = context.state.automaton.instance;
   const { selectedParam } = context.state.curveEditor;
   const param = automaton && selectedParam && automaton.getParam( selectedParam )!;

@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { t2x, v2y } from '../utils/CurveEditorUtils';
 import { Colors } from '../style-constants/Colors';
-import { Context } from '../contexts/Context';
+import { Contexts } from '../contexts/Context';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
@@ -28,7 +28,7 @@ export interface CurveEditorLineProps {
 }
 
 export const CurveEditorLine = ( { className }: CurveEditorLineProps ): JSX.Element => {
-  const context = useContext( Context.Store );
+  const context = useContext( Contexts.Store );
   const { range, size } = context.state.curveEditor;
   const automaton = context.state.automaton.instance;
   if ( !automaton ) { return <></>; }

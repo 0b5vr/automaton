@@ -2,21 +2,21 @@ import { AutomatonWithGUI } from '../../AutomatonWithGUI';
 import { produce } from 'immer';
 
 // == state ========================================================================================
-export interface AutomatonState {
+export interface State {
   instance?: AutomatonWithGUI;
   isPlaying: boolean;
   time: number;
   length: number;
 }
 
-export const initialAutomatonState: Readonly<AutomatonState> = {
+export const initialState: Readonly<State> = {
   isPlaying: false,
   time: 0.0,
   length: 1.0
 };
 
 // == action =======================================================================================
-export enum AutomatonActionType {
+export enum ActionType {
   SetInstance = 'Automaton/SetInstance',
   UpdateIsPlaying = 'Automaton/UpdateIsPlaying',
   UpdateTime = 'Automaton/UpdateTime',
@@ -24,23 +24,23 @@ export enum AutomatonActionType {
 }
 
 interface Action {
-  type: AutomatonActionType;
+  type: ActionType;
   [ key: string ]: any;
 }
 
 // == reducer ======================================================================================
-export function automatonReducer(
-  state: AutomatonState,
+export function reducer(
+  state: State,
   action: Action
-): AutomatonState {
-  return produce( state, ( newState: AutomatonState ) => {
-    if ( action.type === AutomatonActionType.SetInstance ) {
+): State {
+  return produce( state, ( newState: State ) => {
+    if ( action.type === ActionType.SetInstance ) {
       newState.instance = action.automaton;
-    } else if ( action.type === AutomatonActionType.UpdateIsPlaying ) {
+    } else if ( action.type === ActionType.UpdateIsPlaying ) {
       newState.isPlaying = state.instance!.isPlaying;
-    } else if ( action.type === AutomatonActionType.UpdateTime ) {
+    } else if ( action.type === ActionType.UpdateTime ) {
       newState.time = state.instance!.time;
-    } else if ( action.type === AutomatonActionType.UpdateLength ) {
+    } else if ( action.type === ActionType.UpdateLength ) {
       newState.length = state.instance!.length;
     }
   } );

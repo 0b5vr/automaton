@@ -1,18 +1,18 @@
 import { produce } from 'immer';
 
 // == state ========================================================================================
-export interface HeaderState {
+export interface State {
   isSeeking: boolean;
   isSeekbarHovered: boolean;
 }
 
-export const initialHeaderState: Readonly<HeaderState> = {
+export const initialState: Readonly<State> = {
   isSeeking: false,
   isSeekbarHovered: false
 };
 
 // == action =======================================================================================
-export enum HeaderActionType {
+export enum ActionType {
   SeekDown = 'Header/SeekDown',
   SeekUp = 'Header/SeekUp',
   SeekbarEnter = 'Header/SeekbarEnter',
@@ -20,24 +20,24 @@ export enum HeaderActionType {
 }
 
 interface Action {
-  type: HeaderActionType;
+  type: ActionType;
   [ key: string ]: any;
 }
 
 // == reducer ======================================================================================
-export function headerReducer(
-  state: HeaderState,
+export function reducer(
+  state: State,
   action: Action
-): HeaderState {
-  return produce( state, ( newState: HeaderState ) => {
-    if ( action.type === HeaderActionType.SeekDown ) {
+): State {
+  return produce( state, ( newState: State ) => {
+    if ( action.type === ActionType.SeekDown ) {
       newState.isSeeking = true;
       newState.isSeekbarHovered = true; // just in case
-    } else if ( action.type === HeaderActionType.SeekUp ) {
+    } else if ( action.type === ActionType.SeekUp ) {
       newState.isSeeking = false;
-    } else if ( action.type === HeaderActionType.SeekbarEnter ) {
+    } else if ( action.type === ActionType.SeekbarEnter ) {
       newState.isSeekbarHovered = true;
-    } else if ( action.type === HeaderActionType.SeekbarLeave ) {
+    } else if ( action.type === ActionType.SeekbarLeave ) {
       newState.isSeekbarHovered = false;
     }
   } );

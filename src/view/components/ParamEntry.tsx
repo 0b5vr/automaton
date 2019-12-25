@@ -1,8 +1,8 @@
 import { ParamStatus, ParamStatusLevel } from '../../ParamWithGUI';
 import React, { useContext } from 'react';
 import { Colors } from '../style-constants/Colors';
-import { Context } from '../contexts/Context';
-import { CurveEditorActionType } from '../contexts/CurveEditor';
+import { Contexts } from '../contexts/Context';
+import { ActionType as CurveEditorActionType } from '../contexts/CurveEditor';
 import { Icons } from '../icons/Icons';
 import styled from 'styled-components';
 
@@ -47,7 +47,7 @@ export interface ParamEntryProps {
 }
 
 export const ParamEntry = ( { className, name, value, status }: ParamEntryProps ): JSX.Element => {
-  const context = useContext( Context.Store );
+  const context = useContext( Contexts.Store );
 
   function handleClick(): void {
     context.dispatch( {

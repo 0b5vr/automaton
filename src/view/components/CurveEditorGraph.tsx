@@ -2,7 +2,7 @@ import { CurveEditorRange, v2y, x2t } from '../utils/CurveEditorUtils';
 import { ParamWithGUI, ParamWithGUIEvent } from '../../ParamWithGUI';
 import React, { useContext, useEffect, useState } from 'react';
 import { Colors } from '../style-constants/Colors';
-import { Context } from '../contexts/Context';
+import { Contexts } from '../contexts/Context';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
@@ -37,7 +37,7 @@ export interface CurveEditorGraphProps {
 }
 
 export const CurveEditorGraph = ( { className }: CurveEditorGraphProps ): JSX.Element => {
-  const context = useContext( Context.Store );
+  const context = useContext( Contexts.Store );
   const automaton = context.state.automaton.instance;
   const { selectedParam, range, size } = context.state.curveEditor;
   const [ points, setPoints ] = useState( '' );

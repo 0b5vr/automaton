@@ -1,37 +1,37 @@
 import { produce } from 'immer';
 
 // == state ========================================================================================
-export interface ParamListState {
+export interface State {
   params: { [ name: string ]: true };
 }
 
-export const initialParamListState: Readonly<ParamListState> = {
+export const initialState: Readonly<State> = {
   params: {}
 };
 
 // == action =======================================================================================
-export enum ParamListActionType {
+export enum ActionType {
   AddParam = 'ParamList/AddParam',
   DeleteParam = 'ParamList/DeleteParam',
   SetParams = 'ParamList/SetParams',
 }
 
 interface Action {
-  type: ParamListActionType;
+  type: ActionType;
   [ key: string ]: any;
 }
 
 // == reducer ======================================================================================
-export function paramListReducer(
-  state: ParamListState,
+export function reducer(
+  state: State,
   action: Action
-): ParamListState {
-  return produce( state, ( newState: ParamListState ) => {
-    if ( action.type === ParamListActionType.AddParam ) {
+): State {
+  return produce( state, ( newState: State ) => {
+    if ( action.type === ActionType.AddParam ) {
       newState.params[ action.param ] = true;
-    } else if ( action.type === ParamListActionType.DeleteParam ) {
+    } else if ( action.type === ActionType.DeleteParam ) {
       delete newState.params[ action.param ];
-    } else if ( action.type === ParamListActionType.SetParams ) {
+    } else if ( action.type === ActionType.SetParams ) {
       newState.params = {};
       action.params.forEach( ( param: string ) => newState.params[ param ] = true );
     }

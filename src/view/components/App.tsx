@@ -1,11 +1,11 @@
 import React, { useContext } from 'react';
 import styled, { createGlobalStyle } from 'styled-components';
 import { About } from './About';
-import { AboutActionType } from '../contexts/About';
+import { ActionType as AboutActionType } from '../contexts/About';
 import { AutomatonStateListener } from './AutomatonStateListener';
 import { AutomatonWithGUI } from '../../AutomatonWithGUI';
 import { Colors } from '../style-constants/Colors';
-import { Context } from '../contexts/Context';
+import { Contexts } from '../contexts/Context';
 import { CurveEditor } from './CurveEditor';
 import { Header } from './Header';
 import { Metrics } from '../style-constants/Metrics';
@@ -76,7 +76,7 @@ export interface AppProps {
 }
 
 const Fuck = ( { automaton }: AppProps ): JSX.Element => {
-  const context = useContext( Context.Store );
+  const context = useContext( Contexts.Store );
 
   return (
     <Root>
@@ -99,7 +99,7 @@ const Fuck = ( { automaton }: AppProps ): JSX.Element => {
 
 export const App = ( props: AppProps ): JSX.Element => <>
   <GlobalStyle />
-  <Context.Provider>
+  <Contexts.Provider>
     <Fuck { ...props } />
-  </Context.Provider>
+  </Contexts.Provider>
 </>;

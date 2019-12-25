@@ -1,31 +1,31 @@
 import { produce } from 'immer';
 
 // == state ========================================================================================
-export interface ControlsState {
+export interface State {
   lastClick: number;
 }
 
-export const initialControlsState: Readonly<ControlsState> = {
+export const initialState: Readonly<State> = {
   lastClick: 0
 };
 
 // == action =======================================================================================
-export enum ControlsActionType {
+export enum ActionType {
   SetLastClick = 'Controls/SetLastClick'
 }
 
 interface Action {
-  type: ControlsActionType;
+  type: ActionType;
   [ key: string ]: any;
 }
 
 // == reducer ======================================================================================
-export function controlsReducer(
-  state: ControlsState,
+export function reducer(
+  state: State,
   action: Action
-): ControlsState {
-  return produce( state, ( newState: ControlsState ) => {
-    if ( action.type === ControlsActionType.SetLastClick ) {
+): State {
+  return produce( state, ( newState: State ) => {
+    if ( action.type === ActionType.SetLastClick ) {
       newState.lastClick = action.date;
     }
   } );

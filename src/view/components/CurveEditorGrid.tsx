@@ -1,7 +1,7 @@
 import React, { useContext, useMemo } from 'react';
 import { t2x, v2y } from '../utils/CurveEditorUtils';
 import { Colors } from '../style-constants/Colors';
-import { Context } from '../contexts/Context';
+import { Contexts } from '../contexts/Context';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
@@ -30,7 +30,7 @@ interface GridLineEntry {
 }
 
 export const CurveEditorGrid = ( { className }: CurveEditorGridProps ): JSX.Element => {
-  const context = useContext( Context.Store );
+  const context = useContext( Contexts.Store );
   const { range, size } = context.state.curveEditor;
 
   const hlines: GridLineEntry[] = useMemo(

@@ -1,10 +1,10 @@
-import { AboutState, aboutReducer, initialAboutState } from './About';
-import { AutomatonState, automatonReducer, initialAutomatonState } from './Automaton';
-import { ControlsState, controlsReducer, initialControlsState } from './Controls';
-import { CurveEditorState, curveEditorReducer, initialCurveEditorState } from './CurveEditor';
-import { HeaderState, headerReducer, initialHeaderState } from './Header';
-import { HistoryState, historyReducer, initialHistoryState } from './History';
-import { ParamListState, initialParamListState, paramListReducer } from './ParamList';
+import * as About from './About';
+import * as Automaton from './Automaton';
+import * as Controls from './Controls';
+import * as CurveEditor from './CurveEditor';
+import * as Header from './Header';
+import * as History from './History';
+import * as ParamList from './ParamList';
 import React, { createContext, useReducer } from 'react';
 
 // == utils ========================================================================================
@@ -21,40 +21,40 @@ function combineReducers<T>( reducers: any ): ( ( state: any, action: any ) => T
 }
 
 // == state ========================================================================================
-export interface ContextState {
-  about: AboutState;
-  automaton: AutomatonState;
-  controls: ControlsState;
-  curveEditor: CurveEditorState;
-  header: HeaderState;
-  history: HistoryState;
-  paramList: ParamListState;
+export interface ContextsState {
+  about: About.State;
+  automaton: Automaton.State;
+  controls: Controls.State;
+  curveEditor: CurveEditor.State;
+  header: Header.State;
+  history: History.State;
+  paramList: ParamList.State;
 }
 
-const initialState: Readonly<ContextState> = {
-  about: initialAboutState,
-  automaton: initialAutomatonState,
-  controls: initialControlsState,
-  curveEditor: initialCurveEditorState,
-  header: initialHeaderState,
-  history: initialHistoryState,
-  paramList: initialParamListState
+const initialState: Readonly<ContextsState> = {
+  about: About.initialState,
+  automaton: Automaton.initialState,
+  controls: Controls.initialState,
+  curveEditor: CurveEditor.initialState,
+  header: Header.initialState,
+  history: History.initialState,
+  paramList: ParamList.initialState
 };
 
 // == reducer ======================================================================================
-const reducer = combineReducers<ContextState>( {
-  about: aboutReducer,
-  automaton: automatonReducer,
-  controls: controlsReducer,
-  curveEditor: curveEditorReducer,
-  header: headerReducer,
-  history: historyReducer,
-  paramList: paramListReducer
+const reducer = combineReducers<ContextsState>( {
+  about: About.reducer,
+  automaton: Automaton.reducer,
+  controls: Controls.reducer,
+  curveEditor: CurveEditor.reducer,
+  header: Header.reducer,
+  history: History.reducer,
+  paramList: ParamList.reducer
 } );
 
 // == context ======================================================================================
 interface StoreType {
-  state: ContextState;
+  state: ContextsState;
   dispatch: React.Dispatch<any>;
 }
 
@@ -65,7 +65,7 @@ const Provider = ( { children }: { children: JSX.Element } ): JSX.Element => {
   return <Store.Provider value={ { state, dispatch } }>{ children }</Store.Provider>;
 };
 
-export const Context = {
+export const Contexts = {
   Store,
   Provider
 };

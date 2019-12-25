@@ -1,34 +1,34 @@
 import { produce } from 'immer';
 
 // == state ========================================================================================
-export interface AboutState {
+export interface State {
   isVisible: boolean;
 }
 
-export const initialAboutState: Readonly<AboutState> = {
+export const initialState: Readonly<State> = {
   isVisible: false
 };
 
 // == action =======================================================================================
-export enum AboutActionType {
+export enum ActionType {
   Open = 'About/Open',
   Close = 'About/Close'
 }
 
 interface Action {
-  type: AboutActionType;
+  type: ActionType;
   [ key: string ]: any;
 }
 
 // == reducer ======================================================================================
-export function aboutReducer(
-  state: AboutState,
+export function reducer(
+  state: State,
   action: Action
-): AboutState {
-  return produce( state, ( newState: AboutState ) => {
-    if ( action.type === AboutActionType.Open ) {
+): State {
+  return produce( state, ( newState: State ) => {
+    if ( action.type === ActionType.Open ) {
       newState.isVisible = true;
-    } else if ( action.type === AboutActionType.Close ) {
+    } else if ( action.type === ActionType.Close ) {
       newState.isVisible = false;
     }
   } );

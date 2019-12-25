@@ -3,7 +3,7 @@ import { SerializedParam } from '@fms-cat/automaton';
 import { produce } from 'immer';
 
 // == state ========================================================================================
-export interface CurveEditorState {
+export interface State {
   selectedParam: string | null;
   serializedParam: SerializedParam | null;
   range: CurveEditorRange;
@@ -13,7 +13,7 @@ export interface CurveEditorState {
   };
 }
 
-export const initialCurveEditorState: CurveEditorState = {
+export const initialState: State = {
   selectedParam: null,
   serializedParam: null,
   range: {
@@ -29,7 +29,7 @@ export const initialCurveEditorState: CurveEditorState = {
 };
 
 // == action =======================================================================================
-export enum CurveEditorActionType {
+export enum ActionType {
   UpdateSerializedParam = 'CurveEditor/UpdateSerializedParam',
   SelectParam = 'CurveEditor/SelectParam',
   MoveRange = 'CurveEditor/MoveRange',
@@ -38,21 +38,21 @@ export enum CurveEditorActionType {
 }
 
 interface Action {
-  type: CurveEditorActionType;
+  type: ActionType;
   [ key: string ]: any;
 }
 
 // == reducer ======================================================================================
-export function curveEditorReducer(
-  state: CurveEditorState,
+export function reducer(
+  state: State,
   action: Action
-): CurveEditorState {
-  return produce( state, ( newState: CurveEditorState ) => {
-    if ( action.type === CurveEditorActionType.UpdateSerializedParam ) {
+): State {
+  return produce( state, ( newState: State ) => {
+    if ( action.type === ActionType.UpdateSerializedParam ) {
       newState.serializedParam = action.param.serialize();
-    } else if ( action.type === CurveEditorActionType.SelectParam ) {
+    } else if ( action.type === ActionType.SelectParam ) {
       newState.selectedParam = action.param;
-    } else if ( action.type === CurveEditorActionType.MoveRange ) {
+    } else if ( action.type === ActionType.MoveRange ) {
       const { range, size } = state;
       const length = action.tmax;
 
@@ -65,7 +65,7 @@ export function curveEditorReducer(
       newState.range.t1 += dt;
       newState.range.v0 += dv;
       newState.range.v1 += dv;
-    } else if ( action.type === CurveEditorActionType.ZoomRange ) {
+    } else if ( action.type === ActionType.ZoomRange ) {
       const { range, size } = state;
       const length = action.tmax;
 
@@ -99,7 +99,7 @@ export function curveEditorReducer(
       if ( length < newState.range.t1 ) {
         newState.range.t1 = length;
       }
-    } else if ( action.type === CurveEditorActionType.SetSize ) {
+    } else if ( action.type === ActionType.SetSize ) {
       newState.size = action.size;
     }
   } );
