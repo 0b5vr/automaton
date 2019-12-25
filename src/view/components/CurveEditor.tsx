@@ -9,7 +9,7 @@ import { CurveEditorGrid } from './CurveEditorGrid';
 import { CurveEditorLine } from './CurveEditorLine';
 import { CurveEditorNodes } from './CurveEditorNodes';
 import { ActionType as HistoryActionType } from '../contexts/History';
-import { registerMouseEvent } from '../utils/MouseUtils';
+import { registerMouseEvent } from '../utils/registerMouseEvent';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
@@ -100,9 +100,9 @@ export const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
       );
 
       registerMouseEvent(
-        ( event ) => {
-          x += event.movementX;
-          y += event.movementY;
+        ( event, movementSum ) => {
+          x += movementSum.x;
+          y += movementSum.y;
 
           param.moveNode(
             data.$id,
@@ -110,10 +110,7 @@ export const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
             y2v( y, range, size.height )
           );
         },
-        ( event ) => {
-          x += event.movementX;
-          y += event.movementY;
-
+        () => {
           const t = x2t( x, range, size.width );
           const v = y2v( y, range, size.height );
           param.moveNode( data.$id, t, v );
@@ -149,7 +146,7 @@ export const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
         }
       } else if ( event.buttons === 4 ) {
         registerMouseEvent(
-          ( event ) => move( event.movementX, event.movementY )
+          ( event, movementSum ) => move( movementSum.x, movementSum.y )
         );
       }
     },

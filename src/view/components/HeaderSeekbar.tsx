@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { Colors } from '../style-constants/Colors';
 import { Contexts } from '../contexts/Context';
 import { ActionType as HeaderActionType } from '../contexts/Header';
-import { registerMouseEvent } from '../utils/MouseUtils';
+import { registerMouseEvent } from '../utils/registerMouseEvent';
 import styled from 'styled-components';
 
 // == styles =======================================================================================

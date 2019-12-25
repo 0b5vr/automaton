@@ -6,7 +6,7 @@ import { ActionType as ControlsActionType } from '../contexts/Controls';
 import { ActionType as CurveEditorActionType } from '../contexts/CurveEditor';
 import { ActionType as HistoryActionType } from '../contexts/History';
 import { ParamWithGUIEvent } from '../../ParamWithGUI';
-import { registerMouseEvent } from '../utils/MouseUtils';
+import { registerMouseEvent } from '../utils/registerMouseEvent';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
@@ -84,10 +84,10 @@ export const CurveEditorNodes = ( props: CurveEditorNodesProps ): JSX.Element =>
     let hasMoved = false;
 
     registerMouseEvent(
-      ( event ) => {
+      ( event, movementSum ) => {
         hasMoved = true;
-        x += event.movementX;
-        y += event.movementY;
+        x += movementSum.x;
+        y += movementSum.y;
 
         const holdTime = event.ctrlKey || event.metaKey;
         const holdValue = event.shiftKey;
@@ -173,10 +173,10 @@ export const CurveEditorNodes = ( props: CurveEditorNodesProps ): JSX.Element =>
     let hasMoved = false;
 
     registerMouseEvent(
-      ( event ) => {
+      ( event, movementSum ) => {
         hasMoved = true;
-        x += event.movementX;
-        y += event.movementY;
+        x += movementSum.x;
+        y += movementSum.y;
 
         const holdDir = event.shiftKey;
         const moveBoth = event.ctrlKey || event.metaKey;
