@@ -5,6 +5,11 @@ export interface CurveEditorRange {
   v1: number;
 }
 
+export interface CurveEditorSize {
+  width: number;
+  height: number;
+}
+
 export function x2t( x: number, range: CurveEditorRange, width: number ): number {
   return ( x / width ) * ( range.t1 - range.t0 ) + range.t0;
 }

@@ -75,7 +75,7 @@ export interface AppProps {
 }
 
 const Fuck = ( { automaton }: AppProps ): JSX.Element => {
-  const context = useContext( Contexts.Store );
+  const contexts = useContext( Contexts.Store );
 
   return (
     <Root>
@@ -84,9 +84,9 @@ const Fuck = ( { automaton }: AppProps ): JSX.Element => {
       <StyledParamList />
       <StyledCurveEditor />
 
-      { context.state.about.isVisible && <>
+      { contexts.state.about.isVisible && <>
         <OverlayBG
-          onClick={ () => context.dispatch( { type: 'About/Close' } ) }
+          onClick={ () => contexts.dispatch( { type: 'About/Close' } ) }
         />
         <StyledAbout />
       </> }

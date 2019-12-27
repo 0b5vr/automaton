@@ -354,7 +354,7 @@ export class AutomatonWithGUI extends Automaton
   }
 }
 
-export interface AutomatonWithGUI extends EventEmittable<{
+export interface AutomatonWithGUIEvents {
   play: void;
   pause: void;
   seek: void;
@@ -363,5 +363,7 @@ export interface AutomatonWithGUI extends EventEmittable<{
   createParam: { name: string; param: ParamWithGUI };
   removeParam: { name: string };
   changeLength: void;
-}> {}
+}
+
+export interface AutomatonWithGUI extends EventEmittable<AutomatonWithGUIEvents> {}
 applyMixins( AutomatonWithGUI, [ EventEmittable ] );

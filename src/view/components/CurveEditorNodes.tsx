@@ -1,7 +1,9 @@
 import React, { useContext } from 'react';
 import { dt2dx, dv2dy, dx2dt, dy2dv, t2x, v2y, x2t, y2v } from '../utils/CurveEditorUtils';
+import { BezierNode } from '@fms-cat/automaton';
 import { Colors } from '../constants/Colors';
 import { Contexts } from '../contexts/Context';
+import { WithID } from '../../types/WithID';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
 import styled from 'styled-components';
 
@@ -35,16 +37,15 @@ export interface CurveEditorNodesProps {
 }
 
 export const CurveEditorNodes = ( props: CurveEditorNodesProps ): JSX.Element => {
-  const context = useContext( Contexts.Store );
-  const { range, size, selectedParam } = context.state.curveEditor;
-  const automaton = context.state.automaton.instance;
+  const contexts = useContext( Contexts.Store );
+  const { range, size, selectedParam } = contexts.state.curveEditor;
+  const automaton = contexts.state.automaton.instance;
   const param = selectedParam && automaton?.getParam( selectedParam ) || null;
-  const serializedParam = selectedParam && context.state.automaton.params[ selectedParam ] || null;
+  const nodes = selectedParam && contexts.state.automaton.params[ selectedParam ].nodes || null;
 
-  const grabNode = ( index: number ): void => {
+  const grabNode = ( node: BezierNode & WithID ): void => {
     if ( !param ) { return; }
 
-    const node = param.getNodeByIndex( index );
     const tPrev = node.time;
     const vPrev = node.value;
     let x = t2x( tPrev, range, size.width );
@@ -72,7 +73,7 @@ export const CurveEditorNodes = ( props: CurveEditorNodesProps ): JSX.Element =>
 
         const redo = (): void => param.moveNode( node.$id, t, v );
 
-        context.dispatch( {
+        contexts.dispatch( {
           type: 'History/Push',
           entry: {
             description: 'Move Node',
@@ -85,14 +86,12 @@ export const CurveEditorNodes = ( props: CurveEditorNodesProps ): JSX.Element =>
     );
   };
 
-  const removeNode = ( index: number ): void => {
+  const removeNode = ( node: BezierNode & WithID ): void => {
     if ( !param ) { return; }
-
-    const node = param.getNodeByIndex( index );
 
     const redo = (): void => param.removeNode( node.$id );
 
-    context.dispatch( {
+    contexts.dispatch( {
       type: 'History/Push',
       entry: {
         description: 'Remove Node',
@@ -103,27 +102,26 @@ export const CurveEditorNodes = ( props: CurveEditorNodesProps ): JSX.Element =>
     redo();
   };
 
-  const handleNodeClick = ( event: React.MouseEvent, index: number ): void => {
+  const handleNodeClick = ( event: React.MouseEvent, node: BezierNode & WithID ): void => {
     event.preventDefault();
     event.stopPropagation();
 
     if ( event.buttons === 1 ) {
       const now = Date.now();
-      const isDoubleClick = ( now - context.state.controls.lastClick ) < 250;
-      context.dispatch( { type: 'Controls/SetLastClick', date: now } );
+      const isDoubleClick = ( now - contexts.state.controls.lastClick ) < 250;
+      contexts.dispatch( { type: 'Controls/SetLastClick', date: now } );
 
       if ( isDoubleClick ) {
-        removeNode( index );
+        removeNode( node );
       } else {
-        grabNode( index );
+        grabNode( node );
       }
     }
   };
 
-  const grabHandle = ( index: number, dir: 'in' | 'out' ): void => {
+  const grabHandle = ( node: BezierNode & WithID, dir: 'in' | 'out' ): void => {
     if ( !param ) { return; }
 
-    const node = param.getNodeByIndex( index );
     const tPrev = node[ dir ]!.time;
     const vPrev = node[ dir ]!.value;
     const dirOpposite = dir === 'in' ? 'out' : 'in';
@@ -177,7 +175,7 @@ export const CurveEditorNodes = ( props: CurveEditorNodesProps ): JSX.Element =>
           param.moveHandle( node.$id, dirOpposite, tOpposite, vOpposite );
         };
 
-        context.dispatch( {
+        contexts.dispatch( {
           type: 'History/Push',
           entry: {
             description: 'Move Handle',
@@ -193,16 +191,15 @@ export const CurveEditorNodes = ( props: CurveEditorNodesProps ): JSX.Element =>
     );
   };
 
-  const removeHandle = ( index: number, dir: 'in' | 'out' ): void => {
+  const removeHandle = ( node: BezierNode & WithID, dir: 'in' | 'out' ): void => {
     if ( !param ) { return; }
 
-    const node = param.getNodeByIndex( index );
     const tPrev = node[ dir ]!.time;
     const vPrev = node[ dir ]!.value;
 
     const redo = (): void => param.moveHandle( node.$id, dir, 0.0, 0.0 );
 
-    context.dispatch( {
+    contexts.dispatch( {
       type: 'History/Push',
       entry: {
         description: 'Remove Handle',
@@ -213,19 +210,23 @@ export const CurveEditorNodes = ( props: CurveEditorNodesProps ): JSX.Element =>
     redo();
   };
 
-  const handleHandleClick = ( event: React.MouseEvent, index: number, dir: 'in' | 'out' ): void => {
+  const handleHandleClick = (
+    event: React.MouseEvent,
+    node: BezierNode & WithID,
+    dir: 'in' | 'out'
+  ): void => {
     event.preventDefault();
     event.stopPropagation();
 
     if ( event.buttons === 1 ) {
       const now = Date.now();
-      const isDoubleClick = ( now - context.state.controls.lastClick ) < 250;
-      context.dispatch( { type: 'Controls/SetLastClick', date: now } );
+      const isDoubleClick = ( now - contexts.state.controls.lastClick ) < 250;
+      contexts.dispatch( { type: 'Controls/SetLastClick', date: now } );
 
       if ( isDoubleClick ) {
-        removeHandle( index, dir );
+        removeHandle( node, dir );
       } else {
-        grabHandle( index, dir );
+        grabHandle( node, dir );
       }
     }
   };
@@ -233,8 +234,8 @@ export const CurveEditorNodes = ( props: CurveEditorNodesProps ): JSX.Element =>
   return (
     <Root className={ props.className }>
       {
-        serializedParam?.nodes.map( ( node, i ) => (
-          <g key={ i }
+        nodes && Object.values( nodes ).map( ( node ) => (
+          <g key={ node.$id }
             transform={ `translate(${
               t2x( node.time, range, size.width )
             },${
@@ -253,7 +254,7 @@ export const CurveEditorNodes = ( props: CurveEditorNodesProps ): JSX.Element =>
                 },${
                   dv2dy( node.in.value, range, size.height )
                 })` }
-                onMouseDown={ ( event ) => handleHandleClick( event, i, 'in' ) }
+                onMouseDown={ ( event ) => handleHandleClick( event, node, 'in' ) }
               />
             </> }
             { node.out && <>
@@ -268,14 +269,14 @@ export const CurveEditorNodes = ( props: CurveEditorNodesProps ): JSX.Element =>
                 },${
                   dv2dy( node.out.value, range, size.height )
                 })` }
-                onMouseDown={ ( event ) => handleHandleClick( event, i, 'out' ) }
+                onMouseDown={ ( event ) => handleHandleClick( event, node, 'out' ) }
               />
             </> }
             <NodeBody
               as="circle"
               r="5"
               isSelected={ false }
-              onMouseDown={ ( event ) => handleNodeClick( event, i ) }
+              onMouseDown={ ( event ) => handleNodeClick( event, node ) }
             />
           </g>
         ) )

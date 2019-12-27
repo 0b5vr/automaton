@@ -30,20 +30,20 @@ export interface CurveEditorProps {
 }
 
 export const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
-  const context = useContext( Contexts.Store );
-  const { range, size, selectedParam } = context.state.curveEditor;
-  const automaton = context.state.automaton.instance;
+  const contexts = useContext( Contexts.Store );
+  const { range, size, selectedParam } = contexts.state.curveEditor;
+  const automaton = contexts.state.automaton.instance;
 
   const refSvgRoot = useRef<SVGSVGElement>( null );
   const refLength = useRef<number>();
-  refLength.current = context.state.automaton.length;
+  refLength.current = contexts.state.automaton.length;
 
   useEffect( // listen its resize
     () => {
       function heck(): void {
         if ( !refSvgRoot.current ) { return; }
 
-        context.dispatch( {
+        contexts.dispatch( {
           type: 'CurveEditor/SetSize',
           size: {
             width: refSvgRoot.current.clientWidth,
@@ -60,7 +60,7 @@ export const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
 
   const move = useCallback(
     ( dx: number, dy: number ): void => {
-      context.dispatch( {
+      contexts.dispatch( {
         type: 'CurveEditor/MoveRange',
         dx,
         dy,
@@ -72,7 +72,7 @@ export const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
 
   const zoom = useCallback(
     ( cx: number, cy: number, dx: number, dy: number ): void => {
-      context.dispatch( {
+      contexts.dispatch( {
         type: 'CurveEditor/ZoomRange',
         cx,
         cy,
@@ -116,7 +116,7 @@ export const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
           data.time = t;
           data.value = v;
 
-          context.dispatch( {
+          contexts.dispatch( {
             type: 'History/Push',
             entry: {
               description: 'Add Node',
@@ -127,7 +127,7 @@ export const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
         }
       );
     },
-    [ automaton, selectedParam, context, range, size ]
+    [ automaton, selectedParam, contexts, range, size ]
   );
 
   const handleMouseDown = useCallback(
@@ -135,8 +135,8 @@ export const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
       event.preventDefault();
 
       const now = Date.now();
-      const isDoubleClick = ( now - context.state.controls.lastClick ) < 250;
-      context.dispatch( { type: 'Controls/SetLastClick', date: now } );
+      const isDoubleClick = ( now - contexts.state.controls.lastClick ) < 250;
+      contexts.dispatch( { type: 'Controls/SetLastClick', date: now } );
 
       if ( event.buttons === 1 ) {
         if ( isDoubleClick ) {

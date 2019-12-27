@@ -1,14 +1,11 @@
-import { CurveEditorRange, x2t, y2v } from '../utils/CurveEditorUtils';
+import { CurveEditorRange, CurveEditorSize, x2t, y2v } from '../utils/CurveEditorUtils';
 import { produce } from 'immer';
 
 // == state ========================================================================================
 export interface State {
   selectedParam: string | null;
   range: CurveEditorRange;
-  size: {
-    width: number;
-    height: number;
-  };
+  size: CurveEditorSize;
 }
 
 export const initialState: State = {
@@ -43,10 +40,7 @@ export type Action = {
   tmax: number;
 } | {
   type: 'CurveEditor/SetSize';
-  size: {
-    width: number;
-    height: number;
-  };
+  size: CurveEditorSize;
 };
 
 // == reducer ======================================================================================

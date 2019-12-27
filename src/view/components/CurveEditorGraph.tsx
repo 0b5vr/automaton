@@ -1,4 +1,4 @@
-import { CurveEditorRange, v2y, x2t } from '../utils/CurveEditorUtils';
+import { CurveEditorRange, CurveEditorSize, v2y, x2t } from '../utils/CurveEditorUtils';
 import React, { useContext, useEffect, useState } from 'react';
 import { Colors } from '../constants/Colors';
 import { Contexts } from '../contexts/Context';
@@ -19,7 +19,7 @@ const Root = styled.g`
 function calcPoints(
   param: ParamWithGUI,
   range: CurveEditorRange,
-  size: { width: number; height: number }
+  size: CurveEditorSize
 ): string {
   let newPoints = '';
   for ( let x = 0; x < size.width; x ++ ) {
@@ -37,31 +37,24 @@ export interface CurveEditorGraphProps {
 }
 
 export const CurveEditorGraph = ( { className }: CurveEditorGraphProps ): JSX.Element => {
-  const context = useContext( Contexts.Store );
-  const automaton = context.state.automaton.instance;
-  const { selectedParam, range, size } = context.state.curveEditor;
-  const [ points, setPoints ] = useState( '' );
+  const contexts = useContext( Contexts.Store );
+  const { range, size, selectedParam } = contexts.state.curveEditor;
+  const automaton = contexts.state.automaton.instance;
+  const param = selectedParam && automaton?.getParam( selectedParam ) || null;
 
-  useEffect( // update points
-    () => {
-      if ( !automaton || !selectedParam ) { return; }
-      const param = automaton.getParam( selectedParam )!;
-      setPoints( calcPoints( param, range, size ) );
-    },
-    [ automaton, selectedParam, range, size ]
-  );
+  const [ points, setPoints ] = useState( '' );
 
   useEffect( // update points when precalc happened
     () => {
-      if ( !automaton || !selectedParam ) { return; }
-      const param = automaton.getParam( selectedParam )!;
+      if ( !param ) { return; }
 
       const handlePrecalc = (): void => setPoints( calcPoints( param, range, size ) );
+      handlePrecalc();
 
       param.on( 'precalc', handlePrecalc );
       return () => param.off( 'precalc', handlePrecalc );
     },
-    [ automaton, selectedParam, range, size ]
+    [ param, range, size ]
   );
 
   return (

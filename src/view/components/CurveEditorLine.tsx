@@ -28,18 +28,13 @@ export interface CurveEditorLineProps {
 }
 
 export const CurveEditorLine = ( { className }: CurveEditorLineProps ): JSX.Element => {
-  const context = useContext( Contexts.Store );
-  const { range, size } = context.state.curveEditor;
-  const automaton = context.state.automaton.instance;
-  if ( !automaton ) { return <></>; }
+  const contexts = useContext( Contexts.Store );
+  const { range, size, selectedParam } = contexts.state.curveEditor;
+  const automaton = contexts.state.automaton.instance;
+  const param = selectedParam && automaton?.getParam( selectedParam ) || null;
 
-  const param = automaton &&
-    context.state.curveEditor.selectedParam &&
-    automaton.getParam( context.state.curveEditor.selectedParam );
-  if ( !param ) { return <></>; }
-
-  const t = automaton.time || 0.0;
-  const v = param.getValue() || 0.0;
+  const t = contexts.state.automaton.time || 0.0;
+  const v = param?.getValue() || 0.0;
   const x = t2x( t, range, size.width );
   const y = v2y( v, range, size.height );
 
@@ -51,16 +46,20 @@ export const CurveEditorLine = ( { className }: CurveEditorLineProps ): JSX.Elem
         <Line y2={ -size.height } />
         <Text x="2" y="-2">{ t.toFixed( 3 ) }</Text>
       </g>
-      <g
-        transform={ `translate(0,${ y })` }
-      >
-        <Line x2={ size.width } />
-        <Text x="2" y="-2">{ v.toFixed( 3 ) }</Text>
-      </g>
-      <Circle
-        transform={ `translate(${ x },${ y })` }
-        r="5"
-      />
+
+      { param && <>
+        <g
+          transform={ `translate(0,${ y })` }
+        >
+          <Line x2={ size.width } />
+          <Text x="2" y="-2">{ v.toFixed( 3 ) }</Text>
+        </g>
+
+        <Circle
+          transform={ `translate(${ x },${ y })` }
+          r="5"
+        />
+      </> }
     </Root>
   );
 };

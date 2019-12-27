@@ -30,8 +30,8 @@ interface GridLineEntry {
 }
 
 export const CurveEditorGrid = ( { className }: CurveEditorGridProps ): JSX.Element => {
-  const context = useContext( Contexts.Store );
-  const { range, size } = context.state.curveEditor;
+  const contexts = useContext( Contexts.Store );
+  const { range, size } = contexts.state.curveEditor;
 
   const hlines: GridLineEntry[] = useMemo(
     (): GridLineEntry[] => {

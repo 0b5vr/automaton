@@ -60,9 +60,9 @@ export interface HeaderProps {
 }
 
 export const Header = ( { className }: HeaderProps ): JSX.Element => {
-  const context = useContext( Contexts.Store );
+  const contexts = useContext( Contexts.Store );
   const [ cantUndoThis, setCantUndoThis ] = useState( 0 );
-  const automaton = context.state.automaton.instance;
+  const automaton = contexts.state.automaton.instance;
 
   const handlePlay = useCallback(
     (): void => {
@@ -74,9 +74,9 @@ export const Header = ( { className }: HeaderProps ): JSX.Element => {
 
   const handleUndo = useCallback(
     (): void => {
-      if ( context.state.history.index !== 0 ) {
-        context.state.history.entries[ context.state.history.index - 1 ].undo();
-        context.dispatch( { type: 'History/Undo' } );
+      if ( contexts.state.history.index !== 0 ) {
+        contexts.state.history.entries[ contexts.state.history.index - 1 ].undo();
+        contexts.dispatch( { type: 'History/Undo' } );
       } else {
         if ( cantUndoThis === 9 ) {
           window.open( 'https://youtu.be/bzY7J0Xle08', '_blank' );
@@ -86,61 +86,61 @@ export const Header = ( { className }: HeaderProps ): JSX.Element => {
         }
       }
     },
-    [ context.state.history, cantUndoThis ]
+    [ contexts.state.history, cantUndoThis ]
   );
 
   const handleRedo = useCallback(
     (): void => {
-      if ( context.state.history.index !== context.state.history.entries.length ) {
-        context.state.history.entries[ context.state.history.index ].redo();
-        context.dispatch( { type: 'History/Redo' } );
+      if ( contexts.state.history.index !== contexts.state.history.entries.length ) {
+        contexts.state.history.entries[ contexts.state.history.index ].redo();
+        contexts.dispatch( { type: 'History/Redo' } );
       }
     },
-    [ context.state.history ]
+    [ contexts.state.history ]
   );
 
   const undoText = useMemo(
     () => (
-      context.state.history.index !== 0
-        ? 'Undo: ' + context.state.history.entries[ context.state.history.index - 1 ].description
+      contexts.state.history.index !== 0
+        ? 'Undo: ' + contexts.state.history.entries[ contexts.state.history.index - 1 ].description
         : 'Can\'t Undo'
     ),
-    [ context.state.history ]
+    [ contexts.state.history ]
   );
 
   const redoText = useMemo(
     () => (
-      context.state.history.index !== context.state.history.entries.length
-        ? 'Redo: ' + context.state.history.entries[ context.state.history.index ].description
+      contexts.state.history.index !== contexts.state.history.entries.length
+        ? 'Redo: ' + contexts.state.history.entries[ contexts.state.history.index ].description
         : 'Can\'t Redo'
     ),
-    [ context.state.history ]
+    [ contexts.state.history ]
   );
 
   return (
     <Root className={ className }>
       <Section>
         <Button
-          as={ context.state.automaton.isPlaying ? Icons.Pause : Icons.Play }
+          as={ contexts.state.automaton.isPlaying ? Icons.Pause : Icons.Play }
           onClick={ handlePlay }
           data-stalker='Play / Pause'
         />
         <StyledHeaderSeekbar />
       </Section>
       <Logo as={ Icons.Automaton }
-        onClick={ () => context.dispatch( { type: 'About/Open' } ) }
+        onClick={ () => contexts.dispatch( { type: 'About/Open' } ) }
       />
       <Section>
         <Button
           as={ Icons.Undo }
           onClick={ handleUndo }
-          disabled={ context.state.history.index === 0 }
+          disabled={ contexts.state.history.index === 0 }
           data-stalker={ undoText }
         />
         <Button
           as={ Icons.Redo }
           onClick={ handleRedo }
-          disabled={ context.state.history.index === context.state.history.entries.length }
+          disabled={ contexts.state.history.index === contexts.state.history.entries.length }
           data-stalker={ redoText }
         />
         <Button as={ Icons.Snap } />

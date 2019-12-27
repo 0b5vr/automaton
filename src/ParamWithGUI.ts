@@ -85,6 +85,14 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
    */
   private __statusList: ParamStatus[];
 
+  public get nodes(): Array<BezierNode & WithID> {
+    return this.__nodes;
+  }
+
+  public get fxs(): Array<FxSection & WithID> {
+    return this.__fxs;
+  }
+
   public constructor( automaton: AutomatonWithGUI, data?: SerializedParam ) {
     super( automaton, data || {
       nodes: [
@@ -198,7 +206,7 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
     if ( !node ) {
       throw new Error( `Given node index ${index} is invalid (Current count of nodes: ${this.__nodes.length})` );
     }
-    return jsonCopy( node );
+    return node;
   }
 
   /**
@@ -208,7 +216,7 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
    */
   public getNode( id: string ): BezierNode & WithID {
     const index = this.__getNodeIndexById( id );
-    return jsonCopy( this.__nodes[ index ] );
+    return this.__nodes[ index ];
   }
 
   /**
@@ -218,8 +226,9 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
    * @returns Data of the node
    */
   public createNode( time: number, value: number ): BezierNode & WithID {
+    const id = genID();
     const data = {
-      $id: genID(),
+      $id: id,
       time,
       value,
       in: { time: -PARAM_DEFAULT_HANDLE_LENGTH, value: 0.0 },
@@ -229,8 +238,9 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
     this.__sortNodes();
 
     this.precalc();
+    this.__emit( 'createNode', { id, node: data } );
 
-    return jsonCopy( data );
+    return data;
   }
 
   /**
@@ -244,8 +254,9 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
     this.__sortNodes();
 
     this.precalc();
+    this.__emit( 'createNode', { id: node.$id, node: data } );
 
-    return jsonCopy( data );
+    return data;
   }
 
   /**
@@ -258,6 +269,7 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
     this.__nodes.splice( index, 1 );
 
     this.precalc();
+    this.__emit( 'removeNode', { id } );
   }
 
   /**
@@ -287,6 +299,7 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
     node.value = value;
 
     this.precalc();
+    this.__emit( 'updateNode', { id, node } );
   }
 
   /**
@@ -313,6 +326,7 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
     handle.value = value;
 
     this.precalc();
+    this.__emit( 'updateNode', { id, node } );
   }
 
   /**
@@ -336,6 +350,7 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
     }
 
     this.precalc();
+    this.__emit( 'updateNode', { id, node } );
   }
 
   /**
@@ -348,7 +363,7 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
     if ( !fx ) {
       throw new Error( `Given fx section index ${index} is invalid (Current count of fx sections: ${this.__fxs.length})` );
     }
-    return jsonCopy( fx );
+    return fx;
   }
 
   /**
@@ -358,7 +373,7 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
    */
   public getFx( id: string ): FxSection & WithID {
     const index = this.__getFxIndexById( id );
-    return jsonCopy( this.__fxs[ index ] );
+    return this.__fxs[ index ];
   }
 
   /**
@@ -376,8 +391,9 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
       return null;
     }
 
+    const id = genID();
     const data: FxSection & WithID = {
-      $id: genID(),
+      $id: id,
       time: time,
       length: length,
       row: row,
@@ -388,6 +404,7 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
     this.__sortFxs();
 
     this.precalc();
+    this.__emit( 'createFx', { id, fx: data } );
 
     return data.$id;
   }
@@ -411,6 +428,7 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
     this.__sortFxs();
 
     this.precalc();
+    this.__emit( 'createFx', { id: data.$id, fx: data } );
 
     return data.$id;
   }
@@ -425,6 +443,7 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
     this.__fxs.splice( index, 1 );
 
     this.precalc();
+    this.__emit( 'removeFx', { id } );
   }
 
   /**
@@ -447,6 +466,7 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
     fx.time = Math.min( Math.max( time, left ), right - fx.length );
 
     this.precalc();
+    this.__emit( 'updateFx', { id, fx } );
   }
 
   /**
@@ -474,6 +494,7 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
     this.__sortFxs();
 
     this.precalc();
+    this.__emit( 'updateFx', { id, fx } );
   }
 
   /**
@@ -489,6 +510,7 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
     fx.bypass = bypass;
 
     this.precalc();
+    this.__emit( 'updateFx', { id, fx } );
   }
 
   /**
@@ -514,6 +536,7 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
     fx.params[ name ] = newValue;
 
     this.precalc();
+    this.__emit( 'updateFx', { id, fx } );
   }
 
   /**
@@ -533,6 +556,7 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
     this.__sortFxs();
 
     this.precalc();
+    this.__emit( 'updateFx', { id, fx } );
   }
 
   /**
@@ -554,6 +578,7 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
     fx.length = Math.min( Math.max( length, 0.0 ), right - fx.time );
 
     this.precalc();
+    this.__emit( 'updateFx', { id, fx } );
   }
 
   /**
@@ -578,6 +603,7 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
     fx.time = end - fx.length;
 
     this.precalc();
+    this.__emit( 'updateFx', { id, fx } );
   }
 
   /**
@@ -723,8 +749,16 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
   }
 }
 
-export interface ParamWithGUI extends EventEmittable<{
+export interface ParamWithGUIEvents {
+  createNode: { id: string; node: BezierNode & WithID };
+  updateNode: { id: string; node: BezierNode & WithID };
+  removeNode: { id: string };
+  createFx: { id: string; fx: FxSection & WithID };
+  updateFx: { id: string; fx: FxSection & WithID };
+  removeFx: { id: string };
   precalc: void;
   status: void;
-}> {}
+}
+
+export interface ParamWithGUI extends EventEmittable<ParamWithGUIEvents> {}
 applyMixins( ParamWithGUI, [ EventEmittable ] );

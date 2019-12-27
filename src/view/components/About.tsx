@@ -80,9 +80,9 @@ export interface AboutProps {
 }
 
 export const About = ( { className }: AboutProps ): JSX.Element => {
-  const context = useContext( Contexts.Store );
-  const automaton = context.state.automaton.instance;
-  const { selectedParam } = context.state.curveEditor;
+  const contexts = useContext( Contexts.Store );
+  const automaton = contexts.state.automaton.instance;
+  const { selectedParam } = contexts.state.curveEditor;
   const param = automaton && selectedParam && automaton.getParam( selectedParam )!;
   const value = param ? ( 360.0 * param.getValue() ) : 0.0;
 
@@ -94,7 +94,7 @@ export const About = ( { className }: AboutProps ): JSX.Element => {
       <LogoAndVersion>
         <Logo as={ Icons.Automaton } />
         <Version>{
-          context.state.automaton.instance && context.state.automaton.instance.version
+          contexts.state.automaton.instance && contexts.state.automaton.instance.version
         }</Version>
       </LogoAndVersion>
       <Description>Animation engine for creative coding</Description>
@@ -105,7 +105,7 @@ export const About = ( { className }: AboutProps ): JSX.Element => {
       Shoutouts to <Anchor href="https://www.image-line.com/flstudio/">Image Line Software</Anchor> &lt;3
     </SubRoot>
     <Close onClick={
-      () => context.dispatch( { type: 'About/Close' } )
+      () => contexts.dispatch( { type: 'About/Close' } )
     } />
   </Root>;
 };

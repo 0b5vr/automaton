@@ -46,8 +46,8 @@ export interface HeaderSeekbarProps {
 }
 
 export const HeaderSeekbar = ( { className }: HeaderSeekbarProps ): JSX.Element => {
-  const context = useContext( Contexts.Store );
-  const automaton = context.state.automaton.instance!;
+  const contexts = useContext( Contexts.Store );
+  const automaton = contexts.state.automaton.instance!;
 
   function handleMouseDown( event: React.MouseEvent ): void {
     event.preventDefault();
@@ -58,31 +58,31 @@ export const HeaderSeekbar = ( { className }: HeaderSeekbarProps ): JSX.Element 
       const isPlaying = automaton.isPlaying;
 
       automaton.pause();
-      automaton.seek( ( event.clientX - x ) / width * context.state.automaton.length );
-      context.dispatch( { type: 'Header/SeekDown' } );
+      automaton.seek( ( event.clientX - x ) / width * contexts.state.automaton.length );
+      contexts.dispatch( { type: 'Header/SeekDown' } );
 
       registerMouseEvent(
         ( event ) => {
-          automaton.seek( ( event.clientX - x ) / width * context.state.automaton.length );
+          automaton.seek( ( event.clientX - x ) / width * contexts.state.automaton.length );
         },
         ( event ) => {
-          automaton.seek( ( event.clientX - x ) / width * context.state.automaton.length );
+          automaton.seek( ( event.clientX - x ) / width * contexts.state.automaton.length );
           if ( isPlaying ) { automaton.play(); }
-          context.dispatch( { type: 'Header/SeekUp' } );
+          contexts.dispatch( { type: 'Header/SeekUp' } );
         }
       );
     }
   }
 
   function handleMouseEnter(): void {
-    context.dispatch( { type: 'Header/SeekbarEnter' } );
+    contexts.dispatch( { type: 'Header/SeekbarEnter' } );
   }
 
   function handleMouseLeave(): void {
-    context.dispatch( { type: 'Header/SeekbarLeave' } );
+    contexts.dispatch( { type: 'Header/SeekbarLeave' } );
   }
 
-  const progress = context.state.automaton.time / context.state.automaton.length;
+  const progress = contexts.state.automaton.time / contexts.state.automaton.length;
 
   return (
     <Root
@@ -91,13 +91,13 @@ export const HeaderSeekbar = ( { className }: HeaderSeekbarProps ): JSX.Element 
       onMouseEnter={ handleMouseEnter }
       onMouseLeave={ handleMouseLeave }
     >
-      <CurrentTime>{ context.state.automaton.time.toFixed( 3 ) }</CurrentTime>
-      <TotalTime> / { context.state.automaton.length.toFixed( 3 ) }</TotalTime>
+      <CurrentTime>{ contexts.state.automaton.time.toFixed( 3 ) }</CurrentTime>
+      <TotalTime> / { contexts.state.automaton.length.toFixed( 3 ) }</TotalTime>
       <BarBG />
       <BarFG
         style={ { width: progress * 100.0 + '%' } }
-        isSeeking={ context.state.header.isSeeking }
-        isHovering={ context.state.header.isSeekbarHovered }
+        isSeeking={ contexts.state.header.isSeeking }
+        isHovering={ contexts.state.header.isSeekbarHovered }
       />
     </Root>
   );

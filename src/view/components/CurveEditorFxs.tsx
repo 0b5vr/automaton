@@ -2,7 +2,9 @@ import React, { useContext } from 'react';
 import { dt2dx, dx2dt, t2x } from '../utils/CurveEditorUtils';
 import { Colors } from '../constants/Colors';
 import { Contexts } from '../contexts/Context';
+import { FxSection } from '@fms-cat/automaton';
 import { PARAM_FX_ROW_MAX } from '../../ParamWithGUI';
+import { WithID } from '../../types/WithID';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
 import styled from 'styled-components';
 
@@ -56,16 +58,16 @@ export interface CurveEditorFxsProps {
 }
 
 export const CurveEditorFxs = ( props: CurveEditorFxsProps ): JSX.Element => {
-  const context = useContext( Contexts.Store );
-  const { range, size, selectedParam } = context.state.curveEditor;
-  const automaton = context.state.automaton.instance;
+  const contexts = useContext( Contexts.Store );
+  const { range, size, selectedParam } = contexts.state.curveEditor;
+  const automaton = contexts.state.automaton.instance;
   const param = selectedParam && automaton?.getParam( selectedParam ) || null;
-  const serializedParam = selectedParam && context.state.automaton.params[ selectedParam ] || null;
 
-  const grabFxBody = ( index: number ): void => {
+  const fxs = selectedParam && contexts.state.automaton.params[ selectedParam ].fxs || null;
+
+  const grabFxBody = ( fx: FxSection & WithID ): void => {
     if ( !param ) { return; }
 
-    const fx = param.getFxByIndex( index );
     const tPrev = fx.time;
     const rPrev = fx.row;
     let dx = 0.0;
@@ -104,7 +106,7 @@ export const CurveEditorFxs = ( props: CurveEditorFxsProps ): JSX.Element => {
           param.changeFxRow( fx.$id, rPrev );
         };
 
-        context.dispatch( {
+        contexts.dispatch( {
           type: 'History/Push',
           entry: {
             description: 'Move Fx',
@@ -117,16 +119,14 @@ export const CurveEditorFxs = ( props: CurveEditorFxsProps ): JSX.Element => {
     );
   };
 
-  const removeFx = ( index: number ): void => {
+  const removeFx = ( fx: FxSection & WithID ): void => {
     if ( !param ) { return; }
-
-    const fx = param.getFxByIndex( index );
 
     const redo = (): void => param.removeFx( fx.$id );
 
     const undo = (): string => param.createFxFromData( fx );
 
-    context.dispatch( {
+    contexts.dispatch( {
       type: 'History/Push',
       entry: {
         description: 'Remove Node',
@@ -137,27 +137,26 @@ export const CurveEditorFxs = ( props: CurveEditorFxsProps ): JSX.Element => {
     redo();
   };
 
-  const handleFxBodyClick = ( event: React.MouseEvent, index: number ): void => {
+  const handleFxBodyClick = ( event: React.MouseEvent, fx: FxSection & WithID ): void => {
     event.preventDefault();
     event.stopPropagation();
 
     if ( event.buttons === 1 ) {
       const now = Date.now();
-      const isDoubleClick = ( now - context.state.controls.lastClick ) < 250;
-      context.dispatch( { type: 'Controls/SetLastClick', date: now } );
+      const isDoubleClick = ( now - contexts.state.controls.lastClick ) < 250;
+      contexts.dispatch( { type: 'Controls/SetLastClick', date: now } );
 
       if ( isDoubleClick ) {
-        removeFx( index );
+        removeFx( fx );
       } else {
-        grabFxBody( index );
+        grabFxBody( fx );
       }
     }
   };
 
-  const grabFxSide = ( index: number, side: 'left' | 'right' ): void => {
+  const grabFxSide = ( fx: FxSection & WithID, side: 'left' | 'right' ): void => {
     if ( !param ) { return; }
 
-    const fx = param.getFxByIndex( index );
     const lPrev = fx.length;
     let dx = 0.0;
     let l = lPrev;
@@ -195,7 +194,7 @@ export const CurveEditorFxs = ( props: CurveEditorFxsProps ): JSX.Element => {
           }
         };
 
-        context.dispatch( {
+        contexts.dispatch( {
           type: 'History/Push',
           entry: {
             description: 'Resize Fx',
@@ -210,14 +209,14 @@ export const CurveEditorFxs = ( props: CurveEditorFxsProps ): JSX.Element => {
 
   const handleFxSideClick = (
     event: React.MouseEvent,
-    index: number,
+    fx: FxSection & WithID,
     side: 'left' | 'right'
   ): void => {
     event.preventDefault();
     event.stopPropagation();
 
     if ( event.buttons === 1 ) {
-      grabFxSide( index, side );
+      grabFxSide( fx, side );
     }
   };
 
@@ -225,11 +224,11 @@ export const CurveEditorFxs = ( props: CurveEditorFxsProps ): JSX.Element => {
     <Root className={ props.className }>
       <g>
         {
-          serializedParam?.fxs.map( ( fx, i ) => {
+          fxs && Object.values( fxs ).map( ( fx ) => {
             const x = t2x( fx.time, range, size.width );
 
             return (
-              <g key={ i }
+              <g key={ fx.$id }
                 transform={ `translate(${ x }, 0)` }
               >
                 <FxBgFill
@@ -256,19 +255,19 @@ export const CurveEditorFxs = ( props: CurveEditorFxsProps ): JSX.Element => {
       </g>
       <g>
         {
-          serializedParam?.fxs.map( ( fx, i ) => {
+          fxs && Object.values( fxs ).map( ( fx ) => {
             const x = t2x( fx.time, range, size.width );
             const w = dt2dx( fx.length, range, size.width );
 
             return (
-              <g key={ i }
+              <g key={ fx.$id }
                 style={ {
                   transform: `translate(0, calc(0.0625rem + ${ fx.row * FX_HEIGHT }px))`
                 } }
               >
                 <g transform={ `translate(${ x }, 0)` }>
                   <clipPath
-                    id={ `fxclip${ i }` }
+                    id={ `fxclip${ fx.$id }` }
                   >
                     <rect
                       width={ w }
@@ -279,22 +278,22 @@ export const CurveEditorFxs = ( props: CurveEditorFxsProps ): JSX.Element => {
                     width={ w }
                     height={ FX_HEIGHT }
                     isSelected={ false }
-                    onMouseDown={ ( event ) => handleFxBodyClick( event, i ) }
+                    onMouseDown={ ( event ) => handleFxBodyClick( event, fx ) }
                   />
                   <FxSide
                     width="0.25rem"
                     height={ FX_HEIGHT }
-                    onMouseDown={ ( event ) => handleFxSideClick( event, i, 'left' ) }
+                    onMouseDown={ ( event ) => handleFxSideClick( event, fx, 'left' ) }
                   />
                   <FxSide
                     transform={ `translate(${ w }, 0)` }
                     x="-0.25rem"
                     width="0.25rem"
                     height={ FX_HEIGHT }
-                    onMouseDown={ ( event ) => handleFxSideClick( event, i, 'right' ) }
+                    onMouseDown={ ( event ) => handleFxSideClick( event, fx, 'right' ) }
                   />
                   <g
-                    clipPath={ `url(#fxclip${ i })` }
+                    clipPath={ `url(#fxclip${ fx.$id })` }
                   >
                     <g
                       transform={ `translate(${ Math.max( 0.0, x ) - x }, 0)` }

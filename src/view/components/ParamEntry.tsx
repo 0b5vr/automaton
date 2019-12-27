@@ -46,10 +46,10 @@ export interface ParamEntryProps {
 }
 
 export const ParamEntry = ( { className, name, value, status }: ParamEntryProps ): JSX.Element => {
-  const context = useContext( Contexts.Store );
+  const contexts = useContext( Contexts.Store );
 
   function handleClick(): void {
-    context.dispatch( {
+    contexts.dispatch( {
       type: 'CurveEditor/SelectParam',
       param: name
     } );
@@ -59,7 +59,7 @@ export const ParamEntry = ( { className, name, value, status }: ParamEntryProps 
     <Root
       className={ className }
       onClick={ handleClick }
-      isSelected={ context.state.curveEditor.selectedParam === name }
+      isSelected={ contexts.state.curveEditor.selectedParam === name }
       data-stalker={ name }
     >
       <Name>{ name }</Name>

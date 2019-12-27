@@ -21,12 +21,12 @@ export interface ParamListProps {
 }
 
 export const ParamList = ( { className }: ParamListProps ): JSX.Element => {
-  const context = useContext( Contexts.Store );
-  const automaton = context.state.automaton.instance;
+  const contexts = useContext( Contexts.Store );
+  const automaton = contexts.state.automaton.instance;
 
   const arrayOfParams = useMemo(
-    () => Object.keys( context.state.automaton.params ),
-    [ context.state.automaton.params ]
+    () => Object.keys( contexts.state.automaton.params ),
+    [ contexts.state.automaton.params ]
   );
 
   return (
