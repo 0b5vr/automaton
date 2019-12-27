@@ -33,8 +33,12 @@ const FxBody = styled.rect<{ isSelected: boolean }>`
 
 const FxSide = styled.rect`
   fill: rgba( 0, 0, 0, 0 );
+  stroke: rgba( 0, 0, 0, 0 );
+  stroke-width: 0.125rem;
   cursor: ew-resize;
   pointer-events: auto;
+  rx: 0.25rem;
+  ry: 0.25rem;
 `;
 
 const FxText = styled.text<{ isSelected: boolean }>`
@@ -278,14 +282,13 @@ export const CurveEditorFxs = ( props: CurveEditorFxsProps ): JSX.Element => {
                     onMouseDown={ ( event ) => handleFxBodyClick( event, i ) }
                   />
                   <FxSide
-                    x="-0.125rem"
                     width="0.25rem"
                     height={ FX_HEIGHT }
                     onMouseDown={ ( event ) => handleFxSideClick( event, i, 'left' ) }
                   />
                   <FxSide
                     transform={ `translate(${ w }, 0)` }
-                    x="-0.125rem"
+                    x="-0.25rem"
                     width="0.25rem"
                     height={ FX_HEIGHT }
                     onMouseDown={ ( event ) => handleFxSideClick( event, i, 'right' ) }
