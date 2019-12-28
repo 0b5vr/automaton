@@ -15,7 +15,7 @@ module.exports = ( env, argv ) => {
     ? `${ packageJson.name } v${ VERSION }
 ${ packageJson.description }
 
-Copyright (c) 2017-2019 ${ packageJson.author }
+Copyright (c) 2019 ${ packageJson.author }
 ${ packageJson.name } is distributed under the MIT License
 https://opensource.org/licenses/MIT
 
