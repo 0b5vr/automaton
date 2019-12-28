@@ -102,16 +102,14 @@ export const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
           x += movementSum.x;
           y += movementSum.y;
 
-          param.moveNode(
-            data.$id,
-            x2t( x, range, size.width ),
-            y2v( y, range, size.height )
-          );
+          param.moveNodeTime( data.$id, x2t( x, range, size.width ) );
+          param.moveNodeValue( data.$id, y2v( y, range, size.height ) );
         },
         () => {
           const t = x2t( x, range, size.width );
           const v = y2v( y, range, size.height );
-          param.moveNode( data.$id, t, v );
+          param.moveNodeTime( data.$id, t );
+          param.moveNodeValue( data.$id, v );
 
           data.time = t;
           data.value = v;

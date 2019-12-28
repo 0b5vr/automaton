@@ -20,14 +20,14 @@ const Section = styled.div`
   }
 `;
 
-const Button = styled.img<{ disabled?: boolean }>`
+const Button = styled.img<{ disabled?: boolean; active?: boolean }>`
   width: calc( ${ Metrics.headerHeight } - 0.25rem );
   height: calc( ${ Metrics.headerHeight } - 0.25rem );
-  fill: ${ ( { disabled } ) => disabled ? Colors.gray : Colors.accent };
+  fill: ${ ( { disabled, active } ) => disabled ? Colors.gray : active ? Colors.accent : Colors.fore };
   cursor: pointer;
 
   &:hover {
-    fill: ${ ( { disabled } ) => disabled ? Colors.gray : Colors.accentdark };
+    fill: ${ ( { disabled, active } ) => disabled ? Colors.gray : active ? Colors.accentdark : Colors.foresub };
   }
 `;
 
@@ -122,8 +122,9 @@ export const Header = ( { className }: HeaderProps ): JSX.Element => {
       <Section>
         <Button
           as={ contexts.state.automaton.isPlaying ? Icons.Pause : Icons.Play }
+          active={ 1 as any as boolean } // fuck
           onClick={ handlePlay }
-          data-stalker='Play / Pause'
+          data-stalker="Play / Pause"
         />
         <StyledHeaderSeekbar />
       </Section>

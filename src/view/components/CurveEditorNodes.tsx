@@ -66,19 +66,28 @@ export const CurveEditorNodes = ( props: CurveEditorNodesProps ): JSX.Element =>
         t = holdTime ? tPrev : x2t( x, range, size.width );
         v = holdValue ? vPrev : y2v( y, range, size.height );
 
-        param.moveNode( node.$id, t, v );
+        param.moveNodeTime( node.$id, t );
+        param.moveNodeValue( node.$id, v );
       },
       () => {
         if ( !hasMoved ) { return; }
 
-        const redo = (): void => param.moveNode( node.$id, t, v );
+        const undo = (): void => {
+          param.moveNodeTime( node.$id, tPrev );
+          param.moveNodeValue( node.$id, vPrev );
+        };
+
+        const redo = (): void => {
+          param.moveNodeTime( node.$id, t );
+          param.moveNodeValue( node.$id, v );
+        };
 
         contexts.dispatch( {
           type: 'History/Push',
           entry: {
             description: 'Move Node',
             redo,
-            undo: () => param.moveNode( node.$id, tPrev, vPrev )
+            undo
           }
         } );
         redo();
@@ -89,14 +98,20 @@ export const CurveEditorNodes = ( props: CurveEditorNodesProps ): JSX.Element =>
   const removeNode = ( node: BezierNode & WithID ): void => {
     if ( !param ) { return; }
 
-    const redo = (): void => param.removeNode( node.$id );
+    const undo = (): void => {
+      param.createNodeFromData( node );
+    };
+
+    const redo = (): void => {
+      param.removeNode( node.$id );
+    };
 
     contexts.dispatch( {
       type: 'History/Push',
       entry: {
         description: 'Remove Node',
         redo,
-        undo: () => param.createNodeFromData( node )
+        undo
       }
     } );
     redo();
@@ -114,6 +129,11 @@ export const CurveEditorNodes = ( props: CurveEditorNodesProps ): JSX.Element =>
       if ( isDoubleClick ) {
         removeNode( node );
       } else {
+        contexts.dispatch( {
+          type: 'CurveEditor/SelectItems',
+          items: { nodes: [ node.$id ], fxs: [] }
+        } );
+
         grabNode( node );
       }
     }
@@ -164,15 +184,26 @@ export const CurveEditorNodes = ( props: CurveEditorNodesProps ): JSX.Element =>
         tOpposite = moveBoth ? -t : tOppositePrev;
         vOpposite = moveBoth ? -v : vOppositePrev;
 
-        param.moveHandle( node.$id, dir, t, v );
-        param.moveHandle( node.$id, dirOpposite, tOpposite, vOpposite );
+        param.moveHandleTime( node.$id, dir, t );
+        param.moveHandleValue( node.$id, dir, v );
+        param.moveHandleTime( node.$id, dirOpposite, tOpposite );
+        param.moveHandleValue( node.$id, dirOpposite, vOpposite );
       },
       () => {
         if ( !hasMoved ) { return; }
 
+        const undo = (): void => {
+          param.moveHandleTime( node.$id, dir, tPrev );
+          param.moveHandleValue( node.$id, dir, vPrev );
+          param.moveHandleTime( node.$id, dirOpposite, tOppositePrev );
+          param.moveHandleValue( node.$id, dirOpposite, vOppositePrev );
+        };
+
         const redo = (): void => {
-          param.moveHandle( node.$id, dir, t, v );
-          param.moveHandle( node.$id, dirOpposite, tOpposite, vOpposite );
+          param.moveHandleTime( node.$id, dir, t );
+          param.moveHandleValue( node.$id, dir, v );
+          param.moveHandleTime( node.$id, dirOpposite, tOpposite );
+          param.moveHandleValue( node.$id, dirOpposite, vOpposite );
         };
 
         contexts.dispatch( {
@@ -180,10 +211,7 @@ export const CurveEditorNodes = ( props: CurveEditorNodesProps ): JSX.Element =>
           entry: {
             description: 'Move Handle',
             redo,
-            undo: () => {
-              param.moveHandle( node.$id, dir, tPrev, vPrev );
-              param.moveHandle( node.$id, dirOpposite, tOppositePrev, vOppositePrev );
-            }
+            undo
           }
         } );
         redo();
@@ -197,14 +225,22 @@ export const CurveEditorNodes = ( props: CurveEditorNodesProps ): JSX.Element =>
     const tPrev = node[ dir ]!.time;
     const vPrev = node[ dir ]!.value;
 
-    const redo = (): void => param.moveHandle( node.$id, dir, 0.0, 0.0 );
+    const undo = (): void => {
+      param.moveHandleTime( node.$id, dir, tPrev );
+      param.moveHandleValue( node.$id, dir, vPrev );
+    };
+
+    const redo = (): void => {
+      param.moveHandleTime( node.$id, dir, 0.0 );
+      param.moveHandleValue( node.$id, dir, 0.0 );
+    };
 
     contexts.dispatch( {
       type: 'History/Push',
       entry: {
         description: 'Remove Handle',
         redo,
-        undo: () => param.moveHandle( node.$id, dir, tPrev, vPrev )
+        undo
       }
     } );
     redo();
@@ -275,7 +311,9 @@ export const CurveEditorNodes = ( props: CurveEditorNodesProps ): JSX.Element =>
             <NodeBody
               as="circle"
               r="5"
-              isSelected={ false }
+              isSelected={
+                contexts.state.curveEditor.selectedItems.nodes.indexOf( node.$id ) !== -1
+              }
               onMouseDown={ ( event ) => handleNodeClick( event, node ) }
             />
           </g>

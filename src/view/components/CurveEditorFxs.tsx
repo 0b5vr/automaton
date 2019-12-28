@@ -44,7 +44,7 @@ const FxSide = styled.rect`
 `;
 
 const FxText = styled.text<{ isSelected: boolean }>`
-  fill: ${ Colors.fx };
+  fill: ${ ( { isSelected } ) => ( isSelected ? Colors.back1 : Colors.fx ) };
   font-size: 0.7rem;
 `;
 
@@ -149,6 +149,11 @@ export const CurveEditorFxs = ( props: CurveEditorFxsProps ): JSX.Element => {
       if ( isDoubleClick ) {
         removeFx( fx );
       } else {
+        contexts.dispatch( {
+          type: 'CurveEditor/SelectItems',
+          items: { nodes: [], fxs: [ fx.$id ] }
+        } );
+
         grabFxBody( fx );
       }
     }
@@ -277,7 +282,9 @@ export const CurveEditorFxs = ( props: CurveEditorFxsProps ): JSX.Element => {
                   <FxBody
                     width={ w }
                     height={ FX_HEIGHT }
-                    isSelected={ false }
+                    isSelected={
+                      contexts.state.curveEditor.selectedItems.fxs.indexOf( fx.$id ) !== -1
+                    }
                     onMouseDown={ ( event ) => handleFxBodyClick( event, fx ) }
                   />
                   <FxSide
@@ -301,7 +308,9 @@ export const CurveEditorFxs = ( props: CurveEditorFxsProps ): JSX.Element => {
                       <FxText
                         x="0.125rem"
                         y="0.75rem"
-                        isSelected={ false }
+                        isSelected={
+                          contexts.state.curveEditor.selectedItems.fxs.indexOf( fx.$id ) !== -1
+                        }
                       >
                         { automaton?.getFxDefinitionName( fx.def ) }
                       </FxText>

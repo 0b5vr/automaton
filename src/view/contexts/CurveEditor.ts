@@ -4,12 +4,20 @@ import { produce } from 'immer';
 // == state ========================================================================================
 export interface State {
   selectedParam: string | null;
+  selectedItems: {
+    nodes: string[];
+    fxs: string[];
+  };
   range: CurveEditorRange;
   size: CurveEditorSize;
 }
 
 export const initialState: State = {
   selectedParam: null,
+  selectedItems: {
+    nodes: [],
+    fxs: []
+  },
   range: {
     t0: 0.0,
     v0: -0.2,
@@ -26,6 +34,12 @@ export const initialState: State = {
 export type Action = {
   type: 'CurveEditor/SelectParam';
   param: string | null;
+} | {
+  type: 'CurveEditor/SelectItems';
+  items: {
+    nodes: string[];
+    fxs: string[];
+  };
 } | {
   type: 'CurveEditor/MoveRange';
   dx: number;
@@ -51,6 +65,12 @@ export function reducer(
   return produce( state, ( newState: State ) => {
     if ( action.type === 'CurveEditor/SelectParam' ) {
       newState.selectedParam = action.param;
+      newState.selectedItems = {
+        nodes: [],
+        fxs: []
+      };
+    } else if ( action.type === 'CurveEditor/SelectItems' ) {
+      newState.selectedItems = action.items;
     } else if ( action.type === 'CurveEditor/MoveRange' ) {
       const { range, size } = state;
       const length = action.tmax;

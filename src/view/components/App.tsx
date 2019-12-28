@@ -7,6 +7,7 @@ import { Colors } from '../constants/Colors';
 import { Contexts } from '../contexts/Context';
 import { CurveEditor } from './CurveEditor';
 import { Header } from './Header';
+import { Inspector } from './Inspector';
 import { Metrics } from '../constants/Metrics';
 import { ParamList } from './ParamList';
 import { Stalker } from './Stalker';
@@ -34,7 +35,15 @@ const StyledCurveEditor = styled( CurveEditor )`
   position: absolute;
   left: ${ Metrics.paramListWidth };
   bottom: 0;
-  width: calc( 100% - ${ Metrics.paramListWidth } );
+  width: calc( 100% - ${ Metrics.paramListWidth } - ${ Metrics.inspectorWidth } );
+  height: calc( 100% - ${ Metrics.headerHeight } );
+`;
+
+const StyledInspector = styled( Inspector )`
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: ${ Metrics.inspectorWidth };
   height: calc( 100% - ${ Metrics.headerHeight } );
 `;
 
@@ -83,6 +92,7 @@ const Fuck = ( { automaton }: AppProps ): JSX.Element => {
       <StyledHeader />
       <StyledParamList />
       <StyledCurveEditor />
+      <StyledInspector />
 
       { contexts.state.about.isVisible && <>
         <OverlayBG

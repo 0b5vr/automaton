@@ -35,7 +35,7 @@ module.exports = {
         } ], // it forces 2 spaces indentation
         "linebreak-style": [ "error", "unix" ], // fuck you, CRLF
         "quotes": [ "error", "single" ], // quotes must be single
-        "eqeqeq": [ "error", "always" ], // fuck you, `==`
+        "eqeqeq": [ "error", "smart" ], // fuck you, `==`
         "max-len": [ "error", { // don't be too long, code
             "code": 100,
             "ignoreComments": true, // comments are okay

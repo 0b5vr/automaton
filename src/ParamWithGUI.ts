@@ -273,12 +273,11 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
   }
 
   /**
-   * Move a node.
+   * Move a node in the time axis.
    * @param id Id of the node you want to move
    * @param time Time
-   * @param value Value
    */
-  public moveNode( id: string, time: number, value: number ): void {
+  public moveNodeTime( id: string, time: number ): void {
     const index = this.__getNodeIndexById( id );
 
     const node = this.__nodes[ index ];
@@ -296,6 +295,20 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
     }
     node.time = newTime;
 
+    this.precalc();
+    this.__emit( 'updateNode', { id, node } );
+  }
+
+  /**
+   * Move a node in the value axis.
+   * @param id Id of the node you want to move
+   * @param value Value
+   */
+  public moveNodeValue( id: string, value: number ): void {
+    const index = this.__getNodeIndexById( id );
+
+    const node = this.__nodes[ index ];
+
     node.value = value;
 
     this.precalc();
@@ -303,13 +316,12 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
   }
 
   /**
-   * Move a handle of a node.
+   * Move a handle of a node in the time axis.
    * @param id Id of the node you want to operate
    * @param dir Which handle?
    * @param time Time
-   * @param value Value
    */
-  public moveHandle( id: string, dir: 'in' | 'out', time: number, value: number ): void {
+  public moveHandleTime( id: string, dir: 'in' | 'out', time: number ): void {
     const index = this.__getNodeIndexById( id );
 
     if (
@@ -322,6 +334,27 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
 
     const newTime = ( dir === 'in' ) ? Math.min( 0.0, time ) : Math.max( 0.0, time );
     handle.time = newTime;
+
+    this.precalc();
+    this.__emit( 'updateNode', { id, node } );
+  }
+
+  /**
+   * Move a handle of a node in the value axis.
+   * @param id Id of the node you want to operate
+   * @param dir Which handle?
+   * @param value Value
+   */
+  public moveHandleValue( id: string, dir: 'in' | 'out', value: number ): void {
+    const index = this.__getNodeIndexById( id );
+
+    if (
+      ( index === 0 && dir === 'in' ) ||
+      ( index === ( this.getNumNode() - 1 ) && dir === 'out' )
+    ) { return; }
+
+    const node = this.__nodes[ index ];
+    const handle = ( dir === 'in' ? node.in : node.out )!;
 
     handle.value = value;
 
