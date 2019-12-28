@@ -95,6 +95,7 @@ export const Header = ( { className }: HeaderProps ): JSX.Element => {
         contexts.state.history.entries[ contexts.state.history.index ].redo();
         contexts.dispatch( { type: 'History/Redo' } );
       }
+      setCantUndoThis( 0 );
     },
     [ contexts.state.history ]
   );

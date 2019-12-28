@@ -82,6 +82,7 @@ export const Inspector = ( { className }: InspectorProps ): JSX.Element => {
               type="float"
               value={ node.time }
               onChange={ ( value ) => { param?.moveNodeTime( node.$id, value ); } }
+              historyDescription="Change Node Time"
             />
           </Item>
           <Item>
@@ -90,6 +91,7 @@ export const Inspector = ( { className }: InspectorProps ): JSX.Element => {
               type="float"
               value={ node.value }
               onChange={ ( value ) => { param?.moveNodeValue( node.$id, value ); } }
+              historyDescription="Change Node Value"
             />
           </Item>
 
@@ -101,6 +103,7 @@ export const Inspector = ( { className }: InspectorProps ): JSX.Element => {
               type="float"
               value={ node.in?.time || 0.0 }
               onChange={ ( value ) => { param?.moveHandleTime( node.$id, 'in', value ); } }
+              historyDescription="Change Node Handle Time"
             />
           </Item>
           <Item>
@@ -109,6 +112,7 @@ export const Inspector = ( { className }: InspectorProps ): JSX.Element => {
               type="float"
               value={ node.in?.value || 0.0 }
               onChange={ ( value ) => { param?.moveHandleValue( node.$id, 'in', value ); } }
+              historyDescription="Change Node Handle Value"
             />
           </Item>
 
@@ -120,6 +124,7 @@ export const Inspector = ( { className }: InspectorProps ): JSX.Element => {
               type="float"
               value={ node.out?.time || 0.0 }
               onChange={ ( value ) => { param?.moveHandleTime( node.$id, 'out', value ); } }
+              historyDescription="Change Node Handle Time"
             />
           </Item>
           <Item>
@@ -128,6 +133,7 @@ export const Inspector = ( { className }: InspectorProps ): JSX.Element => {
               type="float"
               value={ node.out?.value || 0.0 }
               onChange={ ( value ) => { param?.moveHandleValue( node.$id, 'out', value ); } }
+              historyDescription="Change Node Handle Value"
             />
           </Item>
         </>;
