@@ -1,6 +1,6 @@
+import { InspectorHeader, InspectorHr, InspectorItem, InspectorLabel } from './InspectorComponents';
 import React, { useContext } from 'react';
 import { BoolParam } from './BoolParam';
-import { Colors } from '../constants/Colors';
 import { Contexts } from '../contexts/Context';
 import { FxSection } from '@fms-cat/automaton';
 import { NumberParam } from './NumberParam';
@@ -9,32 +9,7 @@ import { WithID } from '../../types/WithID';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
-const Header = styled.div`
-  color: ${ Colors.accent };
-`;
-
-const Item = styled.div`
-  display: flex;
-  justify-content: space-between;
-  margin: 0.125em 0;
-`;
-
-const StyledLabel = styled.div`
-  margin: 0.15rem;
-  font-size: 0.7rem;
-  line-height: 1em;
-`;
-
-const Hr = styled.div`
-  margin: 0.125em 0;
-  height: 0.125em;
-  width: 100%;
-  background: ${ Colors.back3 };
-`;
-
 const Root = styled.div`
-  overflow: hidden;
-  background: ${ Colors.back2 };
 `;
 
 // == element ======================================================================================
@@ -52,21 +27,21 @@ export const InspectorFx = ( { className, fx }: InspectorFxProps ): JSX.Element 
   return <>
     { automaton && param && (
       <Root className={ className }>
-        <Header>Fx: { automaton.getFxDefinitionName( fx.def ) }</Header>
+        <InspectorHeader>Fx: { automaton.getFxDefinitionName( fx.def ) }</InspectorHeader>
 
-        <Hr />
+        <InspectorHr />
 
-        <Item>
-          <StyledLabel>Time</StyledLabel>
+        <InspectorItem>
+          <InspectorLabel>Time</InspectorLabel>
           <NumberParam
             type="float"
             value={ fx.time }
             onChange={ ( value ) => { param.moveFx( fx.$id, value ); } }
             historyDescription="Change Fx Time"
           />
-        </Item>
-        <Item>
-          <StyledLabel>Row</StyledLabel>
+        </InspectorItem>
+        <InspectorItem>
+          <InspectorLabel>Row</InspectorLabel>
           <NumberParam
             type="int"
             value={ fx.row }
@@ -75,9 +50,9 @@ export const InspectorFx = ( { className, fx }: InspectorFxProps ): JSX.Element 
             } }
             historyDescription="Change Fx Row"
           />
-        </Item>
-        <Item>
-          <StyledLabel>Bypass</StyledLabel>
+        </InspectorItem>
+        <InspectorItem>
+          <InspectorLabel>Bypass</InspectorLabel>
           <BoolParam
             value={ !!fx.bypass }
             onChange={ ( value ) => {
@@ -85,9 +60,9 @@ export const InspectorFx = ( { className, fx }: InspectorFxProps ): JSX.Element 
             } }
             historyDescription="Toggle Fx Bypass"
           />
-        </Item>
+        </InspectorItem>
 
-        <Hr />
+        <InspectorHr />
       </Root>
     ) }
   </>;
