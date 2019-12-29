@@ -77,9 +77,9 @@ export class Automaton {
   protected __params: { [ name: string ]: Param } = {};
 
   /**
-   * A list of fx definitions.
+   * A map of fx definitions.
    */
-  protected __fxDefs: { [ name: string ]: FxDefinition } = {};
+  protected __fxDefinitions: { [ name: string ]: FxDefinition } = {};
 
   public constructor( options: AutomatonOptions ) {
     this.__isLoop = options.loop || false;
@@ -209,7 +209,7 @@ export class Automaton {
    * @param fxDef Fx definition object
    */
   public addFxDefinition( id: string, fxDef: FxDefinition ): void {
-    this.__fxDefs[ id ] = fxDef;
+    this.__fxDefinitions[ id ] = fxDef;
 
     this.precalcAll();
   }
@@ -220,7 +220,7 @@ export class Automaton {
    * @param id Unique id for the Fx definition
    */
   public getFxDefinition( id: string ): FxDefinition | null {
-    return this.__fxDefs[ id ] || null;
+    return this.__fxDefinitions[ id ] || null;
   }
 
   /**
