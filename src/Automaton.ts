@@ -233,7 +233,7 @@ export class Automaton {
   /**
    * Update the entire automaton.
    * **You may want to call this in your update loop.**
-   * @param time Current time
+   * @param time Current time, optional
    */
   public update( time?: number ): void {
     // update the clock
