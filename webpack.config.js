@@ -48,7 +48,7 @@ Repository: ${ packageJson.repository }`
       ],
     },
     optimization: {
-      minimize: argv.mode === 'production'
+      minimize: !DEV
     },
     devServer: {
       contentBase: path.resolve( __dirname, './' ),

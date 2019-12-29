@@ -18,6 +18,7 @@ module.exports = {
 
     "extends": [
         "eslint:recommended",
+        "plugin:react/recommended",
         "plugin:@typescript-eslint/eslint-recommended",
         "plugin:@typescript-eslint/recommended"
     ],
@@ -34,7 +35,7 @@ module.exports = {
         } ], // it forces 2 spaces indentation
         "linebreak-style": [ "error", "unix" ], // fuck you, CRLF
         "quotes": [ "error", "single" ], // quotes must be single
-        "eqeqeq": [ "error", "always" ], // fuck you, `==`
+        "eqeqeq": [ "error", "smart" ], // fuck you, `==`
         "max-len": [ "error", { // don't be too long, code
             "code": 100,
             "ignoreComments": true, // comments are okay
@@ -87,6 +88,7 @@ module.exports = {
         "@typescript-eslint/no-explicit-any": [ "off" ], // yea
         "@typescript-eslint/no-inferrable-types": [ "off" ], // it's ok
         "@typescript-eslint/no-non-null-assertion": [ "off" ], // bang is sometimes required
+        "@typescript-eslint/no-empty-interface": [ "off" ], // we need to perform mixins
         "@typescript-eslint/explicit-function-return-type": [ "error", { "allowExpressions": true } ], // return type is required
         "@typescript-eslint/explicit-member-accessibility": [ "error" ], // `public` / `private` for members and methods are required
     }
