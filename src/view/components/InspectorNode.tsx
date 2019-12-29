@@ -1,7 +1,9 @@
-import { InspectorHeader, InspectorHr, InspectorItem, InspectorLabel } from './InspectorComponents';
 import React, { useContext } from 'react';
 import { BezierNode } from '@fms-cat/automaton';
 import { Contexts } from '../contexts/Context';
+import { InspectorHeader } from './InspectorHeader';
+import { InspectorHr } from './InspectorHr';
+import { InspectorItem } from './InspectorItem';
 import { NumberParam } from './NumberParam';
 import { WithID } from '../../types/WithID';
 import styled from 'styled-components';
@@ -25,12 +27,11 @@ export const InspectorNode = ( { className, node }: InspectorNodeProps ): JSX.El
   return <>
     { param && (
       <Root className={ className }>
-        <InspectorHeader>Node</InspectorHeader>
+        <InspectorHeader text="Node" />
 
         <InspectorHr />
 
-        <InspectorItem>
-          <InspectorLabel>Time</InspectorLabel>
+        <InspectorItem name="Time">
           <NumberParam
             type="float"
             value={ node.time }
@@ -38,8 +39,7 @@ export const InspectorNode = ( { className, node }: InspectorNodeProps ): JSX.El
             historyDescription="Change Node Time"
           />
         </InspectorItem>
-        <InspectorItem>
-          <InspectorLabel>Value</InspectorLabel>
+        <InspectorItem name="Value">
           <NumberParam
             type="float"
             value={ node.value }
@@ -50,8 +50,7 @@ export const InspectorNode = ( { className, node }: InspectorNodeProps ): JSX.El
 
         <InspectorHr />
 
-        <InspectorItem>
-          <InspectorLabel>In Time</InspectorLabel>
+        <InspectorItem name="In Time">
           <NumberParam
             type="float"
             value={ node.in?.time || 0.0 }
@@ -59,8 +58,7 @@ export const InspectorNode = ( { className, node }: InspectorNodeProps ): JSX.El
             historyDescription="Change Node Handle Time"
           />
         </InspectorItem>
-        <InspectorItem>
-          <InspectorLabel>In Value</InspectorLabel>
+        <InspectorItem name="In Value">
           <NumberParam
             type="float"
             value={ node.in?.value || 0.0 }
@@ -71,8 +69,7 @@ export const InspectorNode = ( { className, node }: InspectorNodeProps ): JSX.El
 
         <InspectorHr />
 
-        <InspectorItem>
-          <InspectorLabel>Out Time</InspectorLabel>
+        <InspectorItem name="Out Time">
           <NumberParam
             type="float"
             value={ node.out?.time || 0.0 }
@@ -80,8 +77,7 @@ export const InspectorNode = ( { className, node }: InspectorNodeProps ): JSX.El
             historyDescription="Change Node Handle Time"
           />
         </InspectorItem>
-        <InspectorItem>
-          <InspectorLabel>Out Value</InspectorLabel>
+        <InspectorItem name="Out Value">
           <NumberParam
             type="float"
             value={ node.out?.value || 0.0 }

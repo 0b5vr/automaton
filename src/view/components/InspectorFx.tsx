@@ -1,8 +1,10 @@
-import { InspectorHeader, InspectorHr, InspectorItem, InspectorLabel } from './InspectorComponents';
 import React, { useContext } from 'react';
 import { BoolParam } from './BoolParam';
 import { Contexts } from '../contexts/Context';
 import { FxSection } from '@fms-cat/automaton';
+import { InspectorHeader } from './InspectorHeader';
+import { InspectorHr } from './InspectorHr';
+import { InspectorItem } from './InspectorItem';
 import { NumberParam } from './NumberParam';
 import { PARAM_FX_ROW_MAX } from '../../ParamWithGUI';
 import { WithID } from '../../types/WithID';
@@ -27,12 +29,11 @@ export const InspectorFx = ( { className, fx }: InspectorFxProps ): JSX.Element 
   return <>
     { automaton && param && (
       <Root className={ className }>
-        <InspectorHeader>Fx: { automaton.getFxDefinitionName( fx.def ) }</InspectorHeader>
+        <InspectorHeader text={ `Fx: ${ automaton.getFxDefinitionName( fx.def ) }` } />
 
         <InspectorHr />
 
-        <InspectorItem>
-          <InspectorLabel>Time</InspectorLabel>
+        <InspectorItem name="Time">
           <NumberParam
             type="float"
             value={ fx.time }
@@ -40,8 +41,15 @@ export const InspectorFx = ( { className, fx }: InspectorFxProps ): JSX.Element 
             historyDescription="Change Fx Time"
           />
         </InspectorItem>
-        <InspectorItem>
-          <InspectorLabel>Row</InspectorLabel>
+        <InspectorItem name="Length">
+          <NumberParam
+            type="float"
+            value={ fx.length }
+            onChange={ ( value ) => { param.resizeFx( fx.$id, value ); } }
+            historyDescription="Change Fx Length"
+          />
+        </InspectorItem>
+        <InspectorItem name="Row">
           <NumberParam
             type="int"
             value={ fx.row }
@@ -51,8 +59,7 @@ export const InspectorFx = ( { className, fx }: InspectorFxProps ): JSX.Element 
             historyDescription="Change Fx Row"
           />
         </InspectorItem>
-        <InspectorItem>
-          <InspectorLabel>Bypass</InspectorLabel>
+        <InspectorItem name="Bypass">
           <BoolParam
             value={ !!fx.bypass }
             onChange={ ( value ) => {
@@ -63,6 +70,33 @@ export const InspectorFx = ( { className, fx }: InspectorFxProps ): JSX.Element 
         </InspectorItem>
 
         <InspectorHr />
+
+        { Object.entries( automaton.getFxDefinitionParams( fx.def )! )
+        .map( ( [ name, fxParam ] ) => (
+          <InspectorItem name={ fxParam.name || name } key={ name }>
+            <>
+              { ( fxParam.type === 'float' || fxParam.type === 'int' ) && (
+                <NumberParam
+                  type={ fxParam.type }
+                  value={ fx.params[ name ] }
+                  onChange={ ( value ) => {
+                    param.changeFxParam( fx.$id, name, value );
+                  } }
+                  historyDescription="Change Fx Param"
+                />
+              ) }
+              { ( fxParam.type === 'boolean' ) && (
+                <BoolParam
+                  value={ fx.params[ name ] }
+                  onChange={ ( value ) => {
+                    param.changeFxParam( fx.$id, name, value );
+                  } }
+                  historyDescription="Change Fx Param"
+                />
+              ) }
+            </>
+          </InspectorItem>
+        ) ) }
       </Root>
     ) }
   </>;
