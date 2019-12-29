@@ -117,14 +117,14 @@ export function bezierEasing( node0: BezierNode, node1: BezierNode, time: number
   return rawBezierEasing(
     {
       p0: node0.time,
-      p1: node0.time + node0.out!.time,
-      p2: node1.time + node1.in!.time,
+      p1: node0.time + ( node0.out?.time || 0.0 ),
+      p2: node1.time + ( node1.in?.time || 0.0 ),
       p3: node1.time
     },
     {
       p0: node0.value,
-      p1: node0.value + node0.out!.value,
-      p2: node1.value + node1.in!.value,
+      p1: node0.value + ( node0.out?.value || 0.0 ),
+      p2: node1.value + ( node1.in?.value || 0.0 ),
       p3: node1.value
     },
     time
