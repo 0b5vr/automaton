@@ -12,7 +12,8 @@
       "url": "http://localhost:4000",
       "webRoot": "${workspaceFolder}",
       "sourceMapPathOverrides": {
-        "webpack://Automaton/./*": "${webRoot}/*"
+        "webpack:///./*": "${webRoot}/*",
+        "webpack://Automaton/./*": "${webRoot}/node_modules/@fms-cat/automaton"
       }
     }
   ]

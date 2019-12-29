@@ -24,9 +24,19 @@ const FxBgLine = styled.line`
   stroke-dasharray: 0.25rem;
 `;
 
-const FxBody = styled.rect<{ isSelected: boolean }>`
-  fill: ${ ( { isSelected } ) => ( isSelected ? Colors.fx : Colors.back1 ) };
-  stroke: ${ Colors.fx };
+const FxBody = styled.rect<{ isSelected: boolean; isBypassed: boolean | undefined }>`
+  fill: ${ ( { isSelected, isBypassed } ) => (
+    isSelected
+      ? isBypassed
+        ? Colors.gray
+        : Colors.fx
+      : Colors.back1
+  ) };
+  stroke: ${ ( { isBypassed } ) => (
+    isBypassed
+      ? Colors.gray
+      : Colors.fx
+  ) };
   stroke-width: 0.125rem;
   cursor: pointer;
   pointer-events: auto;
@@ -44,8 +54,14 @@ const FxSide = styled.rect`
   ry: 0.25rem;
 `;
 
-const FxText = styled.text<{ isSelected: boolean }>`
-  fill: ${ ( { isSelected } ) => ( isSelected ? Colors.back1 : Colors.fx ) };
+const FxText = styled.text<{ isSelected: boolean; isBypassed: boolean | undefined }>`
+  fill: ${ ( { isSelected, isBypassed } ) => (
+    isSelected ?
+      Colors.back1
+      : isBypassed
+        ? Colors.gray
+        : Colors.fx
+  ) };
   font-size: 0.7rem;
 `;
 
@@ -232,6 +248,8 @@ export const CurveEditorFxs = ( props: CurveEditorFxsProps ): JSX.Element => {
       <g>
         {
           fxs && Object.values( fxs ).map( ( fx ) => {
+            if ( fx.bypass ) { return null; }
+
             const x = t2x( fx.time, range, size.width );
 
             return (
@@ -287,6 +305,7 @@ export const CurveEditorFxs = ( props: CurveEditorFxsProps ): JSX.Element => {
                     isSelected={
                       contexts.state.curveEditor.selectedItems.fxs.indexOf( fx.$id ) !== -1
                     }
+                    isBypassed={ fx.bypass }
                     onMouseDown={ ( event ) => handleFxBodyClick( event, fx ) }
                   />
                   <FxSide
@@ -313,6 +332,7 @@ export const CurveEditorFxs = ( props: CurveEditorFxsProps ): JSX.Element => {
                         isSelected={
                           contexts.state.curveEditor.selectedItems.fxs.indexOf( fx.$id ) !== -1
                         }
+                        isBypassed={ fx.bypass }
                       >
                         { automaton?.getFxDefinitionName( fx.def ) }
                       </FxText>

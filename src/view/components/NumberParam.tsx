@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import { useDoubleClick } from '../utils/useDoubleClick';
 
 // == styles =======================================================================================
-const Input = styled.input`
+const Input = styled.input< { isInvalid?: boolean } >`
   display: block;
   width: calc( 100% - 0.2rem );
   height: calc( 100% - 0.2rem );
@@ -14,7 +14,7 @@ const Input = styled.input`
   padding: 0.1rem;
   border: none;
   text-align: center;
-  background: ${ Colors.foresub };
+  background: ${ ( { isInvalid } ) => ( isInvalid ? Colors.errorBright : Colors.foresub ) };
   color: ${ Colors.back1 };
   pointer-events: auto;
 `;
@@ -55,28 +55,29 @@ function inputToValue( value: string, type: ValueType ): number | null {
 
 function valueToInput( value: number, type: ValueType ): string {
   if ( type === 'int' ) {
-    return Math.floor( value as number ).toString();
+    return Math.floor( value ).toString();
   } else {
-    return ( value as number ).toFixed( 3 );
+    return ( value ).toFixed( 3 );
   }
 }
 
 // == element ======================================================================================
-export interface ParamBoxProps {
+export interface NumberParamProps {
   type: ValueType;
   value: number;
   historyDescription: string;
   className?: string;
   onChange?: ( value: number ) => void;
-  onPressTab?: () => void;
 }
 
-export const ParamBox = ( props: ParamBoxProps ): JSX.Element => {
+export const NumberParam = ( props: NumberParamProps ): JSX.Element => {
   const contexts = useContext( Contexts.Store );
-  const { className, type, value, historyDescription, onChange, onPressTab } = props;
+  const { className, type, value, historyDescription, onChange } = props;
   const [ isInput, setIsInput ] = useState<boolean>( false );
   const refInput = useRef<HTMLInputElement>( null );
   const [ inputValue, setInputValue ] = useState<string>( '' );
+  const [ inputPrevValue, setInputPrevValue ] = useState<number>( 0.0 );
+  const [ isInputInvalid, setIsInputInvalid ] = useState<boolean>( false );
   const checkDoubleClick = useDoubleClick();
 
   useEffect( () => { // focus on the input
@@ -113,10 +114,12 @@ export const ParamBox = ( props: ParamBoxProps ): JSX.Element => {
       if ( checkDoubleClick() ) {
         setIsInput( true );
         setInputValue( String( value ) );
+        setInputPrevValue( value );
+        setIsInputInvalid( false );
       } else {
         if ( props.type === 'int' ) {
           const vPrev = value;
-          let v = vPrev as number;
+          let v = vPrev;
           let hasMoved = false;
 
           registerMouseEvent(
@@ -152,7 +155,7 @@ export const ParamBox = ( props: ParamBoxProps ): JSX.Element => {
           );
         } else {
           const vPrev = value;
-          let v = vPrev as number;
+          let v = vPrev;
           let hasMoved = false;
 
           registerMouseEvent(
@@ -193,16 +196,21 @@ export const ParamBox = ( props: ParamBoxProps ): JSX.Element => {
 
   const handleChange = ( event: React.ChangeEvent<HTMLInputElement> ): void => {
     setInputValue( event.target.value );
+
+    const v = inputToValue( event.target.value, type );
+    setIsInputInvalid( v == null );
+    if ( v != null ) {
+      onChange && onChange( v );
+    }
   };
 
   const handleKeyDown = ( event: React.KeyboardEvent<HTMLInputElement> ): void => {
     if ( event.nativeEvent.key === 'Enter' ) {
       event.preventDefault();
 
-      const vPrev = value;
       const v = inputToValue( inputValue, type );
       if ( v != null ) {
-        pushHistoryAndDo( v, vPrev );
+        pushHistoryAndDo( v, inputPrevValue );
       }
 
       setIsInput( false );
@@ -210,17 +218,16 @@ export const ParamBox = ( props: ParamBoxProps ): JSX.Element => {
       event.preventDefault();
 
       setIsInput( false );
-    } else if ( event.nativeEvent.key === 'Tab' ) {
-      event.preventDefault();
-
-      const vPrev = value;
-      const v = inputToValue( inputValue, type );
-      if ( v != null ) {
-        pushHistoryAndDo( v, vPrev );
-      }
-
-      setIsInput( false );
     }
+  };
+
+  const handleBlur = (): void => {
+    const v = inputToValue( inputValue, type );
+    if ( v != null ) {
+      pushHistoryAndDo( v, inputPrevValue );
+    }
+
+    setIsInput( false );
   };
 
   const displayValue = valueToInput( value, type );
@@ -234,6 +241,8 @@ export const ParamBox = ( props: ParamBoxProps ): JSX.Element => {
             value={ inputValue }
             onChange={ handleChange }
             onKeyDown={ handleKeyDown }
+            onBlur={ handleBlur }
+            isInvalid={ isInputInvalid }
           />
         ) : (
           <Value

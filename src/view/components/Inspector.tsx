@@ -2,34 +2,12 @@ import React, { useContext } from 'react';
 import { Colors } from '../constants/Colors';
 import { Contexts } from '../contexts/Context';
 import { Icons } from '../icons/Icons';
+import { InspectorFx } from './InspectorFx';
+import { InspectorNode } from './InspectorNode';
 import { Metrics } from '../constants/Metrics';
-import { ParamBox } from './ParamBox';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
-const Header = styled.div`
-  color: ${ Colors.accent };
-`;
-
-const Item = styled.div`
-  display: flex;
-  justify-content: space-between;
-  margin: 0.125em 0;
-`;
-
-const StyledLabel = styled.div`
-  margin: 0.15rem;
-  font-size: 0.7rem;
-  line-height: 1em;
-`;
-
-const Hr = styled.div`
-  margin: 0.125em 0;
-  height: 0.125em;
-  width: 100%;
-  background: ${ Colors.back3 };
-`;
-
 const Logo = styled.img`
   position: absolute;
   fill: ${ Colors.back3 };
@@ -54,9 +32,7 @@ export interface InspectorProps {
 
 export const Inspector = ( { className }: InspectorProps ): JSX.Element => {
   const contexts = useContext( Contexts.Store );
-  const automaton = contexts.state.automaton.instance;
   const { selectedParam } = contexts.state.curveEditor;
-  const param = automaton && selectedParam && automaton.getParam( selectedParam ) || null;
 
   const selectedNodes = contexts.state.curveEditor.selectedItems.nodes.map( ( id ) => {
     return contexts.state.automaton.params[ selectedParam! ].nodes[ id ];
@@ -64,80 +40,18 @@ export const Inspector = ( { className }: InspectorProps ): JSX.Element => {
   const selectedFxs = contexts.state.curveEditor.selectedItems.fxs.map( ( id ) => {
     return contexts.state.automaton.params[ selectedParam! ].fxs[ id ];
   } );
+  const isSelectingANode = selectedNodes.length === 1 && selectedFxs.length === 0;
+  const isSelectingAFx = selectedNodes.length === 0 && selectedFxs.length === 1;
   const isSelectingNothing = ( selectedNodes.length === 0 ) && ( selectedFxs.length === 0 );
 
   return <Root className={ className }>
     <Container>
-      { selectedNodes.length === 1 && ( () => {
-        const node = selectedNodes[ 0 ];
-
-        return <>
-          <Header>Node</Header>
-
-          <Hr />
-
-          <Item>
-            <StyledLabel>Time</StyledLabel>
-            <ParamBox
-              type="float"
-              value={ node.time }
-              onChange={ ( value ) => { param?.moveNodeTime( node.$id, value ); } }
-              historyDescription="Change Node Time"
-            />
-          </Item>
-          <Item>
-            <StyledLabel>Value</StyledLabel>
-            <ParamBox
-              type="float"
-              value={ node.value }
-              onChange={ ( value ) => { param?.moveNodeValue( node.$id, value ); } }
-              historyDescription="Change Node Value"
-            />
-          </Item>
-
-          <Hr />
-
-          <Item>
-            <StyledLabel>In Time</StyledLabel>
-            <ParamBox
-              type="float"
-              value={ node.in?.time || 0.0 }
-              onChange={ ( value ) => { param?.moveHandleTime( node.$id, 'in', value ); } }
-              historyDescription="Change Node Handle Time"
-            />
-          </Item>
-          <Item>
-            <StyledLabel>In Value</StyledLabel>
-            <ParamBox
-              type="float"
-              value={ node.in?.value || 0.0 }
-              onChange={ ( value ) => { param?.moveHandleValue( node.$id, 'in', value ); } }
-              historyDescription="Change Node Handle Value"
-            />
-          </Item>
-
-          <Hr />
-
-          <Item>
-            <StyledLabel>Out Time</StyledLabel>
-            <ParamBox
-              type="float"
-              value={ node.out?.time || 0.0 }
-              onChange={ ( value ) => { param?.moveHandleTime( node.$id, 'out', value ); } }
-              historyDescription="Change Node Handle Time"
-            />
-          </Item>
-          <Item>
-            <StyledLabel>Out Value</StyledLabel>
-            <ParamBox
-              type="float"
-              value={ node.out?.value || 0.0 }
-              onChange={ ( value ) => { param?.moveHandleValue( node.$id, 'out', value ); } }
-              historyDescription="Change Node Handle Value"
-            />
-          </Item>
-        </>;
-      } )() }
+      { isSelectingANode && <InspectorNode
+        node={ selectedNodes[ 0 ] }
+      /> }
+      { isSelectingAFx && <InspectorFx
+        fx={ selectedFxs[ 0 ] }
+      /> }
     </Container>
     { isSelectingNothing && <Logo as={ Icons.AutomatonA } /> }
   </Root>;
