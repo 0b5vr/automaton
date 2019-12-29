@@ -1,4 +1,4 @@
-import { BezierNode, FxSection } from '@fms-cat/automaton';
+import { BezierNode, FxDefinition, FxSection } from '@fms-cat/automaton';
 import { AutomatonWithGUI } from '../../AutomatonWithGUI';
 import { WithID } from '../../types/WithID';
 import { jsonCopy } from '../../utils/jsonCopy';
@@ -7,6 +7,7 @@ import { produce } from 'immer';
 // == state ========================================================================================
 export interface State {
   instance?: AutomatonWithGUI;
+  fxDefinitions: { [ name: string ]: FxDefinition };
   params: {
     [ name: string ]: {
       nodes: { [ id: string ]: BezierNode & WithID };
@@ -20,6 +21,7 @@ export interface State {
 
 export const initialState: Readonly<State> = {
   params: {},
+  fxDefinitions: {},
   isPlaying: false,
   time: 0.0,
   length: 1.0
@@ -29,6 +31,10 @@ export const initialState: Readonly<State> = {
 export type Action = {
   type: 'Automaton/SetInstance';
   automaton: AutomatonWithGUI;
+} | {
+  type: 'Automaton/AddFxDefinition';
+  name: string;
+  fxDefinition: FxDefinition;
 } | {
   type: 'Automaton/CreateParam';
   param: string;
@@ -52,10 +58,13 @@ export type Action = {
   id: string;
 } | {
   type: 'Automaton/UpdateIsPlaying';
+  isPlaying: boolean;
 } | {
   type: 'Automaton/UpdateTime';
+  time: number;
 } | {
   type: 'Automaton/UpdateLength';
+  length: number;
 };
 
 // == reducer ======================================================================================
@@ -66,6 +75,8 @@ export function reducer(
   return produce( state, ( newState: State ) => {
     if ( action.type === 'Automaton/SetInstance' ) {
       newState.instance = action.automaton;
+    } else if ( action.type === 'Automaton/AddFxDefinition' ) {
+      newState.fxDefinitions[ action.name ] = action.fxDefinition;
     } else if ( action.type === 'Automaton/CreateParam' ) {
       newState.params[ action.param ] = {
         nodes: {},
@@ -80,11 +91,11 @@ export function reducer(
     } else if ( action.type === 'Automaton/RemoveParamFx' ) {
       delete newState.params[ action.param ].fxs[ action.id ];
     } else if ( action.type === 'Automaton/UpdateIsPlaying' ) {
-      newState.isPlaying = state.instance!.isPlaying;
+      newState.isPlaying = action.isPlaying;
     } else if ( action.type === 'Automaton/UpdateTime' ) {
-      newState.time = state.instance!.time;
+      newState.time = action.time;
     } else if ( action.type === 'Automaton/UpdateLength' ) {
-      newState.length = state.instance!.length;
+      newState.length = action.length;
     }
   } );
 }

@@ -119,35 +119,66 @@ export const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JS
       } );
 
       contexts.dispatch( {
-        type: 'Automaton/UpdateTime'
+        type: 'Automaton/UpdateTime',
+        time: automaton.time
       } );
 
       contexts.dispatch( {
-        type: 'Automaton/UpdateLength'
+        type: 'Automaton/UpdateLength',
+        length: automaton.length
       } );
 
       contexts.dispatch( {
-        type: 'Automaton/UpdateIsPlaying'
+        type: 'Automaton/UpdateIsPlaying',
+        isPlaying: automaton.isPlaying
       } );
 
-      automaton.getParamNames().forEach( ( name ) => {
-        createParam( name, automaton.getParam( name )! );
+      Object.entries( automaton.fxDefinitions ).forEach( ( [ name, fxDefinition ] ) => {
+        contexts.dispatch( {
+          type: 'Automaton/AddFxDefinition',
+          name,
+          fxDefinition
+        } );
       } );
 
-      automaton.on( 'update', () => {
-        contexts.dispatch( { type: 'Automaton/UpdateTime' } );
+      Object.entries( automaton.params ).forEach( ( [ name, param ] ) => {
+        createParam( name, param );
       } );
 
-      automaton.on( 'changeLength', () => {
-        contexts.dispatch( { type: 'Automaton/UpdateLength' } );
+      automaton.on( 'update', ( { time } ) => {
+        contexts.dispatch( {
+          type: 'Automaton/UpdateTime',
+          time
+        } );
+      } );
+
+      automaton.on( 'changeLength', ( { length } ) => {
+        contexts.dispatch( {
+          type: 'Automaton/UpdateLength',
+          length
+        } );
       } );
 
       automaton.on( 'play', () => {
-        contexts.dispatch( { type: 'Automaton/UpdateIsPlaying' } );
+        contexts.dispatch( {
+          type: 'Automaton/UpdateIsPlaying',
+          isPlaying: true
+        } );
       } );
 
       automaton.on( 'pause', () => {
-        contexts.dispatch( { type: 'Automaton/UpdateIsPlaying' } );
+        contexts.dispatch( {
+          type: 'Automaton/UpdateIsPlaying',
+          isPlaying: false
+        } );
+      } );
+
+      automaton.on( 'addFxDefinition', ( { name, fxDefinition } ) => {
+        contexts.dispatch( {
+          type: 'Automaton/AddFxDefinition',
+          name,
+          fxDefinition
+        } );
       } );
 
       automaton.on( 'createParam', ( event ) => {

@@ -70,7 +70,7 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
   protected __automaton!: AutomatonWithGUI;
 
   /**
-   * List of bezier node.
+   * List of bezier nodes.
    */
   protected __nodes!: Array<BezierNode & WithID>;
 
@@ -85,10 +85,16 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
    */
   private __statusList: ParamStatus[];
 
+  /**
+   * List of bezier nodes.
+   */
   public get nodes(): Array<BezierNode & WithID> {
     return this.__nodes;
   }
 
+  /**
+   * List of fx sections.
+   */
   public get fxs(): Array<FxSection & WithID> {
     return this.__fxs;
   }
@@ -555,8 +561,11 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
     const index = this.__getFxIndexById( id );
 
     const fx = this.__fxs[ index ];
-    // Vue.set( fx, 'bypass', !!bypass );
-    fx.bypass = bypass;
+    if ( bypass ) {
+      fx.bypass = true;
+    } else {
+      delete fx.bypass;
+    }
 
     this.precalc();
     this.__emit( 'updateFx', { id, fx } );

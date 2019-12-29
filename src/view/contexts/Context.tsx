@@ -1,6 +1,7 @@
 import * as About from './About';
 import * as Automaton from './Automaton';
 import * as CurveEditor from './CurveEditor';
+import * as FxSpawner from './FxSpawner';
 import * as Header from './Header';
 import * as History from './History';
 import React, { createContext, useReducer } from 'react';
@@ -23,6 +24,7 @@ export interface ContextsState {
   about: About.State;
   automaton: Automaton.State;
   curveEditor: CurveEditor.State;
+  fxSpawner: FxSpawner.State;
   header: Header.State;
   history: History.State;
 }
@@ -31,6 +33,7 @@ const initialState: Readonly<ContextsState> = {
   about: About.initialState,
   automaton: Automaton.initialState,
   curveEditor: CurveEditor.initialState,
+  fxSpawner: FxSpawner.initialState,
   header: Header.initialState,
   history: History.initialState,
 };
@@ -40,6 +43,7 @@ type Action = (
   About.Action |
   Automaton.Action |
   CurveEditor.Action |
+  FxSpawner.Action |
   Header.Action |
   History.Action
 );
@@ -49,6 +53,7 @@ const reducer = combineReducers<ContextsState>( {
   about: About.reducer,
   automaton: Automaton.reducer,
   curveEditor: CurveEditor.reducer,
+  fxSpawner: FxSpawner.reducer,
   header: Header.reducer,
   history: History.reducer,
 } );

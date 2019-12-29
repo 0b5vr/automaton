@@ -67,12 +67,29 @@ const SubRoot = styled.div`
   }
 `;
 
-const Root = styled.div`
+const Container = styled.div`
+  position: absolute;
+  left: calc( 50% - 15rem );
+  top: 1rem;
+  width: 30rem;
   overflow: hidden;
   border-radius: 0.5rem;
   background: ${ Colors.back3 };
   filter: drop-shadow( 0 0 2px ${ Colors.black } );
   font-size: 0.8rem;
+`;
+
+const OverlayBG = styled.div`
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: ${ Colors.black };
+  opacity: 0.6;
+`;
+
+const Root = styled.div`
 `;
 
 // == element ======================================================================================
@@ -93,30 +110,35 @@ export const About = ( { className }: AboutProps ): JSX.Element => {
   }
 
   return <Root className={ className }>
-    { values.map( ( value, i ) => (
-      <LargeA
-        key={ i }
-        style={ {
-          transform: `rotate(${ value }deg)`
-        } }
-      />
-    ) ) }
-    <SubRoot>
-      <LogoAndVersion>
-        <Logo as={ Icons.Automaton } />
-        <Version>{
-          contexts.state.automaton.instance && contexts.state.automaton.instance.version
-        }</Version>
-      </LogoAndVersion>
-      <Description>Animation engine for creative coding</Description>
-      <Hr />
-      Author: <Anchor href="https://github.com/FMS-Cat">FMS_Cat</Anchor><br />
-      Repository: <Anchor href="https://github.com/FMS-Cat/automaton/">https://github.com/fms-cat/automaton/</Anchor><br />
-      Automaton is distributed under permissive <Anchor href="https://opensource.org/licenses/MIT">MIT License</Anchor><br />
-      Shoutouts to <Anchor href="https://www.image-line.com/flstudio/">Image Line Software</Anchor> &lt;3
-    </SubRoot>
-    <Close onClick={
-      () => contexts.dispatch( { type: 'About/Close' } )
-    } />
+    <OverlayBG
+      onClick={ () => contexts.dispatch( { type: 'About/Close' } ) }
+    />
+    <Container>
+      { values.map( ( value, i ) => (
+        <LargeA
+          key={ i }
+          style={ {
+            transform: `rotate(${ value }deg)`
+          } }
+        />
+      ) ) }
+      <SubRoot>
+        <LogoAndVersion>
+          <Logo as={ Icons.Automaton } />
+          <Version>{
+            contexts.state.automaton.instance && contexts.state.automaton.instance.version
+          }</Version>
+        </LogoAndVersion>
+        <Description>Animation engine for creative coding</Description>
+        <Hr />
+        Author: <Anchor href="https://github.com/FMS-Cat">FMS_Cat</Anchor><br />
+        Repository: <Anchor href="https://github.com/FMS-Cat/automaton/">https://github.com/fms-cat/automaton/</Anchor><br />
+        Automaton is distributed under permissive <Anchor href="https://opensource.org/licenses/MIT">MIT License</Anchor><br />
+        Shoutouts to <Anchor href="https://www.image-line.com/flstudio/">Image Line Software</Anchor> &lt;3
+      </SubRoot>
+      <Close onClick={
+        () => contexts.dispatch( { type: 'About/Close' } )
+      } />
+    </Container>
   </Root>;
 };

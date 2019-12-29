@@ -15,7 +15,7 @@ export const Label = styled.div`
 export const Root = styled.div`
   display: flex;
   justify-content: space-between;
-  margin: 0.125em 0;
+  margin: 0.125rem 0;
 `;
 
 // == components ===================================================================================

@@ -6,6 +6,7 @@ import { AutomatonWithGUI } from '../../AutomatonWithGUI';
 import { Colors } from '../constants/Colors';
 import { Contexts } from '../contexts/Context';
 import { CurveEditor } from './CurveEditor';
+import { FxSpawner } from './FxSpawner';
 import { Header } from './Header';
 import { Inspector } from './Inspector';
 import { Metrics } from '../constants/Metrics';
@@ -47,21 +48,16 @@ const StyledInspector = styled( Inspector )`
   height: calc( 100% - ${ Metrics.headerHeight } );
 `;
 
-const StyledAbout = styled( About )`
+const StyledFxSpawner = styled( FxSpawner )`
   position: absolute;
-  left: calc( 50% - 15em );
-  top: 1rem;
-  width: 30em;
-`;
-
-const OverlayBG = styled.div`
-  position: absolute;
-  left: 0;
-  top: 0;
   width: 100%;
   height: 100%;
-  background: ${ Colors.black };
-  opacity: 0.6;
+`;
+
+const StyledAbout = styled( About )`
+  position: absolute;
+  width: 100%;
+  height: 100%;
 `;
 
 const Root = styled.div`
@@ -93,13 +89,8 @@ const Fuck = ( { automaton }: AppProps ): JSX.Element => {
       <StyledParamList />
       <StyledCurveEditor />
       <StyledInspector />
-
-      { contexts.state.about.isVisible && <>
-        <OverlayBG
-          onClick={ () => contexts.dispatch( { type: 'About/Close' } ) }
-        />
-        <StyledAbout />
-      </> }
+      { contexts.state.fxSpawner.isVisible && <StyledFxSpawner /> }
+      { contexts.state.about.isVisible && <StyledAbout /> }
 
       <Stalker />
     </Root>

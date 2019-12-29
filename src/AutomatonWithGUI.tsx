@@ -52,6 +52,20 @@ export class AutomatonWithGUI extends Automaton
    */
   private __historyIndex: number = 0;
 
+  /**
+   * A map of params.
+   */
+  public get params(): { [ name: string ]: ParamWithGUI } {
+    return this.__params;
+  }
+
+  /**
+   * A map of fx definitions.
+   */
+  public get fxDefinitions(): { [ name: string ]: FxDefinition } {
+    return this.__fxDefinitions;
+  }
+
   public constructor( options: AutomatonWithGUIOptions ) {
     super( options as AutomatonOptions );
 
@@ -77,7 +91,7 @@ export class AutomatonWithGUI extends Automaton
    */
   public seek( time: number ): void {
     super.seek( time );
-    this.__emit( 'seek' );
+    this.__emit( 'seek', { time } );
   }
 
   /**
@@ -99,13 +113,24 @@ export class AutomatonWithGUI extends Automaton
   }
 
   /**
+   * Add a fx definition.
+   * @param id Unique id for the Fx definition
+   * @param fxDef Fx definition object
+   */
+  public addFxDefinition( id: string, fxDef: FxDefinition ): void {
+    super.addFxDefinition( id, fxDef );
+
+    this.__emit( 'addFxDefinition', { name: id, fxDefinition: fxDef } );
+  }
+
+  /**
    * Update the entire automaton.
    * **You may want to call this in your update loop.**
-   * @param time Current time, **Required if the clock mode is manual**
+   * @param time Current time, optional
    */
-  public update( time: number ): void {
+  public update( time?: number ): void {
     super.update( time );
-    this.__emit( 'update' );
+    this.__emit( 'update', { time: this.time } );
   }
 
   /**
@@ -114,7 +139,7 @@ export class AutomatonWithGUI extends Automaton
    * @returns Default fx params object
    */
   public generateDefaultFxParams( id: string ): { [ key: string ]: any } {
-    const fxDef = this.__fxDefs[ id ];
+    const fxDef = this.__fxDefinitions[ id ];
     if ( !fxDef ) { throw new Error( `Fx definition called ${id} is not defined` ); }
 
     const ret: { [ key: string ]: any } = {};
@@ -155,7 +180,7 @@ export class AutomatonWithGUI extends Automaton
     this.__length = length;
 
     // emit an event
-    this.__emit( 'changeLength' );
+    this.__emit( 'changeLength', { length } );
 
     // It's irreversible operation, sorry
     // this.dropHistory();
@@ -220,7 +245,7 @@ export class AutomatonWithGUI extends Automaton
    * @returns List of id of fx definitions
    */
   public getFxDefinitionIds(): string[] {
-    return Object.keys( this.__fxDefs ).sort();
+    return Object.keys( this.__fxDefinitions ).sort();
   }
 
   /**
@@ -230,8 +255,8 @@ export class AutomatonWithGUI extends Automaton
    * @returns Name of the fx definition
    */
   public getFxDefinitionName( id: string ): string | null {
-    if ( this.__fxDefs[ id ] ) {
-      return this.__fxDefs[ id ].name || id;
+    if ( this.__fxDefinitions[ id ] ) {
+      return this.__fxDefinitions[ id ].name || id;
     } else {
       return null;
     }
@@ -244,8 +269,8 @@ export class AutomatonWithGUI extends Automaton
    * @returns Description of the fx definition
    */
   public getFxDefinitionDescription( id: string ): string | null {
-    if ( this.__fxDefs[ id ] ) {
-      return this.__fxDefs[ id ].description || '';
+    if ( this.__fxDefinitions[ id ] ) {
+      return this.__fxDefinitions[ id ].description || '';
     } else {
       return null;
     }
@@ -258,8 +283,8 @@ export class AutomatonWithGUI extends Automaton
    * @returns Params section
    */
   public getFxDefinitionParams( id: string ): { [ key: string ]: FxParam } | null {
-    if ( this.__fxDefs[ id ] ) {
-      return jsonCopy( this.__fxDefs[ id ].params || {} );
+    if ( this.__fxDefinitions[ id ] ) {
+      return jsonCopy( this.__fxDefinitions[ id ].params || {} );
     } else {
       return null;
     }
@@ -357,12 +382,13 @@ export class AutomatonWithGUI extends Automaton
 export interface AutomatonWithGUIEvents {
   play: void;
   pause: void;
-  seek: void;
+  seek: { time: number };
   load: void;
-  update: void;
+  update: { time: number };
   createParam: { name: string; param: ParamWithGUI };
   removeParam: { name: string };
-  changeLength: void;
+  addFxDefinition: { name: string; fxDefinition: FxDefinition };
+  changeLength: { length: number };
 }
 
 export interface AutomatonWithGUI extends EventEmittable<AutomatonWithGUIEvents> {}

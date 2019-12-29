@@ -11,6 +11,7 @@ const Input = styled.input< { isInvalid?: boolean } >`
   width: calc( 100% - 0.2rem );
   height: calc( 100% - 0.2rem );
   font-size: 0.8rem;
+  font-family: 'Roboto', sans-serif;
   padding: 0.1rem;
   border: none;
   background: ${ ( { isInvalid } ) => ( isInvalid ? Colors.errorBright : Colors.foresub ) };
