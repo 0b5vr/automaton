@@ -4,6 +4,9 @@ import styled from 'styled-components';
 
 // == styles =======================================================================================
 export const Root = styled.div`
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   color: ${ Colors.accent };
 `;
 

@@ -6,6 +6,10 @@ export const Label = styled.div`
   margin: 0.15rem;
   font-size: 0.7rem;
   line-height: 1em;
+  overflow: hidden;
+  width: calc( 100% - 4.3rem );
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `;
 
 export const Root = styled.div`
