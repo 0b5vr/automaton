@@ -233,9 +233,9 @@ export class Automaton {
   /**
    * Update the entire automaton.
    * **You may want to call this in your update loop.**
-   * @param time Current time, **Required if the clock mode is manual**
+   * @param time Current time
    */
-  public update( time: number ): void {
+  public update( time?: number ): void {
     // update the clock
     this.__clock.update( time );
 

@@ -38,9 +38,9 @@ export class Clock {
    * Update the clock.
    * @param time Time. You need to set manually
    */
-  public update( time: number ): void {
+  public update( time?: number ): void {
     const prevTime = this.__time;
-    this.__time = time;
+    this.__time = time || this.__time;
     this.__deltaTime = this.__time - prevTime;
   }
 
