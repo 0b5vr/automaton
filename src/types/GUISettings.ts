@@ -5,19 +5,24 @@ import { SerializedData, defaultData } from '@fms-cat/automaton';
  */
 export interface GUISettings {
   /**
-   * Whether snap is activeted or not.
+   * Whether the time snap is activated or not.
    */
-  snapActive: boolean;
+  snapTimeActive: boolean;
 
   /**
-   * Interval of snap, in time axis.
+   * Interval of time axis snap.
    */
-  snapTime: number;
+  snapTimeInterval: number;
 
   /**
-   * Interval of snap, in value axis.
+   * Whether the value snap is activated or not.
    */
-  snapValue: number;
+  snapValueActive: boolean;
+
+  /**
+   * Interval of value axis snap.
+   */
+  snapValueInterval: number;
 }
 
 export interface WithGUISettings {
@@ -27,16 +32,17 @@ export interface WithGUISettings {
   guiSettings: GUISettings;
 }
 
+export const defaultGUISettings: Readonly<GUISettings> = {
+  snapTimeActive: false,
+  snapTimeInterval: 0.1,
+  snapValueActive: false,
+  snapValueInterval: 0.1
+};
+
 export const defaultDataWithGUISettings: Readonly<SerializedData & WithGUISettings> = (
   Object.assign(
     {},
     defaultData,
-    {
-      guiSettings: {
-        snapActive: false,
-        snapTime: 0.1,
-        snapValue: 0.1
-      }
-    }
+    { guiSettings: defaultGUISettings }
   )
 );

@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { dt2dx, dv2dy, dx2dt, dy2dv, t2x, v2y, x2t, y2v } from '../utils/CurveEditorUtils';
+import { dt2dx, dv2dy, dx2dt, dy2dv, snapTime, snapValue, t2x, v2y, x2t, y2v } from '../utils/CurveEditorUtils';
 import { BezierNode } from '@fms-cat/automaton';
 import { Colors } from '../constants/Colors';
 import { Contexts } from '../contexts/Context';
@@ -41,6 +41,7 @@ export const CurveEditorNodes = ( props: CurveEditorNodesProps ): JSX.Element =>
   const contexts = useContext( Contexts.Store );
   const checkDoubleClick = useDoubleClick();
   const { range, size, selectedParam } = contexts.state.curveEditor;
+  const { guiSettings } = contexts.state.automaton;
   const automaton = contexts.state.automaton.instance;
   const param = selectedParam && automaton?.getParam( selectedParam ) || null;
   const nodes = selectedParam && contexts.state.automaton.params[ selectedParam ].nodes || null;
@@ -64,9 +65,15 @@ export const CurveEditorNodes = ( props: CurveEditorNodesProps ): JSX.Element =>
 
         const holdTime = event.ctrlKey || event.metaKey;
         const holdValue = event.shiftKey;
+        const ignoreSnap = event.altKey;
 
         t = holdTime ? tPrev : x2t( x, range, size.width );
         v = holdValue ? vPrev : y2v( y, range, size.height );
+
+        if ( !ignoreSnap ) {
+          if ( !holdTime ) { t = snapTime( t, range, size.width, guiSettings ); }
+          if ( !holdValue ) { v = snapValue( v, range, size.height, guiSettings ); }
+        }
 
         param.moveNodeTime( node.$id, t );
         param.moveNodeValue( node.$id, v );

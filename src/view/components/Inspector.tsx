@@ -4,6 +4,7 @@ import { Contexts } from '../contexts/Context';
 import { Icons } from '../icons/Icons';
 import { InspectorFx } from './InspectorFx';
 import { InspectorNode } from './InspectorNode';
+import { InspectorSnapping } from './InspectorSnapping';
 import { Metrics } from '../constants/Metrics';
 import { Scrollable } from './Scrollable';
 import styled from 'styled-components';
@@ -49,17 +50,24 @@ export const Inspector = ( { className }: InspectorProps ): JSX.Element => {
   } );
   const isSelectingANode = selectedNodes.length === 1 && selectedFxs.length === 0;
   const isSelectingAFx = selectedNodes.length === 0 && selectedFxs.length === 1;
-  const isSelectingNothing = ( selectedNodes.length === 0 ) && ( selectedFxs.length === 0 );
+  const isSelectingNothing = (
+    contexts.state.settings.mode === 'none' &&
+    ( selectedNodes.length === 0 ) &&
+    ( selectedFxs.length === 0 )
+  );
 
   return <Root className={ className }>
     <StyledScrollable>
       <Container>
-        { isSelectingANode && <InspectorNode
-          node={ selectedNodes[ 0 ] }
-        /> }
-        { isSelectingAFx && <InspectorFx
-          fx={ selectedFxs[ 0 ] }
-        /> }
+        { contexts.state.settings.mode === 'snapping' && <InspectorSnapping /> }
+        { contexts.state.settings.mode === 'none' && <>
+          { isSelectingANode && <InspectorNode
+            node={ selectedNodes[ 0 ] }
+          /> }
+          { isSelectingAFx && <InspectorFx
+            fx={ selectedFxs[ 0 ] }
+          /> }
+        </> }
       </Container>
     </StyledScrollable>
     { isSelectingNothing && <Logo as={ Icons.AutomatonA } /> }

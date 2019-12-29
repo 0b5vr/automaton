@@ -5,6 +5,7 @@ import * as CurveEditor from './CurveEditor';
 import * as FxSpawner from './FxSpawner';
 import * as Header from './Header';
 import * as History from './History';
+import * as Settings from './Settings';
 import React, { createContext, useReducer } from 'react';
 
 // == utils ========================================================================================
@@ -29,6 +30,7 @@ export interface ContextsState {
   fxSpawner: FxSpawner.State;
   header: Header.State;
   history: History.State;
+  settings: Settings.State;
 }
 
 const initialState: Readonly<ContextsState> = {
@@ -39,6 +41,7 @@ const initialState: Readonly<ContextsState> = {
   fxSpawner: FxSpawner.initialState,
   header: Header.initialState,
   history: History.initialState,
+  settings: Settings.initialState
 };
 
 // == action =======================================================================================
@@ -49,7 +52,8 @@ type Action = (
   CurveEditor.Action |
   FxSpawner.Action |
   Header.Action |
-  History.Action
+  History.Action |
+  Settings.Action
 );
 
 // == reducer ======================================================================================
@@ -61,6 +65,7 @@ const reducer = combineReducers<ContextsState>( {
   fxSpawner: FxSpawner.reducer,
   header: Header.reducer,
   history: History.reducer,
+  settings: Settings.reducer
 } );
 
 // == context ======================================================================================

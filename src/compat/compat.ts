@@ -3,15 +3,16 @@ import { SerializedData } from '@fms-cat/automaton';
 import { compat1 } from './compat1';
 import { compat2 } from './compat2';
 import { compatPreVersions } from './compatPreVersions';
+import { jsonCopy } from '../utils/jsonCopy';
 
 export function compat( data?: any ): SerializedData & WithGUISettings {
   if ( !data ) {
-    return Object.assign( {}, defaultDataWithGUISettings );
+    return Object.assign( {}, jsonCopy( defaultDataWithGUISettings ) );
   }
 
   let newData;
   if ( typeof data === 'object' ) {
-    newData = data;
+    newData = jsonCopy( data );
   } else {
     console.error( 'Loaded data is invalid' );
     return Object.assign( {}, defaultDataWithGUISettings );

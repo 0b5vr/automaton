@@ -23,11 +23,11 @@ const Section = styled.div`
 const Button = styled.img<{ disabled?: boolean; active?: boolean }>`
   width: calc( ${ Metrics.headerHeight } - 0.25rem );
   height: calc( ${ Metrics.headerHeight } - 0.25rem );
-  fill: ${ ( { disabled, active } ) => disabled ? Colors.gray : active ? Colors.accent : Colors.fore };
+  fill: ${ ( { disabled: disabled, active: active } ) => disabled ? Colors.gray : active ? Colors.accent : Colors.fore };
   cursor: pointer;
 
   &:hover {
-    fill: ${ ( { disabled, active } ) => disabled ? Colors.gray : active ? Colors.accentdark : Colors.foresub };
+    fill: ${ ( { disabled: disabled, active: active } ) => disabled ? Colors.gray : active ? Colors.accentdark : Colors.foresub };
   }
 `;
 
@@ -145,7 +145,16 @@ export const Header = ( { className }: HeaderProps ): JSX.Element => {
           disabled={ contexts.state.history.index === contexts.state.history.entries.length }
           data-stalker={ redoText }
         />
-        <Button as={ Icons.Snap } />
+        <Button
+          as={ Icons.Snap }
+          onClick={ () => {
+            contexts.dispatch( {
+              type: 'Settings/ChangeMode',
+              mode: contexts.state.settings.mode === 'snapping' ? 'none' : 'snapping'
+            } );
+          } }
+          active={ ( contexts.state.settings.mode === 'snapping' ? 1 : 0 ) as any as boolean } // fuck
+        />
         <Button as={ Icons.Cog } />
         <Button as={ Icons.Save } />
       </Section>

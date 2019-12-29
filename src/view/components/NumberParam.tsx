@@ -65,7 +65,7 @@ function valueToInput( value: number, type: ValueType ): string {
 export interface NumberParamProps {
   type: ValueType;
   value: number;
-  historyDescription: string;
+  historyDescription?: string;
   className?: string;
   onChange?: ( value: number ) => void;
 }
@@ -92,22 +92,24 @@ export const NumberParam = ( props: NumberParamProps ): JSX.Element => {
       return;
     }
 
-    const undo = (): void => {
-      onChange && onChange( vPrev );
-    };
-
     const redo = (): void => {
       onChange && onChange( v );
     };
 
-    contexts.dispatch( {
-      type: 'History/Push',
-      entry: {
-        description: historyDescription,
-        redo,
-        undo
-      }
-    } );
+    if ( historyDescription ) {
+      const undo = (): void => {
+        onChange && onChange( vPrev );
+      };
+
+      contexts.dispatch( {
+        type: 'History/Push',
+        entry: {
+          description: historyDescription,
+          redo,
+          undo
+        }
+      } );
+    }
     redo();
   };
 

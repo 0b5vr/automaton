@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { dt2dx, dx2dt, t2x } from '../utils/CurveEditorUtils';
+import { dt2dx, dx2dt, snapTime, t2x } from '../utils/CurveEditorUtils';
 import { Colors } from '../constants/Colors';
 import { Contexts } from '../contexts/Context';
 import { FxSection } from '@fms-cat/automaton';
@@ -78,6 +78,7 @@ export const CurveEditorFxs = ( props: CurveEditorFxsProps ): JSX.Element => {
   const contexts = useContext( Contexts.Store );
   const checkDoubleClick = useDoubleClick();
   const { range, size, selectedParam } = contexts.state.curveEditor;
+  const { guiSettings } = contexts.state.automaton;
   const automaton = contexts.state.automaton.instance;
   const param = selectedParam && automaton?.getParam( selectedParam ) || null;
 
@@ -102,11 +103,16 @@ export const CurveEditorFxs = ( props: CurveEditorFxsProps ): JSX.Element => {
 
         const holdTime = event.ctrlKey || event.metaKey;
         const holdRow = event.shiftKey;
+        const ignoreSnap = event.altKey;
 
         t = holdTime ? tPrev : ( tPrev + dx2dt( dx, range, size.width ) );
         r = holdRow
           ? rPrev
           : Math.min( Math.max( rPrev + Math.round( dy / FX_HEIGHT ), 0 ), PARAM_FX_ROW_MAX - 1 );
+
+        if ( !ignoreSnap ) {
+          if ( !holdTime ) { t = snapTime( t, range, size.width, guiSettings ); }
+        }
 
         param.moveFx( fx.$id, t );
         param.changeFxRow( fx.$id, r );
@@ -180,9 +186,10 @@ export const CurveEditorFxs = ( props: CurveEditorFxsProps ): JSX.Element => {
   const grabFxSide = ( fx: FxSection & WithID, side: 'left' | 'right' ): void => {
     if ( !param ) { return; }
 
-    const lPrev = fx.length;
+    const tPrev = side === 'left' ? fx.time : ( fx.time + fx.length );
+    const otherEnd = side === 'left' ? ( fx.time + fx.length ) : fx.time;
     let dx = 0.0;
-    let l = lPrev;
+    let t = tPrev;
     let hasMoved = false;
 
     registerMouseEvent(
@@ -190,12 +197,18 @@ export const CurveEditorFxs = ( props: CurveEditorFxsProps ): JSX.Element => {
         hasMoved = true;
         dx += movementSum.x;
 
+        const ignoreSnap = event.altKey;
+
+        t = tPrev + dx2dt( dx, range, size.width );
+
+        if ( !ignoreSnap ) {
+          t = snapTime( t, range, size.width, guiSettings );
+        }
+
         if ( side === 'left' ) {
-          l = lPrev + dx2dt( -dx, range, size.width );
-          param.resizeFxByLeft( fx.$id, l );
+          param.resizeFxByLeft( fx.$id, otherEnd - t );
         } else {
-          l = lPrev + dx2dt( dx, range, size.width );
-          param.resizeFx( fx.$id, l );
+          param.resizeFx( fx.$id, t - otherEnd );
         }
       },
       () => {
@@ -203,17 +216,17 @@ export const CurveEditorFxs = ( props: CurveEditorFxsProps ): JSX.Element => {
 
         const redo = (): void => {
           if ( side === 'left' ) {
-            param.resizeFxByLeft( fx.$id, l );
+            param.resizeFxByLeft( fx.$id, otherEnd - t );
           } else {
-            param.resizeFx( fx.$id, l );
+            param.resizeFx( fx.$id, t - otherEnd );
           }
         };
 
         const undo = (): void => {
           if ( side === 'left' ) {
-            param.resizeFxByLeft( fx.$id, lPrev );
+            param.resizeFxByLeft( fx.$id, otherEnd - tPrev );
           } else {
-            param.resizeFx( fx.$id, lPrev );
+            param.resizeFx( fx.$id, tPrev - otherEnd );
           }
         };
 

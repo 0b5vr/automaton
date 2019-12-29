@@ -1,4 +1,5 @@
 import { BezierNode, FxDefinition, FxSection } from '@fms-cat/automaton';
+import { GUISettings, defaultGUISettings } from '../../types/GUISettings';
 import { AutomatonWithGUI } from '../../AutomatonWithGUI';
 import { WithID } from '../../types/WithID';
 import { jsonCopy } from '../../utils/jsonCopy';
@@ -17,6 +18,7 @@ export interface State {
   isPlaying: boolean;
   time: number;
   length: number;
+  guiSettings: GUISettings;
 }
 
 export const initialState: Readonly<State> = {
@@ -24,7 +26,8 @@ export const initialState: Readonly<State> = {
   fxDefinitions: {},
   isPlaying: false,
   time: 0.0,
-  length: 1.0
+  length: 1.0,
+  guiSettings: jsonCopy( defaultGUISettings )
 };
 
 // == action =======================================================================================
@@ -65,6 +68,9 @@ export type Action = {
 } | {
   type: 'Automaton/UpdateLength';
   length: number;
+} | {
+  type: 'Automaton/UpdateGUISettings';
+  settings: GUISettings;
 };
 
 // == reducer ======================================================================================
@@ -96,6 +102,8 @@ export function reducer(
       newState.time = action.time;
     } else if ( action.type === 'Automaton/UpdateLength' ) {
       newState.length = action.length;
+    } else if ( action.type === 'Automaton/UpdateGUISettings' ) {
+      newState.guiSettings = action.settings;
     }
   } );
 }

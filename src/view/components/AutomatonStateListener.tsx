@@ -181,6 +181,18 @@ export const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JS
         } );
       } );
 
+      contexts.dispatch( {
+        type: 'Automaton/UpdateGUISettings',
+        settings: automaton.guiSettings
+      } );
+
+      automaton.on( 'updateGUISettings', ( { settings } ) => {
+        contexts.dispatch( {
+          type: 'Automaton/UpdateGUISettings',
+          settings
+        } );
+      } );
+
       automaton.on( 'createParam', ( event ) => {
         createParam( event.name, event.param );
       } );

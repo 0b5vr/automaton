@@ -1,5 +1,5 @@
 import { Automaton, AutomatonOptions, FxDefinition, FxParam, SerializedData, SerializedParam } from '@fms-cat/automaton';
-import { GUISettings, WithGUISettings } from './types/GUISettings';
+import { GUISettings, WithGUISettings, defaultGUISettings } from './types/GUISettings';
 import { App } from './view/components/App';
 import { EventEmittable } from './mixins/EventEmittable';
 import { ParamWithGUI } from './ParamWithGUI';
@@ -10,6 +10,7 @@ import { applyMixins } from './utils/applyMixins';
 import { compat } from './compat/compat';
 import fxDefinitions from './fxs';
 import { jsonCopy } from './utils/jsonCopy';
+import produce from 'immer';
 
 /**
  * Interface for options of {@link AutomatonWithGUI}.
@@ -41,11 +42,7 @@ export class AutomatonWithGUI extends Automaton
   /**
    * GUI settings for this automaton.
    */
-  public guiSettings: GUISettings = {
-    snapActive: false,
-    snapTime: 0.1,
-    snapValue: 0.1
-  };
+  public guiSettings: GUISettings = jsonCopy( defaultGUISettings );
 
   /**
    * Current position of history stack.
@@ -346,6 +343,19 @@ export class AutomatonWithGUI extends Automaton
   }
 
   /**
+   * Set a property of gui settings.
+   * @param key The parameter key you want to set
+   * @param value The parameter value you want to set
+   */
+  public setGUISettings<T extends keyof GUISettings>( key: T, value: GUISettings[ T ] ): void {
+    this.guiSettings = produce( this.guiSettings, ( newState ) => { // 🔥 Why????
+      newState[ key ] = value;
+    } );
+
+    this.__emit( 'updateGUISettings', { settings: this.guiSettings } );
+  }
+
+  /**
    * Prepare GUI.
    * @param target DOM element where you want to attach the Automaton GUI
    */
@@ -389,6 +399,7 @@ export interface AutomatonWithGUIEvents {
   removeParam: { name: string };
   addFxDefinition: { name: string; fxDefinition: FxDefinition };
   changeLength: { length: number };
+  updateGUISettings: { settings: GUISettings };
 }
 
 export interface AutomatonWithGUI extends EventEmittable<AutomatonWithGUIEvents> {}
