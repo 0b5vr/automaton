@@ -7,6 +7,7 @@ import { PARAM_FX_ROW_MAX } from '../../ParamWithGUI';
 import { WithID } from '../../types/WithID';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
 import styled from 'styled-components';
+import { useDoubleClick } from '../utils/useDoubleClick';
 
 // == constants ====================================================================================
 export const FX_HEIGHT = 16.0;
@@ -59,6 +60,7 @@ export interface CurveEditorFxsProps {
 
 export const CurveEditorFxs = ( props: CurveEditorFxsProps ): JSX.Element => {
   const contexts = useContext( Contexts.Store );
+  const checkDoubleClick = useDoubleClick();
   const { range, size, selectedParam } = contexts.state.curveEditor;
   const automaton = contexts.state.automaton.instance;
   const param = selectedParam && automaton?.getParam( selectedParam ) || null;
@@ -142,11 +144,7 @@ export const CurveEditorFxs = ( props: CurveEditorFxsProps ): JSX.Element => {
     event.stopPropagation();
 
     if ( event.buttons === 1 ) {
-      const now = Date.now();
-      const isDoubleClick = ( now - contexts.state.controls.lastClick ) < 250;
-      contexts.dispatch( { type: 'Controls/SetLastClick', date: now } );
-
-      if ( isDoubleClick ) {
+      if ( checkDoubleClick() ) {
         removeFx( fx );
       } else {
         contexts.dispatch( {

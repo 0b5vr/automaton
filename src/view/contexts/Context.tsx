@@ -1,6 +1,5 @@
 import * as About from './About';
 import * as Automaton from './Automaton';
-import * as Controls from './Controls';
 import * as CurveEditor from './CurveEditor';
 import * as Header from './Header';
 import * as History from './History';
@@ -23,7 +22,6 @@ function combineReducers<T>( reducers: any ): ( ( state: any, action: any ) => T
 export interface ContextsState {
   about: About.State;
   automaton: Automaton.State;
-  controls: Controls.State;
   curveEditor: CurveEditor.State;
   header: Header.State;
   history: History.State;
@@ -32,7 +30,6 @@ export interface ContextsState {
 const initialState: Readonly<ContextsState> = {
   about: About.initialState,
   automaton: Automaton.initialState,
-  controls: Controls.initialState,
   curveEditor: CurveEditor.initialState,
   header: Header.initialState,
   history: History.initialState,
@@ -42,7 +39,6 @@ const initialState: Readonly<ContextsState> = {
 type Action = (
   About.Action |
   Automaton.Action |
-  Controls.Action |
   CurveEditor.Action |
   Header.Action |
   History.Action
@@ -52,7 +48,6 @@ type Action = (
 const reducer = combineReducers<ContextsState>( {
   about: About.reducer,
   automaton: Automaton.reducer,
-  controls: Controls.reducer,
   curveEditor: CurveEditor.reducer,
   header: Header.reducer,
   history: History.reducer,

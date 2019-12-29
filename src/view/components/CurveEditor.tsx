@@ -9,6 +9,7 @@ import { CurveEditorLine } from './CurveEditorLine';
 import { CurveEditorNodes } from './CurveEditorNodes';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
 import styled from 'styled-components';
+import { useDoubleClick } from '../utils/useDoubleClick';
 
 // == styles =======================================================================================
 const SVGRoot = styled.svg`
@@ -31,6 +32,7 @@ export interface CurveEditorProps {
 
 export const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
   const contexts = useContext( Contexts.Store );
+  const checkDoubleClick = useDoubleClick();
   const { range, size, selectedParam } = contexts.state.curveEditor;
   const automaton = contexts.state.automaton.instance;
 
@@ -132,12 +134,8 @@ export const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
     ( event: React.MouseEvent ): void => {
       event.preventDefault();
 
-      const now = Date.now();
-      const isDoubleClick = ( now - contexts.state.controls.lastClick ) < 250;
-      contexts.dispatch( { type: 'Controls/SetLastClick', date: now } );
-
       if ( event.buttons === 1 ) {
-        if ( isDoubleClick ) {
+        if ( checkDoubleClick() ) {
           createNode( event.nativeEvent.offsetX, event.nativeEvent.offsetY );
         }
       } else if ( event.buttons === 4 ) {
