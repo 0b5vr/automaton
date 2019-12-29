@@ -19,9 +19,9 @@ export interface FxSection {
 
   /**
    * Whether the section would be bypassed or not.
-   * Can be undefined.
+   * `true` or `undefined`. It's weird haha
    */
-  bypass?: boolean;
+  bypass?: true;
 
   /**
    * Fx definition name of the section.
