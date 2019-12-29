@@ -26,7 +26,7 @@ Repository: ${ packageJson.repository }`
     entry: path.resolve( __dirname, 'src/index.ts' ),
     output: {
       path: path.join( __dirname, 'dist' ),
-      filename: DEV ? 'automaton-ui.js' : 'automaton-ui.min.js',
+      filename: DEV ? 'automaton-with-gui.js' : 'automaton-with-gui.min.js',
       libraryTarget: 'umd',
       globalObject: 'this',
     },

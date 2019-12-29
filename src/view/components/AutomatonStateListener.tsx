@@ -62,6 +62,10 @@ export const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JS
 
     param.on( 'removeNode', ( { id } ) => {
       contexts.dispatch( {
+        type: 'CurveEditor/SelectItemsSub',
+        nodes: [ id ]
+      } );
+      contexts.dispatch( {
         type: 'Automaton/RemoveParamNode',
         param: name,
         id
@@ -87,6 +91,10 @@ export const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JS
     } );
 
     param.on( 'removeFx', ( { id } ) => {
+      contexts.dispatch( {
+        type: 'CurveEditor/SelectItemsSub',
+        fxs: [ id ]
+      } );
       contexts.dispatch( {
         type: 'Automaton/RemoveParamFx',
         param: name,

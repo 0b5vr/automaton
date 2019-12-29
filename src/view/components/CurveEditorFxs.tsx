@@ -124,9 +124,13 @@ export const CurveEditorFxs = ( props: CurveEditorFxsProps ): JSX.Element => {
   const removeFx = ( fx: FxSection & WithID ): void => {
     if ( !param ) { return; }
 
-    const redo = (): void => param.removeFx( fx.$id );
+    const redo = (): void => {
+      param.removeFx( fx.$id );
+    };
 
-    const undo = (): string => param.createFxFromData( fx );
+    const undo = (): void => {
+      param.createFxFromData( fx );
+    };
 
     contexts.dispatch( {
       type: 'History/Push',
@@ -149,7 +153,7 @@ export const CurveEditorFxs = ( props: CurveEditorFxsProps ): JSX.Element => {
       } else {
         contexts.dispatch( {
           type: 'CurveEditor/SelectItems',
-          items: { nodes: [], fxs: [ fx.$id ] }
+          fxs: [ fx.$id ]
         } );
 
         grabFxBody( fx );

@@ -330,10 +330,19 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
     ) { return; }
 
     const node = this.__nodes[ index ];
-    const handle = ( dir === 'in' ? node.in : node.out )!;
 
     const newTime = ( dir === 'in' ) ? Math.min( 0.0, time ) : Math.max( 0.0, time );
-    handle.time = newTime;
+
+    const handle = node[ dir ];
+    if ( handle ) {
+      if ( newTime === 0.0 && handle.value === 0.0 ) {
+        delete node[ dir ];
+      } else {
+        handle.time = newTime;
+      }
+    } else if ( newTime !== 0.0 ) {
+      node[ dir ] = { time: newTime, value: 0.0 };
+    }
 
     this.precalc();
     this.__emit( 'updateNode', { id, node } );
@@ -354,9 +363,17 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
     ) { return; }
 
     const node = this.__nodes[ index ];
-    const handle = ( dir === 'in' ? node.in : node.out )!;
 
-    handle.value = value;
+    const handle = node[ dir ];
+    if ( handle ) {
+      if ( value === 0.0 && handle.time === 0.0 ) {
+        delete node[ dir ];
+      } else {
+        handle.value = value;
+      }
+    } else if ( value !== 0.0 ) {
+      node[ dir ] = { time: 0.0, value };
+    }
 
     this.precalc();
     this.__emit( 'updateNode', { id, node } );
@@ -376,11 +393,10 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
     ) { return; }
 
     const node = this.__nodes[ index ];
-    if ( dir === 'in' ) {
-      node.in = { time: -PARAM_DEFAULT_HANDLE_LENGTH, value: 0.0 };
-    } else {
-      node.out = { time: PARAM_DEFAULT_HANDLE_LENGTH, value: 0.0 };
-    }
+    node[ dir ] = {
+      time: ( ( dir === 'in' ) ? -1.0 : 1.0 ) * PARAM_DEFAULT_HANDLE_LENGTH,
+      value: 0.0
+    };
 
     this.precalc();
     this.__emit( 'updateNode', { id, node } );

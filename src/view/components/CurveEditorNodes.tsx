@@ -129,7 +129,7 @@ export const CurveEditorNodes = ( props: CurveEditorNodesProps ): JSX.Element =>
       } else {
         contexts.dispatch( {
           type: 'CurveEditor/SelectItems',
-          items: { nodes: [ node.$id ], fxs: [] }
+          nodes: [ node.$id ]
         } );
 
         grabNode( node );
@@ -140,11 +140,11 @@ export const CurveEditorNodes = ( props: CurveEditorNodesProps ): JSX.Element =>
   const grabHandle = ( node: BezierNode & WithID, dir: 'in' | 'out' ): void => {
     if ( !param ) { return; }
 
-    const tPrev = node[ dir ]!.time;
-    const vPrev = node[ dir ]!.value;
+    const tPrev = node[ dir ]?.time || 0.0;
+    const vPrev = node[ dir ]?.value || 0.0;
     const dirOpposite = dir === 'in' ? 'out' : 'in';
-    const tOppositePrev = node[ dirOpposite ]!.time;
-    const vOppositePrev = node[ dirOpposite ]!.value;
+    const tOppositePrev = node[ dirOpposite ]?.time || 0.0;
+    const vOppositePrev = node[ dirOpposite ]?.value || 0.0;
     const xPrev = dt2dx( tPrev, range, size.width );
     const yPrev = dv2dy( vPrev, range, size.height );
     const lPrev = Math.sqrt( xPrev * xPrev + yPrev * yPrev );

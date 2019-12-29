@@ -36,10 +36,16 @@ export type Action = {
   param: string | null;
 } | {
   type: 'CurveEditor/SelectItems';
-  items: {
-    nodes: string[];
-    fxs: string[];
-  };
+  nodes?: string[];
+  fxs?: string[];
+} | {
+  type: 'CurveEditor/SelectItemsAdd';
+  nodes?: string[];
+  fxs?: string[];
+} | {
+  type: 'CurveEditor/SelectItemsSub';
+  nodes?: string[];
+  fxs?: string[];
 } | {
   type: 'CurveEditor/MoveRange';
   dx: number;
@@ -70,7 +76,28 @@ export function reducer(
         fxs: []
       };
     } else if ( action.type === 'CurveEditor/SelectItems' ) {
-      newState.selectedItems = action.items;
+      newState.selectedItems = {
+        nodes: action.nodes || [],
+        fxs: action.fxs || []
+      };
+    } else if ( action.type === 'CurveEditor/SelectItemsAdd' ) {
+      action.nodes?.map( ( node ) => {
+        newState.selectedItems.nodes.push( node );
+      } );
+
+      action.fxs?.map( ( fx ) => {
+        newState.selectedItems.fxs.push( fx );
+      } );
+    } else if ( action.type === 'CurveEditor/SelectItemsSub' ) {
+      action.nodes?.map( ( node ) => {
+        const index = newState.selectedItems.nodes.indexOf( node );
+        index !== -1 && newState.selectedItems.nodes.splice( index, 1 );
+      } );
+
+      action.fxs?.map( ( fx ) => {
+        const index = newState.selectedItems.fxs.indexOf( fx );
+        index !== -1 && newState.selectedItems.fxs.splice( index, 1 );
+      } );
     } else if ( action.type === 'CurveEditor/MoveRange' ) {
       const { range, size } = state;
       const length = action.tmax;

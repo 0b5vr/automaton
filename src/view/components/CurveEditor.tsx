@@ -98,6 +98,10 @@ export const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
         x2t( x, range, size.width ),
         y2v( y, range, size.height )
       );
+      contexts.dispatch( {
+        type: 'CurveEditor/SelectItems',
+        nodes: [ data.$id ]
+      } );
 
       registerMouseEvent(
         ( event, movementSum ) => {
@@ -116,12 +120,20 @@ export const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
           data.time = t;
           data.value = v;
 
+          const undo = (): void => {
+            param.removeNode( data.$id );
+          };
+
+          const redo = (): void => {
+            param.createNodeFromData( data );
+          };
+
           contexts.dispatch( {
             type: 'History/Push',
             entry: {
               description: 'Add Node',
-              redo: () => param.createNodeFromData( data ),
-              undo: () => param.removeNode( data.$id )
+              redo,
+              undo
             }
           } );
         }
