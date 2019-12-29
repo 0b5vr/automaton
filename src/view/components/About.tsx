@@ -35,7 +35,8 @@ const LargeA = styled( Icons.AutomatonA )`
   bottom: -0.5rem;
   width: 11rem;
   fill: ${ Colors.black };
-  opacity: 0.2;
+  opacity: 0.02;
+  mix-blend-mode: darken;
 `;
 
 const Close = styled( Icons.Close )`
@@ -84,12 +85,22 @@ export const About = ( { className }: AboutProps ): JSX.Element => {
   const automaton = contexts.state.automaton.instance;
   const { selectedParam } = contexts.state.curveEditor;
   const param = automaton && selectedParam && automaton.getParam( selectedParam )!;
-  const value = param ? ( 360.0 * param.getValue() ) : 0.0;
+  const values: number[] = [];
+
+  for ( let i = 0; i < 10; i ++ ) {
+    const t = automaton ? ( automaton.time - i * 0.00166 ) : 0.0;
+    values[ i ] = param ? ( 360.0 * param.getValue( t ) ) : 0.0;
+  }
 
   return <Root className={ className }>
-    <LargeA
-      style={{ transform: `rotate(${ value }deg)` }}
-    />
+    { values.map( ( value, i ) => (
+      <LargeA
+        key={ i }
+        style={ {
+          transform: `rotate(${ value }deg)`
+        } }
+      />
+    ) ) }
     <SubRoot>
       <LogoAndVersion>
         <Logo as={ Icons.Automaton } />
