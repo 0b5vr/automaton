@@ -12,7 +12,6 @@ const Input = styled.input< { isInvalid?: boolean } >`
   font-size: 0.8rem;
   padding: 0.1rem;
   border: none;
-  text-align: center;
   background: ${ ( { isInvalid } ) => ( isInvalid ? Colors.errorBright : Colors.foresub ) };
   color: ${ Colors.back1 };
   pointer-events: auto;
@@ -47,8 +46,13 @@ const Root = styled.div`
 
 // == functions ====================================================================================
 function inputToValue( value: string ): boolean | null {
-  const result = Boolean( value );
-  return result;
+  if ( value === 'true' ) {
+    return true;
+  } else if ( value === 'false' ) {
+    return false;
+  } else {
+    return null;
+  }
 }
 
 // == element ======================================================================================
@@ -75,7 +79,12 @@ export const BoolParam = ( props: BoolParamProps ): JSX.Element => {
     }
   }, [ isInput ] );
 
-  const pushHistoryAndDo = ( v: boolean, vPrev: boolean ): void => {
+  const pushHistoryAndDo = ( v: boolean | null, vPrev: boolean ): void => {
+    if ( v == null ) {
+      onChange && onChange( vPrev );
+      return;
+    }
+
     const undo = (): void => {
       onChange && onChange( vPrev );
     };
@@ -105,9 +114,16 @@ export const BoolParam = ( props: BoolParamProps ): JSX.Element => {
         setInputValue( String( value ) );
         setInputPrevValue( value );
         setIsInputInvalid( false );
-      } else {
-        pushHistoryAndDo( !value, value );
       }
+    }
+  };
+
+  const handleClickBox = ( event: React.MouseEvent ): void => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if ( event.buttons === 1 ) {
+      pushHistoryAndDo( !value, value );
     }
   };
 
@@ -126,13 +142,13 @@ export const BoolParam = ( props: BoolParamProps ): JSX.Element => {
       event.preventDefault();
 
       const v = inputToValue( inputValue );
-      if ( v != null ) {
-        pushHistoryAndDo( v, inputPrevValue );
-      }
+      pushHistoryAndDo( v, inputPrevValue );
 
       setIsInput( false );
     } else if ( event.nativeEvent.key === 'Escape' ) {
       event.preventDefault();
+
+      onChange && onChange( inputPrevValue );
 
       setIsInput( false );
     }
@@ -140,15 +156,15 @@ export const BoolParam = ( props: BoolParamProps ): JSX.Element => {
 
   const handleBlur = (): void => {
     const v = inputToValue( inputValue );
-    if ( v != null ) {
-      pushHistoryAndDo( v, inputPrevValue );
-    }
+    pushHistoryAndDo( v, inputPrevValue );
 
     setIsInput( false );
   };
 
   return (
-    <Root className={ className }>
+    <Root className={ className }
+      onMouseDown={ handleClick }
+    >
       {
         isInput ? (
           <Input
@@ -161,7 +177,7 @@ export const BoolParam = ( props: BoolParamProps ): JSX.Element => {
           />
         ) : (
           <Box
-            onMouseDown={ handleClick }
+            onMouseDown={ handleClickBox }
           >
             { value && <Check /> }
           </Box>

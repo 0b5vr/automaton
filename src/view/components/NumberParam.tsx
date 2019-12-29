@@ -13,7 +13,6 @@ const Input = styled.input< { isInvalid?: boolean } >`
   font-size: 0.8rem;
   padding: 0.1rem;
   border: none;
-  text-align: center;
   background: ${ ( { isInvalid } ) => ( isInvalid ? Colors.errorBright : Colors.foresub ) };
   color: ${ Colors.back1 };
   pointer-events: auto;
@@ -86,7 +85,12 @@ export const NumberParam = ( props: NumberParamProps ): JSX.Element => {
     }
   }, [ isInput ] );
 
-  const pushHistoryAndDo = ( v: number, vPrev: number ): void => {
+  const pushHistoryAndDo = ( v: number | null, vPrev: number ): void => {
+    if ( v == null ) {
+      onChange && onChange( vPrev );
+      return;
+    }
+
     const undo = (): void => {
       onChange && onChange( vPrev );
     };
@@ -209,13 +213,13 @@ export const NumberParam = ( props: NumberParamProps ): JSX.Element => {
       event.preventDefault();
 
       const v = inputToValue( inputValue, type );
-      if ( v != null ) {
-        pushHistoryAndDo( v, inputPrevValue );
-      }
+      pushHistoryAndDo( v, inputPrevValue );
 
       setIsInput( false );
     } else if ( event.nativeEvent.key === 'Escape' ) {
       event.preventDefault();
+
+      onChange && onChange( inputPrevValue );
 
       setIsInput( false );
     }
@@ -223,9 +227,7 @@ export const NumberParam = ( props: NumberParamProps ): JSX.Element => {
 
   const handleBlur = (): void => {
     const v = inputToValue( inputValue, type );
-    if ( v != null ) {
-      pushHistoryAndDo( v, inputPrevValue );
-    }
+    pushHistoryAndDo( v, inputPrevValue );
 
     setIsInput( false );
   };
