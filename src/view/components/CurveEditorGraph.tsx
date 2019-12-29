@@ -1,5 +1,5 @@
 import { CurveEditorRange, CurveEditorSize, v2y, x2t } from '../utils/CurveEditorUtils';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { Colors } from '../constants/Colors';
 import { Contexts } from '../contexts/Context';
 import { ParamWithGUI } from '../../ParamWithGUI';
@@ -59,7 +59,9 @@ export const CurveEditorGraph = ( { className }: CurveEditorGraphProps ): JSX.El
 
   return (
     <Root className={ className }>
-      <GraphLine points={ points } />
+      { useMemo( () => (
+        <GraphLine points={ points } />
+      ), [ points ] ) }
     </Root>
   );
 };

@@ -102,26 +102,30 @@ export const CurveEditorGrid = ( { className }: CurveEditorGridProps ): JSX.Elem
 
   return (
     <Root className={ className }>
-      { hlines.map( ( hline, i ): JSX.Element => (
-        <g
-          key={ i }
-          opacity={ hline.opacity }
-          transform={ `translate(${ hline.position },${ size.height })` }
-        >
-          <GridLine y2={ -size.height } />
-          <GridText x="2" y="-2">{ hline.value }</GridText>
-        </g>
-      ) ) }
-      { vlines.map( ( vline, i ): JSX.Element => (
-        <g
-          key={ i }
-          opacity={ vline.opacity }
-          transform={ `translate(0,${ vline.position })` }
-        >
-          <GridLine x2={ size.width } />
-          <GridText x="2" y="-2">{ vline.value }</GridText>
-        </g>
-      ) ) }
+      { useMemo( () => (
+        hlines.map( ( hline, i ): JSX.Element => (
+          <g
+            key={ i }
+            opacity={ hline.opacity }
+            transform={ `translate(${ hline.position },${ size.height })` }
+          >
+            <GridLine y2={ -size.height } />
+            <GridText x="2" y="-2">{ hline.value }</GridText>
+          </g>
+        ) )
+      ), [ hlines, size ] ) }
+      { useMemo( () => (
+        vlines.map( ( vline, i ): JSX.Element => (
+          <g
+            key={ i }
+            opacity={ vline.opacity }
+            transform={ `translate(0,${ vline.position })` }
+          >
+            <GridLine x2={ size.width } />
+            <GridText x="2" y="-2">{ vline.value }</GridText>
+          </g>
+        ) )
+      ), [ vlines, size ] ) }
     </Root>
   );
 };
