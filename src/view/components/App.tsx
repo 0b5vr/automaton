@@ -4,6 +4,7 @@ import { About } from './About';
 import { AutomatonStateListener } from './AutomatonStateListener';
 import { AutomatonWithGUI } from '../../AutomatonWithGUI';
 import { Colors } from '../constants/Colors';
+import { ContextMenu } from './ContextMenu';
 import { Contexts } from '../contexts/Context';
 import { CurveEditor } from './CurveEditor';
 import { FxSpawner } from './FxSpawner';
@@ -60,6 +61,12 @@ const StyledAbout = styled( About )`
   height: 100%;
 `;
 
+const StyledContextMenu = styled( ContextMenu )`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+`;
+
 const Root = styled.div`
   margin: 0;
   padding: 0;
@@ -91,6 +98,7 @@ const Fuck = ( { automaton }: AppProps ): JSX.Element => {
       <StyledInspector />
       { contexts.state.fxSpawner.isVisible && <StyledFxSpawner /> }
       { contexts.state.about.isVisible && <StyledAbout /> }
+      { contexts.state.contextMenu.isVisible && <StyledContextMenu /> }
 
       <Stalker />
     </Root>

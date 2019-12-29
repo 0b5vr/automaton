@@ -38,14 +38,15 @@ const Root = styled.div<{ isSelected: boolean }>`
 `;
 
 // == element ======================================================================================
-export interface ParamEntryProps {
+export interface ParamListEntryProps {
   className?: string;
   name: string;
   value: number;
   status: ParamStatus;
 }
 
-export const ParamEntry = ( { className, name, value, status }: ParamEntryProps ): JSX.Element => {
+export const ParamListEntry = ( props: ParamListEntryProps ): JSX.Element => {
+  const { className, name, value, status } = props;
   const contexts = useContext( Contexts.Store );
 
   function handleClick(): void {

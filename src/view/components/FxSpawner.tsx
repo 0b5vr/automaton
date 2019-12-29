@@ -1,8 +1,9 @@
-import React, { useContext, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Colors } from '../constants/Colors';
 import { Contexts } from '../contexts/Context';
 import { FxSpawnerEntry } from './FxSpawnerEntry';
 import { Scrollable } from './Scrollable';
+import { combineArraysUnique } from '../utils/combineArraysUnique';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
@@ -47,19 +48,6 @@ const OverlayBG = styled.div`
 const Root = styled.div`
 `;
 
-// == functions ====================================================================================
-function combineArraysUnique<T>( ...arrays: Array<Array<T>> ): Array<T> {
-  const known = new Set<T>();
-  arrays.forEach( ( array ) => {
-    array.forEach( ( el ) => {
-      if ( !known.has( el ) ) {
-        known.add( el );
-      }
-    } );
-  } );
-  return [ ...known ];
-}
-
 // == element ======================================================================================
 export interface FxSpawnerProps {
   className?: string;
@@ -69,18 +57,22 @@ export const FxSpawner = ( { className }: FxSpawnerProps ): JSX.Element => {
   const contexts = useContext( Contexts.Store );
   const [ query, setQuery ] = useState<string>( '' );
   const [ focus, setFocus ] = useState<number>( 0 );
-  const [ usedFxs, setUsedFxs ] = useState<string[]>( [] );
+  const refInput = useRef<HTMLInputElement>( null );
+
+  useEffect( () => { // focus the input when it gets activated
+    if ( contexts.state.fxSpawner.isVisible ) {
+      refInput.current?.focus();
+    }
+  }, [ contexts.state.fxSpawner.isVisible ] );
 
   const automaton = contexts.state.automaton.instance;
-  const { selectedParam } = contexts.state.curveEditor;
-  const param = automaton && selectedParam && automaton.getParam( selectedParam )!;
 
   const fxs = useMemo( () => (
     combineArraysUnique(
-      usedFxs,
+      contexts.state.fxSpawner.recently,
       Object.keys( contexts.state.automaton.fxDefinitions )
     )
-  ), [ contexts.state.automaton.fxDefinitions, usedFxs ] );
+  ), [ contexts.state.automaton.fxDefinitions, contexts.state.fxSpawner.recently ] );
 
   const filteredFxs = useMemo( () => {
     const queries = query.split( /\s+/ );
@@ -92,8 +84,11 @@ export const FxSpawner = ( { className }: FxSpawnerProps ): JSX.Element => {
   }, [ fxs, query ] );
 
   function selectFx( name: string ): void {
-    console.log( name ); // 🔥
-    setUsedFxs( combineArraysUnique( [ name ], usedFxs ) );
+    contexts.state.fxSpawner.callback!( name );
+    contexts.dispatch( {
+      type: 'FxSpawner/AddRecently',
+      name
+    } );
     contexts.dispatch( { type: 'FxSpawner/Close' } );
   }
 
@@ -139,6 +134,7 @@ export const FxSpawner = ( { className }: FxSpawnerProps ): JSX.Element => {
         />
         <Container>
           <Input
+            ref={ refInput }
             value={ query }
             placeholder="Add a fx..."
             onChange={ handleChange }
@@ -155,14 +151,14 @@ export const FxSpawner = ( { className }: FxSpawnerProps ): JSX.Element => {
                 onClick={ () => selectFx( fx ) }
               />
             ) ) }
+            { filteredFxs.length === 0 && (
+              <FxSpawnerEntry
+                name="No result found"
+                id=":("
+                description="Try another word!"
+              />
+            ) }
           </FxList>
-          { filteredFxs.length === 0 && (
-            <FxSpawnerEntry
-              name="No result found"
-              id=":("
-              description="Try another word!"
-            />
-          ) }
         </Container>
       </Root>
     ) }

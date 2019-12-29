@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { ReactNode, useEffect, useRef, useState } from 'react';
 import { Colors } from '../constants/Colors';
 import styled from 'styled-components';
-import { useDeltaTime, useAnimationFrame } from '../utils/useAnimationFrame';
+import { useAnimationFrame } from '../utils/useAnimationFrame';
 
 // == styles =======================================================================================
 export const Bar = styled.div`
@@ -24,7 +24,7 @@ export const Root = styled.div`
 // == components ===================================================================================
 export interface ScrollableProps {
   className?: string;
-  children?: JSX.Element[];
+  children?: ReactNode;
   barPosition?: 'left' | 'right';
 }
 

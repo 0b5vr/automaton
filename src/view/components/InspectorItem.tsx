@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
@@ -21,7 +21,7 @@ export const Root = styled.div`
 // == components ===================================================================================
 export interface InspectorItemProps {
   className?: string;
-  children?: JSX.Element;
+  children?: ReactNode;
   name?: string;
 }
 

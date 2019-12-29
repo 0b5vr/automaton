@@ -3,16 +3,6 @@ import React from 'react';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
-export const Id = styled.div`
-  padding: 0.2rem 0.2rem;
-  font-size: 0.6rem;
-  line-height: 1em;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  color: ${ Colors.gray };
-`;
-
 export const Name = styled.div`
   padding: 0.1rem 0.2rem;
   font-size: 0.8rem;
@@ -27,43 +17,40 @@ export const Root = styled.div<{ isSelected?: boolean }>`
   display: flex;
   width: 100%;
   height: 1rem;
-  padding: 0.125rem 0;
+  border-radius: 0.25rem;
   justify-content: space-between;
   background: ${ ( { isSelected } ) => (
-    isSelected ? Colors.back3 : Colors.back2
+    isSelected ? Colors.back3 : 'none'
   ) };
   cursor: pointer;
 
   &:hover {
     background: ${ Colors.back3 };
   }
+
+  &:active {
+    opacity: 0.5;
+  }
 `;
 
 // == components ===================================================================================
-export interface FxSpawnerEntryProps {
+export interface ContextMenuEntryProps {
   className?: string;
-  name?: string;
-  id: string;
+  name: string;
   description?: string;
-  isSelected?: boolean;
   onClick?: ( event: React.MouseEvent<HTMLDivElement> ) => void;
 }
 
-export const FxSpawnerEntry = ( props: FxSpawnerEntryProps ): JSX.Element => {
-  const { className, name, id, description, isSelected, onClick } = props;
+export const ContextMenuEntry = ( props: ContextMenuEntryProps ): JSX.Element => {
+  const { className, name: text, description, onClick } = props;
 
   return (
     <Root
       className={ className }
       data-stalker={ description }
       onClick={ onClick }
-      isSelected={ isSelected }
     >
-      {
-        name
-          ? <><Name>{ name }</Name> <Id>{ id }</Id></>
-          : <Name>{ id }</Name>
-      }
+      <Name>{ text }</Name>
     </Root>
   );
 };

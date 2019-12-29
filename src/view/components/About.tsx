@@ -73,7 +73,7 @@ const Container = styled.div`
   top: 1rem;
   width: 30rem;
   overflow: hidden;
-  border-radius: 0.5rem;
+  border-radius: 0.25rem;
   background: ${ Colors.back3 };
   filter: drop-shadow( 0 0 2px ${ Colors.black } );
   font-size: 0.8rem;

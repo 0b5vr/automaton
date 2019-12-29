@@ -5,19 +5,26 @@ import { Icons } from '../icons/Icons';
 import { InspectorFx } from './InspectorFx';
 import { InspectorNode } from './InspectorNode';
 import { Metrics } from '../constants/Metrics';
+import { Scrollable } from './Scrollable';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
 const Logo = styled.img`
   position: absolute;
-  fill: ${ Colors.back3 };
+  fill: ${ Colors.black };
   left: calc( 0.15 * ${ Metrics.inspectorWidth } );
   top: calc( 50% - 0.35 * ${ Metrics.inspectorWidth } );
   width: calc( 0.7 * ${ Metrics.inspectorWidth } );
+  opacity: 0.2;
 `;
 
 const Container = styled.div`
   padding: 0.5rem 1rem;
+`;
+
+const StyledScrollable = styled( Scrollable )`
+  width: 100%;
+  height: 100%;
 `;
 
 const Root = styled.div`
@@ -45,14 +52,16 @@ export const Inspector = ( { className }: InspectorProps ): JSX.Element => {
   const isSelectingNothing = ( selectedNodes.length === 0 ) && ( selectedFxs.length === 0 );
 
   return <Root className={ className }>
-    <Container>
-      { isSelectingANode && <InspectorNode
-        node={ selectedNodes[ 0 ] }
-      /> }
-      { isSelectingAFx && <InspectorFx
-        fx={ selectedFxs[ 0 ] }
-      /> }
-    </Container>
+    <StyledScrollable>
+      <Container>
+        { isSelectingANode && <InspectorNode
+          node={ selectedNodes[ 0 ] }
+        /> }
+        { isSelectingAFx && <InspectorFx
+          fx={ selectedFxs[ 0 ] }
+        /> }
+      </Container>
+    </StyledScrollable>
     { isSelectingNothing && <Logo as={ Icons.AutomatonA } /> }
   </Root>;
 };

@@ -1,5 +1,6 @@
 import * as About from './About';
 import * as Automaton from './Automaton';
+import * as ContextMenu from './ContextMenu';
 import * as CurveEditor from './CurveEditor';
 import * as FxSpawner from './FxSpawner';
 import * as Header from './Header';
@@ -23,6 +24,7 @@ function combineReducers<T>( reducers: any ): ( ( state: any, action: any ) => T
 export interface ContextsState {
   about: About.State;
   automaton: Automaton.State;
+  contextMenu: ContextMenu.State;
   curveEditor: CurveEditor.State;
   fxSpawner: FxSpawner.State;
   header: Header.State;
@@ -32,6 +34,7 @@ export interface ContextsState {
 const initialState: Readonly<ContextsState> = {
   about: About.initialState,
   automaton: Automaton.initialState,
+  contextMenu: ContextMenu.initialState,
   curveEditor: CurveEditor.initialState,
   fxSpawner: FxSpawner.initialState,
   header: Header.initialState,
@@ -42,6 +45,7 @@ const initialState: Readonly<ContextsState> = {
 type Action = (
   About.Action |
   Automaton.Action |
+  ContextMenu.Action |
   CurveEditor.Action |
   FxSpawner.Action |
   Header.Action |
@@ -52,6 +56,7 @@ type Action = (
 const reducer = combineReducers<ContextsState>( {
   about: About.reducer,
   automaton: Automaton.reducer,
+  contextMenu: ContextMenu.reducer,
   curveEditor: CurveEditor.reducer,
   fxSpawner: FxSpawner.reducer,
   header: Header.reducer,

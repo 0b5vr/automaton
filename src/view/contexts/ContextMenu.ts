@@ -1,28 +1,31 @@
-import { combineArraysUnique } from '../utils/combineArraysUnique';
 import { produce } from 'immer';
 
 // == state ========================================================================================
+interface ContextMenuCommand {
+  name: string;
+  description?: string;
+  command: () => void;
+}
+
 export interface State {
   isVisible: boolean;
-  recently: string[];
-  callback: ( ( name: string ) => void ) | null;
+  position: { x: number; y: number };
+  commands: Array<ContextMenuCommand>;
 }
 
 export const initialState: Readonly<State> = {
   isVisible: false,
-  recently: [],
-  callback: null
+  position: { x: 0, y: 0 },
+  commands: []
 };
 
 // == action =======================================================================================
 export type Action = {
-  type: 'FxSpawner/Open';
-  callback: ( name: string ) => void;
+  type: 'ContextMenu/Open';
+  position: { x: number; y: number };
+  commands: Array<ContextMenuCommand>;
 } | {
-  type: 'FxSpawner/Close';
-} | {
-  type: 'FxSpawner/AddRecently';
-  name: string;
+  type: 'ContextMenu/Close';
 };
 
 // == reducer ======================================================================================
@@ -31,14 +34,13 @@ export function reducer(
   action: Action
 ): State {
   return produce( state, ( newState: State ) => {
-    if ( action.type === 'FxSpawner/Open' ) {
+    if ( action.type === 'ContextMenu/Open' ) {
       newState.isVisible = true;
-      newState.callback = action.callback;
-    } else if ( action.type === 'FxSpawner/Close' ) {
+      newState.position = action.position;
+      newState.commands = action.commands;
+    } else if ( action.type === 'ContextMenu/Close' ) {
       newState.isVisible = false;
-      newState.callback = null;
-    } else if ( action.type === 'FxSpawner/AddRecently' ) {
-      newState.recently = combineArraysUnique( [ action.name ], state.recently );
+      newState.commands = [];
     }
   } );
 }

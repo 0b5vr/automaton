@@ -35,6 +35,7 @@ export const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
   const checkDoubleClick = useDoubleClick();
   const { range, size, selectedParam } = contexts.state.curveEditor;
   const automaton = contexts.state.automaton.instance;
+  const param = selectedParam && automaton?.getParam( selectedParam ) || null;
 
   const refSvgRoot = useRef<SVGSVGElement>( null );
   const refLength = useRef<number>();
@@ -60,104 +61,174 @@ export const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
     []
   );
 
-  const move = useCallback(
-    ( dx: number, dy: number ): void => {
-      contexts.dispatch( {
-        type: 'CurveEditor/MoveRange',
-        dx,
-        dy,
-        tmax: refLength.current! // 🔥
-      } );
-    },
-    []
-  );
+  const move = ( dx: number, dy: number ): void => {
+    contexts.dispatch( {
+      type: 'CurveEditor/MoveRange',
+      dx,
+      dy,
+      tmax: refLength.current! // 🔥
+    } );
+  };
 
-  const zoom = useCallback(
-    ( cx: number, cy: number, dx: number, dy: number ): void => {
-      contexts.dispatch( {
-        type: 'CurveEditor/ZoomRange',
-        cx,
-        cy,
-        dx,
-        dy,
-        tmax: refLength.current! // 🔥
-      } );
-    },
-    []
-  );
+  const zoom = ( cx: number, cy: number, dx: number, dy: number ): void => {
+    contexts.dispatch( {
+      type: 'CurveEditor/ZoomRange',
+      cx,
+      cy,
+      dx,
+      dy,
+      tmax: refLength.current! // 🔥
+    } );
+  };
 
-  const createNode = useCallback(
-    ( x0: number, y0: number ): void => {
-      if ( !automaton || !selectedParam ) { return; }
-      const param = automaton.getParam( selectedParam )!;
+  const createNode = ( x0: number, y0: number ): void => {
+    if ( !param ) { return; }
 
-      let x = x0;
-      let y = y0;
+    let x = x0;
+    let y = y0;
 
-      const data = param.createNode(
-        x2t( x, range, size.width ),
-        y2v( y, range, size.height )
-      );
-      contexts.dispatch( {
-        type: 'CurveEditor/SelectItems',
-        nodes: [ data.$id ]
-      } );
+    const data = param.createNode(
+      x2t( x, range, size.width ),
+      y2v( y, range, size.height )
+    );
+    contexts.dispatch( {
+      type: 'CurveEditor/SelectItems',
+      nodes: [ data.$id ]
+    } );
 
-      registerMouseEvent(
-        ( event, movementSum ) => {
-          x += movementSum.x;
-          y += movementSum.y;
+    registerMouseEvent(
+      ( event, movementSum ) => {
+        x += movementSum.x;
+        y += movementSum.y;
 
-          param.moveNodeTime( data.$id, x2t( x, range, size.width ) );
-          param.moveNodeValue( data.$id, y2v( y, range, size.height ) );
-        },
-        () => {
-          const t = x2t( x, range, size.width );
-          const v = y2v( y, range, size.height );
-          param.moveNodeTime( data.$id, t );
-          param.moveNodeValue( data.$id, v );
+        param.moveNodeTime( data.$id, x2t( x, range, size.width ) );
+        param.moveNodeValue( data.$id, y2v( y, range, size.height ) );
+      },
+      () => {
+        const t = x2t( x, range, size.width );
+        const v = y2v( y, range, size.height );
+        param.moveNodeTime( data.$id, t );
+        param.moveNodeValue( data.$id, v );
 
-          data.time = t;
-          data.value = v;
+        data.time = t;
+        data.value = v;
 
-          const undo = (): void => {
-            param.removeNode( data.$id );
-          };
+        const undo = (): void => {
+          param.removeNode( data.$id );
+        };
 
-          const redo = (): void => {
-            param.createNodeFromData( data );
-          };
+        const redo = (): void => {
+          param.createNodeFromData( data );
+        };
 
-          contexts.dispatch( {
-            type: 'History/Push',
-            entry: {
-              description: 'Add Node',
-              redo,
-              undo
-            }
-          } );
-        }
-      );
-    },
-    [ automaton, selectedParam, contexts, range, size ]
-  );
-
-  const handleMouseDown = useCallback(
-    ( event: React.MouseEvent ): void => {
-      event.preventDefault();
-
-      if ( event.buttons === 1 ) {
-        if ( checkDoubleClick() ) {
-          createNode( event.nativeEvent.offsetX, event.nativeEvent.offsetY );
-        }
-      } else if ( event.buttons === 4 ) {
-        registerMouseEvent(
-          ( event, movementSum ) => move( movementSum.x, movementSum.y )
-        );
+        contexts.dispatch( {
+          type: 'History/Push',
+          entry: {
+            description: 'Add Node',
+            redo,
+            undo
+          }
+        } );
       }
-    },
-    [ createNode, move ]
-  );
+    );
+  };
+
+  const handleMouseDown = ( event: React.MouseEvent ): void => {
+    event.preventDefault();
+
+    if ( event.buttons === 1 ) {
+      if ( checkDoubleClick() ) {
+        createNode( event.nativeEvent.offsetX, event.nativeEvent.offsetY );
+      }
+    } else if ( event.buttons === 4 ) {
+      registerMouseEvent(
+        ( event, movementSum ) => move( movementSum.x, movementSum.y )
+      );
+    }
+  };
+
+  const handleContextMenu = ( event: React.MouseEvent ): void => {
+    if ( !param ) { return; }
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    const x = event.nativeEvent.offsetX;
+    const y = event.nativeEvent.offsetY;
+
+    contexts.dispatch( {
+      type: 'ContextMenu/Open',
+      position: { x: event.clientX, y: event.clientY },
+      commands: [
+        {
+          name: 'Add Node',
+          description: 'Add a new bezier curve node.',
+          command: () => {
+            const t = x2t( x, range, size.width );
+            const v = y2v( y, range, size.height );
+            const data = param.createNode( t, v );
+            contexts.dispatch( {
+              type: 'CurveEditor/SelectItems',
+              nodes: [ data.$id ]
+            } );
+
+            const undo = (): void => {
+              param.removeNode( data.$id );
+            };
+
+            const redo = (): void => {
+              param.createNodeFromData( data );
+            };
+
+            contexts.dispatch( {
+              type: 'History/Push',
+              entry: {
+                description: 'Add Node',
+                redo,
+                undo
+              }
+            } );
+          }
+        },
+        {
+          name: 'Add Fx',
+          description: 'Add a new fx section.',
+          command: () => {
+            contexts.dispatch( {
+              type: 'FxSpawner/Open',
+              callback: ( name ) => {
+                const t = x2t( x, range, size.width );
+                const data = param.createFx( t, 1.0, name );
+                if ( data ) {
+                  contexts.dispatch( {
+                    type: 'CurveEditor/SelectItems',
+                    fxs: [ data.$id ]
+                  } );
+
+                  const undo = (): void => {
+                    param.removeFx( data.$id );
+                  };
+
+                  const redo = (): void => {
+                    param.createFxFromData( data );
+                  };
+
+                  contexts.dispatch( {
+                    type: 'History/Push',
+                    entry: {
+                      description: 'Add Fx',
+                      redo,
+                      undo
+                    }
+                  } );
+                }
+              }
+            } );
+          }
+        }
+      ]
+    } );
+  };
 
   const handleWheel = useCallback(
     ( event: WheelEvent ): void => {
@@ -189,7 +260,11 @@ export const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
 
   return (
     <Root className={ className }>
-      <SVGRoot ref={ refSvgRoot } onMouseDown={ handleMouseDown }>
+      <SVGRoot
+        ref={ refSvgRoot }
+        onMouseDown={ handleMouseDown }
+        onContextMenu={ handleContextMenu }
+      >
         <CurveEditorGrid />
         <CurveEditorFxs />
         <CurveEditorGraph />

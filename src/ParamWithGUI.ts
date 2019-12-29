@@ -439,7 +439,7 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
    * @param def Definition id (kind) of new fx
    * @returns Id of the new fx
    */
-  public createFx( time: number, length: number, def: string ): string | null {
+  public createFx( time: number, length: number, def: string ): ( FxSection & WithID ) | null {
     const row = this.__getFreeRow( time, length );
     if ( PARAM_FX_ROW_MAX <= row ) {
       console.error( 'Too many fx stacks at here!' );
@@ -461,7 +461,7 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
     this.precalc();
     this.__emit( 'createFx', { id, fx: data } );
 
-    return data.$id;
+    return data;
   }
 
   /**
@@ -470,11 +470,11 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
    * @param fx Dumped fx data
    * @returns Id of the new fx
    */
-  public createFxFromData( fx: FxSection & WithID ): string {
+  public createFxFromData( fx: FxSection & WithID ): ( FxSection & WithID ) | null {
     const row = this.__getFreeRow( fx.time, fx.length, fx.row );
     if ( PARAM_FX_ROW_MAX <= row ) {
       console.error( 'Too many fx stacks at here!' );
-      return '';
+      return null;
     }
 
     const data = jsonCopy( fx );
@@ -485,7 +485,7 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
     this.precalc();
     this.__emit( 'createFx', { id: data.$id, fx: data } );
 
-    return data.$id;
+    return data;
   }
 
   /**
