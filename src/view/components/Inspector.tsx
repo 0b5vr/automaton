@@ -18,8 +18,8 @@ const Item = styled.div`
 `;
 
 const StyledLabel = styled.div`
-  margin: 0.1rem;
-  font-size: 0.8rem;
+  margin: 0.15rem;
+  font-size: 0.7rem;
   line-height: 1em;
 `;
 
