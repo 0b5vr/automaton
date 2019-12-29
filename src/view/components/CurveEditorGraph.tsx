@@ -10,6 +10,8 @@ const GraphLine = styled.polyline`
   fill: none;
   stroke: ${ Colors.fore };
   stroke-width: 0.125rem;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 `;
 
 const Root = styled.g`
