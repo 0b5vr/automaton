@@ -39,8 +39,8 @@ export interface AutomatonOptions {
 export class Automaton {
   /**
    * **THE MIGHTY `auto()` FUNCTION!! GRAB IT**
-   * It creates a new param automatically if there are no param called `_name` (GUI mode only).
-   * Otherwise it returns current value of the param called `_name`.
+   * It creates a new param automatically if there are no param called `name` (GUI mode only).
+   * Otherwise it returns current value of the param called `name`.
    * @param name name of the param
    * @returns Current value of the param
    */
