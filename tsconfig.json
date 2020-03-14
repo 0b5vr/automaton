@@ -9,6 +9,7 @@
     "resolveJsonModule": true,
     "removeComments": false,
     "noUnusedLocals": true,
+    "downlevelIteration": true,
     "lib": [ "es2017" ],
     "rootDir": "./src",
     "outDir": "./dist",

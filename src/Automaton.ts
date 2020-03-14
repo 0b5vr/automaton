@@ -1,6 +1,6 @@
-import { SerializedData, defaultData } from './types/SerializedData';
 import { FxDefinition } from './types/FxDefinition';
 import { Param } from './Param';
+import { SerializedData } from './types/SerializedData';
 import { SerializedParam } from './types/SerializedParam';
 import { clamp } from './utils/clamp';
 import { mod } from './utils/mod';
@@ -10,14 +10,14 @@ import { mod } from './utils/mod';
  */
 export interface AutomatonOptions {
   /**
+   * Serialized data of the automaton.
+   */
+  data: SerializedData;
+
+  /**
    * Whether let the time loop or not.
    */
   loop?: boolean;
-
-  /**
-   * Serialized data of the automaton.
-   */
-  data?: SerializedData;
 }
 
 /**
@@ -27,10 +27,11 @@ export interface AutomatonOptions {
  */
 export class Automaton {
   /**
-   * **THE MIGHTY `auto()` FUNCTION!! GRAB IT**
-   * It creates a new param automatically if there are no param called `name` (GUI mode only).
-   * Otherwise it returns current value of the param called `name`.
-   * @param name name of the param
+   * It returns the current value of the [[Param]] called `name`.
+   * If the `name` is an array, it returns a set of name : param as an object instead.
+   * You can also give a listener which will be executed when the param changes its value (optional).
+   * @param name The name of the param
+   * @param listener A function that will be executed when the param changes its value
    * @returns Current value of the param
    */
   public auto = this.__auto.bind( this );
@@ -71,10 +72,15 @@ export class Automaton {
    */
   protected __fxDefinitions: { [ name: string ]: FxDefinition } = {};
 
+  /**
+   * A map of listeners : param names.
+   */
+  protected __listeners = new Map<() => void, string[]>();
+
   public constructor( options: AutomatonOptions ) {
     this.loop = options.loop || false;
 
-    this.deserialize( options.data || defaultData );
+    this.deserialize( options.data );
   }
 
   /**
@@ -159,16 +165,49 @@ export class Automaton {
     // cache the time
     this.__time = t;
 
-    // grab current value for each param
-    Object.values( this.__params ).forEach( ( param ) => param.getValue( this.__time ) );
+    // grab the current value for each param
+    const namesOfUpdatedParams = new Set<string>();
+    for ( const [ name, param ] of Object.entries( this.__params ) ) {
+      const isChanged = param.update( this.__time );
+      if ( isChanged ) {
+        namesOfUpdatedParams.add( name );
+      }
+    }
+
+    for ( const [ listener, names ] of this.__listeners.entries() ) {
+      const isIntersecting = names.some( ( name ) => namesOfUpdatedParams.has( name ) );
+      if ( isIntersecting ) {
+        listener();
+      }
+    }
   }
 
   /**
    * Assigned to {@link Automaton#auto} on its initialize phase.
-   * @param name name of the param
+   * @param name The name of the param
+   * @param listener A function that will be executed when the param changes its value
    * @returns Current value of the param
    */
-  protected __auto( name: string ): number {
-    return this.__params[ name ].getValue( this.__time );
+  protected __auto( name: string, listener?: () => void ): number;
+  protected __auto( names: string[], listener?: () => void ): { [ name: string ]: number };
+  protected __auto( ...args: any[] ): any {
+    if ( Array.isArray( args[ 0 ] ) ) { // the first argument is string[]
+      const names: string[] = args[ 0 ];
+      const listener: () => void = args[ 1 ];
+
+      const result = names.map( ( name ) => this.__params[ name ].value );
+      this.__listeners.set( listener, names );
+
+      return result;
+
+    } else { // the first argument is string
+      const name: string = args[ 0 ];
+      const listener: () => void = args[ 1 ];
+
+      const result = this.__params[ name ].value;
+      this.__listeners.set( listener, [ name ] );
+
+      return result;
+    }
   }
 }

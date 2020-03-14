@@ -36,12 +36,12 @@ export class Param {
   /**
    * A cache of last calculated value.
    */
-  protected __lastValue: number = 0.0;
+  protected __value: number | null = null;
 
   /**
-   * Will be used for calculation of {@link Param#__lastValue}.
+   * The time that was used for the calculation of [[__lastValue]].
    */
-  protected __lastTime: number = 0.0;
+  protected __time: number | null = null;
 
   public constructor( automaton: Automaton, data?: SerializedParam ) {
     this.__automaton = automaton;
@@ -50,6 +50,16 @@ export class Param {
 
     data && this.deserialize( data );
   }
+
+  /**
+   * A cache of last calculated value.
+   */
+  public get value(): number | null { return this.__value; }
+
+  /**
+   * The time that was used for the calculation of [[__lastValue]].
+   */
+  public get time(): number | null { return this.__time; }
 
   /**
    * Load a param data.
@@ -128,6 +138,27 @@ export class Param {
 
       this.__values.set( tempValues, i0 );
     }
+
+    // reset the __lastTime / __lastValue
+    this.__time = null;
+    this.__value = null;
+  }
+
+  /**
+   * This method is intended to be used by [[Automaton.update]].
+   * @param time The current time of the parent [[Automaton]]
+   * @returns whether the value has been changed or not
+   */
+  public update( time: number ): boolean {
+    const value = this.getValue( time );
+
+    const isChanged = this.__value !== value;
+
+    // store lastValue
+    this.__time = time;
+    this.__value = value;
+
+    return isChanged;
   }
 
   /**
@@ -137,11 +168,7 @@ export class Param {
    * @returns Result value
    */
   public getValue( time: number ): number {
-    if ( time === this.__lastTime ) { // use the buffer!
-      return this.__lastValue;
-    }
-
-    // fetch two value then do linear interpolation
+    // fetch two values then do the linear interpolation
     const index = time * this.__automaton.resolution;
     const indexi = Math.floor( index );
     const indexf = index % 1.0;
@@ -150,10 +177,6 @@ export class Param {
     const v1 = this.__values[ indexi + 1 ];
 
     const v = v0 + ( v1 - v0 ) * indexf;
-
-    // store lastValue
-    this.__lastTime = time;
-    this.__lastValue = v;
 
     return v;
   }
