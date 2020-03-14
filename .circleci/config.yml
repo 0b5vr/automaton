@@ -80,6 +80,18 @@ jobs:
           name: Linting
           command: yarn lint
 
+  test:
+    docker: *docker
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - deps-{{ checksum "package.json" }}
+            - deps-
+      - run:
+          name: Testing
+          command: yarn test
+
 workflows:
   version: 2
   fuckery:
@@ -95,5 +107,8 @@ workflows:
           requires:
             - fetch
       - lint:
+          requires:
+            - fetch
+      - test:
           requires:
             - fetch
