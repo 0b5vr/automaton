@@ -14,16 +14,16 @@ const mostSimpleData: SerializedData = {
 
 describe( 'Automaton', () => {
   it( 'must be instantiated correctly', () => {
-    const automaton = new Automaton( { data: mostSimpleData } );
+    const automaton = new Automaton( mostSimpleData );
     expect( automaton ).toBeInstanceOf( Automaton );
   } );
 
   describe( 'auto', () => {
-    let automaton = new Automaton( { data: mostSimpleData } );
+    let automaton = new Automaton( mostSimpleData );
     let auto = automaton.auto;
 
     beforeEach( () => {
-      automaton = new Automaton( { data: mostSimpleData } );
+      automaton = new Automaton( mostSimpleData );
       auto = automaton.auto;
     } );
 
@@ -47,15 +47,15 @@ describe( 'Automaton', () => {
   } );
 
   describe( 'update', () => {
-    let automaton = new Automaton( { data: mostSimpleData } );
+    let automaton = new Automaton( mostSimpleData );
+    let auto = automaton.auto;
 
     beforeEach( () => {
-      automaton = new Automaton( { data: mostSimpleData } );
+      automaton = new Automaton( mostSimpleData );
+      auto = automaton.auto;
     } );
 
     it( 'must execute a callback function exactly once', () => {
-      const auto = automaton.auto;
-
       let count = 0;
       auto( [ 'x', 'y' ], () => {
         count ++;
@@ -67,8 +67,6 @@ describe( 'Automaton', () => {
     } );
 
     it( 'must not execute a callback function if the param is not changed', () => {
-      const auto = automaton.auto;
-
       let count = 0;
       auto( 'y', () => {
         count ++;
@@ -80,8 +78,6 @@ describe( 'Automaton', () => {
     } );
 
     it( 'must execute a callback function with a proper argument (single param)', () => {
-      const auto = automaton.auto;
-
       let resultX: number = 0.0;
       auto( 'x', ( x ) => {
         resultX = x;
@@ -93,8 +89,6 @@ describe( 'Automaton', () => {
     } );
 
     it( 'must execute a callback function with a proper argument (multiple param)', () => {
-      const auto = automaton.auto;
-
       let result: any = {};
       auto( [ 'x', 'y' ], ( r ) => {
         result = r;
@@ -107,8 +101,6 @@ describe( 'Automaton', () => {
     } );
 
     it( 'must execute a callback function exactly once', () => {
-      const auto = automaton.auto;
-
       let count = 0;
       auto( [ 'x', 'y' ], () => {
         count ++;

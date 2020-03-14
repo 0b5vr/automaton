@@ -10,12 +10,7 @@ import { mod } from './utils/mod';
  */
 export interface AutomatonOptions {
   /**
-   * Serialized data of the automaton.
-   */
-  data: SerializedData;
-
-  /**
-   * Whether let the time loop or not.
+   * Whether let the time loop or not. `false` by default.
    */
   loop?: boolean;
 }
@@ -23,6 +18,7 @@ export interface AutomatonOptions {
 /**
  * IT'S AUTOMATON!
  * It's `automaton.nogui.js` version and also base class for {@link AutomatonWithGUI}.
+ * @param data Serialized data of the automaton
  * @param options Options for this Automaton instance
  */
 export class Automaton {
@@ -77,10 +73,9 @@ export class Automaton {
    */
   protected __listeners = new Map<( arg: any ) => void, string | string[]>();
 
-  public constructor( options: AutomatonOptions ) {
+  public constructor( data: SerializedData, options: AutomatonOptions = {} ) {
     this.loop = options.loop || false;
-
-    this.deserialize( options.data );
+    this.deserialize( data );
   }
 
   /**
