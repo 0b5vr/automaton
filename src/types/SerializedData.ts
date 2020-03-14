@@ -19,9 +19,3 @@ export interface SerializedData {
    */
   params: { [ name: string ]: SerializedParam };
 }
-
-export const defaultData: Readonly<SerializedData> = {
-  length: 1.0,
-  resolution: 1000.0,
-  params: {}
-};
