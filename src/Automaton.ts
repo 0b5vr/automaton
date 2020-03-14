@@ -201,21 +201,27 @@ export class Automaton {
   ): { [ name: string ]: number };
   protected __auto( ...args: any[] ): any {
     if ( Array.isArray( args[ 0 ] ) ) { // the first argument is string[]
-      const names = args[ 0 ] as string[];
-      const listener = args[ 1 ] as ( values: { [ name: string ]: number } ) => void;
+      const names: string[] = args[ 0 ];
+      const listener: ( ( values: { [ name: string ]: number } ) => void ) | undefined = args[ 1 ];
 
       const result: { [ name: string ]: number } = {};
       names.forEach( ( name ) => result[ name ] = this.__params[ name ].value );
-      this.__listeners.set( listener, names );
+
+      if ( listener ) {
+        this.__listeners.set( listener, names );
+      }
 
       return result;
 
     } else { // the first argument is string
       const name: string = args[ 0 ];
-      const listener: ( value: number ) => void = args[ 1 ];
+      const listener: ( ( value: number ) => void ) | undefined = args[ 1 ];
 
       const result = this.__params[ name ].value;
-      this.__listeners.set( listener, name );
+
+      if ( listener ) {
+        this.__listeners.set( listener, name );
+      }
 
       return result;
     }
