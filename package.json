@@ -9,7 +9,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "webpack-dev-server --hot --mode development",
-    "all": "yarn lint && yarn clean && yarn build && yarn types && yarn docs",
+    "all": "yarn lint && yarn test && yarn clean && yarn build && yarn types && yarn docs",
     "preversion": "git-branch-is master",
     "version": "yarn all",
     "postpublish": "yarn gh-pages",
