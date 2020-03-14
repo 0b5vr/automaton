@@ -5,11 +5,6 @@ import { SerializedParam } from './SerializedParam';
  */
 export interface SerializedData {
   /**
-   * Version of the Automaton.
-   */
-  version: string;
-
-  /**
    * Length of the timeline.
    */
   length: number;
@@ -26,8 +21,6 @@ export interface SerializedData {
 }
 
 export const defaultData: Readonly<SerializedData> = {
-  version: process.env.VERSION!,
-
   length: 1.0,
   resolution: 1000.0,
   params: {}
