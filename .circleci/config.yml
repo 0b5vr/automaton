@@ -13,7 +13,7 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - deps-{{ checksum "package.json" }}
+            - deps-{{ checksum "yarn.lock" }}
             - deps-
       - run:
           name: Node version
@@ -22,7 +22,7 @@ jobs:
           name: Fetch deps
           command: yarn
       - save_cache:
-          key: deps-{{ checksum "package.json" }}
+          key: deps-{{ checksum "yarn.lock" }}
           paths:
             - node_modules
 
@@ -32,7 +32,7 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - deps-{{ checksum "package.json" }}
+            - deps-{{ checksum "yarn.lock" }}
             - deps-
       - run:
           name: Build
@@ -46,7 +46,7 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - deps-{{ checksum "package.json" }}
+            - deps-{{ checksum "yarn.lock" }}
             - deps-
       - run:
           name: Generate docs
@@ -60,7 +60,7 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - deps-{{ checksum "package.json" }}
+            - deps-{{ checksum "yarn.lock" }}
             - deps-
       - run:
           name: Generate type definitions
@@ -74,10 +74,10 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - deps-{{ checksum "package.json" }}
+            - deps-{{ checksum "yarn.lock" }}
             - deps-
       - run:
-          name: Linting
+          name: Lint
           command: yarn lint
 
   test:
@@ -86,10 +86,10 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - deps-{{ checksum "package.json" }}
+            - deps-{{ checksum "yarn.lock" }}
             - deps-
       - run:
-          name: Testing
+          name: Test
           command: yarn test
 
 workflows:
