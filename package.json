@@ -20,6 +20,7 @@
     "types": "tsc --emitDeclarationOnly",
     "docs": "typedoc --out docs --mode file --excludeNotExported",
     "lint": "eslint \"src/**/*.ts\"",
+    "test": "jest",
     "gh-pages": "node ./utils/gh-pages.js"
   },
   "files": [
@@ -30,13 +31,16 @@
     "README.md"
   ],
   "devDependencies": {
+    "@types/jest": "^25.1.4",
     "@typescript-eslint/eslint-plugin": "^2.3.2",
     "@typescript-eslint/parser": "^2.3.2",
     "eslint": "^6.5.1",
     "fork-ts-checker-webpack-plugin": "^1.5.0",
     "gh-pages": "^2.1.1",
     "git-branch-is": "^3.0.0",
+    "jest": "^25.1.0",
     "rimraf": "^3.0.0",
+    "ts-jest": "^25.2.1",
     "ts-loader": "^6.2.0",
     "typedoc": "^0.15.0",
     "typescript": "^3.7.4",
