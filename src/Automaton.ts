@@ -2,8 +2,8 @@ import { SerializedData, defaultData } from './types/SerializedData';
 import { FxDefinition } from './types/FxDefinition';
 import { Param } from './Param';
 import { SerializedParam } from './types/SerializedParam';
-import { mod } from './utils/mod';
 import { clamp } from './utils/clamp';
+import { mod } from './utils/mod';
 
 /**
  * Interface for options of {@link Automaton}.

@@ -35,6 +35,7 @@
     "@typescript-eslint/eslint-plugin": "^2.3.2",
     "@typescript-eslint/parser": "^2.3.2",
     "eslint": "^6.5.1",
+    "eslint-plugin-jest": "^23.8.2",
     "fork-ts-checker-webpack-plugin": "^1.5.0",
     "gh-pages": "^2.1.1",
     "git-branch-is": "^3.0.0",
