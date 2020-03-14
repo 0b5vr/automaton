@@ -75,7 +75,7 @@ export class Automaton {
   /**
    * A map of listeners : param names.
    */
-  protected __listeners = new Map<() => void, string[]>();
+  protected __listeners = new Map<( arg: any ) => void, string | string[]>();
 
   public constructor( options: AutomatonOptions ) {
     this.loop = options.loop || false;
@@ -174,10 +174,16 @@ export class Automaton {
       }
     }
 
-    for ( const [ listener, names ] of this.__listeners.entries() ) {
-      const isIntersecting = names.some( ( name ) => namesOfUpdatedParams.has( name ) );
-      if ( isIntersecting ) {
-        listener();
+    for ( const [ listener, nameOrNames ] of this.__listeners.entries() ) {
+      if ( Array.isArray( nameOrNames ) ) {
+        const isIntersecting = nameOrNames.some( ( name ) => namesOfUpdatedParams.has( name ) );
+        if ( isIntersecting ) {
+          listener( nameOrNames.map( ( name ) => this.__params[ name ].value ) );
+        }
+      } else {
+        if ( namesOfUpdatedParams.has( nameOrNames ) ) {
+          listener( this.__params[ nameOrNames ].value );
+        }
       }
     }
   }
@@ -188,8 +194,14 @@ export class Automaton {
    * @param listener A function that will be executed when the param changes its value
    * @returns Current value of the param
    */
-  protected __auto( name: string, listener?: () => void ): number;
-  protected __auto( names: string[], listener?: () => void ): { [ name: string ]: number };
+  protected __auto(
+    name: string,
+    listener?: ( value: number | null ) => void
+  ): number | null;
+  protected __auto(
+    names: string[],
+    listener?: ( values: { [ name: string ]: number | null } ) => void
+  ): { [ name: string ]: number | null };
   protected __auto( ...args: any[] ): any {
     if ( Array.isArray( args[ 0 ] ) ) { // the first argument is string[]
       const names: string[] = args[ 0 ];
@@ -205,7 +217,7 @@ export class Automaton {
       const listener: () => void = args[ 1 ];
 
       const result = this.__params[ name ].value;
-      this.__listeners.set( listener, [ name ] );
+      this.__listeners.set( listener, name );
 
       return result;
     }
