@@ -36,12 +36,12 @@ export class Param {
   /**
    * A cache of last calculated value.
    */
-  protected __value: number | null = null;
+  protected __value: number = 0.0;
 
   /**
    * The time that was used for the calculation of [[__lastValue]].
    */
-  protected __time: number | null = null;
+  protected __time: number = 0.0;
 
   public constructor( automaton: Automaton, data?: SerializedParam ) {
     this.__automaton = automaton;
@@ -54,12 +54,12 @@ export class Param {
   /**
    * A cache of last calculated value.
    */
-  public get value(): number | null { return this.__value; }
+  public get value(): number { return this.__value; }
 
   /**
    * The time that was used for the calculation of [[__lastValue]].
    */
-  public get time(): number | null { return this.__time; }
+  public get time(): number { return this.__time; }
 
   /**
    * Load a param data.
@@ -140,8 +140,7 @@ export class Param {
     }
 
     // reset the __lastTime / __lastValue
-    this.__time = null;
-    this.__value = null;
+    this.__value = this.getValue( this.__time );
   }
 
   /**

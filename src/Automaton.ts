@@ -178,7 +178,9 @@ export class Automaton {
       if ( Array.isArray( nameOrNames ) ) {
         const isIntersecting = nameOrNames.some( ( name ) => namesOfUpdatedParams.has( name ) );
         if ( isIntersecting ) {
-          listener( nameOrNames.map( ( name ) => this.__params[ name ].value ) );
+          const arg: { [ name: string ]: number } = {};
+          nameOrNames.forEach( ( name ) => arg[ name ] = this.__params[ name ].value );
+          listener( arg );
         }
       } else {
         if ( namesOfUpdatedParams.has( nameOrNames ) ) {
@@ -196,25 +198,26 @@ export class Automaton {
    */
   protected __auto(
     name: string,
-    listener?: ( value: number | null ) => void
-  ): number | null;
+    listener?: ( value: number ) => void
+  ): number;
   protected __auto(
     names: string[],
-    listener?: ( values: { [ name: string ]: number | null } ) => void
-  ): { [ name: string ]: number | null };
+    listener?: ( values: { [ name: string ]: number } ) => void
+  ): { [ name: string ]: number };
   protected __auto( ...args: any[] ): any {
     if ( Array.isArray( args[ 0 ] ) ) { // the first argument is string[]
-      const names: string[] = args[ 0 ];
-      const listener: () => void = args[ 1 ];
+      const names = args[ 0 ] as string[];
+      const listener = args[ 1 ] as ( values: { [ name: string ]: number } ) => void;
 
-      const result = names.map( ( name ) => this.__params[ name ].value );
+      const result: { [ name: string ]: number } = {};
+      names.forEach( ( name ) => result[ name ] = this.__params[ name ].value );
       this.__listeners.set( listener, names );
 
       return result;
 
     } else { // the first argument is string
       const name: string = args[ 0 ];
-      const listener: () => void = args[ 1 ];
+      const listener: ( value: number ) => void = args[ 1 ];
 
       const result = this.__params[ name ].value;
       this.__listeners.set( listener, name );
