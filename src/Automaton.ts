@@ -1,10 +1,9 @@
 import { SerializedData, defaultData } from './types/SerializedData';
-import { Clock } from './Clock';
-import { ClockFrame } from './ClockFrame';
-import { ClockRealtime } from './ClockRealtime';
 import { FxDefinition } from './types/FxDefinition';
 import { Param } from './Param';
 import { SerializedParam } from './types/SerializedParam';
+import { mod } from './utils/mod';
+import { clamp } from './utils/clamp';
 
 /**
  * Interface for options of {@link Automaton}.
@@ -14,16 +13,6 @@ export interface AutomatonOptions {
    * Whether let the time loop or not.
    */
   loop?: boolean;
-
-  /**
-   * If this is set, the clock will become frame mode.
-   */
-  fps?: number;
-
-  /**
-   * If this is true, the clock will become realtime mode.
-   */
-  realtime?: boolean;
 
   /**
    * Serialized data of the automaton.
@@ -47,6 +36,17 @@ export class Automaton {
   public auto = this.__auto.bind( this );
 
   /**
+   * Whether the animation will be looped or not.
+   */
+  public loop: boolean;
+
+  /**
+   * Current time of the automaton.
+   * Can be set by [[update]], be retrieved by [[get time]], be used by [[auto]]
+   */
+  protected __time: number = 0.0;
+
+  /**
    * Version of the automaton.
    */
   protected __version: string = process.env.VERSION!;
@@ -62,16 +62,6 @@ export class Automaton {
   protected __resolution: number = 1000;
 
   /**
-   * Whether the animation will be looped or not.
-   */
-  protected __isLoop: boolean;
-
-  /**
-   * Clock of the automaton.
-   */
-  protected __clock: Clock;
-
-  /**
    * Params of the timeline.
    */
   protected __params: { [ name: string ]: Param } = {};
@@ -82,16 +72,15 @@ export class Automaton {
   protected __fxDefinitions: { [ name: string ]: FxDefinition } = {};
 
   public constructor( options: AutomatonOptions ) {
-    this.__isLoop = options.loop || false;
-
-    this.__clock = (
-      options.fps ? new ClockFrame( options.fps ) :
-      options.realtime ? new ClockRealtime() :
-      new Clock()
-    );
+    this.loop = options.loop || false;
 
     this.deserialize( options.data || defaultData );
   }
+
+  /**
+   * Current time of the automaton, that is set via [[update]].
+   */
+  public get time(): number { return this.__time; }
 
   /**
    * Version of the automaton.
@@ -107,57 +96,6 @@ export class Automaton {
    * Resolution = Sampling point per second.
    */
   public get resolution(): number { return this.__resolution; }
-
-  /**
-   * Current time. Same as `automaton.__clock.time`.
-   */
-  public get time(): number { return this.__clock.time; }
-
-  /**
-   * Delta of time between now and previous update call.
-   */
-  public get deltaTime(): number { return this.__clock.deltaTime; }
-
-  /**
-   * Current progress by whole length. Might NOT be [0-1] unless {@link AutomatonOptions#loop} is true.
-   */
-  public get progress(): number { return this.__clock.time / this.__length; }
-
-  /**
-   * Whether it's playing or not.
-   */
-  public get isPlaying(): boolean { return this.__clock.isPlaying; }
-
-  /**
-   * Current frame.
-   * If the clock type is not frame mode, it will return `null` instead.
-   */
-  public get frame(): number | null {
-    const frame = ( this.__clock as any ).frame as ( number | undefined );
-    return frame || null;
-  }
-
-  /**
-   * Frame per second.
-   * If the clock type is not frame mode, it will return `null` instead.
-   */
-  public get fps(): number | null {
-    const fps = ( this.__clock as any ).fps as ( number | undefined );
-    return fps || null;
-  }
-
-  /**
-   * Boolean that represents whether the clock is based on realtime or not.
-   */
-  public get isRealtime(): boolean {
-    const isRealtime = ( this.__clock as any ).isRealtime as ( boolean | undefined );
-    return isRealtime || false;
-  }
-
-  /**
-   * Whether the animation will be looped or not.
-   */
-  public get isLoop(): boolean { return this.__isLoop; }
 
   /**
    * Create a new param.
@@ -179,28 +117,6 @@ export class Automaton {
     for ( const name in data.params ) {
       this.createParam( name, data.params[ name ] );
     }
-  }
-
-  /**
-   * Seek the timeline.
-   * @param time Time
-   */
-  public seek( time: number ): void {
-    this.__clock.setTime( time );
-  }
-
-  /**
-   * Play the timeline.
-   */
-  public play(): void {
-    this.__clock.play();
-  }
-
-  /**
-   * Pause the timeline.
-   */
-  public pause(): void {
-    this.__clock.pause();
   }
 
   /**
@@ -233,19 +149,18 @@ export class Automaton {
   /**
    * Update the entire automaton.
    * **You may want to call this in your update loop.**
-   * @param time Current time, optional
+   * @param time Current time
    */
-  public update( time?: number ): void {
-    // update the clock
-    this.__clock.update( time );
+  public update( time: number ): void {
+    const t = this.loop
+      ? mod( time, this.__length ) // if loop is enabled, loop the time
+      : clamp( time, 0.0, this.__length ); // if loop is disabled, clamp the time
 
-    // if loop is enabled, loop the time
-    if ( this.__isLoop && ( this.time < 0 || this.length < this.time ) ) {
-      this.__clock.setTime( this.time - Math.floor( this.time / this.length ) * this.length );
-    }
+    // cache the time
+    this.__time = t;
 
     // grab current value for each param
-    Object.values( this.__params ).forEach( ( param ) => param.getValue() );
+    Object.values( this.__params ).forEach( ( param ) => param.getValue( this.__time ) );
   }
 
   /**
@@ -254,6 +169,6 @@ export class Automaton {
    * @returns Current value of the param
    */
   protected __auto( name: string ): number {
-    return this.__params[ name ].getValue();
+    return this.__params[ name ].getValue( this.__time );
   }
 }

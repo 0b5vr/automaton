@@ -136,37 +136,25 @@ export class Param {
    * If it is not given, use current time of parent automaton instead
    * @returns Result value
    */
-  public getValue( time: number = this.__automaton.time ): number {
+  public getValue( time: number ): number {
     if ( time === this.__lastTime ) { // use the buffer!
       return this.__lastValue;
     }
 
-    let newTime = time;
-    if ( this.__automaton.isLoop ) {
-      newTime = newTime - Math.floor( newTime / this.__automaton.length ) * this.__automaton.length;
-    }
+    // fetch two value then do linear interpolation
+    const index = time * this.__automaton.resolution;
+    const indexi = Math.floor( index );
+    const indexf = index % 1.0;
 
-    if ( newTime <= 0.0 ) { // left clamp
-      return this.__values[ 0 ];
+    const v0 = this.__values[ indexi ];
+    const v1 = this.__values[ indexi + 1 ];
 
-    } else if ( this.__automaton.length <= newTime ) { // right clamp
-      return this.__values[ this.__values.length - 1 ];
+    const v = v0 + ( v1 - v0 ) * indexf;
 
-    } else { // fetch two value then do linear interpolation
-      const index = newTime * this.__automaton.resolution;
-      const indexi = Math.floor( index );
-      const indexf = index % 1.0;
+    // store lastValue
+    this.__lastTime = time;
+    this.__lastValue = v;
 
-      const v0 = this.__values[ indexi ];
-      const v1 = this.__values[ indexi + 1 ];
-
-      const v = v0 + ( v1 - v0 ) * indexf;
-
-      // store lastValue
-      this.__lastTime = newTime;
-      this.__lastValue = v;
-
-      return v;
-    }
+    return v;
   }
 }
