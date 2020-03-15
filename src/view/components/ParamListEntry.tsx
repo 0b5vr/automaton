@@ -1,8 +1,9 @@
 import { ParamStatus, ParamStatusLevel } from '../../ParamWithGUI';
-import React, { useContext } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Colors } from '../constants/Colors';
-import { Contexts } from '../contexts/Context';
 import { Icons } from '../icons/Icons';
+import React from 'react';
+import { State } from '../states/store';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
@@ -47,7 +48,8 @@ export interface ParamListEntryProps {
 
 export const ParamListEntry = ( props: ParamListEntryProps ): JSX.Element => {
   const { className, name, value, status } = props;
-  const { state, dispatch } = useContext( Contexts.Store );
+  const dispatch = useDispatch();
+  const selectedParam = useSelector( ( state: State ) => state.curveEditor.selectedParam );
 
   function handleClick(): void {
     dispatch( {
@@ -60,7 +62,7 @@ export const ParamListEntry = ( props: ParamListEntryProps ): JSX.Element => {
     <Root
       className={ className }
       onClick={ handleClick }
-      isSelected={ state.curveEditor.selectedParam === name }
+      isSelected={ selectedParam === name }
       data-stalker={ name }
     >
       <Name>{ name }</Name>

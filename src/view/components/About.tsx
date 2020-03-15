@@ -1,9 +1,10 @@
-import React, { useContext } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { AboutLargeA } from './AboutLargeA';
 import { Anchor } from './Anchor';
 import { Colors } from '../constants/Colors';
-import { Contexts } from '../contexts/Context';
 import { Icons } from '../icons/Icons';
+import React from 'react';
+import { State } from '../states/store';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
@@ -97,8 +98,8 @@ export interface AboutProps {
 }
 
 export const About = ( { className }: AboutProps ): JSX.Element => {
-  const { state, dispatch } = useContext( Contexts.Store );
-  const version = state.automaton.instance && state.automaton.instance.version;
+  const dispatch = useDispatch();
+  const version = useSelector( ( state: State ) => state.automaton.instance?.version );
 
   return <Root className={ className }>
     <OverlayBG

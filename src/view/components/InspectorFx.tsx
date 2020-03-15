@@ -1,14 +1,15 @@
-import React, { useContext } from 'react';
 import { BoolParam } from './BoolParam';
-import { Contexts } from '../contexts/Context';
 import { FxSection } from '@fms-cat/automaton';
 import { InspectorHeader } from './InspectorHeader';
 import { InspectorHr } from './InspectorHr';
 import { InspectorItem } from './InspectorItem';
 import { NumberParam } from './NumberParam';
 import { PARAM_FX_ROW_MAX } from '../../ParamWithGUI';
+import React from 'react';
+import { State } from '../states/store';
 import { WithID } from '../../types/WithID';
 import styled from 'styled-components';
+import { useSelector } from 'react-redux';
 
 // == styles =======================================================================================
 const Root = styled.div`
@@ -21,9 +22,8 @@ export interface InspectorFxProps {
 }
 
 export const InspectorFx = ( { className, fx }: InspectorFxProps ): JSX.Element => {
-  const { state } = useContext( Contexts.Store );
-  const automaton = state.automaton.instance;
-  const { selectedParam } = state.curveEditor;
+  const automaton = useSelector( ( state: State ) => state.automaton.instance );
+  const selectedParam = useSelector( ( state: State ) => state.curveEditor.selectedParam );
   const param = automaton && selectedParam && automaton.getParam( selectedParam ) || null;
 
   return <>

@@ -1,12 +1,13 @@
-import React, { useCallback, useContext, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { x2t, y2v } from '../utils/CurveEditorUtils';
 import { Colors } from '../constants/Colors';
-import { Contexts } from '../contexts/Context';
 import { CurveEditorFxs } from './CurveEditorFxs';
 import { CurveEditorGraph } from './CurveEditorGraph';
 import { CurveEditorGrid } from './CurveEditorGrid';
 import { CurveEditorLine } from './CurveEditorLine';
 import { CurveEditorNodes } from './CurveEditorNodes';
+import { State } from '../states/store';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
 import styled from 'styled-components';
 import { useDoubleClick } from '../utils/useDoubleClick';
@@ -31,15 +32,16 @@ export interface CurveEditorProps {
 }
 
 export const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
-  const { state, dispatch } = useContext( Contexts.Store );
+  const dispatch = useDispatch();
   const checkDoubleClick = useDoubleClick();
-  const { range, size, selectedParam } = state.curveEditor;
-  const automaton = state.automaton.instance;
+  const selectedParam = useSelector( ( state: State ) => state.curveEditor.selectedParam );
+  const range = useSelector( ( state: State ) => state.curveEditor.range );
+  const size = useSelector( ( state: State ) => state.curveEditor.size );
+  const automaton = useSelector( ( state: State ) => state.automaton.instance );
+  const length = useSelector( ( state: State ) => state.automaton.length );
   const param = selectedParam && automaton?.getParam( selectedParam ) || null;
 
   const refSvgRoot = useRef<SVGSVGElement>( null );
-  const refLength = useRef<number>();
-  refLength.current = state.automaton.length;
 
   useEffect( // listen its resize
     () => {
@@ -66,7 +68,7 @@ export const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
       type: 'CurveEditor/MoveRange',
       dx,
       dy,
-      tmax: refLength.current! // 🔥
+      tmax: length // 🔥
     } );
   };
 
@@ -77,7 +79,7 @@ export const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
       cy,
       dx,
       dy,
-      tmax: refLength.current! // 🔥
+      tmax: length // 🔥
     } );
   };
 
@@ -196,7 +198,7 @@ export const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
           command: () => {
             dispatch( {
               type: 'FxSpawner/Open',
-              callback: ( name ) => {
+              callback: ( name: string ) => {
                 const t = x2t( x, range, size.width );
                 const data = param.createFx( t, 1.0, name );
                 if ( data ) {

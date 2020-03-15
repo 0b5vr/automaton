@@ -1,3 +1,4 @@
+import { Reducer } from 'redux';
 import { produce } from 'immer';
 
 // == state ========================================================================================
@@ -29,10 +30,7 @@ export type Action = {
 };
 
 // == reducer ======================================================================================
-export function reducer(
-  state: State,
-  action: Action
-): State {
+export const reducer: Reducer<State, Action> = ( state = initialState, action ) => {
   return produce( state, ( newState: State ) => {
     if ( action.type === 'ContextMenu/Open' ) {
       newState.isVisible = true;
@@ -43,4 +41,4 @@ export function reducer(
       newState.commands = [];
     }
   } );
-}
+};

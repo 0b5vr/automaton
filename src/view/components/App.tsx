@@ -1,17 +1,18 @@
-import React, { useContext } from 'react';
+import { Provider, useSelector } from 'react-redux';
+import { State, store } from '../states/store';
 import styled, { createGlobalStyle } from 'styled-components';
 import { About } from './About';
 import { AutomatonStateListener } from './AutomatonStateListener';
 import { AutomatonWithGUI } from '../../AutomatonWithGUI';
 import { Colors } from '../constants/Colors';
 import { ContextMenu } from './ContextMenu';
-import { Contexts } from '../contexts/Context';
 import { CurveEditor } from './CurveEditor';
 import { FxSpawner } from './FxSpawner';
 import { Header } from './Header';
 import { Inspector } from './Inspector';
 import { Metrics } from '../constants/Metrics';
 import { ParamList } from './ParamList';
+import React from 'react';
 import { Stalker } from './Stalker';
 
 // == styles =======================================================================================
@@ -87,7 +88,9 @@ export interface AppProps {
 }
 
 const Fuck = ( { automaton }: AppProps ): JSX.Element => {
-  const { state } = useContext( Contexts.Store );
+  const isFxSpawnerVisible = useSelector( ( state: State ) => state.fxSpawner.isVisible );
+  const isAboutVisible = useSelector( ( state: State ) => state.about.isVisible );
+  const isContextMenuVisible = useSelector( ( state: State ) => state.contextMenu.isVisible );
 
   return (
     <Root>
@@ -96,9 +99,9 @@ const Fuck = ( { automaton }: AppProps ): JSX.Element => {
       <StyledParamList />
       <StyledCurveEditor />
       <StyledInspector />
-      { state.fxSpawner.isVisible && <StyledFxSpawner /> }
-      { state.about.isVisible && <StyledAbout /> }
-      { state.contextMenu.isVisible && <StyledContextMenu /> }
+      { isFxSpawnerVisible && <StyledFxSpawner /> }
+      { isAboutVisible && <StyledAbout /> }
+      { isContextMenuVisible && <StyledContextMenu /> }
 
       <Stalker />
     </Root>
@@ -107,7 +110,7 @@ const Fuck = ( { automaton }: AppProps ): JSX.Element => {
 
 export const App = ( props: AppProps ): JSX.Element => <>
   <GlobalStyle />
-  <Contexts.Provider>
+  <Provider store={ store }>
     <Fuck { ...props } />
-  </Contexts.Provider>
+  </Provider>
 </>;

@@ -1,12 +1,13 @@
-import React, { useContext } from 'react';
 import { BezierNode } from '@fms-cat/automaton';
-import { Contexts } from '../contexts/Context';
 import { InspectorHeader } from './InspectorHeader';
 import { InspectorHr } from './InspectorHr';
 import { InspectorItem } from './InspectorItem';
 import { NumberParam } from './NumberParam';
+import React from 'react';
+import { State } from '../states/store';
 import { WithID } from '../../types/WithID';
 import styled from 'styled-components';
+import { useSelector } from 'react-redux';
 
 // == styles =======================================================================================
 const Root = styled.div`
@@ -19,9 +20,8 @@ export interface InspectorNodeProps {
 }
 
 export const InspectorNode = ( { className, node }: InspectorNodeProps ): JSX.Element => {
-  const { state } = useContext( Contexts.Store );
-  const automaton = state.automaton.instance;
-  const { selectedParam } = state.curveEditor;
+  const automaton = useSelector( ( state: State ) => state.automaton.instance );
+  const selectedParam = useSelector( ( state: State ) => state.curveEditor.selectedParam );
   const param = automaton && selectedParam && automaton.getParam( selectedParam ) || null;
 
   return <>

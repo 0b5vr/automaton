@@ -1,6 +1,7 @@
-import React, { useContext } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Colors } from '../constants/Colors';
-import { Contexts } from '../contexts/Context';
+import React from 'react';
+import { State } from '../states/store';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
 import styled from 'styled-components';
 
@@ -46,8 +47,12 @@ export interface HeaderSeekbarProps {
 }
 
 export const HeaderSeekbar = ( { className }: HeaderSeekbarProps ): JSX.Element => {
-  const { state, dispatch } = useContext( Contexts.Store );
-  const automaton = state.automaton.instance!;
+  const dispatch = useDispatch();
+  const automaton = useSelector( ( state: State ) => state.automaton.instance );
+  const time = useSelector( ( state: State ) => state.automaton.time );
+  const length = useSelector( ( state: State ) => state.automaton.length );
+  const isSeeking = useSelector( ( state: State ) => state.header.isSeeking );
+  const isSeekbarHovered = useSelector( ( state: State ) => state.header.isSeekbarHovered );
 
   function handleMouseDown( event: React.MouseEvent ): void {
     event.preventDefault();
@@ -55,19 +60,19 @@ export const HeaderSeekbar = ( { className }: HeaderSeekbarProps ): JSX.Element 
     if ( event.buttons === 1 ) {
       const width = ( event.target as HTMLDivElement ).clientWidth;
       const x = event.clientX - event.nativeEvent.offsetX;
-      const isPlaying = automaton.isPlaying;
+      const isPlaying = automaton!.isPlaying;
 
-      automaton.pause();
-      automaton.seek( ( event.clientX - x ) / width * state.automaton.length );
+      automaton!.pause();
+      automaton!.seek( ( event.clientX - x ) / width * length );
       dispatch( { type: 'Header/SeekDown' } );
 
       registerMouseEvent(
         ( event ) => {
-          automaton.seek( ( event.clientX - x ) / width * state.automaton.length );
+          automaton!.seek( ( event.clientX - x ) / width * length );
         },
         ( event ) => {
-          automaton.seek( ( event.clientX - x ) / width * state.automaton.length );
-          if ( isPlaying ) { automaton.play(); }
+          automaton!.seek( ( event.clientX - x ) / width * length );
+          if ( isPlaying ) { automaton!.play(); }
           dispatch( { type: 'Header/SeekUp' } );
         }
       );
@@ -82,7 +87,7 @@ export const HeaderSeekbar = ( { className }: HeaderSeekbarProps ): JSX.Element 
     dispatch( { type: 'Header/SeekbarLeave' } );
   }
 
-  const progress = state.automaton.time / state.automaton.length;
+  const progress = time / length;
 
   return (
     <Root
@@ -91,13 +96,13 @@ export const HeaderSeekbar = ( { className }: HeaderSeekbarProps ): JSX.Element 
       onMouseEnter={ handleMouseEnter }
       onMouseLeave={ handleMouseLeave }
     >
-      <CurrentTime>{ state.automaton.time.toFixed( 3 ) }</CurrentTime>
-      <TotalTime> / { state.automaton.length.toFixed( 3 ) }</TotalTime>
+      <CurrentTime>{ time.toFixed( 3 ) }</CurrentTime>
+      <TotalTime> / { length.toFixed( 3 ) }</TotalTime>
       <BarBG />
       <BarFG
         style={ { width: progress * 100.0 + '%' } }
-        isSeeking={ state.header.isSeeking }
-        isHovering={ state.header.isSeekbarHovered }
+        isSeeking={ isSeeking }
+        isHovering={ isSeekbarHovered }
       />
     </Root>
   );

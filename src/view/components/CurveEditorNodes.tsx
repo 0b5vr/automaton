@@ -1,8 +1,9 @@
-import React, { useCallback, useContext } from 'react';
+import React, { useCallback } from 'react';
 import { dt2dx, dv2dy, dx2dt, dy2dv, snapTime, snapValue, t2x, v2y, x2t, y2v } from '../utils/CurveEditorUtils';
+import { useDispatch, useSelector } from 'react-redux';
 import { BezierNode } from '@fms-cat/automaton';
 import { Colors } from '../constants/Colors';
-import { Contexts } from '../contexts/Context';
+import { State } from '../states/store';
 import { WithID } from '../../types/WithID';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
 import styled from 'styled-components';
@@ -38,13 +39,18 @@ export interface CurveEditorNodesProps {
 }
 
 export const CurveEditorNodes = ( props: CurveEditorNodesProps ): JSX.Element => {
-  const { state, dispatch } = useContext( Contexts.Store );
+  const dispatch = useDispatch();
   const checkDoubleClick = useDoubleClick();
-  const { range, size, selectedParam } = state.curveEditor;
-  const { guiSettings } = state.automaton;
-  const automaton = state.automaton.instance;
+  const selectedParam = useSelector( ( state: State ) => state.curveEditor.selectedParam );
+  const range = useSelector( ( state: State ) => state.curveEditor.range );
+  const size = useSelector( ( state: State ) => state.curveEditor.size );
+  const guiSettings = useSelector( ( state: State ) => state.automaton.guiSettings );
+  const automaton = useSelector( ( state: State ) => state.automaton.instance );
   const param = selectedParam && automaton?.getParam( selectedParam ) || null;
-  const nodes = selectedParam && state.automaton.params[ selectedParam ].nodes || null;
+  const stateNodes = useSelector(
+    ( state: State ) => selectedParam && state.automaton.params[ selectedParam ].nodes || null
+  );
+  const selectedNodes = useSelector( ( state: State ) => state.curveEditor.selectedItems.nodes );
 
   const grabNode = useCallback(
     ( node: BezierNode & WithID ): void => {
@@ -291,7 +297,7 @@ export const CurveEditorNodes = ( props: CurveEditorNodesProps ): JSX.Element =>
   return (
     <Root className={ props.className }>
       {
-        nodes && Object.values( nodes ).map( ( node ) => (
+        stateNodes && Object.values( stateNodes ).map( ( node ) => (
           <g key={ node.$id }
             transform={ `translate(${
               t2x( node.time, range, size.width )
@@ -333,7 +339,7 @@ export const CurveEditorNodes = ( props: CurveEditorNodesProps ): JSX.Element =>
               as="circle"
               r="5"
               isSelected={
-                state.curveEditor.selectedItems.nodes.indexOf( node.$id ) !== -1
+                selectedNodes.indexOf( node.$id ) !== -1
               }
               onMouseDown={ ( event ) => handleNodeClick( event, node ) }
             />

@@ -1,8 +1,9 @@
-import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Colors } from '../constants/Colors';
-import { Contexts } from '../contexts/Context';
 import { FxSpawnerEntry } from './FxSpawnerEntry';
 import { Scrollable } from './Scrollable';
+import { State } from '../states/store';
 import { combineArraysUnique } from '../utils/combineArraysUnique';
 import styled from 'styled-components';
 
@@ -54,25 +55,29 @@ export interface FxSpawnerProps {
 }
 
 export const FxSpawner = ( { className }: FxSpawnerProps ): JSX.Element => {
-  const { state, dispatch } = useContext( Contexts.Store );
+  const dispatch = useDispatch();
   const [ query, setQuery ] = useState<string>( '' );
   const [ focus, setFocus ] = useState<number>( 0 );
   const refInput = useRef<HTMLInputElement>( null );
+  const isVisible = useSelector( ( state: State ) => state.fxSpawner.isVisible );
+  const recently = useSelector( ( state: State ) => state.fxSpawner.recently );
+  const callback = useSelector( ( state: State ) => state.fxSpawner.callback );
 
   useEffect( () => { // focus the input when it gets activated
-    if ( state.fxSpawner.isVisible ) {
+    if ( isVisible ) {
       refInput.current?.focus();
     }
-  }, [ state.fxSpawner.isVisible ] );
+  }, [ isVisible ] );
 
-  const automaton = state.automaton.instance;
+  const automaton = useSelector( ( state: State ) => state.automaton.instance );
+  const fxDefinitions = useSelector( ( state: State ) => state.automaton.fxDefinitions );
 
   const fxs = useMemo( () => (
     combineArraysUnique(
-      state.fxSpawner.recently,
-      Object.keys( state.automaton.fxDefinitions )
+      recently,
+      Object.keys( fxDefinitions )
     )
-  ), [ state.automaton.fxDefinitions, state.fxSpawner.recently ] );
+  ), [ fxDefinitions, recently ] );
 
   const filteredFxs = useMemo( () => {
     const queries = query.split( /\s+/ );
@@ -84,7 +89,7 @@ export const FxSpawner = ( { className }: FxSpawnerProps ): JSX.Element => {
   }, [ fxs, query ] );
 
   function selectFx( name: string ): void {
-    state.fxSpawner.callback!( name );
+    callback!( name );
     dispatch( {
       type: 'FxSpawner/AddRecently',
       name

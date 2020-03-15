@@ -1,8 +1,9 @@
-import React, { useContext, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { t2x, v2y } from '../utils/CurveEditorUtils';
 import { Colors } from '../constants/Colors';
-import { Contexts } from '../contexts/Context';
+import { State } from '../states/store';
 import styled from 'styled-components';
+import { useSelector } from 'react-redux';
 
 // == styles =======================================================================================
 const GridLine = styled.line`
@@ -30,8 +31,8 @@ interface GridLineEntry {
 }
 
 export const CurveEditorGrid = ( { className }: CurveEditorGridProps ): JSX.Element => {
-  const { state } = useContext( Contexts.Store );
-  const { range, size } = state.curveEditor;
+  const range = useSelector( ( state: State ) => state.curveEditor.range );
+  const size = useSelector( ( state: State ) => state.curveEditor.size );
 
   const hlines: GridLineEntry[] = useMemo(
     (): GridLineEntry[] => {

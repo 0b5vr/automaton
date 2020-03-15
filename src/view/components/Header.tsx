@@ -1,9 +1,10 @@
-import React, { useCallback, useContext, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Colors } from '../constants/Colors';
-import { Contexts } from '../contexts/Context';
 import { HeaderSeekbar } from './HeaderSeekbar';
 import { Icons } from '../icons/Icons';
 import { Metrics } from '../constants/Metrics';
+import { State } from '../states/store';
 import styled from 'styled-components';
 import { writeClipboard } from '../utils/clipboard';
 
@@ -61,10 +62,14 @@ export interface HeaderProps {
 }
 
 export const Header = ( { className }: HeaderProps ): JSX.Element => {
-  const { state, dispatch } = useContext( Contexts.Store );
+  const dispatch = useDispatch();
   const [ cantUndoThis, setCantUndoThis ] = useState( 0 );
   const [ isSavedRecently, setIsSavedRecently ] = useState( false );
-  const automaton = state.automaton.instance;
+  const automaton = useSelector( ( state: State ) => state.automaton.instance );
+  const isPlaying = useSelector( ( state: State ) => state.automaton.isPlaying );
+  const settingsMode = useSelector( ( state: State ) => state.settings.mode );
+  const historyIndex = useSelector( ( state: State ) => state.history.index );
+  const historyEntries = useSelector( ( state: State ) => state.history.entries );
 
   const handlePlay = useCallback(
     (): void => {
@@ -76,8 +81,8 @@ export const Header = ( { className }: HeaderProps ): JSX.Element => {
 
   const handleUndo = useCallback(
     (): void => {
-      if ( state.history.index !== 0 ) {
-        state.history.entries[ state.history.index - 1 ].undo();
+      if ( historyIndex !== 0 ) {
+        historyEntries[ historyIndex - 1 ].undo();
         dispatch( { type: 'History/Undo' } );
       } else {
         if ( cantUndoThis === 9 ) {
@@ -88,43 +93,43 @@ export const Header = ( { className }: HeaderProps ): JSX.Element => {
         }
       }
     },
-    [ state.history, cantUndoThis ]
+    [ historyIndex, historyEntries, cantUndoThis ]
   );
 
   const handleRedo = useCallback(
     (): void => {
-      if ( state.history.index !== state.history.entries.length ) {
-        state.history.entries[ state.history.index ].redo();
+      if ( historyIndex !== historyEntries.length ) {
+        historyEntries[ historyIndex ].redo();
         dispatch( { type: 'History/Redo' } );
       }
       setCantUndoThis( 0 );
     },
-    [ state.history ]
+    [ historyIndex, historyEntries ]
   );
 
   const undoText = useMemo(
     () => (
-      state.history.index !== 0
-        ? 'Undo: ' + state.history.entries[ state.history.index - 1 ].description
+      historyIndex !== 0
+        ? 'Undo: ' + historyEntries[ historyIndex - 1 ].description
         : 'Can\'t Undo'
     ),
-    [ state.history ]
+    [ historyIndex, historyEntries ]
   );
 
   const redoText = useMemo(
     () => (
-      state.history.index !== state.history.entries.length
-        ? 'Redo: ' + state.history.entries[ state.history.index ].description
+      historyIndex !== historyEntries.length
+        ? 'Redo: ' + historyEntries[ historyIndex ].description
         : 'Can\'t Redo'
     ),
-    [ state.history ]
+    [ historyIndex, historyEntries ]
   );
 
   return (
     <Root className={ className }>
       <Section>
         <Button
-          as={ state.automaton.isPlaying ? Icons.Pause : Icons.Play }
+          as={ isPlaying ? Icons.Pause : Icons.Play }
           active={ 1 as any as boolean } // fuck
           onClick={ handlePlay }
           data-stalker="Play / Pause"
@@ -138,13 +143,13 @@ export const Header = ( { className }: HeaderProps ): JSX.Element => {
         <Button
           as={ Icons.Undo }
           onClick={ handleUndo }
-          disabled={ state.history.index === 0 }
+          disabled={ historyIndex === 0 }
           data-stalker={ undoText }
         />
         <Button
           as={ Icons.Redo }
           onClick={ handleRedo }
-          disabled={ state.history.index === state.history.entries.length }
+          disabled={ historyIndex === historyEntries.length }
           data-stalker={ redoText }
         />
         <Button
@@ -152,10 +157,10 @@ export const Header = ( { className }: HeaderProps ): JSX.Element => {
           onClick={ () => {
             dispatch( {
               type: 'Settings/ChangeMode',
-              mode: state.settings.mode === 'snapping' ? 'none' : 'snapping'
+              mode: settingsMode === 'snapping' ? 'none' : 'snapping'
             } );
           } }
-          active={ ( state.settings.mode === 'snapping' ? 1 : 0 ) as any as boolean } // fuck
+          active={ ( settingsMode === 'snapping' ? 1 : 0 ) as any as boolean } // fuck
           data-stalker="Snapping"
         />
         <Button
@@ -163,10 +168,10 @@ export const Header = ( { className }: HeaderProps ): JSX.Element => {
           onClick={ () => {
             dispatch( {
               type: 'Settings/ChangeMode',
-              mode: state.settings.mode === 'general' ? 'none' : 'general'
+              mode: settingsMode === 'general' ? 'none' : 'general'
             } );
           } }
-          active={ ( state.settings.mode === 'general' ? 1 : 0 ) as any as boolean } // fuck
+          active={ ( settingsMode === 'general' ? 1 : 0 ) as any as boolean } // fuck
           data-stalker="General Settings"
         />
         <Button as={ Icons.Save }

@@ -1,7 +1,7 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Colors } from '../constants/Colors';
-import { Contexts } from '../contexts/Context';
 import styled from 'styled-components';
+import { useDispatch } from 'react-redux';
 import { useDoubleClick } from '../utils/useDoubleClick';
 
 // == styles =======================================================================================
@@ -70,7 +70,7 @@ export interface BoolParamProps {
 }
 
 export const BoolParam = ( props: BoolParamProps ): JSX.Element => {
-  const { dispatch } = useContext( Contexts.Store );
+  const dispatch = useDispatch();
   const { className, value, historyDescription, onChange } = props;
   const [ isInput, setIsInput ] = useState<boolean>( false );
   const refInput = useRef<HTMLInputElement>( null );

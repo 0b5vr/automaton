@@ -1,9 +1,10 @@
-import React, { useContext, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Colors } from '../constants/Colors';
-import { Contexts } from '../contexts/Context';
 import { ParamListEntry } from './ParamListEntry';
 import { Scrollable } from './Scrollable';
+import { State } from '../states/store';
 import styled from 'styled-components';
+import { useSelector } from 'react-redux';
 
 // == styles =======================================================================================
 const StyledParamListEntry = styled( ParamListEntry )`
@@ -22,12 +23,12 @@ export interface ParamListProps {
 }
 
 export const ParamList = ( { className }: ParamListProps ): JSX.Element => {
-  const { state } = useContext( Contexts.Store );
-  const automaton = state.automaton.instance;
+  const automaton = useSelector( ( state: State ) => state.automaton.instance );
+  const params = useSelector( ( state: State ) => state.automaton.params );
 
   const arrayOfParams = useMemo(
-    () => Object.keys( state.automaton.params ),
-    [ state.automaton.params ]
+    () => Object.keys( params ),
+    [ params ]
   );
 
   return (

@@ -1,8 +1,8 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { AutomatonWithGUI } from '../../AutomatonWithGUI';
-import { Contexts } from '../contexts/Context';
 import { ParamWithGUI } from '../../ParamWithGUI';
 import styled from 'styled-components';
+import { useDispatch } from 'react-redux';
 
 // == styles =======================================================================================
 const Root = styled.div`
@@ -15,7 +15,7 @@ export interface AutomatonStateListenerProps {
 }
 
 export const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Element => {
-  const { dispatch } = useContext( Contexts.Store );
+  const dispatch = useDispatch();
   const automaton = props.automaton;
 
   function createParam( name: string, param: ParamWithGUI ): void {

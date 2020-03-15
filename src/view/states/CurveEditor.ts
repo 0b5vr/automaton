@@ -1,5 +1,6 @@
 import { CurveEditorRange, CurveEditorSize, x2t, y2v } from '../utils/CurveEditorUtils';
-import { Action as ContextAction } from './Context';
+import { Action as ContextAction } from './store';
+import { Reducer } from 'redux';
 import { produce } from 'immer';
 
 // == state ========================================================================================
@@ -65,10 +66,7 @@ export type Action = {
 };
 
 // == reducer ======================================================================================
-export function reducer(
-  state: State,
-  action: ContextAction
-): State {
+export const reducer: Reducer<State, ContextAction> = ( state = initialState, action ) => {
   return produce( state, ( newState: State ) => {
     if ( action.type === 'CurveEditor/SelectParam' ) {
       newState.selectedParam = action.param;
@@ -173,4 +171,4 @@ export function reducer(
       }
     }
   } );
-}
+};

@@ -1,8 +1,9 @@
-import React, { useContext } from 'react';
 import { t2x, v2y } from '../utils/CurveEditorUtils';
 import { Colors } from '../constants/Colors';
-import { Contexts } from '../contexts/Context';
+import React from 'react';
+import { State } from '../states/store';
 import styled from 'styled-components';
+import { useSelector } from 'react-redux';
 
 // == styles =======================================================================================
 const Line = styled.line`
@@ -28,12 +29,13 @@ export interface CurveEditorLineProps {
 }
 
 export const CurveEditorLine = ( { className }: CurveEditorLineProps ): JSX.Element => {
-  const { state } = useContext( Contexts.Store );
-  const { range, size, selectedParam } = state.curveEditor;
-  const automaton = state.automaton.instance;
+  const selectedParam = useSelector( ( state: State ) => state.curveEditor.selectedParam );
+  const range = useSelector( ( state: State ) => state.curveEditor.range );
+  const size = useSelector( ( state: State ) => state.curveEditor.size );
+  const automaton = useSelector( ( state: State ) => state.automaton.instance );
   const param = selectedParam && automaton?.getParam( selectedParam ) || null;
 
-  const t = state.automaton.time;
+  const t = useSelector( ( state: State ) => state.automaton.time );
   const v = param?.value || 0.0;
   const x = t2x( t, range, size.width );
   const y = v2y( v, range, size.height );

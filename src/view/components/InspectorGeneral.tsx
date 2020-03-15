@@ -1,10 +1,11 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Colors } from '../constants/Colors';
-import { Contexts } from '../contexts/Context';
 import { InspectorHeader } from './InspectorHeader';
 import { InspectorHr } from './InspectorHr';
 import { InspectorItem } from './InspectorItem';
 import { NumberParam } from './NumberParam';
+import { State } from '../states/store';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
@@ -43,19 +44,20 @@ export interface InspectorGeneralProps {
 }
 
 export const InspectorGeneral = ( { className }: InspectorGeneralProps ): JSX.Element => {
-  const { state, dispatch } = useContext( Contexts.Store );
-  const automaton = state.automaton.instance;
+  const dispatch = useDispatch();
+  const automaton = useSelector( ( state: State ) => state.automaton.instance );
+  const settingsMode = useSelector( ( state: State ) => state.settings.mode );
   const [ length, setLength ] = useState( 0.0 );
   const [ resolution, setResolution ] = useState( 0.0 );
 
   useEffect(
     () => {
-      if ( state.settings.mode === 'general' ) {
+      if ( settingsMode === 'general' ) {
         setLength( automaton?.length || 1.0 );
         setResolution( automaton?.resolution || 1.0 );
       }
     },
-    [ state.settings.mode ]
+    [ automaton, settingsMode ]
   );
 
   return <>

@@ -1,31 +1,28 @@
+import { Reducer } from 'redux';
 import { produce } from 'immer';
 
 // == state ========================================================================================
+type SettingsMode = 'none' | 'snapping' | 'general';
+
 export interface State {
-  isVisible: boolean;
+  mode: SettingsMode;
 }
 
 export const initialState: Readonly<State> = {
-  isVisible: false
+  mode: 'none'
 };
 
 // == action =======================================================================================
 export type Action = {
-  type: 'About/Open';
-} | {
-  type: 'About/Close';
+  type: 'Settings/ChangeMode';
+  mode: SettingsMode;
 };
 
 // == reducer ======================================================================================
-export function reducer(
-  state: State,
-  action: Action
-): State {
+export const reducer: Reducer<State, Action> = ( state = initialState, action ) => {
   return produce( state, ( newState: State ) => {
-    if ( action.type === 'About/Open' ) {
-      newState.isVisible = true;
-    } else if ( action.type === 'About/Close' ) {
-      newState.isVisible = false;
+    if ( action.type === 'Settings/ChangeMode' ) {
+      newState.mode = action.mode;
     }
   } );
-}
+};

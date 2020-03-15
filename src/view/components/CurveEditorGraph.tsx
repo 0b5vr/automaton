@@ -1,9 +1,10 @@
 import { CurveEditorRange, CurveEditorSize, v2y, x2t } from '../utils/CurveEditorUtils';
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Colors } from '../constants/Colors';
-import { Contexts } from '../contexts/Context';
 import { ParamWithGUI } from '../../ParamWithGUI';
+import { State } from '../states/store';
 import styled from 'styled-components';
+import { useSelector } from 'react-redux';
 
 // == styles =======================================================================================
 const GraphLine = styled.polyline`
@@ -39,9 +40,10 @@ export interface CurveEditorGraphProps {
 }
 
 export const CurveEditorGraph = ( { className }: CurveEditorGraphProps ): JSX.Element => {
-  const { state } = useContext( Contexts.Store );
-  const { range, size, selectedParam } = state.curveEditor;
-  const automaton = state.automaton.instance;
+  const selectedParam = useSelector( ( state: State ) => state.curveEditor.selectedParam );
+  const range = useSelector( ( state: State ) => state.curveEditor.range );
+  const size = useSelector( ( state: State ) => state.curveEditor.size );
+  const automaton = useSelector( ( state: State ) => state.automaton.instance );
   const param = selectedParam && automaton?.getParam( selectedParam ) || null;
 
   const [ points, setPoints ] = useState( '' );

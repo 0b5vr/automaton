@@ -1,9 +1,10 @@
-import React, { useCallback, useContext } from 'react';
+import React, { useCallback } from 'react';
 import { dt2dx, dx2dt, snapTime, t2x } from '../utils/CurveEditorUtils';
+import { useDispatch, useSelector } from 'react-redux';
 import { Colors } from '../constants/Colors';
-import { Contexts } from '../contexts/Context';
 import { FxSection } from '@fms-cat/automaton';
 import { PARAM_FX_ROW_MAX } from '../../ParamWithGUI';
+import { State } from '../states/store';
 import { WithID } from '../../types/WithID';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
 import styled from 'styled-components';
@@ -75,14 +76,16 @@ export interface CurveEditorFxsProps {
 }
 
 export const CurveEditorFxs = ( props: CurveEditorFxsProps ): JSX.Element => {
-  const { state, dispatch } = useContext( Contexts.Store );
+  const dispatch = useDispatch();
   const checkDoubleClick = useDoubleClick();
-  const { range, size, selectedParam } = state.curveEditor;
-  const { guiSettings } = state.automaton;
-  const automaton = state.automaton.instance;
+  const selectedParam = useSelector( ( state: State ) => state.curveEditor.selectedParam );
+  const range = useSelector( ( state: State ) => state.curveEditor.range );
+  const size = useSelector( ( state: State ) => state.curveEditor.size );
+  const guiSettings = useSelector( ( state: State ) => state.automaton.guiSettings );
+  const automaton = useSelector( ( state: State ) => state.automaton.instance );
   const param = selectedParam && automaton?.getParam( selectedParam ) || null;
-
-  const fxs = selectedParam && state.automaton.params[ selectedParam ].fxs || null;
+  const fxs = param?.fxs || null;
+  const selectedFxs = useSelector( ( state: State ) => state.curveEditor.selectedItems.fxs );
 
   const grabFxBody = useCallback(
     ( fx: FxSection & WithID ): void => {
@@ -331,7 +334,7 @@ export const CurveEditorFxs = ( props: CurveEditorFxsProps ): JSX.Element => {
                     width={ w }
                     height={ FX_HEIGHT }
                     isSelected={
-                      state.curveEditor.selectedItems.fxs.indexOf( fx.$id ) !== -1
+                      selectedFxs.indexOf( fx.$id ) !== -1
                     }
                     isBypassed={ fx.bypass }
                     onMouseDown={ ( event ) => handleFxBodyClick( event, fx ) }
@@ -358,7 +361,7 @@ export const CurveEditorFxs = ( props: CurveEditorFxsProps ): JSX.Element => {
                         x="0.125rem"
                         y="0.75rem"
                         isSelected={
-                          state.curveEditor.selectedItems.fxs.indexOf( fx.$id ) !== -1
+                          selectedFxs.indexOf( fx.$id ) !== -1
                         }
                         isBypassed={ fx.bypass }
                       >

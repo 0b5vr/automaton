@@ -1,14 +1,15 @@
-import React, { useContext } from 'react';
 import { Colors } from '../constants/Colors';
-import { Contexts } from '../contexts/Context';
 import { Icons } from '../icons/Icons';
 import { InspectorFx } from './InspectorFx';
 import { InspectorGeneral } from './InspectorGeneral';
 import { InspectorNode } from './InspectorNode';
 import { InspectorSnapping } from './InspectorSnapping';
 import { Metrics } from '../constants/Metrics';
+import React from 'react';
 import { Scrollable } from './Scrollable';
+import { State } from '../states/store';
 import styled from 'styled-components';
+import { useSelector } from 'react-redux';
 
 // == styles =======================================================================================
 const Logo = styled.img`
@@ -40,19 +41,23 @@ export interface InspectorProps {
 }
 
 export const Inspector = ( { className }: InspectorProps ): JSX.Element => {
-  const { state } = useContext( Contexts.Store );
-  const { selectedParam } = state.curveEditor;
+  const selectedParam = useSelector( ( state: State ) => state.curveEditor.selectedParam );
+  const stateSelectedNodes
+    = useSelector( ( state: State ) => state.curveEditor.selectedItems.nodes );
+  const stateSelectedFxs = useSelector( ( state: State ) => state.curveEditor.selectedItems.fxs );
+  const stateParam = useSelector( ( state: State ) => state.automaton.params[ selectedParam! ] );
+  const settingsMode = useSelector( ( state: State ) => state.settings.mode );
 
-  const selectedNodes = state.curveEditor.selectedItems.nodes.map( ( id ) => {
-    return state.automaton.params[ selectedParam! ].nodes[ id ];
+  const selectedNodes = stateSelectedNodes.map( ( id ) => {
+    return stateParam.nodes[ id ];
   } );
-  const selectedFxs = state.curveEditor.selectedItems.fxs.map( ( id ) => {
-    return state.automaton.params[ selectedParam! ].fxs[ id ];
+  const selectedFxs = stateSelectedFxs.map( ( id ) => {
+    return stateParam.fxs[ id ];
   } );
   const isSelectingANode = selectedNodes.length === 1 && selectedFxs.length === 0;
   const isSelectingAFx = selectedNodes.length === 0 && selectedFxs.length === 1;
   const isSelectingNothing = (
-    state.settings.mode === 'none' &&
+    settingsMode === 'none' &&
     ( selectedNodes.length === 0 ) &&
     ( selectedFxs.length === 0 )
   );
@@ -60,9 +65,9 @@ export const Inspector = ( { className }: InspectorProps ): JSX.Element => {
   return <Root className={ className }>
     <StyledScrollable>
       <Container>
-        { state.settings.mode === 'snapping' && <InspectorSnapping /> }
-        { state.settings.mode === 'general' && <InspectorGeneral /> }
-        { state.settings.mode === 'none' && <>
+        { settingsMode === 'snapping' && <InspectorSnapping /> }
+        { settingsMode === 'general' && <InspectorGeneral /> }
+        { settingsMode === 'none' && <>
           { isSelectingANode && <InspectorNode
             node={ selectedNodes[ 0 ] }
           /> }

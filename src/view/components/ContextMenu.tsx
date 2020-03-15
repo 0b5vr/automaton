@@ -1,7 +1,8 @@
-import React, { useContext, useRef } from 'react';
+import React, { useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Colors } from '../constants/Colors';
 import { ContextMenuEntry } from './ContextMenuEntry';
-import { Contexts } from '../contexts/Context';
+import { State } from '../states/store';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
@@ -33,12 +34,15 @@ export interface ContextMenuProps {
 }
 
 export const ContextMenu = ( { className }: ContextMenuProps ): JSX.Element => {
-  const { state, dispatch } = useContext( Contexts.Store );
+  const dispatch = useDispatch();
   const refRoot = useRef<HTMLDivElement>( null );
 
   const rect = refRoot.current?.getBoundingClientRect();
-  const x = state.contextMenu.position.x - ( rect?.left || 0.0 );
-  const y = state.contextMenu.position.y - ( rect?.top || 0.0 );
+  const position = useSelector( ( state: State ) => state.contextMenu.position );
+  const x = position.x - ( rect?.left || 0.0 );
+  const y = position.y - ( rect?.top || 0.0 );
+
+  const commands = useSelector( ( state: State ) => state.contextMenu.commands );
 
   return <Root
     ref={ refRoot }
@@ -53,7 +57,7 @@ export const ContextMenu = ( { className }: ContextMenuProps ): JSX.Element => {
         top: `${ y }px`
       } }
     >
-      { state.contextMenu.commands.map( ( command ) => (
+      { commands.map( ( command ) => (
         <ContextMenuEntry
           key={ command.name }
           name={ command.name }

@@ -1,3 +1,4 @@
+import { Reducer } from 'redux';
 import { combineArraysUnique } from '../utils/combineArraysUnique';
 import { produce } from 'immer';
 
@@ -26,10 +27,7 @@ export type Action = {
 };
 
 // == reducer ======================================================================================
-export function reducer(
-  state: State,
-  action: Action
-): State {
+export const reducer: Reducer<State, Action> = ( state = initialState, action ) => {
   return produce( state, ( newState: State ) => {
     if ( action.type === 'FxSpawner/Open' ) {
       newState.isVisible = true;
@@ -41,4 +39,4 @@ export function reducer(
       newState.recently = combineArraysUnique( [ action.name ], state.recently );
     }
   } );
-}
+};
