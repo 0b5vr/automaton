@@ -121,6 +121,7 @@ export class AutomatonWithGUI extends Automaton
    */
   public play(): void {
     this.__emit( 'play' );
+    this.__isPlaying = true;
   }
 
   /**
@@ -130,6 +131,7 @@ export class AutomatonWithGUI extends Automaton
    */
   public pause(): void {
     this.__emit( 'pause' );
+    this.__isPlaying = false;
   }
 
   /**
