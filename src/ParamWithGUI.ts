@@ -272,6 +272,13 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
   public removeNode( id: string ): void {
     const index = this.__getNodeIndexById( id );
 
+    // we can't delete the first / last node
+    if ( index === 0 ) {
+      return;
+    } else if ( index === this.__nodes.length - 1 ) {
+      return;
+    }
+
     this.__nodes.splice( index, 1 );
 
     this.precalc();
