@@ -154,6 +154,7 @@ export const Header = ( { className }: HeaderProps ): JSX.Element => {
             } );
           } }
           active={ ( state.settings.mode === 'snapping' ? 1 : 0 ) as any as boolean } // fuck
+          data-stalker="Snapping"
         />
         <Button
           as={ Icons.Cog }
@@ -164,11 +165,13 @@ export const Header = ( { className }: HeaderProps ): JSX.Element => {
             } );
           } }
           active={ ( state.settings.mode === 'general' ? 1 : 0 ) as any as boolean } // fuck
+          data-stalker="General Settings"
         />
         <Button as={ Icons.Save }
           onClick={ () => {
             throw new Error( 'Not implemented' );
           } }
+          data-stalker="Copy current status as JSON"
         />
       </Section>
     </Root>
