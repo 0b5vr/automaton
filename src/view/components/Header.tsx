@@ -5,6 +5,7 @@ import { HeaderSeekbar } from './HeaderSeekbar';
 import { Icons } from '../icons/Icons';
 import { Metrics } from '../constants/Metrics';
 import styled from 'styled-components';
+import { writeClipboard } from '../utils/clipboard';
 
 // == styles =======================================================================================
 const StyledHeaderSeekbar = styled( HeaderSeekbar )`
@@ -62,6 +63,7 @@ export interface HeaderProps {
 export const Header = ( { className }: HeaderProps ): JSX.Element => {
   const { state, dispatch } = useContext( Contexts.Store );
   const [ cantUndoThis, setCantUndoThis ] = useState( 0 );
+  const [ isSavedRecently, setIsSavedRecently ] = useState( false );
   const automaton = state.automaton.instance;
 
   const handlePlay = useCallback(
@@ -169,9 +171,14 @@ export const Header = ( { className }: HeaderProps ): JSX.Element => {
         />
         <Button as={ Icons.Save }
           onClick={ () => {
-            throw new Error( 'Not implemented' );
+            const data = automaton!.serialize();
+            writeClipboard( JSON.stringify( data ) );
+            setIsSavedRecently( true );
+            setTimeout( () => {
+              setIsSavedRecently( false );
+            }, 3000 );
           } }
-          data-stalker="Copy current status as JSON"
+          data-stalker={ isSavedRecently ? 'Copied!' : 'Copy current status as JSON' }
         />
       </Section>
     </Root>
