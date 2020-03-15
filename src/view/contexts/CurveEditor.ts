@@ -1,4 +1,5 @@
 import { CurveEditorRange, CurveEditorSize, x2t, y2v } from '../utils/CurveEditorUtils';
+import { Action as ContextAction } from './Context';
 import { produce } from 'immer';
 
 // == state ========================================================================================
@@ -66,7 +67,7 @@ export type Action = {
 // == reducer ======================================================================================
 export function reducer(
   state: State,
-  action: Action
+  action: ContextAction
 ): State {
   return produce( state, ( newState: State ) => {
     if ( action.type === 'CurveEditor/SelectParam' ) {
@@ -151,6 +152,25 @@ export function reducer(
       }
     } else if ( action.type === 'CurveEditor/SetSize' ) {
       newState.size = action.size;
+    } else if ( action.type === 'Automaton/UpdateLength' ) { // WHOA, REALLY
+      if ( action.length < state.range.t0 ) {
+        // if t0 is larger than the new length, reset the range
+        newState.range = {
+          t0: 0.0,
+          t1: action.length,
+          v0: state.range.v0,
+          v1: state.range.v1,
+        };
+
+      } else if ( action.length < state.range.t1 ) {
+        // if t1 is larger than the new length, clamp the t1 to the new length
+        newState.range = {
+          t0: state.range.t0,
+          t1: action.length,
+          v0: state.range.v0,
+          v1: state.range.v1,
+        };
+      }
     }
   } );
 }

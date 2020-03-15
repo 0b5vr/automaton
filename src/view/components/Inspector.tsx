@@ -3,6 +3,7 @@ import { Colors } from '../constants/Colors';
 import { Contexts } from '../contexts/Context';
 import { Icons } from '../icons/Icons';
 import { InspectorFx } from './InspectorFx';
+import { InspectorGeneral } from './InspectorGeneral';
 import { InspectorNode } from './InspectorNode';
 import { InspectorSnapping } from './InspectorSnapping';
 import { Metrics } from '../constants/Metrics';
@@ -60,6 +61,7 @@ export const Inspector = ( { className }: InspectorProps ): JSX.Element => {
     <StyledScrollable>
       <Container>
         { state.settings.mode === 'snapping' && <InspectorSnapping /> }
+        { state.settings.mode === 'general' && <InspectorGeneral /> }
         { state.settings.mode === 'none' && <>
           { isSelectingANode && <InspectorNode
             node={ selectedNodes[ 0 ] }

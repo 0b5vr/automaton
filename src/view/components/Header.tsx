@@ -155,8 +155,21 @@ export const Header = ( { className }: HeaderProps ): JSX.Element => {
           } }
           active={ ( state.settings.mode === 'snapping' ? 1 : 0 ) as any as boolean } // fuck
         />
-        <Button as={ Icons.Cog } />
-        <Button as={ Icons.Save } />
+        <Button
+          as={ Icons.Cog }
+          onClick={ () => {
+            dispatch( {
+              type: 'Settings/ChangeMode',
+              mode: state.settings.mode === 'general' ? 'none' : 'general'
+            } );
+          } }
+          active={ ( state.settings.mode === 'general' ? 1 : 0 ) as any as boolean } // fuck
+        />
+        <Button as={ Icons.Save }
+          onClick={ () => {
+            throw new Error( 'Not implemented' );
+          } }
+        />
       </Section>
     </Root>
   );

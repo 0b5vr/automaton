@@ -45,7 +45,7 @@ const initialState: Readonly<ContextsState> = {
 };
 
 // == action =======================================================================================
-type Action = (
+export type Action = (
   About.Action |
   Automaton.Action |
   ContextMenu.Action |

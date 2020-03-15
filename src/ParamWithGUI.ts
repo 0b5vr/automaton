@@ -272,7 +272,6 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
   public isFirstOrLastNode( id: string ): boolean {
     const index = this.__getNodeIndexById( id );
 
-    // we can't delete the first / last node
     if ( index === 0 ) {
       return true;
     } else if ( index === this.__nodes.length - 1 ) {
@@ -694,35 +693,56 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
    * @param length Desired length
    */
   public changeLength( length: number ): void {
+    // iterating nodes from the tail
     for ( let i = this.__nodes.length - 1; 0 <= i; i -- ) {
       const node = this.__nodes[ i ];
-      if ( length < node.time ) {
-        this.__nodes.splice( i, 1 );
-      } else if ( node.time === length ) {
-        delete node.out;
-        break;
-      } else {
-        const lastNode = this.__nodes[ this.__nodes.length - 1 ];
-        if ( lastNode ) {
-          lastNode.out = { time: PARAM_DEFAULT_HANDLE_LENGTH, value: 0.0 };
-        }
 
-        this.__nodes.push( {
+      if ( length < node.time ) {
+        // if the node time is larger than the new length, remove it
+        this.__nodes.splice( i, 1 );
+        this.__emit( 'removeNode', { id: node.$id } );
+
+      } else if ( node.time === length ) {
+        // if the node time is same as the new length, remove the out handle
+        delete node.out;
+        this.__emit( 'updateNode', { id: node.$id, node } );
+        break;
+
+      } else {
+        // add a out handle to the previous last node
+        if ( node ) {
+          node.out = { time: PARAM_DEFAULT_HANDLE_LENGTH, value: 0.0 };
+        }
+        this.__emit( 'updateNode', { id: node.$id, node } );
+
+        // if the node time is smaller than the new length, make a new last node then break
+        const newNode = {
           time: length,
           value: 0.0,
           in: { time: -PARAM_DEFAULT_HANDLE_LENGTH, value: 0.0 },
           $id: genID()
-        } );
+        };
+        this.__nodes.push( newNode );
+        this.__emit( 'createNode', { id: newNode.$id, node: newNode } );
         break;
+
       }
     }
 
+    // iterating fxs from the tail
     for ( let i = this.__fxs.length - 1; 0 <= i; i -- ) {
       const fx = this.__fxs[ i ];
+
       if ( length < fx.time ) {
+        // if the beginning time of the fx is larger than the new length, remove it
         this.__fxs.splice( i, 1 );
-      } else if ( length < fx.time + fx.length ) {
+        this.__emit( 'removeFx', { id: fx.$id } );
+
+      } else if ( length < ( fx.time + fx.length ) ) {
+        // if the ending time of the fx is larger than the new length, shorten it
         fx.length = length - fx.time;
+        this.__emit( 'updateFx', { id: fx.$id, fx } );
+
       }
     }
 
