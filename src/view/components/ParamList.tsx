@@ -36,7 +36,7 @@ export const ParamList = ( { className }: ParamListProps ): JSX.Element => {
         <StyledParamListEntry
           key={ param }
           name={ param }
-          value={ automaton!.getParam( param )!.getValue() }
+          value={ automaton!.getParam( param )!.value }
           status={ automaton!.getParam( param )!.status }
         />
       ) ) }

@@ -1,13 +1,12 @@
-import { WithGUISettings, defaultDataWithGUISettings } from '../types/GUISettings';
-import { SerializedData } from '@fms-cat/automaton';
+import { SerializedDataWithGUI, defaultDataWithGUI } from '../types/SerializedDataWithGUI';
 import { compat1 } from './compat1';
 import { compat2 } from './compat2';
 import { compatPreVersions } from './compatPreVersions';
 import { jsonCopy } from '../utils/jsonCopy';
 
-export function compat( data?: any ): SerializedData & WithGUISettings {
+export function compat( data?: any ): SerializedDataWithGUI {
   if ( !data ) {
-    return Object.assign( {}, jsonCopy( defaultDataWithGUISettings ) );
+    return Object.assign( {}, jsonCopy( defaultDataWithGUI ) );
   }
 
   let newData;
@@ -15,7 +14,7 @@ export function compat( data?: any ): SerializedData & WithGUISettings {
     newData = jsonCopy( data );
   } else {
     console.error( 'Loaded data is invalid' );
-    return Object.assign( {}, defaultDataWithGUISettings );
+    return Object.assign( {}, defaultDataWithGUI );
   }
 
   let version = parseFloat( newData.version ) || parseFloat( newData.v );
@@ -23,7 +22,7 @@ export function compat( data?: any ): SerializedData & WithGUISettings {
   if ( !version && !newData.rev ) {
     newData = compatPreVersions( newData );
     if ( newData === null ) {
-      return Object.assign( {}, defaultDataWithGUISettings );
+      return Object.assign( {}, defaultDataWithGUI );
     }
   }
 

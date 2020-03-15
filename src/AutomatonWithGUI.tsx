@@ -1,5 +1,6 @@
-import { Automaton, AutomatonOptions, FxDefinition, FxParam, SerializedData, SerializedParam } from '@fms-cat/automaton';
+import { Automaton, AutomatonOptions, FxDefinition, FxParam, SerializedParam } from '@fms-cat/automaton';
 import { GUISettings, WithGUISettings, defaultGUISettings } from './types/GUISettings';
+import { SerializedDataWithGUI, defaultDataWithGUI } from './types/SerializedDataWithGUI';
 import { App } from './view/components/App';
 import { EventEmittable } from './mixins/EventEmittable';
 import { ParamWithGUI } from './ParamWithGUI';
@@ -17,9 +18,14 @@ import produce from 'immer';
  */
 export interface AutomatonWithGUIOptions extends AutomatonOptions {
   /**
-   * DOM element where you want to attach the Automaton GUI
+   * DOM element where you want to attach the Automaton GUI.
    */
-  gui: HTMLElement;
+  gui?: HTMLElement;
+
+  /**
+   * Initial state of play / pause. `false` by default.
+   */
+  isPlaying?: boolean;
 }
 
 /**
@@ -28,7 +34,12 @@ export interface AutomatonWithGUIOptions extends AutomatonOptions {
  * @param {Object} options Options for this Automaton instance
  */
 export class AutomatonWithGUI extends Automaton
-  implements Serializable<SerializedData & WithGUISettings> {
+  implements Serializable<SerializedDataWithGUI & WithGUISettings> {
+  /**
+   * GUI settings for this automaton.
+   */
+  public guiSettings: GUISettings = jsonCopy( defaultGUISettings );
+
   /**
    * Version of the automaton.
    */
@@ -40,14 +51,21 @@ export class AutomatonWithGUI extends Automaton
   protected __params!: { [ name: string ]: ParamWithGUI };
 
   /**
-   * GUI settings for this automaton.
+   * It's currently playing or not.
    */
-  public guiSettings: GUISettings = jsonCopy( defaultGUISettings );
+  protected __isPlaying: boolean;
 
   /**
    * Current position of history stack.
    */
   private __historyIndex: number = 0;
+
+  /**
+   * It's currently playing or not.
+   */
+  public get isPlaying(): boolean {
+    return this.__isPlaying;
+  }
 
   /**
    * A map of params.
@@ -63,8 +81,13 @@ export class AutomatonWithGUI extends Automaton
     return this.__fxDefinitions;
   }
 
-  public constructor( options: AutomatonWithGUIOptions ) {
-    super( options as AutomatonOptions );
+  public constructor(
+    data: SerializedDataWithGUI = defaultDataWithGUI,
+    options: AutomatonWithGUIOptions = {}
+  ) {
+    super( data, options );
+
+    this.__isPlaying = options.isPlaying || false;
 
     fxDefinitions.map( ( fxDef: [ string, FxDefinition ] /* TODO */ ) => {
       this.addFxDefinition( ...fxDef );
@@ -82,30 +105,30 @@ export class AutomatonWithGUI extends Automaton
   }
 
   /**
-   * Seek the timeline.
-   * Can be performed via GUI.
+   * Emit the `seek` event.
+   * **The function itself doesn't do the seek operation**, as Automaton doesn't have a clock.
+   * It will be performed via GUI.
    * @param time Time
    */
   public seek( time: number ): void {
-    super.seek( time );
     this.__emit( 'seek', { time } );
   }
 
   /**
-   * Play the timeline.
+   * Emit the `play` event.
+   * **The function itself doesn't do the play operation**, as Automaton doesn't have a clock.
    * Can be performed via GUI.
    */
   public play(): void {
-    super.play();
     this.__emit( 'play' );
   }
 
   /**
-   * Pause the timeline.
+   * Emit the `pause` event.
+   * **The function itself doesn't do the pause operation**, as Automaton doesn't have a clock.
    * Can be performed via GUI.
    */
   public pause(): void {
-    super.pause();
     this.__emit( 'pause' );
   }
 
@@ -123,9 +146,9 @@ export class AutomatonWithGUI extends Automaton
   /**
    * Update the entire automaton.
    * **You may want to call this in your update loop.**
-   * @param time Current time, optional
+   * @param time Current time
    */
-  public update( time?: number ): void {
+  public update( time: number ): void {
     super.update( time );
     this.__emit( 'update', { time: this.time } );
   }
@@ -322,7 +345,7 @@ export class AutomatonWithGUI extends Automaton
    * Serialize its current state.
    * @returns Serialized state
    */
-  public serialize(): SerializedData & WithGUISettings {
+  public serialize(): SerializedDataWithGUI {
     return {
       version: this.version,
       length: this.length,
@@ -378,14 +401,37 @@ export class AutomatonWithGUI extends Automaton
 
   /**
    * Assigned to `Automaton.auto` at constructor.
-   * @param name name of the param
+   * @param name The name of the param
+   * @param listener A function that will be executed when the param changes its value
    * @returns Current value of the param
    */
-  protected __auto( name: string ): number {
-    let param = this.__params[ name ];
-    if ( !param ) { param = this.createParam( name ); }
-    param.markAsUsed();
-    return param.getValue();
+  protected __auto(
+    name: string,
+    listener?: ( value: number ) => void
+  ): number;
+  protected __auto(
+    names: string[],
+    listener?: ( values: { [ name: string ]: number } ) => void
+  ): { [ name: string ]: number };
+  protected __auto( ...args: any[] ): any {
+    if ( Array.isArray( args[ 0 ] ) ) { // the first argument is string[]
+      const names = args[ 0 ] as string[];
+
+      for ( const name of names ) {
+        let param = this.__params[ name ];
+        if ( !param ) { param = this.createParam( name ); }
+        param.markAsUsed();
+      }
+
+    } else { // the first argument is string
+      const name = args[ 0 ] as string;
+
+      let param = this.__params[ name ];
+      if ( !param ) { param = this.createParam( name ); }
+      param.markAsUsed();
+    }
+
+    return super.__auto( args[ 0 ], args[ 1 ] );
   }
 }
 

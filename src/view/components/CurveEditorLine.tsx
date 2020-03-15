@@ -33,8 +33,8 @@ export const CurveEditorLine = ( { className }: CurveEditorLineProps ): JSX.Elem
   const automaton = contexts.state.automaton.instance;
   const param = selectedParam && automaton?.getParam( selectedParam ) || null;
 
-  const t = contexts.state.automaton.time || 0.0;
-  const v = param?.getValue() || 0.0;
+  const t = contexts.state.automaton.time;
+  const v = param?.value || 0.0;
   const x = t2x( t, range, size.width );
   const y = v2y( v, range, size.height );
 
