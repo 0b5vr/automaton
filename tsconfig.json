@@ -10,6 +10,7 @@
     "resolveJsonModule": true,
     "removeComments": false,
     "noUnusedLocals": true,
+    "sourceMap": true,
     "jsx": "react",
     "lib": [ "dom", "es2017" ],
     "rootDir": "./src",
