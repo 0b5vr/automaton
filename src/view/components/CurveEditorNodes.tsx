@@ -107,6 +107,8 @@ export const CurveEditorNodes = ( props: CurveEditorNodesProps ): JSX.Element =>
   const removeNode = ( node: BezierNode & WithID ): void => {
     if ( !param ) { return; }
 
+    if ( param.isFirstOrLastNode( node.$id ) ) { return; }
+
     const undo = (): void => {
       param.createNodeFromData( node );
     };

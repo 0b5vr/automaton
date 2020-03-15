@@ -266,6 +266,23 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
   }
 
   /**
+   * Check whether the node is the first / last node or not.
+   * @param id Id of the node you want to check
+   */
+  public isFirstOrLastNode( id: string ): boolean {
+    const index = this.__getNodeIndexById( id );
+
+    // we can't delete the first / last node
+    if ( index === 0 ) {
+      return true;
+    } else if ( index === this.__nodes.length - 1 ) {
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
    * Remove a node.
    * @param id Id of the node you want to remove
    */
