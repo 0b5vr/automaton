@@ -20,7 +20,7 @@ export interface SerializedDataWithGUI extends SerializedData {
 export const defaultDataWithGUI: Readonly<SerializedDataWithGUI> = {
   version: process.env.VERSION!,
   length: 1.0,
-  resolution: 1000.0,
+  resolution: 100,
   params: {},
   guiSettings: defaultGUISettings
 };
