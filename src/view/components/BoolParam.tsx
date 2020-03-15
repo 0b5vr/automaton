@@ -59,6 +59,11 @@ function inputToValue( value: string ): boolean | null {
 // == element ======================================================================================
 export interface BoolParamProps {
   value: boolean;
+
+  /**
+   * A description text that will be showed at the undo / redo button.
+   * If it is not given, **changing this value doesn't do anything to the history stack**.
+   */
   historyDescription?: string;
   className?: string;
   onChange?: ( value: boolean ) => void;

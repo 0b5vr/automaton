@@ -65,6 +65,11 @@ function valueToInput( value: number, type: ValueType ): string {
 export interface NumberParamProps {
   type: ValueType;
   value: number;
+
+  /**
+   * A description text that will be showed at the undo / redo button.
+   * If it is not given, **changing this value doesn't do anything to the history stack**.
+   */
   historyDescription?: string;
   className?: string;
   onChange?: ( value: number ) => void;
