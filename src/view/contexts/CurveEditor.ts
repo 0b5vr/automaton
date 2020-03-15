@@ -81,20 +81,20 @@ export function reducer(
         fxs: action.fxs || []
       };
     } else if ( action.type === 'CurveEditor/SelectItemsAdd' ) {
-      action.nodes?.map( ( node ) => {
+      action.nodes?.forEach( ( node ) => {
         newState.selectedItems.nodes.push( node );
       } );
 
-      action.fxs?.map( ( fx ) => {
+      action.fxs?.forEach( ( fx ) => {
         newState.selectedItems.fxs.push( fx );
       } );
     } else if ( action.type === 'CurveEditor/SelectItemsSub' ) {
-      action.nodes?.map( ( node ) => {
+      action.nodes?.forEach( ( node ) => {
         const index = newState.selectedItems.nodes.indexOf( node );
         index !== -1 && newState.selectedItems.nodes.splice( index, 1 );
       } );
 
-      action.fxs?.map( ( fx ) => {
+      action.fxs?.forEach( ( fx ) => {
         const index = newState.selectedItems.fxs.indexOf( fx );
         index !== -1 && newState.selectedItems.fxs.splice( index, 1 );
       } );
@@ -107,10 +107,12 @@ export function reducer(
 
       const dv = y2v( 0.0, range, size.height ) - y2v( action.dy, range, size.height );
 
-      newState.range.t0 += dt;
-      newState.range.t1 += dt;
-      newState.range.v0 += dv;
-      newState.range.v1 += dv;
+      newState.range = {
+        t0: state.range.t0 + dt,
+        t1: state.range.t1 + dt,
+        v0: state.range.v0 + dv,
+        v1: state.range.v1 + dv,
+      };
     } else if ( action.type === 'CurveEditor/ZoomRange' ) {
       const { range, size } = state;
       const length = action.tmax;
@@ -128,10 +130,12 @@ export function reducer(
       dv *= Math.pow( ( size.width + 1.0 ) / size.width, action.dy * 2.0 );
       dv = Math.min( Math.max( dv, 0.01 ), 1000.0 );
 
-      newState.range.t0 = ct - rt * dt;
-      newState.range.t1 = ct + ( 1.0 - rt ) * dt;
-      newState.range.v0 = cv - rv * dv;
-      newState.range.v1 = cv + ( 1.0 - rv ) * dv;
+      newState.range = {
+        t0: ct - rt * dt,
+        t1: ct + ( 1.0 - rt ) * dt,
+        v0: cv - rv * dv,
+        v1: cv + ( 1.0 - rv ) * dv,
+      };
 
       if ( newState.range.t0 < 0.0 ) {
         newState.range.t1 = Math.max( newState.range.t1 - newState.range.t0, newState.range.t1 );

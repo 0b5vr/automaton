@@ -31,22 +31,22 @@ export interface CurveEditorProps {
 }
 
 export const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
-  const contexts = useContext( Contexts.Store );
+  const { state, dispatch } = useContext( Contexts.Store );
   const checkDoubleClick = useDoubleClick();
-  const { range, size, selectedParam } = contexts.state.curveEditor;
-  const automaton = contexts.state.automaton.instance;
+  const { range, size, selectedParam } = state.curveEditor;
+  const automaton = state.automaton.instance;
   const param = selectedParam && automaton?.getParam( selectedParam ) || null;
 
   const refSvgRoot = useRef<SVGSVGElement>( null );
   const refLength = useRef<number>();
-  refLength.current = contexts.state.automaton.length;
+  refLength.current = state.automaton.length;
 
   useEffect( // listen its resize
     () => {
       function heck(): void {
         if ( !refSvgRoot.current ) { return; }
 
-        contexts.dispatch( {
+        dispatch( {
           type: 'CurveEditor/SetSize',
           size: {
             width: refSvgRoot.current.clientWidth,
@@ -62,7 +62,7 @@ export const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
   );
 
   const move = ( dx: number, dy: number ): void => {
-    contexts.dispatch( {
+    dispatch( {
       type: 'CurveEditor/MoveRange',
       dx,
       dy,
@@ -71,7 +71,7 @@ export const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
   };
 
   const zoom = ( cx: number, cy: number, dx: number, dy: number ): void => {
-    contexts.dispatch( {
+    dispatch( {
       type: 'CurveEditor/ZoomRange',
       cx,
       cy,
@@ -91,7 +91,7 @@ export const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
       x2t( x, range, size.width ),
       y2v( y, range, size.height )
     );
-    contexts.dispatch( {
+    dispatch( {
       type: 'CurveEditor/SelectItems',
       nodes: [ data.$id ]
     } );
@@ -121,7 +121,7 @@ export const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
           param.createNodeFromData( data );
         };
 
-        contexts.dispatch( {
+        dispatch( {
           type: 'History/Push',
           entry: {
             description: 'Add Node',
@@ -156,7 +156,7 @@ export const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
     const x = event.nativeEvent.offsetX;
     const y = event.nativeEvent.offsetY;
 
-    contexts.dispatch( {
+    dispatch( {
       type: 'ContextMenu/Open',
       position: { x: event.clientX, y: event.clientY },
       commands: [
@@ -167,7 +167,7 @@ export const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
             const t = x2t( x, range, size.width );
             const v = y2v( y, range, size.height );
             const data = param.createNode( t, v );
-            contexts.dispatch( {
+            dispatch( {
               type: 'CurveEditor/SelectItems',
               nodes: [ data.$id ]
             } );
@@ -180,7 +180,7 @@ export const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
               param.createNodeFromData( data );
             };
 
-            contexts.dispatch( {
+            dispatch( {
               type: 'History/Push',
               entry: {
                 description: 'Add Node',
@@ -194,13 +194,13 @@ export const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
           name: 'Add Fx',
           description: 'Add a new fx section.',
           command: () => {
-            contexts.dispatch( {
+            dispatch( {
               type: 'FxSpawner/Open',
               callback: ( name ) => {
                 const t = x2t( x, range, size.width );
                 const data = param.createFx( t, 1.0, name );
                 if ( data ) {
-                  contexts.dispatch( {
+                  dispatch( {
                     type: 'CurveEditor/SelectItems',
                     fxs: [ data.$id ]
                   } );
@@ -213,7 +213,7 @@ export const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
                     param.createFxFromData( data );
                   };
 
-                  contexts.dispatch( {
+                  dispatch( {
                     type: 'History/Push',
                     entry: {
                       description: 'Add Fx',

@@ -17,8 +17,8 @@ export interface InspectorSnappingProps {
 }
 
 export const InspectorSnapping = ( { className }: InspectorSnappingProps ): JSX.Element => {
-  const contexts = useContext( Contexts.Store );
-  const automaton = contexts.state.automaton.instance;
+  const { state } = useContext( Contexts.Store );
+  const automaton = state.automaton.instance;
 
   return <>
     { automaton && (
@@ -29,7 +29,7 @@ export const InspectorSnapping = ( { className }: InspectorSnappingProps ): JSX.
 
         <InspectorItem name="Time">
           <BoolParam
-            value={ contexts.state.automaton.guiSettings.snapTimeActive }
+            value={ state.automaton.guiSettings.snapTimeActive }
             onChange={ ( value ) => {
               automaton.setGUISettings( 'snapTimeActive', value );
             } }
@@ -39,7 +39,7 @@ export const InspectorSnapping = ( { className }: InspectorSnappingProps ): JSX.
         <InspectorItem name="Time Interval">
           <NumberParam
             type="float"
-            value={ contexts.state.automaton.guiSettings.snapTimeInterval }
+            value={ state.automaton.guiSettings.snapTimeInterval }
             onChange={ ( value ) => {
               automaton.setGUISettings( 'snapTimeInterval', Math.max( 0.0, value ) );
             } }
@@ -51,7 +51,7 @@ export const InspectorSnapping = ( { className }: InspectorSnappingProps ): JSX.
 
         <InspectorItem name="Value">
           <BoolParam
-            value={ contexts.state.automaton.guiSettings.snapValueActive }
+            value={ state.automaton.guiSettings.snapValueActive }
             onChange={ ( value ) => {
               automaton.setGUISettings( 'snapValueActive', value );
             } }
@@ -61,7 +61,7 @@ export const InspectorSnapping = ( { className }: InspectorSnappingProps ): JSX.
         <InspectorItem name="Value Interval">
           <NumberParam
             type="float"
-            value={ contexts.state.automaton.guiSettings.snapValueInterval }
+            value={ state.automaton.guiSettings.snapValueInterval }
             onChange={ ( value ) => {
               automaton.setGUISettings( 'snapValueInterval', Math.max( 0.0, value ) );
             } }

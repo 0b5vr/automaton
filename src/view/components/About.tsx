@@ -1,4 +1,5 @@
 import React, { useContext } from 'react';
+import { AboutLargeA } from './AboutLargeA';
 import { Anchor } from './Anchor';
 import { Colors } from '../constants/Colors';
 import { Contexts } from '../contexts/Context';
@@ -29,14 +30,12 @@ const Hr = styled.div`
   background: ${ Colors.fore };
 `;
 
-const LargeA = styled( Icons.AutomatonA )`
+const StyledLargeA = styled( AboutLargeA )`
   position: absolute;
   right: -0.5rem;
   bottom: -0.5rem;
   width: 11rem;
-  fill: ${ Colors.black };
-  opacity: 0.02;
-  mix-blend-mode: darken;
+  height: 11rem;
 `;
 
 const Close = styled( Icons.Close )`
@@ -98,36 +97,19 @@ export interface AboutProps {
 }
 
 export const About = ( { className }: AboutProps ): JSX.Element => {
-  const contexts = useContext( Contexts.Store );
-  const automaton = contexts.state.automaton.instance;
-  const { selectedParam } = contexts.state.curveEditor;
-  const param = automaton && selectedParam && automaton.getParam( selectedParam )!;
-  const values: number[] = [];
-
-  for ( let i = 0; i < 10; i ++ ) {
-    const t = automaton ? ( automaton.time - i * 0.00166 ) : 0.0;
-    values[ i ] = param ? ( 360.0 * param.getValue( t ) ) : 0.0;
-  }
+  const { state, dispatch } = useContext( Contexts.Store );
+  const version = state.automaton.instance && state.automaton.instance.version;
 
   return <Root className={ className }>
     <OverlayBG
-      onClick={ () => contexts.dispatch( { type: 'About/Close' } ) }
+      onClick={ () => dispatch( { type: 'About/Close' } ) }
     />
     <Container>
-      { values.map( ( value, i ) => (
-        <LargeA
-          key={ i }
-          style={ {
-            transform: `rotate(${ value }deg)`
-          } }
-        />
-      ) ) }
+      <StyledLargeA />
       <SubRoot>
         <LogoAndVersion>
           <Logo as={ Icons.Automaton } />
-          <Version>{
-            contexts.state.automaton.instance && contexts.state.automaton.instance.version
-          }</Version>
+          <Version>{ version }</Version>
         </LogoAndVersion>
         <Description>Animation engine for creative coding</Description>
         <Hr />
@@ -137,7 +119,7 @@ export const About = ( { className }: AboutProps ): JSX.Element => {
         Shoutouts to <Anchor href="https://www.image-line.com/flstudio/">Image Line Software</Anchor> &lt;3
       </SubRoot>
       <Close onClick={
-        () => contexts.dispatch( { type: 'About/Close' } )
+        () => dispatch( { type: 'About/Close' } )
       } />
     </Container>
   </Root>;

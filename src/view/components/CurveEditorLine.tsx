@@ -28,12 +28,12 @@ export interface CurveEditorLineProps {
 }
 
 export const CurveEditorLine = ( { className }: CurveEditorLineProps ): JSX.Element => {
-  const contexts = useContext( Contexts.Store );
-  const { range, size, selectedParam } = contexts.state.curveEditor;
-  const automaton = contexts.state.automaton.instance;
+  const { state } = useContext( Contexts.Store );
+  const { range, size, selectedParam } = state.curveEditor;
+  const automaton = state.automaton.instance;
   const param = selectedParam && automaton?.getParam( selectedParam ) || null;
 
-  const t = contexts.state.automaton.time;
+  const t = state.automaton.time;
   const v = param?.value || 0.0;
   const x = t2x( t, range, size.width );
   const y = v2y( v, range, size.height );

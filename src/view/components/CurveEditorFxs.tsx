@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useCallback, useContext } from 'react';
 import { dt2dx, dx2dt, snapTime, t2x } from '../utils/CurveEditorUtils';
 import { Colors } from '../constants/Colors';
 import { Contexts } from '../contexts/Context';
@@ -75,186 +75,201 @@ export interface CurveEditorFxsProps {
 }
 
 export const CurveEditorFxs = ( props: CurveEditorFxsProps ): JSX.Element => {
-  const contexts = useContext( Contexts.Store );
+  const { state, dispatch } = useContext( Contexts.Store );
   const checkDoubleClick = useDoubleClick();
-  const { range, size, selectedParam } = contexts.state.curveEditor;
-  const { guiSettings } = contexts.state.automaton;
-  const automaton = contexts.state.automaton.instance;
+  const { range, size, selectedParam } = state.curveEditor;
+  const { guiSettings } = state.automaton;
+  const automaton = state.automaton.instance;
   const param = selectedParam && automaton?.getParam( selectedParam ) || null;
 
-  const fxs = selectedParam && contexts.state.automaton.params[ selectedParam ].fxs || null;
+  const fxs = selectedParam && state.automaton.params[ selectedParam ].fxs || null;
 
-  const grabFxBody = ( fx: FxSection & WithID ): void => {
-    if ( !param ) { return; }
+  const grabFxBody = useCallback(
+    ( fx: FxSection & WithID ): void => {
+      if ( !param ) { return; }
 
-    const tPrev = fx.time;
-    const rPrev = fx.row;
-    let dx = 0.0;
-    let dy = 0.0;
-    let t = tPrev;
-    let r = rPrev;
-    let hasMoved = false;
+      const tPrev = fx.time;
+      const rPrev = fx.row;
+      let dx = 0.0;
+      let dy = 0.0;
+      let t = tPrev;
+      let r = rPrev;
+      let hasMoved = false;
 
-    registerMouseEvent(
-      ( event, movementSum ) => {
-        hasMoved = true;
-        dx += movementSum.x;
-        dy += movementSum.y;
+      registerMouseEvent(
+        ( event, movementSum ) => {
+          hasMoved = true;
+          dx += movementSum.x;
+          dy += movementSum.y;
 
-        const holdTime = event.ctrlKey || event.metaKey;
-        const holdRow = event.shiftKey;
-        const ignoreSnap = event.altKey;
+          const holdTime = event.ctrlKey || event.metaKey;
+          const holdRow = event.shiftKey;
+          const ignoreSnap = event.altKey;
 
-        t = holdTime ? tPrev : ( tPrev + dx2dt( dx, range, size.width ) );
-        r = holdRow
-          ? rPrev
-          : Math.min( Math.max( rPrev + Math.round( dy / FX_HEIGHT ), 0 ), PARAM_FX_ROW_MAX - 1 );
+          t = holdTime ? tPrev : ( tPrev + dx2dt( dx, range, size.width ) );
+          r = holdRow
+            ? rPrev
+            : Math.min( Math.max( rPrev + Math.round( dy / FX_HEIGHT ), 0 ), PARAM_FX_ROW_MAX - 1 );
 
-        if ( !ignoreSnap ) {
-          if ( !holdTime ) { t = snapTime( t, range, size.width, guiSettings ); }
-        }
+          if ( !ignoreSnap ) {
+            if ( !holdTime ) { t = snapTime( t, range, size.width, guiSettings ); }
+          }
 
-        param.moveFx( fx.$id, t );
-        param.changeFxRow( fx.$id, r );
-      },
-      () => {
-        if ( !hasMoved ) { return; }
-
-        const redo = (): void => {
           param.moveFx( fx.$id, t );
           param.changeFxRow( fx.$id, r );
-        };
+        },
+        () => {
+          if ( !hasMoved ) { return; }
 
-        const undo = (): void => {
-          param.moveFx( fx.$id, tPrev );
-          param.changeFxRow( fx.$id, rPrev );
-        };
+          const redo = (): void => {
+            param.moveFx( fx.$id, t );
+            param.changeFxRow( fx.$id, r );
+          };
 
-        contexts.dispatch( {
-          type: 'History/Push',
-          entry: {
-            description: 'Move Fx',
-            redo,
-            undo
-          }
-        } );
-        redo();
-      }
-    );
-  };
+          const undo = (): void => {
+            param.moveFx( fx.$id, tPrev );
+            param.changeFxRow( fx.$id, rPrev );
+          };
 
-  const removeFx = ( fx: FxSection & WithID ): void => {
-    if ( !param ) { return; }
-
-    const redo = (): void => {
-      param.removeFx( fx.$id );
-    };
-
-    const undo = (): void => {
-      param.createFxFromData( fx );
-    };
-
-    contexts.dispatch( {
-      type: 'History/Push',
-      entry: {
-        description: 'Remove Node',
-        redo,
-        undo
-      }
-    } );
-    redo();
-  };
-
-  const handleFxBodyClick = ( event: React.MouseEvent, fx: FxSection & WithID ): void => {
-    event.preventDefault();
-    event.stopPropagation();
-
-    if ( event.buttons === 1 ) {
-      if ( checkDoubleClick() ) {
-        removeFx( fx );
-      } else {
-        contexts.dispatch( {
-          type: 'CurveEditor/SelectItems',
-          fxs: [ fx.$id ]
-        } );
-
-        grabFxBody( fx );
-      }
-    }
-  };
-
-  const grabFxSide = ( fx: FxSection & WithID, side: 'left' | 'right' ): void => {
-    if ( !param ) { return; }
-
-    const tPrev = side === 'left' ? fx.time : ( fx.time + fx.length );
-    const otherEnd = side === 'left' ? ( fx.time + fx.length ) : fx.time;
-    let dx = 0.0;
-    let t = tPrev;
-    let hasMoved = false;
-
-    registerMouseEvent(
-      ( event, movementSum ) => {
-        hasMoved = true;
-        dx += movementSum.x;
-
-        const ignoreSnap = event.altKey;
-
-        t = tPrev + dx2dt( dx, range, size.width );
-
-        if ( !ignoreSnap ) {
-          t = snapTime( t, range, size.width, guiSettings );
+          dispatch( {
+            type: 'History/Push',
+            entry: {
+              description: 'Move Fx',
+              redo,
+              undo
+            }
+          } );
+          redo();
         }
+      );
+    },
+    [ param, range, size, guiSettings ]
+  );
 
-        if ( side === 'left' ) {
-          param.resizeFxByLeft( fx.$id, otherEnd - t );
+  const removeFx = useCallback(
+    ( fx: FxSection & WithID ): void => {
+      if ( !param ) { return; }
+
+      const redo = (): void => {
+        param.removeFx( fx.$id );
+      };
+
+      const undo = (): void => {
+        param.createFxFromData( fx );
+      };
+
+      dispatch( {
+        type: 'History/Push',
+        entry: {
+          description: 'Remove Node',
+          redo,
+          undo
+        }
+      } );
+      redo();
+    },
+    [ param ]
+  );
+
+  const handleFxBodyClick = useCallback(
+    ( event: React.MouseEvent, fx: FxSection & WithID ): void => {
+      event.preventDefault();
+      event.stopPropagation();
+
+      if ( event.buttons === 1 ) {
+        if ( checkDoubleClick() ) {
+          removeFx( fx );
         } else {
-          param.resizeFx( fx.$id, t - otherEnd );
-        }
-      },
-      () => {
-        if ( !hasMoved ) { return; }
+          dispatch( {
+            type: 'CurveEditor/SelectItems',
+            fxs: [ fx.$id ]
+          } );
 
-        const redo = (): void => {
+          grabFxBody( fx );
+        }
+      }
+    },
+    [ removeFx, grabFxBody ]
+  );
+
+  const grabFxSide = useCallback(
+    ( fx: FxSection & WithID, side: 'left' | 'right' ): void => {
+      if ( !param ) { return; }
+
+      const tPrev = side === 'left' ? fx.time : ( fx.time + fx.length );
+      const otherEnd = side === 'left' ? ( fx.time + fx.length ) : fx.time;
+      let dx = 0.0;
+      let t = tPrev;
+      let hasMoved = false;
+
+      registerMouseEvent(
+        ( event, movementSum ) => {
+          hasMoved = true;
+          dx += movementSum.x;
+
+          const ignoreSnap = event.altKey;
+
+          t = tPrev + dx2dt( dx, range, size.width );
+
+          if ( !ignoreSnap ) {
+            t = snapTime( t, range, size.width, guiSettings );
+          }
+
           if ( side === 'left' ) {
             param.resizeFxByLeft( fx.$id, otherEnd - t );
           } else {
             param.resizeFx( fx.$id, t - otherEnd );
           }
-        };
+        },
+        () => {
+          if ( !hasMoved ) { return; }
 
-        const undo = (): void => {
-          if ( side === 'left' ) {
-            param.resizeFxByLeft( fx.$id, otherEnd - tPrev );
-          } else {
-            param.resizeFx( fx.$id, tPrev - otherEnd );
-          }
-        };
+          const redo = (): void => {
+            if ( side === 'left' ) {
+              param.resizeFxByLeft( fx.$id, otherEnd - t );
+            } else {
+              param.resizeFx( fx.$id, t - otherEnd );
+            }
+          };
 
-        contexts.dispatch( {
-          type: 'History/Push',
-          entry: {
-            description: 'Resize Fx',
-            redo,
-            undo
-          }
-        } );
-        redo();
+          const undo = (): void => {
+            if ( side === 'left' ) {
+              param.resizeFxByLeft( fx.$id, otherEnd - tPrev );
+            } else {
+              param.resizeFx( fx.$id, tPrev - otherEnd );
+            }
+          };
+
+          dispatch( {
+            type: 'History/Push',
+            entry: {
+              description: 'Resize Fx',
+              redo,
+              undo
+            }
+          } );
+          redo();
+        }
+      );
+    },
+    [ param, range, size, guiSettings ]
+  );
+
+  const handleFxSideClick = useCallback(
+    (
+      event: React.MouseEvent,
+      fx: FxSection & WithID,
+      side: 'left' | 'right'
+    ): void => {
+      event.preventDefault();
+      event.stopPropagation();
+
+      if ( event.buttons === 1 ) {
+        grabFxSide( fx, side );
       }
-    );
-  };
-
-  const handleFxSideClick = (
-    event: React.MouseEvent,
-    fx: FxSection & WithID,
-    side: 'left' | 'right'
-  ): void => {
-    event.preventDefault();
-    event.stopPropagation();
-
-    if ( event.buttons === 1 ) {
-      grabFxSide( fx, side );
-    }
-  };
+    },
+    [ grabFxSide ]
+  );
 
   return (
     <Root className={ props.className }>
@@ -316,7 +331,7 @@ export const CurveEditorFxs = ( props: CurveEditorFxsProps ): JSX.Element => {
                     width={ w }
                     height={ FX_HEIGHT }
                     isSelected={
-                      contexts.state.curveEditor.selectedItems.fxs.indexOf( fx.$id ) !== -1
+                      state.curveEditor.selectedItems.fxs.indexOf( fx.$id ) !== -1
                     }
                     isBypassed={ fx.bypass }
                     onMouseDown={ ( event ) => handleFxBodyClick( event, fx ) }
@@ -343,7 +358,7 @@ export const CurveEditorFxs = ( props: CurveEditorFxsProps ): JSX.Element => {
                         x="0.125rem"
                         y="0.75rem"
                         isSelected={
-                          contexts.state.curveEditor.selectedItems.fxs.indexOf( fx.$id ) !== -1
+                          state.curveEditor.selectedItems.fxs.indexOf( fx.$id ) !== -1
                         }
                         isBypassed={ fx.bypass }
                       >

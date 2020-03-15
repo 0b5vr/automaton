@@ -54,25 +54,25 @@ export interface FxSpawnerProps {
 }
 
 export const FxSpawner = ( { className }: FxSpawnerProps ): JSX.Element => {
-  const contexts = useContext( Contexts.Store );
+  const { state, dispatch } = useContext( Contexts.Store );
   const [ query, setQuery ] = useState<string>( '' );
   const [ focus, setFocus ] = useState<number>( 0 );
   const refInput = useRef<HTMLInputElement>( null );
 
   useEffect( () => { // focus the input when it gets activated
-    if ( contexts.state.fxSpawner.isVisible ) {
+    if ( state.fxSpawner.isVisible ) {
       refInput.current?.focus();
     }
-  }, [ contexts.state.fxSpawner.isVisible ] );
+  }, [ state.fxSpawner.isVisible ] );
 
-  const automaton = contexts.state.automaton.instance;
+  const automaton = state.automaton.instance;
 
   const fxs = useMemo( () => (
     combineArraysUnique(
-      contexts.state.fxSpawner.recently,
-      Object.keys( contexts.state.automaton.fxDefinitions )
+      state.fxSpawner.recently,
+      Object.keys( state.automaton.fxDefinitions )
     )
-  ), [ contexts.state.automaton.fxDefinitions, contexts.state.fxSpawner.recently ] );
+  ), [ state.automaton.fxDefinitions, state.fxSpawner.recently ] );
 
   const filteredFxs = useMemo( () => {
     const queries = query.split( /\s+/ );
@@ -84,12 +84,12 @@ export const FxSpawner = ( { className }: FxSpawnerProps ): JSX.Element => {
   }, [ fxs, query ] );
 
   function selectFx( name: string ): void {
-    contexts.state.fxSpawner.callback!( name );
-    contexts.dispatch( {
+    state.fxSpawner.callback!( name );
+    dispatch( {
       type: 'FxSpawner/AddRecently',
       name
     } );
-    contexts.dispatch( { type: 'FxSpawner/Close' } );
+    dispatch( { type: 'FxSpawner/Close' } );
   }
 
   function handleChange( event: React.ChangeEvent<HTMLInputElement> ): void {
@@ -103,10 +103,10 @@ export const FxSpawner = ( { className }: FxSpawnerProps ): JSX.Element => {
       if ( fx ) {
         selectFx( fx );
       } else {
-        contexts.dispatch( { type: 'FxSpawner/Close' } );
+        dispatch( { type: 'FxSpawner/Close' } );
       }
     } else if ( event.nativeEvent.key === 'Escape' ) {
-      contexts.dispatch( { type: 'FxSpawner/Close' } );
+      dispatch( { type: 'FxSpawner/Close' } );
     } else if ( event.nativeEvent.key === 'ArrowDown' ) {
       event.preventDefault();
 
@@ -130,7 +130,7 @@ export const FxSpawner = ( { className }: FxSpawnerProps ): JSX.Element => {
     { automaton && (
       <Root className={ className }>
         <OverlayBG
-          onClick={ () => contexts.dispatch( { type: 'FxSpawner/Close' } ) }
+          onClick={ () => dispatch( { type: 'FxSpawner/Close' } ) }
         />
         <Container>
           <Input

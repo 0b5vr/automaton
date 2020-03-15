@@ -39,9 +39,9 @@ export interface CurveEditorGraphProps {
 }
 
 export const CurveEditorGraph = ( { className }: CurveEditorGraphProps ): JSX.Element => {
-  const contexts = useContext( Contexts.Store );
-  const { range, size, selectedParam } = contexts.state.curveEditor;
-  const automaton = contexts.state.automaton.instance;
+  const { state } = useContext( Contexts.Store );
+  const { range, size, selectedParam } = state.curveEditor;
+  const automaton = state.automaton.instance;
   const param = selectedParam && automaton?.getParam( selectedParam ) || null;
 
   const [ points, setPoints ] = useState( '' );

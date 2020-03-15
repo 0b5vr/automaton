@@ -65,7 +65,7 @@ export interface BoolParamProps {
 }
 
 export const BoolParam = ( props: BoolParamProps ): JSX.Element => {
-  const contexts = useContext( Contexts.Store );
+  const { dispatch } = useContext( Contexts.Store );
   const { className, value, historyDescription, onChange } = props;
   const [ isInput, setIsInput ] = useState<boolean>( false );
   const refInput = useRef<HTMLInputElement>( null );
@@ -95,7 +95,7 @@ export const BoolParam = ( props: BoolParamProps ): JSX.Element => {
         onChange && onChange( vPrev );
       };
 
-      contexts.dispatch( {
+      dispatch( {
         type: 'History/Push',
         entry: {
           description: historyDescription,

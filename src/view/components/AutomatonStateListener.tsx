@@ -15,17 +15,17 @@ export interface AutomatonStateListenerProps {
 }
 
 export const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Element => {
-  const contexts = useContext( Contexts.Store );
+  const { dispatch } = useContext( Contexts.Store );
   const automaton = props.automaton;
 
   function createParam( name: string, param: ParamWithGUI ): void {
-    contexts.dispatch( {
+    dispatch( {
       type: 'Automaton/CreateParam',
       param: name
     } );
 
     param.nodes.forEach( ( node ) => {
-      contexts.dispatch( {
+      dispatch( {
         type: 'Automaton/UpdateParamNode',
         param: name,
         id: node.$id,
@@ -34,7 +34,7 @@ export const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JS
     } );
 
     param.fxs.forEach( ( fx ) => {
-      contexts.dispatch( {
+      dispatch( {
         type: 'Automaton/UpdateParamFx',
         param: name,
         id: fx.$id,
@@ -43,7 +43,7 @@ export const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JS
     } );
 
     param.on( 'createNode', ( { id, node } ) => {
-      contexts.dispatch( {
+      dispatch( {
         type: 'Automaton/UpdateParamNode',
         param: name,
         id,
@@ -52,7 +52,7 @@ export const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JS
     } );
 
     param.on( 'updateNode', ( { id, node } ) => {
-      contexts.dispatch( {
+      dispatch( {
         type: 'Automaton/UpdateParamNode',
         param: name,
         id,
@@ -61,11 +61,11 @@ export const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JS
     } );
 
     param.on( 'removeNode', ( { id } ) => {
-      contexts.dispatch( {
+      dispatch( {
         type: 'CurveEditor/SelectItemsSub',
         nodes: [ id ]
       } );
-      contexts.dispatch( {
+      dispatch( {
         type: 'Automaton/RemoveParamNode',
         param: name,
         id
@@ -73,7 +73,7 @@ export const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JS
     } );
 
     param.on( 'createFx', ( { id, fx } ) => {
-      contexts.dispatch( {
+      dispatch( {
         type: 'Automaton/UpdateParamFx',
         param: name,
         id,
@@ -82,7 +82,7 @@ export const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JS
     } );
 
     param.on( 'updateFx', ( { id, fx } ) => {
-      contexts.dispatch( {
+      dispatch( {
         type: 'Automaton/UpdateParamFx',
         param: name,
         id,
@@ -91,11 +91,11 @@ export const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JS
     } );
 
     param.on( 'removeFx', ( { id } ) => {
-      contexts.dispatch( {
+      dispatch( {
         type: 'CurveEditor/SelectItemsSub',
         fxs: [ id ]
       } );
-      contexts.dispatch( {
+      dispatch( {
         type: 'Automaton/RemoveParamFx',
         param: name,
         id
@@ -113,28 +113,28 @@ export const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JS
 
   useEffect(
     () => {
-      contexts.dispatch( {
+      dispatch( {
         type: 'Automaton/SetInstance',
         automaton
       } );
 
-      contexts.dispatch( {
+      dispatch( {
         type: 'Automaton/UpdateTime',
         time: automaton.time
       } );
 
-      contexts.dispatch( {
+      dispatch( {
         type: 'Automaton/UpdateLength',
         length: automaton.length
       } );
 
-      contexts.dispatch( {
+      dispatch( {
         type: 'Automaton/UpdateIsPlaying',
         isPlaying: automaton.isPlaying
       } );
 
       Object.entries( automaton.fxDefinitions ).forEach( ( [ name, fxDefinition ] ) => {
-        contexts.dispatch( {
+        dispatch( {
           type: 'Automaton/AddFxDefinition',
           name,
           fxDefinition
@@ -146,48 +146,48 @@ export const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JS
       } );
 
       automaton.on( 'update', ( { time } ) => {
-        contexts.dispatch( {
+        dispatch( {
           type: 'Automaton/UpdateTime',
           time
         } );
       } );
 
       automaton.on( 'changeLength', ( { length } ) => {
-        contexts.dispatch( {
+        dispatch( {
           type: 'Automaton/UpdateLength',
           length
         } );
       } );
 
       automaton.on( 'play', () => {
-        contexts.dispatch( {
+        dispatch( {
           type: 'Automaton/UpdateIsPlaying',
           isPlaying: true
         } );
       } );
 
       automaton.on( 'pause', () => {
-        contexts.dispatch( {
+        dispatch( {
           type: 'Automaton/UpdateIsPlaying',
           isPlaying: false
         } );
       } );
 
       automaton.on( 'addFxDefinition', ( { name, fxDefinition } ) => {
-        contexts.dispatch( {
+        dispatch( {
           type: 'Automaton/AddFxDefinition',
           name,
           fxDefinition
         } );
       } );
 
-      contexts.dispatch( {
+      dispatch( {
         type: 'Automaton/UpdateGUISettings',
         settings: automaton.guiSettings
       } );
 
       automaton.on( 'updateGUISettings', ( { settings } ) => {
-        contexts.dispatch( {
+        dispatch( {
           type: 'Automaton/UpdateGUISettings',
           settings
         } );

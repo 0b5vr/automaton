@@ -19,9 +19,9 @@ export interface InspectorNodeProps {
 }
 
 export const InspectorNode = ( { className, node }: InspectorNodeProps ): JSX.Element => {
-  const contexts = useContext( Contexts.Store );
-  const automaton = contexts.state.automaton.instance;
-  const { selectedParam } = contexts.state.curveEditor;
+  const { state } = useContext( Contexts.Store );
+  const automaton = state.automaton.instance;
+  const { selectedParam } = state.curveEditor;
   const param = automaton && selectedParam && automaton.getParam( selectedParam ) || null;
 
   return <>

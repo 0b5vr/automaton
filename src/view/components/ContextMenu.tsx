@@ -33,19 +33,19 @@ export interface ContextMenuProps {
 }
 
 export const ContextMenu = ( { className }: ContextMenuProps ): JSX.Element => {
-  const contexts = useContext( Contexts.Store );
+  const { state, dispatch } = useContext( Contexts.Store );
   const refRoot = useRef<HTMLDivElement>( null );
 
   const rect = refRoot.current?.getBoundingClientRect();
-  const x = contexts.state.contextMenu.position.x - ( rect?.left || 0.0 );
-  const y = contexts.state.contextMenu.position.y - ( rect?.top || 0.0 );
+  const x = state.contextMenu.position.x - ( rect?.left || 0.0 );
+  const y = state.contextMenu.position.y - ( rect?.top || 0.0 );
 
   return <Root
     ref={ refRoot }
     className={ className }
   >
     <OverlayBG
-      onClick={ () => contexts.dispatch( { type: 'ContextMenu/Close' } ) }
+      onClick={ () => dispatch( { type: 'ContextMenu/Close' } ) }
     />
     <Container
       style={ {
@@ -53,14 +53,14 @@ export const ContextMenu = ( { className }: ContextMenuProps ): JSX.Element => {
         top: `${ y }px`
       } }
     >
-      { contexts.state.contextMenu.commands.map( ( command ) => (
+      { state.contextMenu.commands.map( ( command ) => (
         <ContextMenuEntry
           key={ command.name }
           name={ command.name }
           description={ command.description }
           onClick={ () => {
             command.command();
-            contexts.dispatch( { type: 'ContextMenu/Close' } );
+            dispatch( { type: 'ContextMenu/Close' } );
           } }
         />
       ) ) }

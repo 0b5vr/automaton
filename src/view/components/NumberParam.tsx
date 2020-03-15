@@ -71,7 +71,7 @@ export interface NumberParamProps {
 }
 
 export const NumberParam = ( props: NumberParamProps ): JSX.Element => {
-  const contexts = useContext( Contexts.Store );
+  const { dispatch } = useContext( Contexts.Store );
   const { className, type, value, historyDescription, onChange } = props;
   const [ isInput, setIsInput ] = useState<boolean>( false );
   const refInput = useRef<HTMLInputElement>( null );
@@ -101,7 +101,7 @@ export const NumberParam = ( props: NumberParamProps ): JSX.Element => {
         onChange && onChange( vPrev );
       };
 
-      contexts.dispatch( {
+      dispatch( {
         type: 'History/Push',
         entry: {
           description: historyDescription,

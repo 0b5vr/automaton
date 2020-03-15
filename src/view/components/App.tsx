@@ -87,7 +87,7 @@ export interface AppProps {
 }
 
 const Fuck = ( { automaton }: AppProps ): JSX.Element => {
-  const contexts = useContext( Contexts.Store );
+  const { state } = useContext( Contexts.Store );
 
   return (
     <Root>
@@ -96,9 +96,9 @@ const Fuck = ( { automaton }: AppProps ): JSX.Element => {
       <StyledParamList />
       <StyledCurveEditor />
       <StyledInspector />
-      { contexts.state.fxSpawner.isVisible && <StyledFxSpawner /> }
-      { contexts.state.about.isVisible && <StyledAbout /> }
-      { contexts.state.contextMenu.isVisible && <StyledContextMenu /> }
+      { state.fxSpawner.isVisible && <StyledFxSpawner /> }
+      { state.about.isVisible && <StyledAbout /> }
+      { state.contextMenu.isVisible && <StyledContextMenu /> }
 
       <Stalker />
     </Root>

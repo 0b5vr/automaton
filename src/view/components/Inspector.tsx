@@ -39,19 +39,19 @@ export interface InspectorProps {
 }
 
 export const Inspector = ( { className }: InspectorProps ): JSX.Element => {
-  const contexts = useContext( Contexts.Store );
-  const { selectedParam } = contexts.state.curveEditor;
+  const { state } = useContext( Contexts.Store );
+  const { selectedParam } = state.curveEditor;
 
-  const selectedNodes = contexts.state.curveEditor.selectedItems.nodes.map( ( id ) => {
-    return contexts.state.automaton.params[ selectedParam! ].nodes[ id ];
+  const selectedNodes = state.curveEditor.selectedItems.nodes.map( ( id ) => {
+    return state.automaton.params[ selectedParam! ].nodes[ id ];
   } );
-  const selectedFxs = contexts.state.curveEditor.selectedItems.fxs.map( ( id ) => {
-    return contexts.state.automaton.params[ selectedParam! ].fxs[ id ];
+  const selectedFxs = state.curveEditor.selectedItems.fxs.map( ( id ) => {
+    return state.automaton.params[ selectedParam! ].fxs[ id ];
   } );
   const isSelectingANode = selectedNodes.length === 1 && selectedFxs.length === 0;
   const isSelectingAFx = selectedNodes.length === 0 && selectedFxs.length === 1;
   const isSelectingNothing = (
-    contexts.state.settings.mode === 'none' &&
+    state.settings.mode === 'none' &&
     ( selectedNodes.length === 0 ) &&
     ( selectedFxs.length === 0 )
   );
@@ -59,8 +59,8 @@ export const Inspector = ( { className }: InspectorProps ): JSX.Element => {
   return <Root className={ className }>
     <StyledScrollable>
       <Container>
-        { contexts.state.settings.mode === 'snapping' && <InspectorSnapping /> }
-        { contexts.state.settings.mode === 'none' && <>
+        { state.settings.mode === 'snapping' && <InspectorSnapping /> }
+        { state.settings.mode === 'none' && <>
           { isSelectingANode && <InspectorNode
             node={ selectedNodes[ 0 ] }
           /> }

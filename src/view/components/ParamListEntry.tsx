@@ -47,10 +47,10 @@ export interface ParamListEntryProps {
 
 export const ParamListEntry = ( props: ParamListEntryProps ): JSX.Element => {
   const { className, name, value, status } = props;
-  const contexts = useContext( Contexts.Store );
+  const { state, dispatch } = useContext( Contexts.Store );
 
   function handleClick(): void {
-    contexts.dispatch( {
+    dispatch( {
       type: 'CurveEditor/SelectParam',
       param: name
     } );
@@ -60,7 +60,7 @@ export const ParamListEntry = ( props: ParamListEntryProps ): JSX.Element => {
     <Root
       className={ className }
       onClick={ handleClick }
-      isSelected={ contexts.state.curveEditor.selectedParam === name }
+      isSelected={ state.curveEditor.selectedParam === name }
       data-stalker={ name }
     >
       <Name>{ name }</Name>

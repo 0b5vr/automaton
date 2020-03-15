@@ -60,9 +60,9 @@ export interface HeaderProps {
 }
 
 export const Header = ( { className }: HeaderProps ): JSX.Element => {
-  const contexts = useContext( Contexts.Store );
+  const { state, dispatch } = useContext( Contexts.Store );
   const [ cantUndoThis, setCantUndoThis ] = useState( 0 );
-  const automaton = contexts.state.automaton.instance;
+  const automaton = state.automaton.instance;
 
   const handlePlay = useCallback(
     (): void => {
@@ -74,9 +74,9 @@ export const Header = ( { className }: HeaderProps ): JSX.Element => {
 
   const handleUndo = useCallback(
     (): void => {
-      if ( contexts.state.history.index !== 0 ) {
-        contexts.state.history.entries[ contexts.state.history.index - 1 ].undo();
-        contexts.dispatch( { type: 'History/Undo' } );
+      if ( state.history.index !== 0 ) {
+        state.history.entries[ state.history.index - 1 ].undo();
+        dispatch( { type: 'History/Undo' } );
       } else {
         if ( cantUndoThis === 9 ) {
           window.open( 'https://youtu.be/bzY7J0Xle08', '_blank' );
@@ -86,43 +86,43 @@ export const Header = ( { className }: HeaderProps ): JSX.Element => {
         }
       }
     },
-    [ contexts.state.history, cantUndoThis ]
+    [ state.history, cantUndoThis ]
   );
 
   const handleRedo = useCallback(
     (): void => {
-      if ( contexts.state.history.index !== contexts.state.history.entries.length ) {
-        contexts.state.history.entries[ contexts.state.history.index ].redo();
-        contexts.dispatch( { type: 'History/Redo' } );
+      if ( state.history.index !== state.history.entries.length ) {
+        state.history.entries[ state.history.index ].redo();
+        dispatch( { type: 'History/Redo' } );
       }
       setCantUndoThis( 0 );
     },
-    [ contexts.state.history ]
+    [ state.history ]
   );
 
   const undoText = useMemo(
     () => (
-      contexts.state.history.index !== 0
-        ? 'Undo: ' + contexts.state.history.entries[ contexts.state.history.index - 1 ].description
+      state.history.index !== 0
+        ? 'Undo: ' + state.history.entries[ state.history.index - 1 ].description
         : 'Can\'t Undo'
     ),
-    [ contexts.state.history ]
+    [ state.history ]
   );
 
   const redoText = useMemo(
     () => (
-      contexts.state.history.index !== contexts.state.history.entries.length
-        ? 'Redo: ' + contexts.state.history.entries[ contexts.state.history.index ].description
+      state.history.index !== state.history.entries.length
+        ? 'Redo: ' + state.history.entries[ state.history.index ].description
         : 'Can\'t Redo'
     ),
-    [ contexts.state.history ]
+    [ state.history ]
   );
 
   return (
     <Root className={ className }>
       <Section>
         <Button
-          as={ contexts.state.automaton.isPlaying ? Icons.Pause : Icons.Play }
+          as={ state.automaton.isPlaying ? Icons.Pause : Icons.Play }
           active={ 1 as any as boolean } // fuck
           onClick={ handlePlay }
           data-stalker="Play / Pause"
@@ -130,30 +130,30 @@ export const Header = ( { className }: HeaderProps ): JSX.Element => {
         <StyledHeaderSeekbar />
       </Section>
       <Logo as={ Icons.Automaton }
-        onClick={ () => contexts.dispatch( { type: 'About/Open' } ) }
+        onClick={ () => dispatch( { type: 'About/Open' } ) }
       />
       <Section>
         <Button
           as={ Icons.Undo }
           onClick={ handleUndo }
-          disabled={ contexts.state.history.index === 0 }
+          disabled={ state.history.index === 0 }
           data-stalker={ undoText }
         />
         <Button
           as={ Icons.Redo }
           onClick={ handleRedo }
-          disabled={ contexts.state.history.index === contexts.state.history.entries.length }
+          disabled={ state.history.index === state.history.entries.length }
           data-stalker={ redoText }
         />
         <Button
           as={ Icons.Snap }
           onClick={ () => {
-            contexts.dispatch( {
+            dispatch( {
               type: 'Settings/ChangeMode',
-              mode: contexts.state.settings.mode === 'snapping' ? 'none' : 'snapping'
+              mode: state.settings.mode === 'snapping' ? 'none' : 'snapping'
             } );
           } }
-          active={ ( contexts.state.settings.mode === 'snapping' ? 1 : 0 ) as any as boolean } // fuck
+          active={ ( state.settings.mode === 'snapping' ? 1 : 0 ) as any as boolean } // fuck
         />
         <Button as={ Icons.Cog } />
         <Button as={ Icons.Save } />
