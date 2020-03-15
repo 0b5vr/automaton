@@ -1,5 +1,5 @@
 import { Automaton, AutomatonOptions, FxDefinition, FxParam, SerializedParam } from '@fms-cat/automaton';
-import { GUISettings, WithGUISettings, defaultGUISettings } from './types/GUISettings';
+import { GUISettings, defaultGUISettings } from './types/GUISettings';
 import { SerializedDataWithGUI, defaultDataWithGUI } from './types/SerializedDataWithGUI';
 import { App } from './view/components/App';
 import { EventEmittable } from './mixins/EventEmittable';
@@ -34,7 +34,7 @@ export interface AutomatonWithGUIOptions extends AutomatonOptions {
  * @param {Object} options Options for this Automaton instance
  */
 export class AutomatonWithGUI extends Automaton
-  implements Serializable<SerializedDataWithGUI & WithGUISettings> {
+  implements Serializable<SerializedDataWithGUI> {
   /**
    * GUI settings for this automaton.
    */
