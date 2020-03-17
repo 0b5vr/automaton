@@ -209,9 +209,9 @@ automaton.addFxDefinition( 'sawtooth', {
     if ( context.init ) {
       context.state.saw = 0.0;
     }
-    context.state.saw += context.params.freq * context.dt;
+    context.state.saw += context.params.freq * context.deltaTime;
     context.state.saw = context.state.saw % 1.0;
-    return context.v + context.params.amp * context.state.saw;
+    return context.value + context.params.amp * context.state.saw;
   }
 } );
 
