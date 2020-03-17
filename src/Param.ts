@@ -163,7 +163,6 @@ export class Param {
   /**
    * Return the value of specified time point.
    * @param time Time at the point you want to grab the value.
-   * If it is not given, use current time of parent automaton instead
    * @returns Result value
    */
   public getValue( time: number ): number {
