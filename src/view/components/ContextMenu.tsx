@@ -1,7 +1,7 @@
-import React, { useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Colors } from '../constants/Colors';
 import { ContextMenuEntry } from './ContextMenuEntry';
+import React from 'react';
 import { State } from '../states/store';
 import styled from 'styled-components';
 
@@ -26,6 +26,12 @@ const OverlayBG = styled.div`
 `;
 
 const Root = styled.div`
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba( 0, 0, 0, 0 );
 `;
 
 // == element ======================================================================================
@@ -35,17 +41,12 @@ export interface ContextMenuProps {
 
 export const ContextMenu = ( { className }: ContextMenuProps ): JSX.Element => {
   const dispatch = useDispatch();
-  const refRoot = useRef<HTMLDivElement>( null );
 
-  const rect = refRoot.current?.getBoundingClientRect();
   const position = useSelector( ( state: State ) => state.contextMenu.position );
-  const x = position.x - ( rect?.left || 0.0 );
-  const y = position.y - ( rect?.top || 0.0 );
 
   const commands = useSelector( ( state: State ) => state.contextMenu.commands );
 
   return <Root
-    ref={ refRoot }
     className={ className }
   >
     <OverlayBG
@@ -53,8 +54,8 @@ export const ContextMenu = ( { className }: ContextMenuProps ): JSX.Element => {
     />
     <Container
       style={ {
-        left: `${ x }px`,
-        top: `${ y }px`
+        left: `${ position.x }px`,
+        top: `${ position.y }px`
       } }
     >
       { commands.map( ( command ) => (

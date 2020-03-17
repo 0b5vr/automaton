@@ -62,12 +62,6 @@ const StyledAbout = styled( About )`
   height: 100%;
 `;
 
-const StyledContextMenu = styled( ContextMenu )`
-  position: absolute;
-  width: 100%;
-  height: 100%;
-`;
-
 const Root = styled.div`
   margin: 0;
   padding: 0;
@@ -101,7 +95,7 @@ const Fuck = ( { automaton }: AppProps ): JSX.Element => {
       <StyledInspector />
       { isFxSpawnerVisible && <StyledFxSpawner /> }
       { isAboutVisible && <StyledAbout /> }
-      { isContextMenuVisible && <StyledContextMenu /> }
+      { isContextMenuVisible && <ContextMenu /> }
 
       <Stalker />
     </Root>
