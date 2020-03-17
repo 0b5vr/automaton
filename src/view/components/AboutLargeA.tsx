@@ -1,6 +1,6 @@
+import React, { useMemo } from 'react';
 import { Colors } from '../constants/Colors';
 import { Icons } from '../icons/Icons';
-import React from 'react';
 import { State } from '../states/store';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
@@ -25,15 +25,20 @@ export interface AboutLargeAProps {
 }
 
 export const AboutLargeA = ( { className }: AboutLargeAProps ): JSX.Element => {
-  const automaton = useSelector( ( state: State ) => state.automaton.instance );
-  const selectedParam = useSelector( ( state: State ) => state.curveEditor.selectedParam );
+  const { time, automaton, selectedParam } = useSelector( ( state: State ) => ( {
+    time: state.automaton.time,
+    automaton: state.automaton.instance,
+    selectedParam: state.curveEditor.selectedParam
+  } ) );
   const param = automaton && selectedParam && automaton.getParam( selectedParam )!;
-  const values: number[] = [];
 
-  for ( let i = 0; i < 10; i ++ ) {
-    const t = automaton ? ( automaton.time - i * 0.00166 ) : 0.0;
-    values[ i ] = param ? ( 360.0 * param.getValue( t ) ) : 0.0;
-  }
+  const values = useMemo(
+    () => new Array( 10 ).fill( 0 ).map( ( _, i ) => {
+      const t = time - i * 0.00166;
+      return param ? ( 360.0 * param.getValue( t ) ) : 0.0;
+    } ),
+    [ time, param ]
+  );
 
   return <Root className={ className }>
     { values.map( ( value, i ) => (
