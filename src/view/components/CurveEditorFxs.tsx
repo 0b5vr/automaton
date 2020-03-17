@@ -78,13 +78,17 @@ export interface CurveEditorFxsProps {
 export const CurveEditorFxs = ( props: CurveEditorFxsProps ): JSX.Element => {
   const dispatch = useDispatch();
   const checkDoubleClick = useDoubleClick();
-  const selectedParam = useSelector( ( state: State ) => state.curveEditor.selectedParam );
-  const range = useSelector( ( state: State ) => state.curveEditor.range );
-  const size = useSelector( ( state: State ) => state.curveEditor.size );
-  const guiSettings = useSelector( ( state: State ) => state.automaton.guiSettings );
-  const automaton = useSelector( ( state: State ) => state.automaton.instance );
+  const { selectedParam, range, size, guiSettings, automaton } = useSelector( ( s: State ) => ( {
+    selectedParam: s.curveEditor.selectedParam,
+    range: s.curveEditor.range,
+    size: s.curveEditor.size,
+    guiSettings: s.automaton.guiSettings,
+    automaton: s.automaton.instance,
+  } ) );
+  const stateFxs = useSelector( ( s: State ) => (
+    selectedParam && s.automaton.params[ selectedParam ].fxs
+  ) );
   const param = selectedParam && automaton?.getParam( selectedParam ) || null;
-  const fxs = param?.fxs || null;
   const selectedFxs = useSelector( ( state: State ) => state.curveEditor.selectedItems.fxs );
 
   const grabFxBody = useCallback(
@@ -278,7 +282,7 @@ export const CurveEditorFxs = ( props: CurveEditorFxsProps ): JSX.Element => {
     <Root className={ props.className }>
       <g>
         {
-          fxs && Object.values( fxs ).map( ( fx ) => {
+          stateFxs && Object.values( stateFxs ).map( ( fx ) => {
             if ( fx.bypass ) { return null; }
 
             const x = t2x( fx.time, range, size.width );
@@ -311,7 +315,7 @@ export const CurveEditorFxs = ( props: CurveEditorFxsProps ): JSX.Element => {
       </g>
       <g>
         {
-          fxs && Object.values( fxs ).map( ( fx ) => {
+          stateFxs && Object.values( stateFxs ).map( ( fx ) => {
             const x = t2x( fx.time, range, size.width );
             const w = dt2dx( fx.length, range, size.width );
 
