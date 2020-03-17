@@ -1,5 +1,7 @@
 import React, { useEffect } from 'react';
+import { Action } from '../states/store';
 import { AutomatonWithGUI } from '../../AutomatonWithGUI';
+import { Dispatch } from 'redux';
 import { ParamWithGUI } from '../../ParamWithGUI';
 import styled from 'styled-components';
 import { useDispatch } from 'react-redux';
@@ -15,13 +17,25 @@ export interface AutomatonStateListenerProps {
 }
 
 export const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Element => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<Dispatch<Action>>();
   const automaton = props.automaton;
 
   function createParam( name: string, param: ParamWithGUI ): void {
     dispatch( {
       type: 'Automaton/CreateParam',
       param: name
+    } );
+
+    dispatch( {
+      type: 'Automaton/UpdateParamValue',
+      param: name,
+      value: param.value
+    } );
+
+    dispatch( {
+      type: 'Automaton/UpdateParamStatus',
+      param: name,
+      status: param.status
     } );
 
     param.nodes.forEach( ( node ) => {
@@ -39,6 +53,22 @@ export const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JS
         param: name,
         id: fx.$id,
         fx
+      } );
+    } );
+
+    param.on( 'changeValue', () => {
+      dispatch( {
+        type: 'Automaton/UpdateParamValue',
+        param: name,
+        value: param.value
+      } );
+    } );
+
+    param.on( 'updateStatus', () => {
+      dispatch( {
+        type: 'Automaton/UpdateParamStatus',
+        param: name,
+        status: param.status
       } );
     } );
 

@@ -1,6 +1,7 @@
 import { BezierNode, FxDefinition, FxSection } from '@fms-cat/automaton';
 import { GUISettings, defaultGUISettings } from '../../types/GUISettings';
 import { AutomatonWithGUI } from '../../AutomatonWithGUI';
+import { ParamStatus } from '../../ParamWithGUI';
 import { Reducer } from 'redux';
 import { WithID } from '../../types/WithID';
 import { jsonCopy } from '../../utils/jsonCopy';
@@ -12,6 +13,8 @@ export interface State {
   fxDefinitions: { [ name: string ]: FxDefinition };
   params: {
     [ name: string ]: {
+      value: number;
+      status: ParamStatus | null;
       nodes: { [ id: string ]: BezierNode & WithID };
       fxs: { [ id: string ]: FxSection & WithID };
     };
@@ -44,6 +47,14 @@ export type Action = {
 } | {
   type: 'Automaton/CreateParam';
   param: string;
+} | {
+  type: 'Automaton/UpdateParamValue';
+  param: string;
+  value: number;
+} | {
+  type: 'Automaton/UpdateParamStatus';
+  param: string;
+  status: ParamStatus | null;
 } | {
   type: 'Automaton/UpdateParamNode';
   param: string;
@@ -86,9 +97,15 @@ export const reducer: Reducer<State, Action> = ( state = initialState, action ) 
       newState.fxDefinitions[ action.name ] = action.fxDefinition;
     } else if ( action.type === 'Automaton/CreateParam' ) {
       newState.params[ action.param ] = {
+        value: 0.0,
+        status: null,
         nodes: {},
         fxs: {}
       };
+    } else if ( action.type === 'Automaton/UpdateParamValue' ) {
+      newState.params[ action.param ].value = action.value;
+    } else if ( action.type === 'Automaton/UpdateParamStatus' ) {
+      newState.params[ action.param ].status = action.status;
     } else if ( action.type === 'Automaton/UpdateParamNode' ) {
       newState.params[ action.param ].nodes[ action.id ] = jsonCopy( action.node );
     } else if ( action.type === 'Automaton/RemoveParamNode' ) {

@@ -23,8 +23,9 @@ export interface ParamListProps {
 }
 
 export const ParamList = ( { className }: ParamListProps ): JSX.Element => {
-  const automaton = useSelector( ( state: State ) => state.automaton.instance );
-  const params = useSelector( ( state: State ) => state.automaton.params );
+  const { params } = useSelector( ( state: State ) => ( {
+    params: state.automaton.params
+  } ) );
 
   const arrayOfParams = useMemo(
     () => Object.keys( params ),
@@ -37,8 +38,6 @@ export const ParamList = ( { className }: ParamListProps ): JSX.Element => {
         <StyledParamListEntry
           key={ param }
           name={ param }
-          value={ automaton!.getParam( param )!.value }
-          status={ automaton!.getParam( param )!.status }
         />
       ) ) }
     </Root>

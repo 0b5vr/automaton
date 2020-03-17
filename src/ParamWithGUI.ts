@@ -20,7 +20,6 @@ export const PARAM_FX_ROW_MAX = 5;
  * Represents "Status code" of a {@link ParamStatus}.
  */
 export enum ParamStatusCode {
-  OK,
   NOT_USED,
   NAN_DETECTED,
 }
@@ -29,7 +28,6 @@ export enum ParamStatusCode {
  * Represents fatality of a {@link ParamStatus}.
  */
 export enum ParamStatusLevel {
-  OK,
   INFO,
   WARNING,
   ERROR,
@@ -128,12 +126,9 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
   /**
    * Its current status (warning / error).
    */
-  public get status(): ParamStatus {
+  public get status(): ParamStatus | null {
     if ( this.__statusList.length === 0 ) {
-      return {
-        code: ParamStatusCode.OK,
-        level: ParamStatusLevel.OK
-      };
+      return null;
     }
 
     return this.__statusList[ 0 ];
@@ -171,6 +166,23 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
 
     this.__emit( 'precalc' );
     this.__automaton.pokeRenderer();
+  }
+
+  /**
+   * This method is intended to be used by [[Automaton.update]].
+   * @param time The current time of the parent [[Automaton]]
+   * @returns whether the value has been changed or not
+   */
+  public update( time: number ): boolean {
+    // update
+    const isChanged = super.update( time );
+
+    // emit if the value is changed
+    if ( isChanged ) {
+      this.__emit( 'changeValue' );
+    }
+
+    return isChanged;
   }
 
   /**
@@ -790,7 +802,7 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
       this.__statusList.sort( ( a, b ) => b.level - a.level );
     }
 
-    this.__emit( 'status' );
+    this.__emit( 'updateStatus' );
   }
 
   /**
@@ -859,8 +871,9 @@ export interface ParamWithGUIEvents {
   createFx: { id: string; fx: FxSection & WithID };
   updateFx: { id: string; fx: FxSection & WithID };
   removeFx: { id: string };
+  changeValue: void;
   precalc: void;
-  status: void;
+  updateStatus: void;
 }
 
 export interface ParamWithGUI extends EventEmittable<ParamWithGUIEvents> {}

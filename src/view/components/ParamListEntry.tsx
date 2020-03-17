@@ -1,7 +1,7 @@
-import { ParamStatus, ParamStatusLevel } from '../../ParamWithGUI';
 import { useDispatch, useSelector } from 'react-redux';
 import { Colors } from '../constants/Colors';
 import { Icons } from '../icons/Icons';
+import { ParamStatusLevel } from '../../ParamWithGUI';
 import React from 'react';
 import { State } from '../states/store';
 import styled from 'styled-components';
@@ -42,14 +42,16 @@ const Root = styled.div<{ isSelected: boolean }>`
 export interface ParamListEntryProps {
   className?: string;
   name: string;
-  value: number;
-  status: ParamStatus;
 }
 
 export const ParamListEntry = ( props: ParamListEntryProps ): JSX.Element => {
-  const { className, name, value, status } = props;
+  const { className, name } = props;
   const dispatch = useDispatch();
-  const selectedParam = useSelector( ( state: State ) => state.curveEditor.selectedParam );
+  const { selectedParam, value, status } = useSelector( ( state: State ) => ( {
+    selectedParam: state.curveEditor.selectedParam,
+    value: state.automaton.params[ name ].value,
+    status: state.automaton.params[ name ].status
+  } ) );
 
   function handleClick(): void {
     dispatch( {
@@ -67,7 +69,7 @@ export const ParamListEntry = ( props: ParamListEntryProps ): JSX.Element => {
     >
       <Name>{ name }</Name>
       {
-        status.level === ParamStatusLevel.OK
+        status === null
           ? <Value>{ value.toFixed( 3 ) }</Value>
           : <Icon
             as={
