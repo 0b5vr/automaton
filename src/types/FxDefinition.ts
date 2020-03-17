@@ -7,10 +7,6 @@ export interface FxParam {
 }
 
 export interface FxContext {
-  /**
-   * Index value of the current sample.
-   */
-  i: number;
 
   /**
    * Index value of the current sample.
@@ -30,11 +26,6 @@ export interface FxContext {
   /**
    * Time of the current point.
    */
-  t: number;
-
-  /**
-   * Time of the current point.
-   */
   time: number;
 
   /**
@@ -50,17 +41,7 @@ export interface FxContext {
   /**
    * DeltaTime between current sample and previous sample.
    */
-  dt: number;
-
-  /**
-   * DeltaTime between current sample and previous sample.
-   */
   deltaTime: number;
-
-  /**
-   * Progress of current position of the fx section, in [0-1].
-   */
-  p: number;
 
   /**
    * Progress of current position of the fx section, in [0-1].
@@ -96,11 +77,6 @@ export interface FxContext {
    * Whether the sample is initial point of the fx section or not.
    */
   init: boolean;
-
-  /**
-   * Current input value.
-   */
-  v: number;
 
   /**
    * Current input value.

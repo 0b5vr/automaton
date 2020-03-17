@@ -103,19 +103,14 @@ export class Param {
       const tempLength = tempValues.length;
 
       const context: FxContext = {
-        i: i0,
         index: i0,
         i0: i0,
         i1: i1,
-        t: fx.time,
         time: fx.time,
         t0: fx.time,
         t1: fx.time + fx.length,
-        dt: 1.0 / this.__automaton.resolution,
         deltaTime: 1.0 / this.__automaton.resolution,
-        v: 0.0,
         value: 0.0,
-        p: 0.0,
         progress: 0.0,
         resolution: this.__automaton.resolution,
         length: fx.length,
@@ -127,10 +122,10 @@ export class Param {
       };
 
       for ( let i = 0; i < tempLength; i ++ ) {
-        context.i = context.index = i + i0;
-        context.t = context.time = context.i / this.__automaton.resolution;
-        context.v = context.value = this.__values[ i + i0 ];
-        context.p = context.progress = ( context.t - fx.time ) / fx.length;
+        context.index = i + i0;
+        context.time = context.index / this.__automaton.resolution;
+        context.value = this.__values[ i + i0 ];
+        context.progress = ( context.time - fx.time ) / fx.length;
         tempValues[ i ] = fxDef.func( context );
 
         context.init = false;
