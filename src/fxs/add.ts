@@ -7,6 +7,6 @@ export default [ 'add', {
     value: { name: 'Value', type: 'float', default: 1.0 }
   },
   func( context ) {
-    return context.v + context.params.value;
+    return context.value + context.params.value;
   }
 } as FxDefinition ];

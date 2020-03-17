@@ -12,13 +12,13 @@ export default [ 'lofi', {
   func( context ) {
     let t;
     if ( context.params.rate === 0.0 ) {
-      t = context.t;
+      t = context.time;
     } else if ( context.params.relative ) {
       t = context.t0 + Math.floor(
-        ( context.t - context.t0 ) * context.params.rate
+        ( context.time - context.t0 ) * context.params.rate
       ) / context.params.rate;
     } else {
-      t = Math.floor( ( context.t ) * context.params.rate ) / context.params.rate;
+      t = Math.floor( ( context.time ) * context.params.rate ) / context.params.rate;
     }
 
     let v = context.getValue( t );

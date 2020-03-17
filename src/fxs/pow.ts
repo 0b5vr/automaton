@@ -9,7 +9,7 @@ export default [ 'pow', {
     positive: { name: 'Force Positive', type: 'boolean', default: false }
   },
   func( context ) {
-    const v = context.v - context.params.bias;
+    const v = context.value - context.params.bias;
     const sign = context.params.positive ? 1.0 : Math.sign( v );
     return Math.pow(
       Math.abs( v ),

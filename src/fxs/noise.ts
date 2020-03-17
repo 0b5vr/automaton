@@ -28,7 +28,7 @@ export default [ 'noise', {
       }
     }
 
-    let v = context.v;
+    let v = context.value;
     const p = context.progress;
 
     for ( let i = 0; i < context.params.recursion; i ++ ) {

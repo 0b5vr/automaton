@@ -19,10 +19,10 @@ export default [ 'clamp', {
   },
   func( context ) {
     if ( context.params.smooth === 0.0 ) {
-      return clamp( context.v, context.params.min, context.params.max );
+      return clamp( context.value, context.params.min, context.params.max );
     }
 
-    const v = -smin( -context.params.min, -context.v, context.params.smooth );
+    const v = -smin( -context.params.min, -context.value, context.params.smooth );
     return smin( context.params.max, v, context.params.smooth );
   }
 } as FxDefinition ];

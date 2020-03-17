@@ -9,13 +9,13 @@ export default [ 'gravity', {
     preserve: { name: 'Preserve Velocity', type: 'boolean', default: false }
   },
   func( context ) {
-    const dt = context.dt;
-    const v = context.v;
+    const dt = context.deltaTime;
+    const v = context.value;
 
     if ( context.init ) {
       context.state.pos = v;
       if ( context.params.preserve ) {
-        const dv = v - context.getValue( context.t - dt );
+        const dv = v - context.getValue( context.time - dt );
         context.state.vel = dv / dt;
       } else {
         context.state.vel = 0.0;

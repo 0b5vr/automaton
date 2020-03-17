@@ -9,14 +9,14 @@ export default [ 'cds', {
     preserve: { name: 'Preserve Velocity', type: 'boolean', default: false }
   },
   func( context ) {
-    const dt = context.dt;
-    const v = context.v;
+    const dt = context.deltaTime;
+    const v = context.value;
     const k = context.params.factor;
 
     if ( context.init ) {
-      context.state.pos = context.v;
+      context.state.pos = context.value;
       if ( context.params.preserve ) {
-        const dv = v - context.getValue( context.t - dt );
+        const dv = v - context.getValue( context.time - dt );
         context.state.vel = dv / dt;
       } else {
         context.state.vel = 0.0;
