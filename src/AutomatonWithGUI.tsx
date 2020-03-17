@@ -181,28 +181,34 @@ export class AutomatonWithGUI extends Automaton
   }
 
   /**
-   * Set new length for this automaton instance.
+   * Set the new length and resolution for this automaton instance.
    * **Some nodes / fxs might be automatically removed / changed.**
    * Can be performed via GUI.
    * @param length New length for the automaton
    */
-  public setLength( length: number ): void {
-    // if length is invalid then throw error
+  public setLength( length: number, resolution: number ): void {
+    // if the length is invalid then throw error
     if ( isNaN( length ) ) {
       throw new Error( 'Automaton.setLength: length is invalid' );
     }
 
-    // if length is not changed then do fast-return
-    if ( length === this.length ) { return; }
+    // if the resolution is invalid then throw error
+    if ( isNaN( length ) ) {
+      throw new Error( 'Automaton.setLength: length is invalid' );
+    }
+
+    // if both length and resolution are not changed then do fast-return
+    if ( length === this.length && resolution === this.resolution ) { return; }
+
+    // set the length / resolution
+    this.__length = length;
+    this.__resolution = resolution;
 
     // changeLength is a good method
-    Object.values( this.__params ).forEach( ( param ) => param.changeLength( length ) );
-
-    // finally set the length
-    this.__length = length;
+    Object.values( this.__params ).forEach( ( param ) => param.changeLength() );
 
     // emit an event
-    this.__emit( 'changeLength', { length } );
+    this.__emit( 'changeLength', { length, resolution } );
 
     // It's irreversible operation, sorry
     // this.dropHistory();
@@ -211,15 +217,6 @@ export class AutomatonWithGUI extends Automaton
     // if ( this.__vue ) {
     //   this.__vue.$emit( 'changedLength' );
     // }
-  }
-
-  /**
-   * Set new resolution for this automaton instance.
-   * @param resolultion New resolution for the automaton lul
-   */
-  public setResolution( resolultion: number ): void { // lul
-    this.__resolution = resolultion; // lul
-    this.precalcAll();
   }
 
   /**
@@ -446,7 +443,7 @@ export interface AutomatonWithGUIEvents {
   createParam: { name: string; param: ParamWithGUI };
   removeParam: { name: string };
   addFxDefinition: { name: string; fxDefinition: FxDefinition };
-  changeLength: { length: number };
+  changeLength: { length: number; resolution: number };
   updateGUISettings: { settings: GUISettings };
 }
 

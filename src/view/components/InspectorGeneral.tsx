@@ -45,19 +45,28 @@ export interface InspectorGeneralProps {
 
 export const InspectorGeneral = ( { className }: InspectorGeneralProps ): JSX.Element => {
   const dispatch = useDispatch();
-  const automaton = useSelector( ( state: State ) => state.automaton.instance );
-  const settingsMode = useSelector( ( state: State ) => state.settings.mode );
+  const {
+    automaton,
+    settingsMode,
+    initLength,
+    initResolution
+  } = useSelector( ( state: State ) => ( {
+    automaton: state.automaton.instance,
+    settingsMode: state.settings.mode,
+    initLength: state.automaton.length,
+    initResolution: state.automaton.resolution
+  } ) );
   const [ length, setLength ] = useState( 0.0 );
   const [ resolution, setResolution ] = useState( 0.0 );
 
   useEffect(
     () => {
       if ( settingsMode === 'general' ) {
-        setLength( automaton?.length || 1.0 );
-        setResolution( automaton?.resolution || 1.0 );
+        setLength( initLength );
+        setResolution( initResolution );
       }
     },
-    [ automaton, settingsMode ]
+    [ automaton, settingsMode, initLength, initResolution ]
   );
 
   return <>
@@ -92,8 +101,7 @@ export const InspectorGeneral = ( { className }: InspectorGeneralProps ): JSX.El
         <ConfirmNotice>This cannot be undone!</ConfirmNotice>
         <ConfirmButton
           onClick={ () => {
-            automaton.setLength( length );
-            automaton.setResolution( resolution );
+            automaton.setLength( length, resolution );
 
             dispatch( {
               type: 'History/Drop'

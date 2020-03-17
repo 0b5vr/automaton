@@ -688,21 +688,20 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
   }
 
   /**
-   * Call when you need to change automaton length.
+   * Call when you need to change the length of the automaton.
    * This is very hardcore method. Should not be called by anywhere except {@link AutomatonWithGUI#setLength}.
-   * @param length Desired length
    */
-  public changeLength( length: number ): void {
+  public changeLength(): void {
     // iterating nodes from the tail
     for ( let i = this.__nodes.length - 1; 0 <= i; i -- ) {
       const node = this.__nodes[ i ];
 
-      if ( length < node.time ) {
+      if ( this.__automaton.length < node.time ) {
         // if the node time is larger than the new length, remove it
         this.__nodes.splice( i, 1 );
         this.__emit( 'removeNode', { id: node.$id } );
 
-      } else if ( node.time === length ) {
+      } else if ( node.time === this.__automaton.length ) {
         // if the node time is same as the new length, remove the out handle
         delete node.out;
         this.__emit( 'updateNode', { id: node.$id, node } );
@@ -717,7 +716,7 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
 
         // if the node time is smaller than the new length, make a new last node then break
         const newNode = {
-          time: length,
+          time: this.__automaton.length,
           value: 0.0,
           in: { time: -PARAM_DEFAULT_HANDLE_LENGTH, value: 0.0 },
           $id: genID()
@@ -733,20 +732,22 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
     for ( let i = this.__fxs.length - 1; 0 <= i; i -- ) {
       const fx = this.__fxs[ i ];
 
-      if ( length < fx.time ) {
+      if ( this.__automaton.length < fx.time ) {
         // if the beginning time of the fx is larger than the new length, remove it
         this.__fxs.splice( i, 1 );
         this.__emit( 'removeFx', { id: fx.$id } );
 
-      } else if ( length < ( fx.time + fx.length ) ) {
+      } else if ( this.__automaton.length < ( fx.time + fx.length ) ) {
         // if the ending time of the fx is larger than the new length, shorten it
-        fx.length = length - fx.time;
+        fx.length = this.__automaton.length - fx.time;
         this.__emit( 'updateFx', { id: fx.$id, fx } );
 
       }
     }
 
-    this.__values = new Float32Array( this.__automaton.resolution * length + 1 );
+    this.__values = new Float32Array(
+      Math.ceil( this.__automaton.resolution * this.__automaton.length )
+    );
     this.precalc();
   }
 

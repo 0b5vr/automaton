@@ -125,7 +125,8 @@ export const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JS
 
       dispatch( {
         type: 'Automaton/UpdateLength',
-        length: automaton.length
+        length: automaton.length,
+        resolution: automaton.resolution
       } );
 
       dispatch( {
@@ -152,10 +153,11 @@ export const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JS
         } );
       } );
 
-      automaton.on( 'changeLength', ( { length } ) => {
+      automaton.on( 'changeLength', ( { length, resolution } ) => {
         dispatch( {
           type: 'Automaton/UpdateLength',
-          length
+          length,
+          resolution
         } );
       } );
 

@@ -19,6 +19,7 @@ export interface State {
   isPlaying: boolean;
   time: number;
   length: number;
+  resolution: number;
   guiSettings: GUISettings;
 }
 
@@ -28,6 +29,7 @@ export const initialState: Readonly<State> = {
   isPlaying: false,
   time: 0.0,
   length: 1.0,
+  resolution: 10.0,
   guiSettings: jsonCopy( defaultGUISettings )
 };
 
@@ -69,6 +71,7 @@ export type Action = {
 } | {
   type: 'Automaton/UpdateLength';
   length: number;
+  resolution: number;
 } | {
   type: 'Automaton/UpdateGUISettings';
   settings: GUISettings;
@@ -100,6 +103,7 @@ export const reducer: Reducer<State, Action> = ( state = initialState, action ) 
       newState.time = action.time;
     } else if ( action.type === 'Automaton/UpdateLength' ) {
       newState.length = action.length;
+      newState.resolution = action.resolution;
     } else if ( action.type === 'Automaton/UpdateGUISettings' ) {
       newState.guiSettings = action.settings;
     }
