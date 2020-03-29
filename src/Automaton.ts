@@ -175,7 +175,7 @@ export class Automaton {
    */
   protected __auto(
     name: string,
-    listener?: ( events: ChannelUpdateEvent ) => void
+    listener?: ( event: ChannelUpdateEvent ) => void
   ): number {
     if ( listener ) {
       this.__channels[ name ].subscribe( listener );
