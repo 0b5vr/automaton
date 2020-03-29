@@ -2,7 +2,6 @@ import { Automaton } from './Automaton';
 import { ChannelItem } from './ChannelItem';
 import { Curve } from './Curve';
 import { SerializedChannelItemCurve } from './types/SerializedChannelItemCurve';
-import { mod } from './utils/mod';
 
 /**
  * Represents a curve item of a [[Channel]].
