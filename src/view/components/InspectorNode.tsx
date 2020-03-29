@@ -21,11 +21,11 @@ export interface InspectorNodeProps {
 
 export const InspectorNode = ( { className, node }: InspectorNodeProps ): JSX.Element => {
   const automaton = useSelector( ( state: State ) => state.automaton.instance );
-  const selectedParam = useSelector( ( state: State ) => state.curveEditor.selectedParam );
-  const param = automaton && selectedParam && automaton.getParam( selectedParam ) || null;
+  const selectedChannel = useSelector( ( state: State ) => state.curveEditor.selectedChannel );
+  const channel = automaton && selectedChannel && automaton.getChannel( selectedChannel ) || null;
 
   return <>
-    { param && (
+    { channel && (
       <Root className={ className }>
         <InspectorHeader text="Node" />
 
@@ -35,7 +35,7 @@ export const InspectorNode = ( { className, node }: InspectorNodeProps ): JSX.El
           <NumberParam
             type="float"
             value={ node.time }
-            onChange={ ( value ) => { param.moveNodeTime( node.$id, value ); } }
+            onChange={ ( value ) => { channel.moveNodeTime( node.$id, value ); } }
             historyDescription="Change Node Time"
           />
         </InspectorItem>
@@ -43,7 +43,7 @@ export const InspectorNode = ( { className, node }: InspectorNodeProps ): JSX.El
           <NumberParam
             type="float"
             value={ node.value }
-            onChange={ ( value ) => { param.moveNodeValue( node.$id, value ); } }
+            onChange={ ( value ) => { channel.moveNodeValue( node.$id, value ); } }
             historyDescription="Change Node Value"
           />
         </InspectorItem>
@@ -54,7 +54,7 @@ export const InspectorNode = ( { className, node }: InspectorNodeProps ): JSX.El
           <NumberParam
             type="float"
             value={ node.in?.time || 0.0 }
-            onChange={ ( value ) => { param.moveHandleTime( node.$id, 'in', value ); } }
+            onChange={ ( value ) => { channel.moveHandleTime( node.$id, 'in', value ); } }
             historyDescription="Change Node Handle Time"
           />
         </InspectorItem>
@@ -62,7 +62,7 @@ export const InspectorNode = ( { className, node }: InspectorNodeProps ): JSX.El
           <NumberParam
             type="float"
             value={ node.in?.value || 0.0 }
-            onChange={ ( value ) => { param.moveHandleValue( node.$id, 'in', value ); } }
+            onChange={ ( value ) => { channel.moveHandleValue( node.$id, 'in', value ); } }
             historyDescription="Change Node Handle Value"
           />
         </InspectorItem>
@@ -73,7 +73,7 @@ export const InspectorNode = ( { className, node }: InspectorNodeProps ): JSX.El
           <NumberParam
             type="float"
             value={ node.out?.time || 0.0 }
-            onChange={ ( value ) => { param.moveHandleTime( node.$id, 'out', value ); } }
+            onChange={ ( value ) => { channel.moveHandleTime( node.$id, 'out', value ); } }
             historyDescription="Change Node Handle Time"
           />
         </InspectorItem>
@@ -81,7 +81,7 @@ export const InspectorNode = ( { className, node }: InspectorNodeProps ): JSX.El
           <NumberParam
             type="float"
             value={ node.out?.value || 0.0 }
-            onChange={ ( value ) => { param.moveHandleValue( node.$id, 'out', value ); } }
+            onChange={ ( value ) => { channel.moveHandleValue( node.$id, 'out', value ); } }
             historyDescription="Change Node Handle Value"
           />
         </InspectorItem>

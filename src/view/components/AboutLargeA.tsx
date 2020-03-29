@@ -25,19 +25,19 @@ export interface AboutLargeAProps {
 }
 
 export const AboutLargeA = ( { className }: AboutLargeAProps ): JSX.Element => {
-  const { time, automaton, selectedParam } = useSelector( ( state: State ) => ( {
+  const { time, automaton, selectedChannel } = useSelector( ( state: State ) => ( {
     time: state.automaton.time,
     automaton: state.automaton.instance,
-    selectedParam: state.curveEditor.selectedParam
+    selectedChannel: state.curveEditor.selectedChannel
   } ) );
-  const param = automaton && selectedParam && automaton.getParam( selectedParam )!;
+  const channel = automaton && selectedChannel && automaton.getChannel( selectedChannel )!;
 
   const values = useMemo(
     () => new Array( 10 ).fill( 0 ).map( ( _, i ) => {
       const t = time - i * 0.00166;
-      return param ? ( 360.0 * param.getValue( t ) ) : 0.0;
+      return channel ? ( 360.0 * channel.getValue( t ) ) : 0.0;
     } ),
-    [ time, param ]
+    [ time, channel ]
   );
 
   return <Root className={ className }>

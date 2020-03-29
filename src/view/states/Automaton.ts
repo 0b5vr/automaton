@@ -1,7 +1,7 @@
 import { BezierNode, FxDefinition, FxSection } from '@fms-cat/automaton';
 import { GUISettings, defaultGUISettings } from '../../types/GUISettings';
 import { AutomatonWithGUI } from '../../AutomatonWithGUI';
-import { ParamStatus } from '../../ParamWithGUI';
+import { ChannelStatus } from '../../ChannelWithGUI';
 import { Reducer } from 'redux';
 import { WithID } from '../../types/WithID';
 import { jsonCopy } from '../../utils/jsonCopy';
@@ -11,10 +11,10 @@ import { produce } from 'immer';
 export interface State {
   instance?: AutomatonWithGUI;
   fxDefinitions: { [ name: string ]: FxDefinition };
-  params: {
+  channels: {
     [ name: string ]: {
       value: number;
-      status: ParamStatus | null;
+      status: ChannelStatus | null;
       nodes: { [ id: string ]: BezierNode & WithID };
       fxs: { [ id: string ]: FxSection & WithID };
     };
@@ -27,7 +27,7 @@ export interface State {
 }
 
 export const initialState: Readonly<State> = {
-  params: {},
+  channels: {},
   fxDefinitions: {},
   isPlaying: false,
   time: 0.0,
@@ -45,33 +45,33 @@ export type Action = {
   name: string;
   fxDefinition: FxDefinition;
 } | {
-  type: 'Automaton/CreateParam';
-  param: string;
+  type: 'Automaton/CreateChannel';
+  channel: string;
 } | {
-  type: 'Automaton/UpdateParamValue';
-  param: string;
+  type: 'Automaton/UpdateChannelValue';
+  channel: string;
   value: number;
 } | {
-  type: 'Automaton/UpdateParamStatus';
-  param: string;
-  status: ParamStatus | null;
+  type: 'Automaton/UpdateChannelStatus';
+  channel: string;
+  status: ChannelStatus | null;
 } | {
-  type: 'Automaton/UpdateParamNode';
-  param: string;
+  type: 'Automaton/UpdateChannelNode';
+  channel: string;
   id: string;
   node: BezierNode & WithID;
 } | {
-  type: 'Automaton/RemoveParamNode';
-  param: string;
+  type: 'Automaton/RemoveChannelNode';
+  channel: string;
   id: string;
 } | {
-  type: 'Automaton/UpdateParamFx';
-  param: string;
+  type: 'Automaton/UpdateChannelFx';
+  channel: string;
   id: string;
   fx: FxSection & WithID;
 } | {
-  type: 'Automaton/RemoveParamFx';
-  param: string;
+  type: 'Automaton/RemoveChannelFx';
+  channel: string;
   id: string;
 } | {
   type: 'Automaton/UpdateIsPlaying';
@@ -95,25 +95,25 @@ export const reducer: Reducer<State, Action> = ( state = initialState, action ) 
       newState.instance = action.automaton;
     } else if ( action.type === 'Automaton/AddFxDefinition' ) {
       newState.fxDefinitions[ action.name ] = action.fxDefinition;
-    } else if ( action.type === 'Automaton/CreateParam' ) {
-      newState.params[ action.param ] = {
+    } else if ( action.type === 'Automaton/CreateChannel' ) {
+      newState.channels[ action.channel ] = {
         value: 0.0,
         status: null,
         nodes: {},
         fxs: {}
       };
-    } else if ( action.type === 'Automaton/UpdateParamValue' ) {
-      newState.params[ action.param ].value = action.value;
-    } else if ( action.type === 'Automaton/UpdateParamStatus' ) {
-      newState.params[ action.param ].status = action.status;
-    } else if ( action.type === 'Automaton/UpdateParamNode' ) {
-      newState.params[ action.param ].nodes[ action.id ] = jsonCopy( action.node );
-    } else if ( action.type === 'Automaton/RemoveParamNode' ) {
-      delete newState.params[ action.param ].nodes[ action.id ];
-    } else if ( action.type === 'Automaton/UpdateParamFx' ) {
-      newState.params[ action.param ].fxs[ action.id ] = jsonCopy( action.fx );
-    } else if ( action.type === 'Automaton/RemoveParamFx' ) {
-      delete newState.params[ action.param ].fxs[ action.id ];
+    } else if ( action.type === 'Automaton/UpdateChannelValue' ) {
+      newState.channels[ action.channel ].value = action.value;
+    } else if ( action.type === 'Automaton/UpdateChannelStatus' ) {
+      newState.channels[ action.channel ].status = action.status;
+    } else if ( action.type === 'Automaton/UpdateChannelNode' ) {
+      newState.channels[ action.channel ].nodes[ action.id ] = jsonCopy( action.node );
+    } else if ( action.type === 'Automaton/RemoveChannelNode' ) {
+      delete newState.channels[ action.channel ].nodes[ action.id ];
+    } else if ( action.type === 'Automaton/UpdateChannelFx' ) {
+      newState.channels[ action.channel ].fxs[ action.id ] = jsonCopy( action.fx );
+    } else if ( action.type === 'Automaton/RemoveChannelFx' ) {
+      delete newState.channels[ action.channel ].fxs[ action.id ];
     } else if ( action.type === 'Automaton/UpdateIsPlaying' ) {
       newState.isPlaying = action.isPlaying;
     } else if ( action.type === 'Automaton/UpdateTime' ) {

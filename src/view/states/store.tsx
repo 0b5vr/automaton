@@ -45,4 +45,8 @@ const reducer = combineReducers<State>( {
 } );
 
 // == store ========================================================================================
-export const store = createStore( reducer );
+const devtools = ( window as any ).__REDUX_DEVTOOLS_EXTENSION__;
+export const store = createStore(
+  reducer,
+  devtools && devtools()
+);

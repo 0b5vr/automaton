@@ -21,6 +21,6 @@ export const defaultDataWithGUI: Readonly<SerializedDataWithGUI> = {
   version: process.env.VERSION!,
   length: 1.0,
   resolution: 100,
-  params: {},
+  channels: {},
   guiSettings: defaultGUISettings
 };

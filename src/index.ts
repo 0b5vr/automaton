@@ -1,2 +1,2 @@
 export { AutomatonWithGUI } from './AutomatonWithGUI';
-export { ParamWithGUI } from './ParamWithGUI';
+export { ChannelWithGUI } from './ChannelWithGUI';

@@ -3,7 +3,7 @@ export function compat2( data: any ): any {
     version: data.v,
     length: data.length,
     resolution: data.resolution,
-    params: data.params,
+    channels: data.channels || data.params,
     guiSettings: {
       snapTimeActive: data.snapActive || false,
       snapTimeInterval: data.snapTime || 0.1,

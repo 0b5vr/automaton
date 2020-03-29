@@ -1,7 +1,7 @@
 import { CurveEditorRange, CurveEditorSize, v2y, x2t } from '../utils/CurveEditorUtils';
 import React, { useEffect, useMemo, useState } from 'react';
+import { ChannelWithGUI } from '../../ChannelWithGUI';
 import { Colors } from '../constants/Colors';
-import { ParamWithGUI } from '../../ParamWithGUI';
 import { State } from '../states/store';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
@@ -20,14 +20,14 @@ const Root = styled.g`
 
 // == functions ====================================================================================
 function calcPoints(
-  param: ParamWithGUI,
+  channel: ChannelWithGUI,
   range: CurveEditorRange,
   size: CurveEditorSize
 ): string {
   let newPoints = '';
   for ( let x = 0; x < size.width; x ++ ) {
     const t = x2t( x, range, size.width );
-    const v = param.getValue( t );
+    const v = channel.getValue( t );
     const y = v2y( isNaN( v ) ? 0.0 : v, range, size.height );
     newPoints += `${ x },${ y } `;
   }
@@ -40,25 +40,25 @@ export interface CurveEditorGraphProps {
 }
 
 export const CurveEditorGraph = ( { className }: CurveEditorGraphProps ): JSX.Element => {
-  const selectedParam = useSelector( ( state: State ) => state.curveEditor.selectedParam );
+  const selectedChannel = useSelector( ( state: State ) => state.curveEditor.selectedChannel );
   const range = useSelector( ( state: State ) => state.curveEditor.range );
   const size = useSelector( ( state: State ) => state.curveEditor.size );
   const automaton = useSelector( ( state: State ) => state.automaton.instance );
-  const param = selectedParam && automaton?.getParam( selectedParam ) || null;
+  const channel = selectedChannel && automaton?.getChannel( selectedChannel ) || null;
 
   const [ points, setPoints ] = useState( '' );
 
   useEffect( // update points when precalc happened
     () => {
-      if ( !param ) { return; }
+      if ( !channel ) { return; }
 
-      const handlePrecalc = (): void => setPoints( calcPoints( param, range, size ) );
+      const handlePrecalc = (): void => setPoints( calcPoints( channel, range, size ) );
       handlePrecalc();
 
-      param.on( 'precalc', handlePrecalc );
-      return () => param.off( 'precalc', handlePrecalc );
+      channel.on( 'precalc', handlePrecalc );
+      return () => channel.off( 'precalc', handlePrecalc );
     },
-    [ param, range, size ]
+    [ channel, range, size ]
   );
 
   return (

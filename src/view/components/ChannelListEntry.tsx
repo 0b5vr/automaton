@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux';
+import { ChannelStatusLevel } from '../../ChannelWithGUI';
 import { Colors } from '../constants/Colors';
 import { Icons } from '../icons/Icons';
-import { ParamStatusLevel } from '../../ParamWithGUI';
 import React from 'react';
 import { State } from '../states/store';
 import styled from 'styled-components';
@@ -39,24 +39,24 @@ const Root = styled.div<{ isSelected: boolean }>`
 `;
 
 // == element ======================================================================================
-export interface ParamListEntryProps {
+export interface ChannelListEntryProps {
   className?: string;
   name: string;
 }
 
-export const ParamListEntry = ( props: ParamListEntryProps ): JSX.Element => {
+export const ChannelListEntry = ( props: ChannelListEntryProps ): JSX.Element => {
   const { className, name } = props;
   const dispatch = useDispatch();
-  const { selectedParam, value, status } = useSelector( ( state: State ) => ( {
-    selectedParam: state.curveEditor.selectedParam,
-    value: state.automaton.params[ name ].value,
-    status: state.automaton.params[ name ].status
+  const { selectedChannel, value, status } = useSelector( ( state: State ) => ( {
+    selectedChannel: state.curveEditor.selectedChannel,
+    value: state.automaton.channels[ name ].value,
+    status: state.automaton.channels[ name ].status
   } ) );
 
   function handleClick(): void {
     dispatch( {
-      type: 'CurveEditor/SelectParam',
-      param: name
+      type: 'CurveEditor/SelectChannel',
+      channel: name
     } );
   }
 
@@ -64,7 +64,7 @@ export const ParamListEntry = ( props: ParamListEntryProps ): JSX.Element => {
     <Root
       className={ className }
       onClick={ handleClick }
-      isSelected={ selectedParam === name }
+      isSelected={ selectedChannel === name }
       data-stalker={ name }
     >
       <Name>{ name }</Name>
@@ -73,7 +73,7 @@ export const ParamListEntry = ( props: ParamListEntryProps ): JSX.Element => {
           ? <Value>{ value.toFixed( 3 ) }</Value>
           : <Icon
             as={
-              status.level === ParamStatusLevel.ERROR
+              status.level === ChannelStatusLevel.ERROR
                 ? Icons.Error
                 : Icons.Warning
             }

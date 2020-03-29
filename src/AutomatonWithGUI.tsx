@@ -1,9 +1,9 @@
-import { Automaton, AutomatonOptions, FxDefinition, FxParam, SerializedParam } from '@fms-cat/automaton';
+import { Automaton, AutomatonOptions, FxDefinition, FxParam, SerializedChannel } from '@fms-cat/automaton';
 import { GUISettings, defaultGUISettings } from './types/GUISettings';
 import { SerializedDataWithGUI, defaultDataWithGUI } from './types/SerializedDataWithGUI';
 import { App } from './view/components/App';
+import { ChannelWithGUI } from './ChannelWithGUI';
 import { EventEmittable } from './mixins/EventEmittable';
-import { ParamWithGUI } from './ParamWithGUI';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Serializable } from './types/Serializable';
@@ -46,9 +46,9 @@ export class AutomatonWithGUI extends Automaton
   protected __version: string = process.env.VERSION!;
 
   /**
-   * Params of the timeline.
+   * Channels of the timeline.
    */
-  protected __params!: { [ name: string ]: ParamWithGUI };
+  protected __channels!: { [ name: string ]: ChannelWithGUI };
 
   /**
    * It's currently playing or not.
@@ -68,10 +68,10 @@ export class AutomatonWithGUI extends Automaton
   }
 
   /**
-   * A map of params.
+   * A map of channels.
    */
-  public get params(): { [ name: string ]: ParamWithGUI } {
-    return this.__params;
+  public get channels(): { [ name: string ]: ChannelWithGUI } {
+    return this.__channels;
   }
 
   /**
@@ -205,7 +205,7 @@ export class AutomatonWithGUI extends Automaton
     this.__resolution = resolution;
 
     // changeLength is a good method
-    Object.values( this.__params ).forEach( ( param ) => param.changeLength() );
+    Object.values( this.__channels ).forEach( ( channel ) => channel.changeLength() );
 
     // emit an event
     this.__emit( 'changeLength', { length, resolution } );
@@ -220,43 +220,41 @@ export class AutomatonWithGUI extends Automaton
   }
 
   /**
-   * Create a new param.
-   * @param name Name of param
-   * @returns Created param
+   * Create a new channel.
+   * @param name Name of channel
+   * @returns Created channel
    */
-  public createParam( name: string, data?: SerializedParam ): ParamWithGUI {
-    const param = new ParamWithGUI( this, data );
-    // Vue.set( this.__params, name, param ); 🔥
-    this.__params[ name ] = param;
-    this.__emit( 'createParam', { name, param } );
-    return param;
+  public createChannel( name: string, data?: SerializedChannel ): ChannelWithGUI {
+    const channel = new ChannelWithGUI( this, data );
+    this.__channels[ name ] = channel;
+    this.__emit( 'createChannel', { name, channel: channel } );
+    return channel;
   }
 
   /**
-   * Remove a param.
-   * @param name Name of param
+   * Remove a channel.
+   * @param name Name of channel
    */
-  public removeParam( name: string ): void {
-    // Vue.delete( this.__params, name ); 🔥
-    delete this.__params[ name ];
-    this.__emit( 'removeParam', { name } );
+  public removeChannel( name: string ): void {
+    delete this.__channels[ name ];
+    this.__emit( 'removeChannel', { name } );
   }
 
   /**
-   * Get a param.
-   * @param name Name of the param
-   * @returns Param object
+   * Get a channel.
+   * @param name Name of the channel
+   * @returns The channel
    */
-  public getParam( name: string ): ParamWithGUI | null {
-    return this.__params[ name ] || null;
+  public getChannel( name: string ): ChannelWithGUI | null {
+    return this.__channels[ name ] || null;
   }
 
   /**
-   * Return list of name of params. Sorted.
-   * @returns List of name of params
+   * Return list of name of channels. Sorted.
+   * @returns List of name of channels
    */
-  public getParamNames(): string[] {
-    return Object.keys( this.__params ).sort();
+  public getChannelNames(): string[] {
+    return Object.keys( this.__channels ).sort();
   }
 
   /**
@@ -310,11 +308,11 @@ export class AutomatonWithGUI extends Automaton
   }
 
   /**
-   * Return count of params.
-   * @returns Count of params
+   * Return count of channels.
+   * @returns Count of channels
    */
-  public countParams(): number {
-    return Object.keys( this.__params ).length;
+  public countChannels(): number {
+    return Object.keys( this.__channels ).length;
   }
 
   /**
@@ -349,7 +347,7 @@ export class AutomatonWithGUI extends Automaton
       version: this.version,
       length: this.length,
       resolution: this.resolution,
-      params: this.__serializeParamList(),
+      channels: this.__serializeChannelList(),
       guiSettings: this.guiSettings,
     };
   }
@@ -388,21 +386,21 @@ export class AutomatonWithGUI extends Automaton
     );
   }
 
-  private __serializeParamList(): { [ name: string ]: SerializedParam } {
-    return Object.keys( this.__params ).reduce(
-      ( params, name ) => {
-        params[ name ] = this.__params[ name ].serialize();
-        return params;
+  private __serializeChannelList(): { [ name: string ]: SerializedChannel } {
+    return Object.keys( this.__channels ).reduce(
+      ( channels, name ) => {
+        channels[ name ] = this.__channels[ name ].serialize();
+        return channels;
       },
-      {} as { [ name: string ]: SerializedParam }
+      {} as { [ name: string ]: SerializedChannel }
     );
   }
 
   /**
    * Assigned to `Automaton.auto` at constructor.
-   * @param name The name of the param
-   * @param listener A function that will be executed when the param changes its value
-   * @returns Current value of the param
+   * @param name The name of the channel
+   * @param listener A function that will be executed when the channel changes its value
+   * @returns Current value of the channel
    */
   protected __auto(
     name: string,
@@ -417,17 +415,17 @@ export class AutomatonWithGUI extends Automaton
       const names = args[ 0 ] as string[];
 
       for ( const name of names ) {
-        let param = this.__params[ name ];
-        if ( !param ) { param = this.createParam( name ); }
-        param.markAsUsed();
+        let channel = this.__channels[ name ];
+        if ( !channel ) { channel = this.createChannel( name ); }
+        channel.markAsUsed();
       }
 
     } else { // the first argument is string
       const name = args[ 0 ] as string;
 
-      let param = this.__params[ name ];
-      if ( !param ) { param = this.createParam( name ); }
-      param.markAsUsed();
+      let channel = this.__channels[ name ];
+      if ( !channel ) { channel = this.createChannel( name ); }
+      channel.markAsUsed();
     }
 
     return super.__auto( args[ 0 ], args[ 1 ] );
@@ -440,8 +438,8 @@ export interface AutomatonWithGUIEvents {
   seek: { time: number };
   load: void;
   update: { time: number };
-  createParam: { name: string; param: ParamWithGUI };
-  removeParam: { name: string };
+  createChannel: { name: string; channel: ChannelWithGUI };
+  removeChannel: { name: string };
   addFxDefinition: { name: string; fxDefinition: FxDefinition };
   changeLength: { length: number; resolution: number };
   updateGUISettings: { settings: GUISettings };

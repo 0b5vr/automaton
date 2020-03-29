@@ -1,4 +1,4 @@
-import { BezierNode, FxSection, Param, SerializedParam } from '@fms-cat/automaton';
+import { BezierNode, Channel, FxSection, SerializedChannel } from '@fms-cat/automaton';
 import { AutomatonWithGUI } from './AutomatonWithGUI';
 import { EventEmittable } from './mixins/EventEmittable';
 import { Serializable } from './types/Serializable';
@@ -12,41 +12,41 @@ import { removeID } from './utils/removeID';
 /**
  * Handles of a new node will be created in this length.
  */
-export const PARAM_DEFAULT_HANDLE_LENGTH = 0.5;
+export const CHANNEL_DEFAULT_HANDLE_LENGTH = 0.5;
 
-export const PARAM_FX_ROW_MAX = 5;
+export const CHANNEL_FX_ROW_MAX = 5;
 
 /**
- * Represents "Status code" of a {@link ParamStatus}.
+ * Represents "Status code" of a {@link ChannelStatus}.
  */
-export enum ParamStatusCode {
+export enum ChannelStatusCode {
   NOT_USED,
   NAN_DETECTED,
 }
 
 /**
- * Represents fatality of a {@link ParamStatus}.
+ * Represents fatality of a {@link ChannelStatus}.
  */
-export enum ParamStatusLevel {
+export enum ChannelStatusLevel {
   INFO,
   WARNING,
   ERROR,
 }
 
 /**
- * Interface represents a status of a {@link Param}.
+ * Interface represents a status of a {@link ChannelWithGUI}.
  * Status: info / warning / error...
  */
-export interface ParamStatus {
+export interface ChannelStatus {
   /**
    * Status code of the status.
    */
-  code: ParamStatusCode;
+  code: ChannelStatusCode;
 
   /**
    * Fatality of the status.
    */
-  level: ParamStatusLevel;
+  level: ChannelStatusLevel;
 
   /**
    * Message of the status.
@@ -55,13 +55,13 @@ export interface ParamStatus {
 }
 
 /**
- * It represents a param of Automaton.
+ * It represents a channel of Automaton.
  * It's `automaton.js` and `automaton.min.js` version.
  * It has even more pretty APIs yay
  * @param automaton Parent automaton
- * @param data Data of the param
+ * @param data Data of the channel
  */
-export class ParamWithGUI extends Param implements Serializable<SerializedParam> {
+export class ChannelWithGUI extends Channel implements Serializable<SerializedChannel> {
   /**
    * The parent automaton.
    */
@@ -81,7 +81,7 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
    * List of status (warning / error).
    * The array is empty = you're cool
    */
-  private __statusList: ParamStatus[];
+  private __statusList: ChannelStatus[];
 
   /**
    * List of bezier nodes.
@@ -97,18 +97,18 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
     return this.__fxs;
   }
 
-  public constructor( automaton: AutomatonWithGUI, data?: SerializedParam ) {
+  public constructor( automaton: AutomatonWithGUI, data?: SerializedChannel ) {
     super( automaton, data || {
       nodes: [
         {
           time: 0.0,
           value: 0.0,
-          out: { time: PARAM_DEFAULT_HANDLE_LENGTH, value: 0.0 }
+          out: { time: CHANNEL_DEFAULT_HANDLE_LENGTH, value: 0.0 }
         },
         {
           time: automaton.length,
           value: 0.0,
-          in: { time: -PARAM_DEFAULT_HANDLE_LENGTH, value: 0.0 }
+          in: { time: -CHANNEL_DEFAULT_HANDLE_LENGTH, value: 0.0 }
         }
       ],
       fxs: []
@@ -116,9 +116,9 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
 
     this.__statusList = [
       {
-        code: ParamStatusCode.NOT_USED,
-        level: ParamStatusLevel.WARNING,
-        message: 'This param has not been used yet'
+        code: ChannelStatusCode.NOT_USED,
+        level: ChannelStatusLevel.WARNING,
+        message: 'This channel has not been used yet'
       }
     ];
   }
@@ -126,7 +126,7 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
   /**
    * Its current status (warning / error).
    */
-  public get status(): ParamStatus | null {
+  public get status(): ChannelStatus | null {
     if ( this.__statusList.length === 0 ) {
       return null;
     }
@@ -135,10 +135,10 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
   }
 
   /**
-   * Load a param data.
-   * @param data Data of param
+   * Load a channel data.
+   * @param data Data of channel
    */
-  public deserialize( data: SerializedParam ): void {
+  public deserialize( data: SerializedChannel ): void {
     super.deserialize( jsonCopy( data ) );
 
     this.__nodes.forEach( ( node ) => node.$id = genID() );
@@ -159,9 +159,9 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
       }
     } );
     this.__setStatus( b, {
-      code: ParamStatusCode.NAN_DETECTED,
-      level: ParamStatusLevel.ERROR,
-      message: 'This param has NaN value'
+      code: ChannelStatusCode.NAN_DETECTED,
+      level: ChannelStatusLevel.ERROR,
+      message: 'This channel has NaN value'
     } );
 
     this.__emit( 'precalc' );
@@ -186,17 +186,17 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
   }
 
   /**
-   * Mark this param as used.
+   * Mark this channel as used.
    */
   public markAsUsed(): void {
     this.__setStatus( false, {
-      code: ParamStatusCode.NOT_USED,
-      level: ParamStatusLevel.WARNING
+      code: ChannelStatusCode.NOT_USED,
+      level: ChannelStatusLevel.WARNING
     } );
   }
 
   /**
-   * Return how many node the param currently have.
+   * Return how many node the channel currently have.
    * @returns Nodes count
    */
   public getNumNode(): number {
@@ -207,7 +207,7 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
    * Serialize its current state.
    * @returns Serialized state
    */
-  public serialize(): SerializedParam {
+  public serialize(): SerializedChannel {
     return {
       nodes: this.__serializeNodes(),
       fxs: this.__serializeFxs()
@@ -249,8 +249,8 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
       $id: id,
       time,
       value,
-      in: { time: -PARAM_DEFAULT_HANDLE_LENGTH, value: 0.0 },
-      out: { time: PARAM_DEFAULT_HANDLE_LENGTH, value: 0.0 }
+      in: { time: -CHANNEL_DEFAULT_HANDLE_LENGTH, value: 0.0 },
+      out: { time: CHANNEL_DEFAULT_HANDLE_LENGTH, value: 0.0 }
     };
     this.__nodes.push( data );
     this.__sortNodes();
@@ -435,7 +435,7 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
 
     const node = this.__nodes[ index ];
     node[ dir ] = {
-      time: ( ( dir === 'in' ) ? -1.0 : 1.0 ) * PARAM_DEFAULT_HANDLE_LENGTH,
+      time: ( ( dir === 'in' ) ? -1.0 : 1.0 ) * CHANNEL_DEFAULT_HANDLE_LENGTH,
       value: 0.0
     };
 
@@ -468,7 +468,7 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
 
   /**
    * Create a fx.
-   * If it couldn't create param, it will return `null` instead.
+   * If it couldn't create an fx, it will return `null` instead.
    * @param time Beginning time of new fx
    * @param length Length of new fx
    * @param def Definition id (kind) of new fx
@@ -476,7 +476,7 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
    */
   public createFx( time: number, length: number, def: string ): ( FxSection & WithID ) | null {
     const row = this.__getFreeRow( time, length );
-    if ( PARAM_FX_ROW_MAX <= row ) {
+    if ( CHANNEL_FX_ROW_MAX <= row ) {
       console.error( 'Too many fx stacks at here!' );
       return null;
     }
@@ -501,13 +501,13 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
 
   /**
    * Create a fx from dumped data.
-   * If it couldn't create param, it will return empty string instead.
+   * If it couldn't create an fx, it will return empty string instead.
    * @param fx Dumped fx data
    * @returns Id of the new fx
    */
   public createFxFromData( fx: FxSection & WithID ): ( FxSection & WithID ) | null {
     const row = this.__getFreeRow( fx.time, fx.length, fx.row );
-    if ( PARAM_FX_ROW_MAX <= row ) {
+    if ( CHANNEL_FX_ROW_MAX <= row ) {
       console.error( 'Too many fx stacks at here!' );
       return null;
     }
@@ -567,7 +567,7 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
   public changeFxRow( id: string, row: number ): void {
     const index = this.__getFxIndexById( id );
 
-    if ( row < 0 || PARAM_FX_ROW_MAX <= row ) {
+    if ( row < 0 || CHANNEL_FX_ROW_MAX <= row ) {
       throw new Error( `Row number ${row} is invalid` );
     }
 
@@ -625,7 +625,6 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
     if ( params[ name ].max !== undefined ) {
       newValue = Math.min( params[ name ].max!, newValue );
     }
-    // Vue.set( fx.params, name, newValue );
     fx.params[ name ] = newValue;
 
     this.precalc();
@@ -722,7 +721,7 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
       } else {
         // add a out handle to the previous last node
         if ( node ) {
-          node.out = { time: PARAM_DEFAULT_HANDLE_LENGTH, value: 0.0 };
+          node.out = { time: CHANNEL_DEFAULT_HANDLE_LENGTH, value: 0.0 };
         }
         this.__emit( 'updateNode', { id: node.$id, node } );
 
@@ -730,7 +729,7 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
         const newNode = {
           time: this.__automaton.length,
           value: 0.0,
-          in: { time: -PARAM_DEFAULT_HANDLE_LENGTH, value: 0.0 },
+          in: { time: -CHANNEL_DEFAULT_HANDLE_LENGTH, value: 0.0 },
           $id: genID()
         };
         this.__nodes.push( newNode );
@@ -784,10 +783,12 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
    * @param bool Boolean whether the status is currently active or not
    * @param status The status
    */
-  private __setStatus( bool: boolean, status: ParamStatus ): void {
-    if ( !this.__statusList ) { // Param.constructor -> ... -> ParamWithGUI.precalc -> ParamWithGUI.__setStatus
+  private __setStatus( bool: boolean, status: ChannelStatus ): void {
+    if ( !this.__statusList ) { // Channel.constructor -> ... -> ChannelWithGUI.precalc -> ChannelWithGUI.__setStatus
       return;
     }
+
+    const prevStatus = this.status;
 
     // search for old entry, then delete it
     for ( let i = 0; i < this.__statusList.length; i ++ ) {
@@ -802,7 +803,9 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
       this.__statusList.sort( ( a, b ) => b.level - a.level );
     }
 
-    this.__emit( 'updateStatus' );
+    if ( prevStatus !== this.status ) {
+      this.__emit( 'updateStatus' );
+    }
   }
 
   /**
@@ -864,7 +867,7 @@ export class ParamWithGUI extends Param implements Serializable<SerializedParam>
   }
 }
 
-export interface ParamWithGUIEvents {
+export interface ChannelWithGUIEvents {
   createNode: { id: string; node: BezierNode & WithID };
   updateNode: { id: string; node: BezierNode & WithID };
   removeNode: { id: string };
@@ -876,5 +879,5 @@ export interface ParamWithGUIEvents {
   updateStatus: void;
 }
 
-export interface ParamWithGUI extends EventEmittable<ParamWithGUIEvents> {}
-applyMixins( ParamWithGUI, [ EventEmittable ] );
+export interface ChannelWithGUI extends EventEmittable<ChannelWithGUIEvents> {}
+applyMixins( ChannelWithGUI, [ EventEmittable ] );

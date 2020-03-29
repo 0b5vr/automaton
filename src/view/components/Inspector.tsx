@@ -41,18 +41,20 @@ export interface InspectorProps {
 }
 
 export const Inspector = ( { className }: InspectorProps ): JSX.Element => {
-  const selectedParam = useSelector( ( state: State ) => state.curveEditor.selectedParam );
+  const selectedChannel = useSelector( ( state: State ) => state.curveEditor.selectedChannel );
   const stateSelectedNodes
     = useSelector( ( state: State ) => state.curveEditor.selectedItems.nodes );
   const stateSelectedFxs = useSelector( ( state: State ) => state.curveEditor.selectedItems.fxs );
-  const stateParam = useSelector( ( state: State ) => state.automaton.params[ selectedParam! ] );
+  const stateChannel = useSelector(
+    ( state: State ) => state.automaton.channels[ selectedChannel! ]
+  );
   const settingsMode = useSelector( ( state: State ) => state.settings.mode );
 
   const selectedNodes = stateSelectedNodes.map( ( id ) => {
-    return stateParam.nodes[ id ];
+    return stateChannel.nodes[ id ];
   } );
   const selectedFxs = stateSelectedFxs.map( ( id ) => {
-    return stateParam.fxs[ id ];
+    return stateChannel.fxs[ id ];
   } );
   const isSelectingANode = selectedNodes.length === 1 && selectedFxs.length === 0;
   const isSelectingAFx = selectedNodes.length === 0 && selectedFxs.length === 1;

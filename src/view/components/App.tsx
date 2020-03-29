@@ -4,6 +4,7 @@ import styled, { createGlobalStyle } from 'styled-components';
 import { About } from './About';
 import { AutomatonStateListener } from './AutomatonStateListener';
 import { AutomatonWithGUI } from '../../AutomatonWithGUI';
+import { ChannelList } from './ChannelList';
 import { Colors } from '../constants/Colors';
 import { ContextMenu } from './ContextMenu';
 import { CurveEditor } from './CurveEditor';
@@ -11,7 +12,6 @@ import { FxSpawner } from './FxSpawner';
 import { Header } from './Header';
 import { Inspector } from './Inspector';
 import { Metrics } from '../constants/Metrics';
-import { ParamList } from './ParamList';
 import React from 'react';
 import { Stalker } from './Stalker';
 
@@ -27,18 +27,18 @@ const StyledHeader = styled( Header )`
   height: calc( ${ Metrics.headerHeight } - 0.25rem );
 `;
 
-const StyledParamList = styled( ParamList )`
+const StyledChannelList = styled( ChannelList )`
   position: absolute;
   bottom: 0;
-  width: ${ Metrics.paramListWidth };
+  width: ${ Metrics.channelListWidth };
   height: calc( 100% - ${ Metrics.headerHeight } );
 `;
 
 const StyledCurveEditor = styled( CurveEditor )`
   position: absolute;
-  left: ${ Metrics.paramListWidth };
+  left: ${ Metrics.channelListWidth };
   bottom: 0;
-  width: calc( 100% - ${ Metrics.paramListWidth } - ${ Metrics.inspectorWidth } );
+  width: calc( 100% - ${ Metrics.channelListWidth } - ${ Metrics.inspectorWidth } );
   height: calc( 100% - ${ Metrics.headerHeight } );
 `;
 
@@ -90,7 +90,7 @@ const Fuck = ( { automaton }: AppProps ): JSX.Element => {
     <Root>
       <AutomatonStateListener automaton={ automaton } />
       <StyledHeader />
-      <StyledParamList />
+      <StyledChannelList />
       <StyledCurveEditor />
       <StyledInspector />
       { isFxSpawnerVisible && <StyledFxSpawner /> }

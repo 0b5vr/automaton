@@ -29,14 +29,14 @@ export interface CurveEditorLineProps {
 }
 
 export const CurveEditorLine = ( { className }: CurveEditorLineProps ): JSX.Element => {
-  const selectedParam = useSelector( ( state: State ) => state.curveEditor.selectedParam );
+  const selectedChannel = useSelector( ( state: State ) => state.curveEditor.selectedChannel );
   const range = useSelector( ( state: State ) => state.curveEditor.range );
   const size = useSelector( ( state: State ) => state.curveEditor.size );
   const automaton = useSelector( ( state: State ) => state.automaton.instance );
-  const param = selectedParam && automaton?.getParam( selectedParam ) || null;
+  const channel = selectedChannel && automaton?.getChannel( selectedChannel ) || null;
 
   const t = useSelector( ( state: State ) => state.automaton.time );
-  const v = param?.value || 0.0;
+  const v = channel?.value || 0.0;
   const x = t2x( t, range, size.width );
   const y = v2y( v, range, size.height );
 
@@ -49,7 +49,7 @@ export const CurveEditorLine = ( { className }: CurveEditorLineProps ): JSX.Elem
         <Text x="2" y="-2">{ t.toFixed( 3 ) }</Text>
       </g>
 
-      { param && <>
+      { channel && <>
         <g
           transform={ `translate(0,${ y })` }
         >

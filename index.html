@@ -90,17 +90,17 @@ Automaton is still under development so some features will be added / changed in
 
 First you might want to define a function named <code>auto</code> like <code>var auto = automaton.auto</code> .
 <code>auto</code> is magical function, it pours cool animation into your code!
-When you use <code>auto</code> like <b><code>auto( "rectX" )</code></b> for the first time, new parameter named "rectX" will be created on Automaton, and it appears on GUI.
-Then, you can tweak the parameter using timeline!
+When you use <code>auto</code> like <b><code>auto( "rectX" )</code></b> for the first time, new parameter channel named "rectX" will be created on Automaton, and it appears on GUI.
+Then, you can tweak the channel using timeline!
 
-Be careful that you cannot use Automaton parameter outside the update loop.
-Doing that will create your parameter on Automaton, but not updated.
+Be careful that you cannot use these Automaton channels outside of your update loop.
+Doing that will create your channel on Automaton, but not updated.
 Also, don't forget to call <code>automaton.update()</code> !
 
 <h1>How to use GUI</h1>
 The Automaton GUI has a lot of feature!
 
-First, choose the parameter you want to tweak by left menu.
+First, choose the channel you want to tweak by left menu.
 Then the GUI will be show animation curve on the timeline.
 
 When you <code>doubleclick</code> inside the timeline, new <b>node</b> will be created.
@@ -121,7 +121,7 @@ You can scroll around the timeline using mouse <code>wheel</code>.
 Once you tweaked animations using GUI, you might want to save your changes.
 Saving can be performed by <code>click</code>ing floppy icon at rightmost of GUI.
 It will send very long JSON string to your clipboard.
-You can load this JSON savedata by adding parameter named <code>data</code> when you initialize Automaton.
+You can load this JSON savedata by adding a parameter named <code>data</code> when you initialize Automaton.
     </div>
 
     <div id="editor">// Press Ctrl+S (Cmd+S on MacOS) to run script
@@ -137,7 +137,7 @@ var isHalted = false;
 // == initialize an automaton instance =============================================================
 var automaton = new AutomatonWithGUI(
   JSON.parse( `
-  {"v":"2.0.0","length":5,"resolution":100,"params":{"rectX":{"nodes":[{"time":0,"value":0.2,"out":{"time":0.5,"value":0}},{"time":1,"value":0.6,"in":{"time":-0.5,"value":0},"out":{"time":0,"value":0}},{"time":1.1,"value":0,"in":{"time":0,"value":0},"out":{"time":0,"value":0}},{"time":2.2,"value":0,"in":{"time":0,"value":0},"out":{"time":0.2029702970297027,"value":0}},{"time":2.683168316831683,"value":0.2,"in":{"time":-0.0058960808318827985,"value":-0.16171574263249228},"out":{"time":0.029151407919009283,"value":0.7995551137822344}},{"time":3.0792079207920793,"value":0.8,"in":{"time":-0.26237623762376217,"value":0},"out":{"time":0,"value":0}},{"time":4,"value":0.8,"in":{"time":0,"value":0},"out":{"time":0.5,"value":0}},{"time":5,"value":0.2,"in":{"time":-0.22277227722772253,"value":0.46032643646145566}}],"fxs":[{"time":1,"length":1.2,"row":0,"def":"gravity","params":{"a":20,"e":0.5,"preserve":false},"bypass":false},{"time":2.2,"length":1.8,"row":0,"def":"cds","params":{"factor":1000,"ratio":0.15,"preserve":true},"bypass":false},{"time":4,"length":1,"row":0,"def":"sine","params":{"amp":0.2,"freq":2,"phase":0}},{"def":"lofi","bypass":false,"row":1,"time":4.5,"length":0.5,"params":{"reso":10,"relative":true,"rate":20,"round":true}}]},"rectY":{"nodes":[{"time":0,"value":0,"out":{"time":0,"value":0}},{"time":5,"value":1,"in":{"time":0,"value":0}}],"fxs":[]}},"guiSettings":{"snapActive":false,"snapTime":0.1,"snapValue":0.1}}
+  {"v":"2.0.0","length":5,"resolution":100,"channels":{"rectX":{"nodes":[{"time":0,"value":0.2,"out":{"time":0.5,"value":0}},{"time":1,"value":0.6,"in":{"time":-0.5,"value":0},"out":{"time":0,"value":0}},{"time":1.1,"value":0,"in":{"time":0,"value":0},"out":{"time":0,"value":0}},{"time":2.2,"value":0,"in":{"time":0,"value":0},"out":{"time":0.2029702970297027,"value":0}},{"time":2.683168316831683,"value":0.2,"in":{"time":-0.0058960808318827985,"value":-0.16171574263249228},"out":{"time":0.029151407919009283,"value":0.7995551137822344}},{"time":3.0792079207920793,"value":0.8,"in":{"time":-0.26237623762376217,"value":0},"out":{"time":0,"value":0}},{"time":4,"value":0.8,"in":{"time":0,"value":0},"out":{"time":0.5,"value":0}},{"time":5,"value":0.2,"in":{"time":-0.22277227722772253,"value":0.46032643646145566}}],"fxs":[{"time":1,"length":1.2,"row":0,"def":"gravity","params":{"a":20,"e":0.5,"preserve":false},"bypass":false},{"time":2.2,"length":1.8,"row":0,"def":"cds","params":{"factor":1000,"ratio":0.15,"preserve":true},"bypass":false},{"time":4,"length":1,"row":0,"def":"sine","params":{"amp":0.2,"freq":2,"phase":0}},{"def":"lofi","bypass":false,"row":1,"time":4.5,"length":0.5,"params":{"reso":10,"relative":true,"rate":20,"round":true}}]},"rectY":{"nodes":[{"time":0,"value":0,"out":{"time":0,"value":0}},{"time":5,"value":1,"in":{"time":0,"value":0}}],"fxs":[]}},"guiSettings":{"snapActive":false,"snapTime":0.1,"snapValue":0.1}}
   ` ), // put your automaton savedata here
   {
     gui: divAutomatonContainer, // where you want to put entire automaton GUI

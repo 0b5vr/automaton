@@ -34,12 +34,12 @@ export interface CurveEditorProps {
 export const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
   const dispatch = useDispatch();
   const checkDoubleClick = useDoubleClick();
-  const selectedParam = useSelector( ( state: State ) => state.curveEditor.selectedParam );
+  const selectedChannel = useSelector( ( state: State ) => state.curveEditor.selectedChannel );
   const range = useSelector( ( state: State ) => state.curveEditor.range );
   const size = useSelector( ( state: State ) => state.curveEditor.size );
   const automaton = useSelector( ( state: State ) => state.automaton.instance );
   const length = useSelector( ( state: State ) => state.automaton.length );
-  const param = selectedParam && automaton?.getParam( selectedParam ) || null;
+  const channel = selectedChannel && automaton?.getChannel( selectedChannel ) || null;
 
   const refSvgRoot = useRef<SVGSVGElement>( null );
 
@@ -84,12 +84,12 @@ export const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
   };
 
   const createNode = ( x0: number, y0: number ): void => {
-    if ( !param ) { return; }
+    if ( !channel ) { return; }
 
     let x = x0;
     let y = y0;
 
-    const data = param.createNode(
+    const data = channel.createNode(
       x2t( x, range, size.width ),
       y2v( y, range, size.height )
     );
@@ -103,24 +103,24 @@ export const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
         x += movementSum.x;
         y += movementSum.y;
 
-        param.moveNodeTime( data.$id, x2t( x, range, size.width ) );
-        param.moveNodeValue( data.$id, y2v( y, range, size.height ) );
+        channel.moveNodeTime( data.$id, x2t( x, range, size.width ) );
+        channel.moveNodeValue( data.$id, y2v( y, range, size.height ) );
       },
       () => {
         const t = x2t( x, range, size.width );
         const v = y2v( y, range, size.height );
-        param.moveNodeTime( data.$id, t );
-        param.moveNodeValue( data.$id, v );
+        channel.moveNodeTime( data.$id, t );
+        channel.moveNodeValue( data.$id, v );
 
         data.time = t;
         data.value = v;
 
         const undo = (): void => {
-          param.removeNode( data.$id );
+          channel.removeNode( data.$id );
         };
 
         const redo = (): void => {
-          param.createNodeFromData( data );
+          channel.createNodeFromData( data );
         };
 
         dispatch( {
@@ -150,7 +150,7 @@ export const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
   };
 
   const handleContextMenu = ( event: React.MouseEvent ): void => {
-    if ( !param ) { return; }
+    if ( !channel ) { return; }
 
     event.preventDefault();
     event.stopPropagation();
@@ -168,18 +168,18 @@ export const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
           command: () => {
             const t = x2t( x, range, size.width );
             const v = y2v( y, range, size.height );
-            const data = param.createNode( t, v );
+            const data = channel.createNode( t, v );
             dispatch( {
               type: 'CurveEditor/SelectItems',
               nodes: [ data.$id ]
             } );
 
             const undo = (): void => {
-              param.removeNode( data.$id );
+              channel.removeNode( data.$id );
             };
 
             const redo = (): void => {
-              param.createNodeFromData( data );
+              channel.createNodeFromData( data );
             };
 
             dispatch( {
@@ -200,7 +200,7 @@ export const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
               type: 'FxSpawner/Open',
               callback: ( name: string ) => {
                 const t = x2t( x, range, size.width );
-                const data = param.createFx( t, 1.0, name );
+                const data = channel.createFx( t, 1.0, name );
                 if ( data ) {
                   dispatch( {
                     type: 'CurveEditor/SelectItems',
@@ -208,11 +208,11 @@ export const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
                   } );
 
                   const undo = (): void => {
-                    param.removeFx( data.$id );
+                    channel.removeFx( data.$id );
                   };
 
                   const redo = (): void => {
-                    param.createFxFromData( data );
+                    channel.createFxFromData( data );
                   };
 
                   dispatch( {

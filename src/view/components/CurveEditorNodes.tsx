@@ -41,20 +41,20 @@ export interface CurveEditorNodesProps {
 export const CurveEditorNodes = ( props: CurveEditorNodesProps ): JSX.Element => {
   const dispatch = useDispatch();
   const checkDoubleClick = useDoubleClick();
-  const selectedParam = useSelector( ( state: State ) => state.curveEditor.selectedParam );
+  const selectedChannel = useSelector( ( state: State ) => state.curveEditor.selectedChannel );
   const range = useSelector( ( state: State ) => state.curveEditor.range );
   const size = useSelector( ( state: State ) => state.curveEditor.size );
   const guiSettings = useSelector( ( state: State ) => state.automaton.guiSettings );
   const automaton = useSelector( ( state: State ) => state.automaton.instance );
-  const param = selectedParam && automaton?.getParam( selectedParam ) || null;
+  const channel = selectedChannel && automaton?.getChannel( selectedChannel ) || null;
   const stateNodes = useSelector(
-    ( state: State ) => selectedParam && state.automaton.params[ selectedParam ].nodes || null
+    ( state: State ) => selectedChannel && state.automaton.channels[ selectedChannel ].nodes || null
   );
   const selectedNodes = useSelector( ( state: State ) => state.curveEditor.selectedItems.nodes );
 
   const grabNode = useCallback(
     ( node: BezierNode & WithID ): void => {
-      if ( !param ) { return; }
+      if ( !channel ) { return; }
 
       const tPrev = node.time;
       const vPrev = node.value;
@@ -82,20 +82,20 @@ export const CurveEditorNodes = ( props: CurveEditorNodesProps ): JSX.Element =>
             if ( !holdValue ) { v = snapValue( v, range, size.height, guiSettings ); }
           }
 
-          param.moveNodeTime( node.$id, t );
-          param.moveNodeValue( node.$id, v );
+          channel.moveNodeTime( node.$id, t );
+          channel.moveNodeValue( node.$id, v );
         },
         () => {
           if ( !hasMoved ) { return; }
 
           const undo = (): void => {
-            param.moveNodeTime( node.$id, tPrev );
-            param.moveNodeValue( node.$id, vPrev );
+            channel.moveNodeTime( node.$id, tPrev );
+            channel.moveNodeValue( node.$id, vPrev );
           };
 
           const redo = (): void => {
-            param.moveNodeTime( node.$id, t );
-            param.moveNodeValue( node.$id, v );
+            channel.moveNodeTime( node.$id, t );
+            channel.moveNodeValue( node.$id, v );
           };
 
           dispatch( {
@@ -110,21 +110,21 @@ export const CurveEditorNodes = ( props: CurveEditorNodesProps ): JSX.Element =>
         }
       );
     },
-    [ param, range, size, guiSettings ]
+    [ channel, range, size, guiSettings ]
   );
 
   const removeNode = useCallback(
     ( node: BezierNode & WithID ): void => {
-      if ( !param ) { return; }
+      if ( !channel ) { return; }
 
-      if ( param.isFirstOrLastNode( node.$id ) ) { return; }
+      if ( channel.isFirstOrLastNode( node.$id ) ) { return; }
 
       const undo = (): void => {
-        param.createNodeFromData( node );
+        channel.createNodeFromData( node );
       };
 
       const redo = (): void => {
-        param.removeNode( node.$id );
+        channel.removeNode( node.$id );
       };
 
       dispatch( {
@@ -137,7 +137,7 @@ export const CurveEditorNodes = ( props: CurveEditorNodesProps ): JSX.Element =>
       } );
       redo();
     },
-    [ param ]
+    [ channel ]
   );
 
   const handleNodeClick = useCallback(
@@ -163,7 +163,7 @@ export const CurveEditorNodes = ( props: CurveEditorNodesProps ): JSX.Element =>
 
   const grabHandle = useCallback(
     ( node: BezierNode & WithID, dir: 'in' | 'out' ): void => {
-      if ( !param ) { return; }
+      if ( !channel ) { return; }
 
       const tPrev = node[ dir ]?.time || 0.0;
       const vPrev = node[ dir ]?.value || 0.0;
@@ -207,26 +207,26 @@ export const CurveEditorNodes = ( props: CurveEditorNodesProps ): JSX.Element =>
           tOpposite = moveBoth ? -t : tOppositePrev;
           vOpposite = moveBoth ? -v : vOppositePrev;
 
-          param.moveHandleTime( node.$id, dir, t );
-          param.moveHandleValue( node.$id, dir, v );
-          param.moveHandleTime( node.$id, dirOpposite, tOpposite );
-          param.moveHandleValue( node.$id, dirOpposite, vOpposite );
+          channel.moveHandleTime( node.$id, dir, t );
+          channel.moveHandleValue( node.$id, dir, v );
+          channel.moveHandleTime( node.$id, dirOpposite, tOpposite );
+          channel.moveHandleValue( node.$id, dirOpposite, vOpposite );
         },
         () => {
           if ( !hasMoved ) { return; }
 
           const undo = (): void => {
-            param.moveHandleTime( node.$id, dir, tPrev );
-            param.moveHandleValue( node.$id, dir, vPrev );
-            param.moveHandleTime( node.$id, dirOpposite, tOppositePrev );
-            param.moveHandleValue( node.$id, dirOpposite, vOppositePrev );
+            channel.moveHandleTime( node.$id, dir, tPrev );
+            channel.moveHandleValue( node.$id, dir, vPrev );
+            channel.moveHandleTime( node.$id, dirOpposite, tOppositePrev );
+            channel.moveHandleValue( node.$id, dirOpposite, vOppositePrev );
           };
 
           const redo = (): void => {
-            param.moveHandleTime( node.$id, dir, t );
-            param.moveHandleValue( node.$id, dir, v );
-            param.moveHandleTime( node.$id, dirOpposite, tOpposite );
-            param.moveHandleValue( node.$id, dirOpposite, vOpposite );
+            channel.moveHandleTime( node.$id, dir, t );
+            channel.moveHandleValue( node.$id, dir, v );
+            channel.moveHandleTime( node.$id, dirOpposite, tOpposite );
+            channel.moveHandleValue( node.$id, dirOpposite, vOpposite );
           };
 
           dispatch( {
@@ -241,24 +241,24 @@ export const CurveEditorNodes = ( props: CurveEditorNodesProps ): JSX.Element =>
         }
       );
     },
-    [ param, range, size ]
+    [ channel, range, size ]
   );
 
   const removeHandle = useCallback(
     ( node: BezierNode & WithID, dir: 'in' | 'out' ): void => {
-      if ( !param ) { return; }
+      if ( !channel ) { return; }
 
       const tPrev = node[ dir ]!.time;
       const vPrev = node[ dir ]!.value;
 
       const undo = (): void => {
-        param.moveHandleTime( node.$id, dir, tPrev );
-        param.moveHandleValue( node.$id, dir, vPrev );
+        channel.moveHandleTime( node.$id, dir, tPrev );
+        channel.moveHandleValue( node.$id, dir, vPrev );
       };
 
       const redo = (): void => {
-        param.moveHandleTime( node.$id, dir, 0.0 );
-        param.moveHandleValue( node.$id, dir, 0.0 );
+        channel.moveHandleTime( node.$id, dir, 0.0 );
+        channel.moveHandleValue( node.$id, dir, 0.0 );
       };
 
       dispatch( {
@@ -271,7 +271,7 @@ export const CurveEditorNodes = ( props: CurveEditorNodesProps ): JSX.Element =>
       } );
       redo();
     },
-    [ param ]
+    [ channel ]
   );
 
   const handleHandleClick = useCallback(

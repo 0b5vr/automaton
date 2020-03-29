@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { Action } from '../states/store';
 import { AutomatonWithGUI } from '../../AutomatonWithGUI';
+import { ChannelWithGUI } from '../../ChannelWithGUI';
 import { Dispatch } from 'redux';
-import { ParamWithGUI } from '../../ParamWithGUI';
 import styled from 'styled-components';
 import { useDispatch } from 'react-redux';
 
@@ -20,125 +20,117 @@ export const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JS
   const dispatch = useDispatch<Dispatch<Action>>();
   const automaton = props.automaton;
 
-  function createParam( name: string, param: ParamWithGUI ): void {
+  function createChannel( name: string, channel: ChannelWithGUI ): void {
     dispatch( {
-      type: 'Automaton/CreateParam',
-      param: name
+      type: 'Automaton/CreateChannel',
+      channel: name
     } );
 
     dispatch( {
-      type: 'Automaton/UpdateParamValue',
-      param: name,
-      value: param.value
+      type: 'Automaton/UpdateChannelValue',
+      channel: name,
+      value: channel.value
     } );
 
     dispatch( {
-      type: 'Automaton/UpdateParamStatus',
-      param: name,
-      status: param.status
+      type: 'Automaton/UpdateChannelStatus',
+      channel: name,
+      status: channel.status
     } );
 
-    param.nodes.forEach( ( node ) => {
+    channel.nodes.forEach( ( node ) => {
       dispatch( {
-        type: 'Automaton/UpdateParamNode',
-        param: name,
+        type: 'Automaton/UpdateChannelNode',
+        channel: name,
         id: node.$id,
         node
       } );
     } );
 
-    param.fxs.forEach( ( fx ) => {
+    channel.fxs.forEach( ( fx ) => {
       dispatch( {
-        type: 'Automaton/UpdateParamFx',
-        param: name,
+        type: 'Automaton/UpdateChannelFx',
+        channel: name,
         id: fx.$id,
         fx
       } );
     } );
 
-    param.on( 'changeValue', () => {
+    channel.on( 'changeValue', () => {
       dispatch( {
-        type: 'Automaton/UpdateParamValue',
-        param: name,
-        value: param.value
+        type: 'Automaton/UpdateChannelValue',
+        channel: name,
+        value: channel.value
       } );
     } );
 
-    param.on( 'updateStatus', () => {
+    channel.on( 'updateStatus', () => {
       dispatch( {
-        type: 'Automaton/UpdateParamStatus',
-        param: name,
-        status: param.status
+        type: 'Automaton/UpdateChannelStatus',
+        channel: name,
+        status: channel.status
       } );
     } );
 
-    param.on( 'createNode', ( { id, node } ) => {
+    channel.on( 'createNode', ( { id, node } ) => {
       dispatch( {
-        type: 'Automaton/UpdateParamNode',
-        param: name,
+        type: 'Automaton/UpdateChannelNode',
+        channel: name,
         id,
         node
       } );
     } );
 
-    param.on( 'updateNode', ( { id, node } ) => {
+    channel.on( 'updateNode', ( { id, node } ) => {
       dispatch( {
-        type: 'Automaton/UpdateParamNode',
-        param: name,
+        type: 'Automaton/UpdateChannelNode',
+        channel: name,
         id,
         node
       } );
     } );
 
-    param.on( 'removeNode', ( { id } ) => {
+    channel.on( 'removeNode', ( { id } ) => {
       dispatch( {
         type: 'CurveEditor/SelectItemsSub',
         nodes: [ id ]
       } );
       dispatch( {
-        type: 'Automaton/RemoveParamNode',
-        param: name,
+        type: 'Automaton/RemoveChannelNode',
+        channel: name,
         id
       } );
     } );
 
-    param.on( 'createFx', ( { id, fx } ) => {
+    channel.on( 'createFx', ( { id, fx } ) => {
       dispatch( {
-        type: 'Automaton/UpdateParamFx',
-        param: name,
+        type: 'Automaton/UpdateChannelFx',
+        channel: name,
         id,
         fx
       } );
     } );
 
-    param.on( 'updateFx', ( { id, fx } ) => {
+    channel.on( 'updateFx', ( { id, fx } ) => {
       dispatch( {
-        type: 'Automaton/UpdateParamFx',
-        param: name,
+        type: 'Automaton/UpdateChannelFx',
+        channel: name,
         id,
         fx
       } );
     } );
 
-    param.on( 'removeFx', ( { id } ) => {
+    channel.on( 'removeFx', ( { id } ) => {
       dispatch( {
         type: 'CurveEditor/SelectItemsSub',
         fxs: [ id ]
       } );
       dispatch( {
-        type: 'Automaton/RemoveParamFx',
-        param: name,
+        type: 'Automaton/RemoveChannelFx',
+        channel: name,
         id
       } );
     } );
-
-    // param.on( 'precalc', () => {
-    //   context.dispatch( {
-    //     type: 'Automaton/UpdateParam',
-    //     name: name,
-    //     serializedParam: param.serialize()
-    //   } );
-    // } );
   }
 
   useEffect(
@@ -172,8 +164,8 @@ export const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JS
         } );
       } );
 
-      Object.entries( automaton.params ).forEach( ( [ name, param ] ) => {
-        createParam( name, param );
+      Object.entries( automaton.channels ).forEach( ( [ name, channel ] ) => {
+        createChannel( name, channel );
       } );
 
       automaton.on( 'update', ( { time } ) => {
@@ -225,8 +217,8 @@ export const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JS
         } );
       } );
 
-      automaton.on( 'createParam', ( event ) => {
-        createParam( event.name, event.param );
+      automaton.on( 'createChannel', ( event ) => {
+        createChannel( event.name, event.channel );
       } );
     },
     [ automaton ]

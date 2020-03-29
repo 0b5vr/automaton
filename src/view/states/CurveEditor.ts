@@ -5,7 +5,7 @@ import { produce } from 'immer';
 
 // == state ========================================================================================
 export interface State {
-  selectedParam: string | null;
+  selectedChannel: string | null;
   selectedItems: {
     nodes: string[];
     fxs: string[];
@@ -15,7 +15,7 @@ export interface State {
 }
 
 export const initialState: State = {
-  selectedParam: null,
+  selectedChannel: null,
   selectedItems: {
     nodes: [],
     fxs: []
@@ -34,8 +34,8 @@ export const initialState: State = {
 
 // == action =======================================================================================
 export type Action = {
-  type: 'CurveEditor/SelectParam';
-  param: string | null;
+  type: 'CurveEditor/SelectChannel';
+  channel: string | null;
 } | {
   type: 'CurveEditor/SelectItems';
   nodes?: string[];
@@ -68,8 +68,8 @@ export type Action = {
 // == reducer ======================================================================================
 export const reducer: Reducer<State, ContextAction> = ( state = initialState, action ) => {
   return produce( state, ( newState: State ) => {
-    if ( action.type === 'CurveEditor/SelectParam' ) {
-      newState.selectedParam = action.param;
+    if ( action.type === 'CurveEditor/SelectChannel' ) {
+      newState.selectedChannel = action.channel;
       newState.selectedItems = {
         nodes: [],
         fxs: []

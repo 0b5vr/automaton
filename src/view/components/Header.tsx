@@ -138,6 +138,7 @@ export const Header = ( { className }: HeaderProps ): JSX.Element => {
       </Section>
       <Logo as={ Icons.Automaton }
         onClick={ () => dispatch( { type: 'About/Open' } ) }
+        data-stalker={ `Automaton v${ process.env.VERSION! }` }
       />
       <Section>
         <Button
