@@ -9,11 +9,6 @@ import { mod } from './utils/mod';
  */
 export class ChannelItemCurve extends ChannelItem {
   /**
-   * The value of the item.
-   */
-  public value!: number;
-
-  /**
    * The time offset of the item.
    */
   public offset!: number;
