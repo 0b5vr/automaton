@@ -25,7 +25,7 @@ export type ChannelItem = {
   offset?: number;
 
   /**
-   * `0.0` by default
+   * Use the length of curve by default
    */
   length?: number;
 
