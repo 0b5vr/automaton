@@ -117,6 +117,25 @@ export class Channel {
   }
 
   /**
+   * Return the value of specified time point.
+   * @param time Time at the point you want to grab the value.
+   * @returns Result value
+   */
+  public getValue( time: number ): number {
+    const next = this.__items.findIndex( ( item ) => ( time < item.time ) );
+
+    // it's the first one!
+    if ( next === 0 ) { return 0.0; }
+
+    const item = this.__items[ next - 1 ];
+    if ( item.end < time ) {
+      return item.getValue( item.end );
+    } else {
+      return item.getValue( time );
+    }
+  }
+
+  /**
    * This method is intended to be used by [[Automaton.update]].
    * @param time The current time of the parent [[Automaton]]
    * @returns whether the value has been changed or not
