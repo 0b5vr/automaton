@@ -2,16 +2,15 @@ import { Automaton } from './Automaton';
 import { BezierNode } from './types/BezierNode';
 import { FxContext } from './types/FxDefinition';
 import { FxSection } from './types/FxSection';
-import { SerializedParam } from './types/SerializedParam';
+import { SerializedChannel } from './types/SerializedChannel';
 import { bezierEasing } from './utils/bezierEasing';
 
 /**
- * It represents a param of Automaton.
- * It's `automaton.nogui.js` version and also base class for {@link ParamWithGUI}
+ * It represents a channel of Automaton.
  * @param automaton Parent automaton
- * @param data Data of the param
+ * @param data Data of the channel
  */
-export class Param {
+export class Channel {
   /**
    * The parent automaton.
    */
@@ -19,7 +18,7 @@ export class Param {
 
   /**
    * An array of precalculated value.
-   * Its length is same as `param.__automaton.resolution * param.__automaton.length + 1`.
+   * Its length is same as `channel.__automaton.resolution * channel.__automaton.length + 1`.
   */
   protected __values: Float32Array;
 
@@ -43,7 +42,7 @@ export class Param {
    */
   protected __time: number = 0.0;
 
-  public constructor( automaton: Automaton, data?: SerializedParam ) {
+  public constructor( automaton: Automaton, data?: SerializedChannel ) {
     this.__automaton = automaton;
 
     this.__values = new Float32Array( this.__automaton.resolution * this.__automaton.length + 1 );
@@ -62,10 +61,10 @@ export class Param {
   public get time(): number { return this.__time; }
 
   /**
-   * Load a param data.
-   * @param data Data of param
+   * Load a serialized data of a channel.
+   * @param data Data of a channel
    */
-  public deserialize( data: SerializedParam ): void {
+  public deserialize( data: SerializedChannel ): void {
     this.__nodes = data.nodes;
     this.__fxs = data.fxs;
 

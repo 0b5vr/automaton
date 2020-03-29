@@ -1,4 +1,4 @@
-import { SerializedParam } from './SerializedParam';
+import { SerializedChannel } from './SerializedChannel';
 
 /**
  * Interface of serialized automaton data.
@@ -15,7 +15,7 @@ export interface SerializedData {
   resolution: number;
 
   /**
-   * Params in the timeline.
+   * Instruments in the timeline.
    */
-  params: { [ name: string ]: SerializedParam };
+  channels: { [ name: string ]: SerializedChannel };
 }

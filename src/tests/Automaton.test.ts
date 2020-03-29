@@ -6,7 +6,7 @@ import { SerializedData } from '../types';
 const mostSimpleData: SerializedData = {
   length: 1.0,
   resolution: 100.0,
-  params: {
+  channels: {
     x: { nodes: [ { time: 0.0, value: 0.0 }, { time: 1.0, value: 1.0 } ], fxs: [] },
     y: { nodes: [ { time: 0.0, value: 2.0 }, { time: 1.0, value: 2.0 } ], fxs: [] },
   }
@@ -32,13 +32,13 @@ describe( 'Automaton', () => {
       expect( auto( 'y' ) ).toBeCloseTo( 2.0 );
     } );
 
-    it( 'must return a proper value (single param)', () => {
+    it( 'must return a proper value (single channel)', () => {
       automaton.update( 0.5 );
       expect( auto( 'x' ) ).toBeCloseTo( 0.5 );
       expect( auto( 'y' ) ).toBeCloseTo( 2.0 );
     } );
 
-    it( 'must return a proper value (multiple param)', () => {
+    it( 'must return a proper value (multiple channel)', () => {
       automaton.update( 0.5 );
       const result = auto( [ 'x', 'y' ] );
       expect( result.x ).toBeCloseTo( 0.5 );
@@ -66,7 +66,7 @@ describe( 'Automaton', () => {
       expect( count ).toBe( 1 );
     } );
 
-    it( 'must not execute a callback function if the param is not changed', () => {
+    it( 'must not execute a callback function if the channel is not changed', () => {
       let count = 0;
       auto( 'y', () => {
         count ++;
@@ -77,7 +77,7 @@ describe( 'Automaton', () => {
       expect( count ).toBe( 0 );
     } );
 
-    it( 'must execute a callback function with a proper argument (single param)', () => {
+    it( 'must execute a callback function with a proper argument (single channel)', () => {
       let resultX: number = 0.0;
       auto( 'x', ( x ) => {
         resultX = x;
@@ -88,7 +88,7 @@ describe( 'Automaton', () => {
       expect( resultX ).toBeCloseTo( 0.5 );
     } );
 
-    it( 'must execute a callback function with a proper argument (multiple param)', () => {
+    it( 'must execute a callback function with a proper argument (multiple channel)', () => {
       let result: any = {};
       auto( [ 'x', 'y' ], ( r ) => {
         result = r;

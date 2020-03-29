@@ -2,16 +2,16 @@ import { BezierNode } from './BezierNode';
 import { FxSection } from './FxSection';
 
 /**
- * Interface of serialized param.
+ * Interface of a serialized channel.
  */
-export interface SerializedParam {
+export interface SerializedChannel {
   /**
-   * Bezier nodes of the param.
+   * Bezier nodes of the channel.
    */
   nodes: BezierNode[];
 
   /**
-   * Fx sections of the param.
+   * Fx sections of the channel.
    */
   fxs: FxSection[];
 }

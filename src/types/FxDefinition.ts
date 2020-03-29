@@ -69,7 +69,7 @@ export interface FxContext {
   array: Float32Array;
 
   /**
-   * {@link Param#getValue} of the current param.
+   * {@link Channel#getValue} of the current channel.
    */
   getValue: ( time: number ) => number;
 

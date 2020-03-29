@@ -1,7 +1,7 @@
+import { Channel } from './Channel';
 import { FxDefinition } from './types/FxDefinition';
-import { Param } from './Param';
+import { SerializedChannel } from './types/SerializedChannel';
 import { SerializedData } from './types/SerializedData';
-import { SerializedParam } from './types/SerializedParam';
 import { clamp } from './utils/clamp';
 import { mod } from './utils/mod';
 
@@ -17,18 +17,17 @@ export interface AutomatonOptions {
 
 /**
  * IT'S AUTOMATON!
- * It's `automaton.nogui.js` version and also base class for {@link AutomatonWithGUI}.
  * @param data Serialized data of the automaton
  * @param options Options for this Automaton instance
  */
 export class Automaton {
   /**
-   * It returns the current value of the [[Param]] called `name`.
-   * If the `name` is an array, it returns a set of name : param as an object instead.
-   * You can also give a listener which will be executed when the param changes its value (optional).
-   * @param name The name of the param
-   * @param listener A function that will be executed when the param changes its value
-   * @returns Current value of the param
+   * It returns the current value of the [[Channel]] called `name`.
+   * If the `name` is an array, it returns a set of name : channel as an object instead.
+   * You can also give a listener which will be executed when the channel changes its value (optional).
+   * @param name The name of the channel
+   * @param listener A function that will be executed when the channel changes its value
+   * @returns Current value of the channel
    */
   public auto = this.__auto.bind( this );
 
@@ -59,9 +58,9 @@ export class Automaton {
   protected __resolution: number = 1000;
 
   /**
-   * Params of the timeline.
+   * Channels of the timeline.
    */
-  protected __params: { [ name: string ]: Param } = {};
+  protected __channels: { [ name: string ]: Channel } = {};
 
   /**
    * A map of fx definitions.
@@ -69,7 +68,7 @@ export class Automaton {
   protected __fxDefinitions: { [ name: string ]: FxDefinition } = {};
 
   /**
-   * A map of listeners : param names.
+   * A map of listeners : channel names.
    */
   protected __listeners = new Map<( arg: any ) => void, string | string[]>();
 
@@ -99,12 +98,12 @@ export class Automaton {
   public get resolution(): number { return this.__resolution; }
 
   /**
-   * Create a new param.
-   * @param name Name of the param
-   * @param data Data for the param
+   * Create a new channel.
+   * @param name Name of the channel
+   * @param data Data for the channel
    */
-  public createParam( name: string, data: SerializedParam ): void {
-    this.__params[ name ] = new Param( this, data );
+  public createChannel( name: string, data: SerializedChannel ): void {
+    this.__channels[ name ] = new Channel( this, data );
   }
 
   /**
@@ -115,8 +114,8 @@ export class Automaton {
     this.__length = data.length;
     this.__resolution = data.resolution;
 
-    for ( const name in data.params ) {
-      this.createParam( name, data.params[ name ] );
+    for ( const name in data.channels ) {
+      this.createChannel( name, data.channels[ name ] );
     }
   }
 
@@ -141,10 +140,10 @@ export class Automaton {
   }
 
   /**
-   * Precalculate all params.
+   * Precalculate all channels.
    */
   public precalcAll(): void {
-    Object.values( this.__params ).forEach( ( param ) => param.precalc() );
+    Object.values( this.__channels ).forEach( ( ch ) => ch.precalc() );
   }
 
   /**
@@ -160,26 +159,26 @@ export class Automaton {
     // cache the time
     this.__time = t;
 
-    // grab the current value for each param
-    const namesOfUpdatedParams = new Set<string>();
-    for ( const [ name, param ] of Object.entries( this.__params ) ) {
-      const isChanged = param.update( this.__time );
+    // grab the current value for each channels
+    const namesOfUpdatedChannels = new Set<string>();
+    for ( const [ name, ch ] of Object.entries( this.__channels ) ) {
+      const isChanged = ch.update( this.__time );
       if ( isChanged ) {
-        namesOfUpdatedParams.add( name );
+        namesOfUpdatedChannels.add( name );
       }
     }
 
     for ( const [ listener, nameOrNames ] of this.__listeners.entries() ) {
       if ( Array.isArray( nameOrNames ) ) {
-        const isIntersecting = nameOrNames.some( ( name ) => namesOfUpdatedParams.has( name ) );
+        const isIntersecting = nameOrNames.some( ( name ) => namesOfUpdatedChannels.has( name ) );
         if ( isIntersecting ) {
           const arg: { [ name: string ]: number } = {};
-          nameOrNames.forEach( ( name ) => arg[ name ] = this.__params[ name ].value );
+          nameOrNames.forEach( ( name ) => arg[ name ] = this.__channels[ name ].value );
           listener( arg );
         }
       } else {
-        if ( namesOfUpdatedParams.has( nameOrNames ) ) {
-          listener( this.__params[ nameOrNames ].value );
+        if ( namesOfUpdatedChannels.has( nameOrNames ) ) {
+          listener( this.__channels[ nameOrNames ].value );
         }
       }
     }
@@ -187,9 +186,9 @@ export class Automaton {
 
   /**
    * Assigned to {@link Automaton#auto} on its initialize phase.
-   * @param name The name of the param
-   * @param listener A function that will be executed when the param changes its value
-   * @returns Current value of the param
+   * @param name The name of the channel
+   * @param listener A function that will be executed when the channel changes its value
+   * @returns Current value of the channel
    */
   protected __auto(
     name: string,
@@ -205,7 +204,7 @@ export class Automaton {
       const listener: ( ( values: { [ name: string ]: number } ) => void ) | undefined = args[ 1 ];
 
       const result: { [ name: string ]: number } = {};
-      names.forEach( ( name ) => result[ name ] = this.__params[ name ].value );
+      names.forEach( ( name ) => result[ name ] = this.__channels[ name ].value );
 
       if ( listener ) {
         this.__listeners.set( listener, names );
@@ -217,7 +216,7 @@ export class Automaton {
       const name: string = args[ 0 ];
       const listener: ( ( value: number ) => void ) | undefined = args[ 1 ];
 
-      const result = this.__params[ name ].value;
+      const result = this.__channels[ name ].value;
 
       if ( listener ) {
         this.__listeners.set( listener, name );
