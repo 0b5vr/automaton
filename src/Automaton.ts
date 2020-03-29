@@ -1,7 +1,7 @@
 import { Channel, ChannelUpdateEvent } from './Channel';
 import { Curve } from './Curve';
 import { FxDefinition } from './types/FxDefinition';
-import { SerializedData } from './types/SerializedData';
+import { SerializedAutomaton } from './types/SerializedAutomaton';
 import { clamp } from './utils/clamp';
 import { mod } from './utils/mod';
 
@@ -72,7 +72,7 @@ export class Automaton {
    */
   protected __fxDefinitions: { [ name: string ]: FxDefinition } = {};
 
-  public constructor( data: SerializedData, options: AutomatonOptions = {} ) {
+  public constructor( data: SerializedAutomaton, options: AutomatonOptions = {} ) {
     this.loop = options.loop || false;
 
     this.deserialize( data );
@@ -102,7 +102,7 @@ export class Automaton {
    * Load serialized automaton data.
    * @param data Serialized object contains automaton data.
    */
-  public deserialize( data: SerializedData ): void {
+  public deserialize( data: SerializedAutomaton ): void {
     this.__length = data.length;
     this.__resolution = data.resolution;
 

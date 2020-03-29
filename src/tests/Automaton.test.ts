@@ -2,9 +2,9 @@
 
 import { Automaton } from '../Automaton';
 import { ChannelUpdateEvent } from '../Channel';
-import { SerializedData } from '../types';
+import { SerializedAutomaton } from '../types';
 
-const mostSimpleData: SerializedData = {
+const mostSimpleData: SerializedAutomaton = {
   length: 1.0,
   resolution: 100.0,
   curves: [

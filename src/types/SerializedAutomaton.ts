@@ -4,7 +4,7 @@ import { SerializedCurve } from './SerializedCurve';
 /**
  * Interface of serialized automaton data.
  */
-export interface SerializedData {
+export interface SerializedAutomaton {
   /**
    * Length of the timeline.
    */
