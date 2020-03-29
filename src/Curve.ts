@@ -23,7 +23,7 @@ export class Curve {
    * An array of precalculated value.
    * Its length is same as `curve.__automaton.resolution * curve.__automaton.length + 1`.
   */
-  protected __values: Float32Array = new Float32Array();
+  protected __values!: Float32Array;
 
   /**
    * List of bezier node.
