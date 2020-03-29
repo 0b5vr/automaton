@@ -1,6 +1,7 @@
 import { Automaton } from './Automaton';
-import { ChannelItem } from './types/ChannelItem';
-import { Curve } from './Curve';
+import { ChannelItem } from './ChannelItem';
+import { ChannelItemConstant } from './ChannelItemConstant';
+import { ChannelItemCurve } from './ChannelItemCurve';
 import { SerializedChannel } from './types/SerializedChannel';
 
 /**
@@ -88,7 +89,13 @@ export class Channel {
    * @param data Data of a channel
    */
   public deserialize( data: SerializedChannel ): void {
-    this.__items = data.items;
+    this.__items = data.items.map( ( item ) => {
+      if ( 'curve' in item ) {
+        return new ChannelItemCurve( this.__automaton, item );
+      } else {
+        return new ChannelItemConstant( this.__automaton, item );
+      }
+    } );
   }
 
   /**
@@ -121,25 +128,16 @@ export class Channel {
     for ( let i = this.__head; i < this.__items.length; i ++ ) {
       const item = this.__items[ i ];
 
-      let curve: Curve | undefined;
-      if ( 'curve' in item ) {
-        curve = this.__automaton.getCurve( item.curve );
-      }
-
-      const begin = item.time || 0.0;
-      const length = item.length || curve?.length || 0.0;
-      const end = begin + length;
-
-      if ( time < begin ) {
+      if ( time < item.time ) {
         break;
       }
 
-      if ( begin <= time && prevTime <= end ) {
+      if ( item.time <= time && prevTime <= item.end ) {
         let progress: number;
         let init: true | undefined;
         let uninit: true | undefined;
 
-        if ( end < time ) {
+        if ( item.end < time ) {
           progress = 1.0;
           uninit = true;
 
@@ -147,22 +145,16 @@ export class Channel {
             this.__head ++;
           }
         } else {
-          progress = length !== 0.0
-            ? ( time - begin ) / length
+          progress = item.length !== 0.0
+            ? ( time - item.time ) / item.length
             : 1.0;
         }
 
-        if ( prevTime < begin ) {
+        if ( prevTime < item.time ) {
           init = true;
         }
 
-        if ( 'curve' in item ) {
-          const curveTime = ( item.offset || 0.0 ) + ( time - begin ) * ( item.speed || 1.0 );
-          const curve = this.__automaton.getCurve( item.curve );
-          value = curve.getValue( curveTime );
-        } else { // constant
-          value = item.value || 0.0;
-        }
+        value = item.getValue( time );
 
         this.__listeners.forEach( ( listener ) => listener( {
           value,
