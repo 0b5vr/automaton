@@ -1,6 +1,6 @@
-import { Channel } from './Channel';
+import { Channel, ChannelUpdateEvent } from './Channel';
+import { Curve } from './Curve';
 import { FxDefinition } from './types/FxDefinition';
-import { SerializedChannel } from './types/SerializedChannel';
 import { SerializedData } from './types/SerializedData';
 import { clamp } from './utils/clamp';
 import { mod } from './utils/mod';
@@ -58,6 +58,11 @@ export class Automaton {
   protected __resolution: number = 1000;
 
   /**
+   * Curves of the automaton.
+   */
+  protected __curves: Curve[] = [];
+
+  /**
    * Channels of the timeline.
    */
   protected __channels: { [ name: string ]: Channel } = {};
@@ -67,13 +72,9 @@ export class Automaton {
    */
   protected __fxDefinitions: { [ name: string ]: FxDefinition } = {};
 
-  /**
-   * A map of listeners : channel names.
-   */
-  protected __listeners = new Map<( arg: any ) => void, string | string[]>();
-
   public constructor( data: SerializedData, options: AutomatonOptions = {} ) {
     this.loop = options.loop || false;
+
     this.deserialize( data );
   }
 
@@ -98,15 +99,6 @@ export class Automaton {
   public get resolution(): number { return this.__resolution; }
 
   /**
-   * Create a new channel.
-   * @param name Name of the channel
-   * @param data Data for the channel
-   */
-  public createChannel( name: string, data: SerializedChannel ): void {
-    this.__channels[ name ] = new Channel( this, data );
-  }
-
-  /**
    * Load serialized automaton data.
    * @param data Serialized object contains automaton data.
    */
@@ -114,8 +106,10 @@ export class Automaton {
     this.__length = data.length;
     this.__resolution = data.resolution;
 
+    this.__curves = data.curves.map( ( data ) => new Curve( this, data ) );
+
     for ( const name in data.channels ) {
-      this.createChannel( name, data.channels[ name ] );
+      this.__channels[ name ] = new Channel( this, data.channels[ name ] );
     }
   }
 
@@ -140,10 +134,18 @@ export class Automaton {
   }
 
   /**
-   * Precalculate all channels.
+   * Get a curve.
+   * @param index An index of the curve
+   */
+  public getCurve( index: number ): Curve {
+    return this.__curves[ index ];
+  }
+
+  /**
+   * Precalculate all curves.
    */
   public precalcAll(): void {
-    Object.values( this.__channels ).forEach( ( ch ) => ch.precalc() );
+    Object.values( this.__curves ).forEach( ( curve ) => curve.precalc() );
   }
 
   /**
@@ -160,27 +162,8 @@ export class Automaton {
     this.__time = t;
 
     // grab the current value for each channels
-    const namesOfUpdatedChannels = new Set<string>();
-    for ( const [ name, ch ] of Object.entries( this.__channels ) ) {
-      const isChanged = ch.update( this.__time );
-      if ( isChanged ) {
-        namesOfUpdatedChannels.add( name );
-      }
-    }
-
-    for ( const [ listener, nameOrNames ] of this.__listeners.entries() ) {
-      if ( Array.isArray( nameOrNames ) ) {
-        const isIntersecting = nameOrNames.some( ( name ) => namesOfUpdatedChannels.has( name ) );
-        if ( isIntersecting ) {
-          const arg: { [ name: string ]: number } = {};
-          nameOrNames.forEach( ( name ) => arg[ name ] = this.__channels[ name ].value );
-          listener( arg );
-        }
-      } else {
-        if ( namesOfUpdatedChannels.has( nameOrNames ) ) {
-          listener( this.__channels[ nameOrNames ].value );
-        }
-      }
+    for ( const channel of Object.values( this.__channels ) ) {
+      channel.update( this.__time );
     }
   }
 
@@ -192,37 +175,12 @@ export class Automaton {
    */
   protected __auto(
     name: string,
-    listener?: ( value: number ) => void
-  ): number;
-  protected __auto(
-    names: string[],
-    listener?: ( values: { [ name: string ]: number } ) => void
-  ): { [ name: string ]: number };
-  protected __auto( ...args: any[] ): any {
-    if ( Array.isArray( args[ 0 ] ) ) { // the first argument is string[]
-      const names: string[] = args[ 0 ];
-      const listener: ( ( values: { [ name: string ]: number } ) => void ) | undefined = args[ 1 ];
-
-      const result: { [ name: string ]: number } = {};
-      names.forEach( ( name ) => result[ name ] = this.__channels[ name ].value );
-
-      if ( listener ) {
-        this.__listeners.set( listener, names );
-      }
-
-      return result;
-
-    } else { // the first argument is string
-      const name: string = args[ 0 ];
-      const listener: ( ( value: number ) => void ) | undefined = args[ 1 ];
-
-      const result = this.__channels[ name ].value;
-
-      if ( listener ) {
-        this.__listeners.set( listener, name );
-      }
-
-      return result;
+    listener?: ( events: ChannelUpdateEvent ) => void
+  ): number {
+    if ( listener ) {
+      this.__channels[ name ].subscribe( listener );
     }
+
+    return this.__channels[ name ].value;
   }
 }

@@ -1,4 +1,5 @@
 import { SerializedChannel } from './SerializedChannel';
+import { SerializedCurve } from './SerializedCurve';
 
 /**
  * Interface of serialized automaton data.
@@ -15,7 +16,12 @@ export interface SerializedData {
   resolution: number;
 
   /**
-   * Instruments in the timeline.
+   * Curves of the automaton.
+   */
+  curves: SerializedCurve[];
+
+  /**
+   * Channels of the automaton.
    */
   channels: { [ name: string ]: SerializedChannel };
 }

@@ -1,17 +1,11 @@
-import { BezierNode } from './BezierNode';
-import { FxSection } from './FxSection';
+import { ChannelItem } from './ChannelItem';
 
 /**
  * Interface of a serialized channel.
  */
 export interface SerializedChannel {
   /**
-   * Bezier nodes of the channel.
+   *List of channel items.
    */
-  nodes: BezierNode[];
-
-  /**
-   * Fx sections of the channel.
-   */
-  fxs: FxSection[];
+  items: ChannelItem[];
 }
