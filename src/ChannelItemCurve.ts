@@ -33,9 +33,8 @@ export class ChannelItemCurve extends ChannelItem {
   }
 
   public getValue( time: number ): number {
-    return this.curve.getValue(
-      mod( this.offset + ( time - this.time ) * this.speed, this.curve.length )
-    );
+    const t = this.offset + ( time - this.time ) * this.speed;
+    return this.curve.getValue( t );
   }
 
   /**
