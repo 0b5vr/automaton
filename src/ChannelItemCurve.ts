@@ -42,7 +42,7 @@ export class ChannelItemCurve extends ChannelItem {
    */
   public deserialize( data: SerializedChannelItemCurve ): void {
     super.deserialize( data );
-    this.curve = this.__automaton.getCurve( data.curve );
+    this.curve = this.__automaton.getCurve( data.curve )!;
     this.offset = data.offset || 0.0;
     this.speed = data.speed || 1.0;
     this.length = this.length || this.curve.length || 0.0;
