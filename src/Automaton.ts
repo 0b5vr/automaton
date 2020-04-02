@@ -3,17 +3,6 @@ import { Curve } from './Curve';
 import { FxDefinition } from './types/FxDefinition';
 import { SerializedAutomaton } from './types/SerializedAutomaton';
 import { clamp } from './utils/clamp';
-import { mod } from './utils/mod';
-
-/**
- * Interface for options of {@link Automaton}.
- */
-export interface AutomatonOptions {
-  /**
-   * Whether let the time loop or not. `false` by default.
-   */
-  loop?: boolean;
-}
 
 /**
  * IT'S AUTOMATON!
@@ -30,11 +19,6 @@ export class Automaton {
    * @returns Current value of the channel
    */
   public auto = this.__auto.bind( this );
-
-  /**
-   * Whether the animation will be looped or not.
-   */
-  public loop: boolean;
 
   /**
    * Current time of the automaton.
@@ -72,9 +56,7 @@ export class Automaton {
    */
   protected __fxDefinitions: { [ name: string ]: FxDefinition } = {};
 
-  public constructor( data: SerializedAutomaton, options: AutomatonOptions = {} ) {
-    this.loop = options.loop || false;
-
+  public constructor( data: SerializedAutomaton ) {
     this.deserialize( data );
   }
 
@@ -137,8 +119,8 @@ export class Automaton {
    * Get a curve.
    * @param index An index of the curve
    */
-  public getCurve( index: number ): Curve {
-    return this.__curves[ index ];
+  public getCurve( index: number ): Curve | null {
+    return this.__curves[ index ] || null;
   }
 
   /**
@@ -154,9 +136,7 @@ export class Automaton {
    * @param time Current time
    */
   public update( time: number ): void {
-    const t = this.loop
-      ? mod( time, this.__length ) // if loop is enabled, loop the time
-      : clamp( time, 0.0, this.__length ); // if loop is disabled, clamp the time
+    const t = clamp( time, 0.0, this.__length );
 
     // cache the time
     this.__time = t;
