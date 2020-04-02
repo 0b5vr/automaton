@@ -131,6 +131,14 @@ export class Automaton {
   }
 
   /**
+   * Reset the internal states of channels.
+   * **Call this method when you seek the time.**
+   */
+  public reset(): void {
+    Object.values( this.__channels ).forEach( ( channel ) => channel.reset() );
+  }
+
+  /**
    * Update the entire automaton.
    * **You may want to call this in your update loop.**
    * @param time Current time
