@@ -137,16 +137,27 @@ export class Curve {
    * @returns Result value
    */
   public getValue( time: number ): number {
-    // fetch two values then do the linear interpolation
-    const index = time * this.__automaton.resolution;
-    const indexi = Math.floor( index );
-    const indexf = index % 1.0;
+    if ( time < 0.0 ) {
+      // clamp left
+      return this.__values[ 0 ];
 
-    const v0 = this.__values[ indexi ];
-    const v1 = this.__values[ indexi + 1 ];
+    } else if ( this.__length <= time ) {
+      // clamp right
+      return this.__values[ this.__values.length - 1 ];
 
-    const v = v0 + ( v1 - v0 ) * indexf;
+    } else {
+      // fetch two values then do the linear interpolation
+      const index = time * this.__automaton.resolution;
+      const indexi = Math.floor( index );
+      const indexf = index % 1.0;
 
-    return v;
+      const v0 = this.__values[ indexi ];
+      const v1 = this.__values[ indexi + 1 ];
+
+      const v = v0 + ( v1 - v0 ) * indexf;
+
+      return v;
+
+    }
   }
 }

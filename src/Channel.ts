@@ -149,9 +149,7 @@ export class Channel {
 
       if ( time < item.time ) {
         break;
-      }
-
-      if ( item.time <= time && prevTime <= item.end ) {
+      } else {
         let progress: number;
         let init: true | undefined;
         let uninit: true | undefined;
