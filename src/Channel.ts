@@ -141,9 +141,9 @@ export class Channel {
 
     const item = this.__items[ next - 1 ];
     if ( item.end < time ) {
-      return item.getValue( item.end );
+      return item.getValue( item.length );
     } else {
-      return item.getValue( time );
+      return item.getValue( time - item.time );
     }
   }
 
