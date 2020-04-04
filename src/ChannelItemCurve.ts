@@ -32,7 +32,7 @@ export class ChannelItemCurve extends ChannelItem {
   }
 
   public getValue( time: number ): number {
-    const t = this.offset + time * this.speed;
+    const t = ( this.offset + time ) * this.speed;
     return this.curve.getValue( t );
   }
 
