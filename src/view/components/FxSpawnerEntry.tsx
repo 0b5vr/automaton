@@ -49,7 +49,7 @@ export interface FxSpawnerEntryProps {
   onClick?: ( event: React.MouseEvent<HTMLDivElement> ) => void;
 }
 
-export const FxSpawnerEntry = ( props: FxSpawnerEntryProps ): JSX.Element => {
+const FxSpawnerEntry = ( props: FxSpawnerEntryProps ): JSX.Element => {
   const { className, name, id, description, isSelected, onClick } = props;
 
   return (
@@ -67,3 +67,5 @@ export const FxSpawnerEntry = ( props: FxSpawnerEntryProps ): JSX.Element => {
     </Root>
   );
 };
+
+export { FxSpawnerEntry };

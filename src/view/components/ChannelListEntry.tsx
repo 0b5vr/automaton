@@ -1,10 +1,25 @@
+import { Action, State } from '../states/store';
+import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ChannelStatusLevel } from '../../ChannelWithGUI';
 import { Colors } from '../constants/Colors';
+import { Dispatch } from 'redux';
 import { Icons } from '../icons/Icons';
-import React from 'react';
-import { State } from '../states/store';
 import styled from 'styled-components';
+
+// == microcomponent ===============================================================================
+const Value = ( { className, name }: {
+  className?: string;
+  name: string;
+} ): JSX.Element => {
+  const { value } = useSelector( ( state: State ) => ( {
+    value: state.automaton.channels[ name ].value
+  } ) );
+
+  return (
+    <div className={ className }>{ value.toFixed( 3 ) }</div>
+  );
+};
 
 // == styles =======================================================================================
 const Name = styled.div`
@@ -17,7 +32,7 @@ const Name = styled.div`
   white-space: nowrap;
 `;
 
-const Value = styled.div`
+const StyledValue = styled( Value )`
   position: absolute;
   right: 0.2rem;
   bottom: 0.1rem;
@@ -38,27 +53,29 @@ const Root = styled.div<{ isSelected: boolean }>`
   background: ${ ( { isSelected } ) => ( isSelected ? Colors.back4 : Colors.back3 ) };
 `;
 
-// == element ======================================================================================
+// == component ====================================================================================
 export interface ChannelListEntryProps {
   className?: string;
   name: string;
 }
 
-export const ChannelListEntry = ( props: ChannelListEntryProps ): JSX.Element => {
+const ChannelListEntry = ( props: ChannelListEntryProps ): JSX.Element => {
   const { className, name } = props;
-  const dispatch = useDispatch();
-  const { selectedChannel, value, status } = useSelector( ( state: State ) => ( {
-    selectedChannel: state.curveEditor.selectedChannel,
-    value: state.automaton.channels[ name ].value,
+  const dispatch = useDispatch<Dispatch<Action>>();
+  const { selectedChannel, status } = useSelector( ( state: State ) => ( {
+    selectedChannel: state.timeline.selectedChannel,
     status: state.automaton.channels[ name ].status
   } ) );
 
-  function handleClick(): void {
-    dispatch( {
-      type: 'CurveEditor/SelectChannel',
-      channel: name
-    } );
-  }
+  const handleClick = useCallback(
+    () => {
+      dispatch( {
+        type: 'Timeline/SelectChannel',
+        channel: selectedChannel === name ? null : name
+      } );
+    },
+    [ selectedChannel ]
+  );
 
   return (
     <Root
@@ -70,7 +87,7 @@ export const ChannelListEntry = ( props: ChannelListEntryProps ): JSX.Element =>
       <Name>{ name }</Name>
       {
         status === null
-          ? <Value>{ value.toFixed( 3 ) }</Value>
+          ? <StyledValue name={ name } />
           : <Icon
             as={
               status.level === ChannelStatusLevel.ERROR
@@ -83,3 +100,5 @@ export const ChannelListEntry = ( props: ChannelListEntryProps ): JSX.Element =>
     </Root>
   );
 };
+
+export { ChannelListEntry };

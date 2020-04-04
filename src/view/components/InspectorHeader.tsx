@@ -3,7 +3,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
-export const Root = styled.div`
+const Root = styled.div`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -16,7 +16,7 @@ export interface InspectorHeaderProps {
   text: string;
 }
 
-export const InspectorHeader = ( { className, text }: InspectorHeaderProps ): JSX.Element => (
+const InspectorHeader = ( { className, text }: InspectorHeaderProps ): JSX.Element => (
   <Root
     className={ className }
     data-stalker={ text }
@@ -24,3 +24,5 @@ export const InspectorHeader = ( { className, text }: InspectorHeaderProps ): JS
     { text }
   </Root>
 );
+
+export { InspectorHeader };

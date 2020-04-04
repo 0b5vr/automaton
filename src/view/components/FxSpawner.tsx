@@ -1,9 +1,10 @@
+import { Action, State } from '../states/store';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Colors } from '../constants/Colors';
+import { Dispatch } from 'redux';
 import { FxSpawnerEntry } from './FxSpawnerEntry';
 import { Scrollable } from './Scrollable';
-import { State } from '../states/store';
 import { combineArraysUnique } from '../utils/combineArraysUnique';
 import styled from 'styled-components';
 
@@ -54,8 +55,8 @@ export interface FxSpawnerProps {
   className?: string;
 }
 
-export const FxSpawner = ( { className }: FxSpawnerProps ): JSX.Element => {
-  const dispatch = useDispatch();
+const FxSpawner = ( { className }: FxSpawnerProps ): JSX.Element => {
+  const dispatch = useDispatch<Dispatch<Action>>();
   const [ query, setQuery ] = useState<string>( '' );
   const [ focus, setFocus ] = useState<number>( 0 );
   const refInput = useRef<HTMLInputElement>( null );
@@ -169,3 +170,5 @@ export const FxSpawner = ( { className }: FxSpawnerProps ): JSX.Element => {
     ) }
   </>;
 };
+
+export { FxSpawner };

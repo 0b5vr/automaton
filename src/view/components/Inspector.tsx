@@ -1,8 +1,9 @@
 import { Colors } from '../constants/Colors';
 import { Icons } from '../icons/Icons';
-import { InspectorFx } from './InspectorFx';
+import { InspectorChannelItem } from './InspectorChannelItem';
+import { InspectorCurveFx } from './InspectorCurveFx';
+import { InspectorCurveNode } from './InspectorCurveNode';
 import { InspectorGeneral } from './InspectorGeneral';
-import { InspectorNode } from './InspectorNode';
 import { InspectorSnapping } from './InspectorSnapping';
 import { Metrics } from '../constants/Metrics';
 import React from 'react';
@@ -35,50 +36,49 @@ const Root = styled.div`
   background: ${ Colors.back2 };
 `;
 
-// == element ======================================================================================
-export interface InspectorProps {
+// == component ====================================================================================
+const Inspector = ( { className }: {
   className?: string;
-}
-
-export const Inspector = ( { className }: InspectorProps ): JSX.Element => {
-  const selectedChannel = useSelector( ( state: State ) => state.curveEditor.selectedChannel );
-  const stateSelectedNodes
-    = useSelector( ( state: State ) => state.curveEditor.selectedItems.nodes );
-  const stateSelectedFxs = useSelector( ( state: State ) => state.curveEditor.selectedItems.fxs );
-  const stateChannel = useSelector(
-    ( state: State ) => state.automaton.channels[ selectedChannel! ]
+} ): JSX.Element => {
+  const {
+    selectedCurve,
+    stateSelectedNodes,
+    stateSelectedFxs,
+    stateSelectedTimelineItems
+  } = useSelector( ( state: State ) => ( {
+    selectedCurve: state.curveEditor.selectedCurve,
+    stateSelectedNodes: state.curveEditor.selectedItems.nodes,
+    stateSelectedFxs: state.curveEditor.selectedItems.fxs,
+    stateSelectedTimelineItems: state.timeline.selectedItems
+  } ) );
+  const stateCurve = useSelector(
+    ( state: State ) => state.automaton.curves[ selectedCurve! ]
   );
   const settingsMode = useSelector( ( state: State ) => state.settings.mode );
 
-  const selectedNodes = stateSelectedNodes.map( ( id ) => {
-    return stateChannel.nodes[ id ];
-  } );
-  const selectedFxs = stateSelectedFxs.map( ( id ) => {
-    return stateChannel.fxs[ id ];
-  } );
-  const isSelectingANode = selectedNodes.length === 1 && selectedFxs.length === 0;
-  const isSelectingAFx = selectedNodes.length === 0 && selectedFxs.length === 1;
-  const isSelectingNothing = (
-    settingsMode === 'none' &&
-    ( selectedNodes.length === 0 ) &&
-    ( selectedFxs.length === 0 )
-  );
+  let content: JSX.Element | null = null;
+  if ( settingsMode === 'snapping' ) {
+    content = <InspectorSnapping />;
+  } else if ( settingsMode === 'general' ) {
+    content = <InspectorGeneral />;
+  } else if ( stateSelectedNodes.length === 1 ) {
+    content = <InspectorCurveNode node={ stateCurve.nodes[ 0 ] } />;
+  } else if ( stateSelectedFxs.length === 1 ) {
+    content = <InspectorCurveFx fx={ stateCurve.fxs[ 0 ] } />;
+  } else if ( stateSelectedTimelineItems.size === 1 ) {
+    content = <InspectorChannelItem
+      item={ Array.from( stateSelectedTimelineItems.values() )[ 0 ] }
+    />;
+  }
 
   return <Root className={ className }>
     <StyledScrollable>
       <Container>
-        { settingsMode === 'snapping' && <InspectorSnapping /> }
-        { settingsMode === 'general' && <InspectorGeneral /> }
-        { settingsMode === 'none' && <>
-          { isSelectingANode && <InspectorNode
-            node={ selectedNodes[ 0 ] }
-          /> }
-          { isSelectingAFx && <InspectorFx
-            fx={ selectedFxs[ 0 ] }
-          /> }
-        </> }
+        { content }
       </Container>
     </StyledScrollable>
-    { isSelectingNothing && <Logo as={ Icons.AutomatonA } /> }
+    { content == null && <Logo as={ Icons.AutomatonA } /> };
   </Root>;
 };
+
+export { Inspector };

@@ -54,6 +54,7 @@
     "react-redux": "^7.2.0",
     "react-svg-loader": "^3.0.3",
     "redux": "^4.0.5",
+    "resize-observer-polyfill": "^1.5.1",
     "rimraf": "^3.0.0",
     "styled-components": "^4.4.0",
     "ts-loader": "^6.2.0",

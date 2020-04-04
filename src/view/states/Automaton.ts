@@ -1,7 +1,8 @@
-import { BezierNode, FxDefinition, FxSection } from '@fms-cat/automaton';
+import { BezierNode, FxDefinition, FxSection, SerializedChannelItem } from '@fms-cat/automaton';
 import { GUISettings, defaultGUISettings } from '../../types/GUISettings';
 import { AutomatonWithGUI } from '../../AutomatonWithGUI';
 import { ChannelStatus } from '../../ChannelWithGUI';
+import { CurveStatus } from '../../CurveWithGUI';
 import { Reducer } from 'redux';
 import { WithID } from '../../types/WithID';
 import { jsonCopy } from '../../utils/jsonCopy';
@@ -11,14 +12,23 @@ import { produce } from 'immer';
 export interface State {
   instance?: AutomatonWithGUI;
   fxDefinitions: { [ name: string ]: FxDefinition };
+  channelNames: Set<string>;
   channels: {
     [ name: string ]: {
       value: number;
       status: ChannelStatus | null;
-      nodes: { [ id: string ]: BezierNode & WithID };
-      fxs: { [ id: string ]: FxSection & WithID };
+      items: { [ id: string ]: Required<SerializedChannelItem> & WithID };
     };
   };
+  curves: Array<{
+    previewTime: number | null;
+    previewValue: number | null;
+    status: CurveStatus | null;
+    length: number;
+    path: string;
+    nodes: { [ id: string ]: BezierNode & WithID };
+    fxs: { [ id: string ]: FxSection & WithID };
+  }>;
   isPlaying: boolean;
   time: number;
   length: number;
@@ -27,7 +37,9 @@ export interface State {
 }
 
 export const initialState: Readonly<State> = {
+  channelNames: new Set(),
   channels: {},
+  curves: [],
   fxDefinitions: {},
   isPlaying: false,
   time: 0.0,
@@ -56,23 +68,54 @@ export type Action = {
   channel: string;
   status: ChannelStatus | null;
 } | {
-  type: 'Automaton/UpdateChannelNode';
+  type: 'Automaton/UpdateChannelItem';
   channel: string;
+  id: string;
+  item: Required<SerializedChannelItem> & WithID;
+} | {
+  type: 'Automaton/RemoveChannelItem';
+  channel: string;
+  id: string;
+} | {
+  type: 'Automaton/CreateCurve';
+  curve: number;
+  length: number;
+  path: string;
+} | {
+  type: 'Automaton/UpdateCurvePath';
+  curve: number;
+  path: string;
+} | {
+  type: 'Automaton/UpdateCurveStatus';
+  curve: number;
+  status: CurveStatus | null;
+} | {
+  type: 'Automaton/UpdateCurvePreviewValue';
+  curve: number;
+  time: number;
+  value: number;
+} | {
+  type: 'Automaton/UpdateCurveNode';
+  curve: number;
   id: string;
   node: BezierNode & WithID;
 } | {
-  type: 'Automaton/RemoveChannelNode';
-  channel: string;
+  type: 'Automaton/RemoveCurveNode';
+  curve: number;
   id: string;
 } | {
-  type: 'Automaton/UpdateChannelFx';
-  channel: string;
+  type: 'Automaton/UpdateCurveFx';
+  curve: number;
   id: string;
   fx: FxSection & WithID;
 } | {
-  type: 'Automaton/RemoveChannelFx';
-  channel: string;
+  type: 'Automaton/RemoveCurveFx';
+  curve: number;
   id: string;
+} | {
+  type: 'Automaton/ChangeCurveLength';
+  curve: number;
+  length: number;
 } | {
   type: 'Automaton/UpdateIsPlaying';
   isPlaying: boolean;
@@ -96,24 +139,48 @@ export const reducer: Reducer<State, Action> = ( state = initialState, action ) 
     } else if ( action.type === 'Automaton/AddFxDefinition' ) {
       newState.fxDefinitions[ action.name ] = action.fxDefinition;
     } else if ( action.type === 'Automaton/CreateChannel' ) {
+      newState.channelNames.add( action.channel );
       newState.channels[ action.channel ] = {
         value: 0.0,
         status: null,
-        nodes: {},
-        fxs: {}
+        items: {}
       };
     } else if ( action.type === 'Automaton/UpdateChannelValue' ) {
       newState.channels[ action.channel ].value = action.value;
     } else if ( action.type === 'Automaton/UpdateChannelStatus' ) {
       newState.channels[ action.channel ].status = action.status;
-    } else if ( action.type === 'Automaton/UpdateChannelNode' ) {
-      newState.channels[ action.channel ].nodes[ action.id ] = jsonCopy( action.node );
-    } else if ( action.type === 'Automaton/RemoveChannelNode' ) {
-      delete newState.channels[ action.channel ].nodes[ action.id ];
-    } else if ( action.type === 'Automaton/UpdateChannelFx' ) {
-      newState.channels[ action.channel ].fxs[ action.id ] = jsonCopy( action.fx );
-    } else if ( action.type === 'Automaton/RemoveChannelFx' ) {
-      delete newState.channels[ action.channel ].fxs[ action.id ];
+    } else if ( action.type === 'Automaton/UpdateChannelItem' ) {
+      newState.channels[ action.channel ].items[ action.id ] = action.item;
+    } else if ( action.type === 'Automaton/RemoveChannelItem' ) {
+      newState.channelNames.delete( action.channel );
+      delete newState.channels[ action.channel ].items[ action.id ];
+    } else if ( action.type === 'Automaton/CreateCurve' ) {
+      newState.curves[ action.curve ] = {
+        previewTime: null,
+        previewValue: null,
+        status: null,
+        length: action.length,
+        path: action.path,
+        nodes: {},
+        fxs: {}
+      };
+    } else if ( action.type === 'Automaton/UpdateCurvePath' ) {
+      newState.curves[ action.curve ].path = action.path;
+    } else if ( action.type === 'Automaton/UpdateCurveStatus' ) {
+      newState.curves[ action.curve ].status = action.status;
+    } else if ( action.type === 'Automaton/UpdateCurvePreviewValue' ) {
+      newState.curves[ action.curve ].previewTime = action.time;
+      newState.curves[ action.curve ].previewValue = action.value;
+    } else if ( action.type === 'Automaton/UpdateCurveNode' ) {
+      newState.curves[ action.curve ].nodes[ action.id ] = jsonCopy( action.node );
+    } else if ( action.type === 'Automaton/RemoveCurveNode' ) {
+      delete newState.curves[ action.curve ].nodes[ action.id ];
+    } else if ( action.type === 'Automaton/UpdateCurveFx' ) {
+      newState.curves[ action.curve ].fxs[ action.id ] = jsonCopy( action.fx );
+    } else if ( action.type === 'Automaton/RemoveCurveFx' ) {
+      delete newState.curves[ action.curve ].fxs[ action.id ];
+    } else if ( action.type === 'Automaton/ChangeCurveLength' ) {
+      newState.curves[ action.curve ].length = action.length;
     } else if ( action.type === 'Automaton/UpdateIsPlaying' ) {
       newState.isPlaying = action.isPlaying;
     } else if ( action.type === 'Automaton/UpdateTime' ) {

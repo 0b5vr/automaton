@@ -1,52 +1,53 @@
 import { GUISettings } from '../../types/GUISettings';
 
-export interface CurveEditorRange {
+export interface TimeRange {
   t0: number;
   t1: number;
+}
+
+export interface ValueRange {
   v0: number;
   v1: number;
 }
 
-export interface CurveEditorSize {
-  width: number;
-  height: number;
-}
+export interface TimeValueRange extends TimeRange {}
+export interface TimeValueRange extends ValueRange {}
 
-export function x2t( x: number, range: CurveEditorRange, width: number ): number {
+export function x2t( x: number, range: TimeRange, width: number ): number {
   return ( x / width ) * ( range.t1 - range.t0 ) + range.t0;
 }
 
-export function t2x( t: number, range: CurveEditorRange, width: number ): number {
+export function t2x( t: number, range: TimeRange, width: number ): number {
   return ( ( t - range.t0 ) / ( range.t1 - range.t0 ) ) * width;
 }
 
-export function y2v( y: number, range: CurveEditorRange, height: number ): number {
+export function y2v( y: number, range: ValueRange, height: number ): number {
   return ( 1.0 - y / height ) * ( range.v1 - range.v0 ) + range.v0;
 }
 
-export function v2y( v: number, range: CurveEditorRange, height: number ): number {
+export function v2y( v: number, range: ValueRange, height: number ): number {
   return ( 1.0 - ( v - range.v0 ) / ( range.v1 - range.v0 ) ) * height;
 }
 
-export function dx2dt( x: number, range: CurveEditorRange, width: number ): number {
+export function dx2dt( x: number, range: TimeRange, width: number ): number {
   return ( x / width ) * ( range.t1 - range.t0 );
 }
 
-export function dt2dx( t: number, range: CurveEditorRange, width: number ): number {
+export function dt2dx( t: number, range: TimeRange, width: number ): number {
   return t / ( range.t1 - range.t0 ) * width;
 }
 
-export function dy2dv( y: number, range: CurveEditorRange, height: number ): number {
+export function dy2dv( y: number, range: ValueRange, height: number ): number {
   return -y / height * ( range.v1 - range.v0 );
 }
 
-export function dv2dy( v: number, range: CurveEditorRange, height: number ): number {
+export function dv2dy( v: number, range: ValueRange, height: number ): number {
   return -v / ( range.v1 - range.v0 ) * height;
 }
 
 export function snapTime(
   t: number,
-  range: CurveEditorRange,
+  range: TimeRange,
   width: number,
   settings: GUISettings
 ): number {
@@ -60,7 +61,7 @@ export function snapTime(
 
 export function snapValue(
   v: number,
-  range: CurveEditorRange,
+  range: ValueRange,
   height: number,
   settings: GUISettings | null
 ): number {

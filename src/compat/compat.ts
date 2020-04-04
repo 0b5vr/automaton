@@ -1,10 +1,10 @@
-import { SerializedDataWithGUI, defaultDataWithGUI } from '../types/SerializedDataWithGUI';
-import { compat1 } from './compat1';
-import { compat2 } from './compat2';
-import { compatPreVersions } from './compatPreVersions';
+import { SerializedAutomatonWithGUI, defaultDataWithGUI } from '../types/SerializedAutomatonWithGUI';
 import { jsonCopy } from '../utils/jsonCopy';
+import { preversionCompat } from './preversionCompat';
+import { v1Compat } from './v1Compat';
+import { v2Compat } from './v2Compat';
 
-export function compat( data?: any ): SerializedDataWithGUI {
+export function compat( data?: any ): SerializedAutomatonWithGUI {
   if ( !data ) {
     return Object.assign( {}, jsonCopy( defaultDataWithGUI ) );
   }
@@ -20,7 +20,7 @@ export function compat( data?: any ): SerializedDataWithGUI {
   let version = parseFloat( newData.version ) || parseFloat( newData.v );
 
   if ( !version && !newData.rev ) {
-    newData = compatPreVersions( newData );
+    newData = preversionCompat( newData );
     if ( newData === null ) {
       return Object.assign( {}, defaultDataWithGUI );
     }
@@ -32,11 +32,11 @@ export function compat( data?: any ): SerializedDataWithGUI {
   }
 
   if ( version < 2.0 ) { // v1, modes and modifiers, CURSED
-    newData = compat1( newData );
+    newData = v1Compat( newData );
   }
 
   if ( version < 3.0 ) { // v2
-    newData = compat2( newData );
+    newData = v2Compat( newData );
   }
 
   newData.v = process.env.VERSION;

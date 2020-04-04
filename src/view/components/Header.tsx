@@ -1,10 +1,11 @@
+import { Action, State } from '../states/store';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Colors } from '../constants/Colors';
+import { Dispatch } from 'redux';
 import { HeaderSeekbar } from './HeaderSeekbar';
 import { Icons } from '../icons/Icons';
 import { Metrics } from '../constants/Metrics';
-import { State } from '../states/store';
 import styled from 'styled-components';
 import { writeClipboard } from '../utils/clipboard';
 
@@ -61,8 +62,8 @@ export interface HeaderProps {
   className?: string;
 }
 
-export const Header = ( { className }: HeaderProps ): JSX.Element => {
-  const dispatch = useDispatch();
+const Header = ( { className }: HeaderProps ): JSX.Element => {
+  const dispatch = useDispatch<Dispatch<Action>>();
   const [ cantUndoThis, setCantUndoThis ] = useState( 0 );
   const [ isSavedRecently, setIsSavedRecently ] = useState( false );
   const automaton = useSelector( ( state: State ) => state.automaton.instance );
@@ -190,3 +191,5 @@ export const Header = ( { className }: HeaderProps ): JSX.Element => {
     </Root>
   );
 };
+
+export { Header };

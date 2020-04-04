@@ -1,10 +1,11 @@
+import { Action, State } from '../states/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { AboutLargeA } from './AboutLargeA';
 import { Anchor } from './Anchor';
 import { Colors } from '../constants/Colors';
+import { Dispatch } from 'redux';
 import { Icons } from '../icons/Icons';
 import React from 'react';
-import { State } from '../states/store';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
@@ -97,8 +98,8 @@ export interface AboutProps {
   className?: string;
 }
 
-export const About = ( { className }: AboutProps ): JSX.Element => {
-  const dispatch = useDispatch();
+const About = ( { className }: AboutProps ): JSX.Element => {
+  const dispatch = useDispatch<Dispatch<Action>>();
   const version = useSelector( ( state: State ) => state.automaton.instance?.version );
 
   return <Root className={ className }>
@@ -125,3 +126,5 @@ export const About = ( { className }: AboutProps ): JSX.Element => {
     </Container>
   </Root>;
 };
+
+export { About };

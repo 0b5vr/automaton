@@ -1,11 +1,11 @@
 import { GUISettings, defaultGUISettings } from './GUISettings';
-import { SerializedData } from '@fms-cat/automaton';
+import { SerializedAutomaton } from '@fms-cat/automaton';
 
 /**
  * Interface of serialized automaton data.
  * It's a [[AutomatonWithGUI]] variant.
  */
-export interface SerializedDataWithGUI extends SerializedData {
+export interface SerializedAutomatonWithGUI extends SerializedAutomaton {
   /**
    * Version of the automaton.
    */
@@ -17,10 +17,11 @@ export interface SerializedDataWithGUI extends SerializedData {
   guiSettings: GUISettings;
 }
 
-export const defaultDataWithGUI: Readonly<SerializedDataWithGUI> = {
+export const defaultDataWithGUI: Readonly<SerializedAutomatonWithGUI> = {
   version: process.env.VERSION!,
   length: 1.0,
   resolution: 100,
+  curves: [],
   channels: {},
   guiSettings: defaultGUISettings
 };

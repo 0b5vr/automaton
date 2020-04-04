@@ -6,7 +6,12 @@ import * as FxSpawner from './FxSpawner';
 import * as Header from './Header';
 import * as History from './History';
 import * as Settings from './Settings';
+import * as Timeline from './Timeline';
 import { combineReducers, createStore } from 'redux';
+import { enableMapSet } from 'immer';
+
+// haha
+enableMapSet();
 
 // == state ========================================================================================
 export interface State {
@@ -18,6 +23,7 @@ export interface State {
   header: Header.State;
   history: History.State;
   settings: Settings.State;
+  timeline: Timeline.State;
 }
 
 // == action =======================================================================================
@@ -29,7 +35,8 @@ export type Action = (
   FxSpawner.Action |
   Header.Action |
   History.Action |
-  Settings.Action
+  Settings.Action |
+  Timeline.Action
 );
 
 // == reducer ======================================================================================
@@ -41,7 +48,8 @@ const reducer = combineReducers<State>( {
   fxSpawner: FxSpawner.reducer,
   header: Header.reducer,
   history: History.reducer,
-  settings: Settings.reducer
+  settings: Settings.reducer,
+  timeline: Timeline.reducer
 } );
 
 // == store ========================================================================================

@@ -1,6 +1,9 @@
 import { useEffect, useRef } from 'react';
 
-export function useAnimationFrame( callback: ( delta: number ) => void ): void {
+export function useAnimationFrame(
+  callback: ( delta: number ) => void,
+  deps: any[]
+): void {
   const refPrev = useRef<number>( 0 );
 
   useEffect( () => {
@@ -19,5 +22,5 @@ export function useAnimationFrame( callback: ( delta: number ) => void ): void {
     return () => {
       halt = true;
     };
-  }, [ callback ] );
+  }, [ callback, ...deps ] );
 }

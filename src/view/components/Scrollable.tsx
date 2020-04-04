@@ -1,22 +1,64 @@
-import React, { ReactNode, useEffect, useRef, useState } from 'react';
+import React, { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { Colors } from '../constants/Colors';
 import styled from 'styled-components';
 import { useAnimationFrame } from '../utils/useAnimationFrame';
 
+// == microcomponent ===============================================================================
+const Bar = ( { className, style, top }: {
+  className?: string;
+  style?: React.CSSProperties;
+  top: number;
+} ): JSX.Element => {
+  const [ lastTop, setLastTop ] = useState( 0.0 );
+  const [ accumMovement, setAccumMovement ] = useState( 0.0 );
+  const [ opacity, setOpacity ] = useState( 0.0 );
+
+  if ( top !== lastTop ) {
+    const delta = Math.abs( top - lastTop );
+    setAccumMovement( accumMovement + delta );
+    setLastTop( top );
+  }
+
+  useAnimationFrame(
+    ( delta ) => {
+      if ( opacity === 0.0 ) {
+        // do nothing
+      } else if ( opacity < 0.01 ) {
+        setOpacity( 0.0 );
+      } else {
+        setOpacity( opacity * Math.exp( -5.0 * delta ) );
+      }
+
+      if ( accumMovement !== 0 ) {
+        setOpacity( 0.1 * accumMovement );
+        setAccumMovement( 0.0 );
+      }
+    },
+    [ opacity, accumMovement ]
+  );
+
+  return (
+    <div
+      className={ className }
+      style={ { opacity, ...style } }
+    />
+  );
+};
+
 // == styles =======================================================================================
-export const Bar = styled.div`
+const StyledBar = styled( Bar )`
   position: absolute;
   width: 0.25rem;
   background: ${ Colors.accent };
   border-radius: 0.125rem;
 `;
 
-export const Container = styled.div`
+const Container = styled.div`
   position: absolute;
   width: 100%;
 `;
 
-export const Root = styled.div`
+const Root = styled.div`
   position: relative;
   overflow: hidden;
 `;
@@ -28,30 +70,30 @@ export interface ScrollableProps {
   barPosition?: 'left' | 'right';
 }
 
-export const Scrollable = ( props: ScrollableProps ): JSX.Element => {
+const Scrollable = ( props: ScrollableProps ): JSX.Element => {
   const { className, children, barPosition } = props;
-  const refOpacity = useRef<number>( 0 );
-  const [ top, setTop ] = useState<number>( 0 );
   const refRoot = useRef<HTMLDivElement>( null );
   const refContainer = useRef<HTMLDivElement>( null );
+  const [ top, setTop ] = useState( 0 );
 
   const visibleHeight = refRoot.current?.clientHeight || 0.0;
   const contentHeight = refContainer.current?.clientHeight || 1.0;
   const barHeight = visibleHeight / contentHeight;
   const barTop = top / contentHeight;
 
-  const handleWheel = ( event: WheelEvent ): void => {
-    event.preventDefault();
-    event.stopPropagation();
+  const handleWheel = useCallback(
+    ( event: WheelEvent ): void => {
+      event.preventDefault();
+      event.stopPropagation();
 
-    const scrollMax = contentHeight - visibleHeight;
-    setTop( Math.min( Math.max( top - event.deltaY, -scrollMax ), 0.0 ) );
-    refOpacity.current = 1.0;
-  };
+      const visibleHeight = refRoot.current?.clientHeight || 0.0;
+      const contentHeight = refContainer.current?.clientHeight || 1.0;
 
-  useAnimationFrame( ( delta ) => {
-    refOpacity.current *= Math.exp( -5.0 * delta );
-  } );
+      const scrollMax = contentHeight - visibleHeight;
+      setTop( Math.min( Math.max( top - event.deltaY, -scrollMax ), 0.0 ) );
+    },
+    [ top ]
+  );
 
   useEffect( // 🔥 fuck
     () => {
@@ -79,15 +121,16 @@ export const Scrollable = ( props: ScrollableProps ): JSX.Element => {
       >
         { children }
       </Container>
-      <Bar
+      <StyledBar
+        top={ top }
         style={ {
           height: `${ 100.0 * barHeight }%`,
           top: `${ -100.0 * barTop }%`,
           left: barPosition === 'left' ? 0 : undefined,
           right: barPosition !== 'left' ? 0 : undefined,
-          opacity: refOpacity.current
         } }
       />
     </Root>
   );
 };
+export { Scrollable };

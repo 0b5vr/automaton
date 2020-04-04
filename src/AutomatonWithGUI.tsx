@@ -1,8 +1,10 @@
-import { Automaton, AutomatonOptions, FxDefinition, FxParam, SerializedChannel } from '@fms-cat/automaton';
+import { Automaton, FxDefinition, FxParam, SerializedChannel, SerializedCurve } from '@fms-cat/automaton';
 import { GUISettings, defaultGUISettings } from './types/GUISettings';
-import { SerializedDataWithGUI, defaultDataWithGUI } from './types/SerializedDataWithGUI';
+import { SerializedAutomatonWithGUI, defaultDataWithGUI } from './types/SerializedAutomatonWithGUI';
 import { App } from './view/components/App';
+import { ChannelUpdateEvent } from '@fms-cat/automaton/types/Channel';
 import { ChannelWithGUI } from './ChannelWithGUI';
+import { CurveWithGUI } from './CurveWithGUI';
 import { EventEmittable } from './mixins/EventEmittable';
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -16,7 +18,7 @@ import produce from 'immer';
 /**
  * Interface for options of {@link AutomatonWithGUI}.
  */
-export interface AutomatonWithGUIOptions extends AutomatonOptions {
+export interface AutomatonWithGUIOptions {
   /**
    * DOM element where you want to attach the Automaton GUI.
    */
@@ -30,11 +32,9 @@ export interface AutomatonWithGUIOptions extends AutomatonOptions {
 
 /**
  * IT'S AUTOMATON!
- * It's `automaton.js` and `automaton.min.js` version.
- * @param {Object} options Options for this Automaton instance
  */
 export class AutomatonWithGUI extends Automaton
-  implements Serializable<SerializedDataWithGUI> {
+  implements Serializable<SerializedAutomatonWithGUI> {
   /**
    * GUI settings for this automaton.
    */
@@ -44,6 +44,11 @@ export class AutomatonWithGUI extends Automaton
    * Version of the automaton.
    */
   protected __version: string = process.env.VERSION!;
+
+  /**
+   * Curves of the automaton.
+   */
+  protected __curves!: CurveWithGUI[];
 
   /**
    * Channels of the timeline.
@@ -75,17 +80,29 @@ export class AutomatonWithGUI extends Automaton
   }
 
   /**
+   * Curves of the automaton.
+   */
+  public get curves(): CurveWithGUI[] {
+    return this.__curves;
+  }
+
+  /**
    * A map of fx definitions.
    */
   public get fxDefinitions(): { [ name: string ]: FxDefinition } {
     return this.__fxDefinitions;
   }
 
+  /**
+   * Create a new Automaton instance.
+   * @param data Serialized data of the automaton
+   * @param options Options for this Automaton instance
+   */
   public constructor(
-    data: SerializedDataWithGUI = defaultDataWithGUI,
+    data: SerializedAutomatonWithGUI = defaultDataWithGUI,
     options: AutomatonWithGUIOptions = {}
   ) {
-    super( data, options );
+    super( data );
 
     this.__isPlaying = options.isPlaying || false;
 
@@ -258,6 +275,36 @@ export class AutomatonWithGUI extends Automaton
   }
 
   /**
+   * Create a new curve.
+   * @returns Created channel
+   */
+  public createCurve( data?: SerializedCurve ): CurveWithGUI {
+    const curve = new CurveWithGUI( this, data );
+    const index = this.__curves.length;
+    this.__curves.push( curve );
+    this.__emit( 'createCurve', { index, curve } );
+    return curve;
+  }
+
+  /**
+   * Remove a curve.
+   * @param index Index of the curve
+   */
+  public removeCurve( index: number ): void {
+    delete this.__curves[ index ];
+    this.__emit( 'removeCurve', { index } );
+  }
+
+  /**
+   * Get a curve.
+   * @param index Index of the curve
+   * @returns The curve
+   */
+  public getCurve( index: number ): CurveWithGUI | null {
+    return this.__curves[ index ] || null;
+  }
+
+  /**
    * Return list of id of fx definitions. Sorted.
    * @returns List of id of fx definitions
    */
@@ -316,37 +363,48 @@ export class AutomatonWithGUI extends Automaton
   }
 
   /**
+   * Return the index of a given curve.
+   * return `-1` if it couldn't find the curve.
+   * @param curve A curve you want to look up its index
+   * @returns the index of the curve
+   */
+  public getCurveIndex( curve: CurveWithGUI ): number {
+    return this.__curves.indexOf( curve );
+  }
+
+  /**
    * Load automaton state data.
    * @param data Object contains automaton data.
    */
   public deserialize( data?: any ): void {
     const convertedData = compat( data );
-    super.deserialize( convertedData );
+
+    this.__length = convertedData.length;
+    this.__resolution = convertedData.resolution;
+
+    this.__curves = convertedData.curves.map(
+      ( data ) => this.createCurve( data )
+    );
+
+    for ( const name in convertedData.channels ) {
+      this.__channels[ name ] = this.createChannel( name, convertedData.channels[ name ] );
+    }
 
     this.guiSettings = convertedData.guiSettings;
 
     this.__emit( 'load' );
-
-    // Poke vue 🔥
-    // if ( this.__vue ) {
-    //   this.__vue.$emit( 'loaded' );
-    // }
-
-    // Bye history
-    // if ( this.__history ) { // Automaton.constructor -> AutomatonWithGUI.load -> AutomatonWithGUI.dropHistory
-    //   this.dropHistory();
-    // }
   }
 
   /**
    * Serialize its current state.
    * @returns Serialized state
    */
-  public serialize(): SerializedDataWithGUI {
+  public serialize(): SerializedAutomatonWithGUI {
     return {
       version: this.version,
       length: this.length,
       resolution: this.resolution,
+      curves: this.__serializeCurves(),
       channels: this.__serializeChannelList(),
       guiSettings: this.guiSettings,
     };
@@ -386,14 +444,16 @@ export class AutomatonWithGUI extends Automaton
     );
   }
 
+  private __serializeCurves(): SerializedCurve[] {
+    return this.__curves.map( ( curve ) => curve.serialize() );
+  }
+
   private __serializeChannelList(): { [ name: string ]: SerializedChannel } {
-    return Object.keys( this.__channels ).reduce(
-      ( channels, name ) => {
-        channels[ name ] = this.__channels[ name ].serialize();
-        return channels;
-      },
-      {} as { [ name: string ]: SerializedChannel }
-    );
+    const data: { [ name: string ]: SerializedChannel } = {};
+    Object.entries( this.__channels ).forEach( ( [ name, channel ] ) => {
+      data[ name ] = channel.serialize();
+    } );
+    return data;
   }
 
   /**
@@ -404,31 +464,18 @@ export class AutomatonWithGUI extends Automaton
    */
   protected __auto(
     name: string,
-    listener?: ( value: number ) => void
-  ): number;
-  protected __auto(
-    names: string[],
-    listener?: ( values: { [ name: string ]: number } ) => void
-  ): { [ name: string ]: number };
-  protected __auto( ...args: any[] ): any {
-    if ( Array.isArray( args[ 0 ] ) ) { // the first argument is string[]
-      const names = args[ 0 ] as string[];
+    listener?: ( event: ChannelUpdateEvent ) => void
+  ): number {
+    let channel = this.__channels[ name ];
+    if ( !channel ) { channel = this.createChannel( name ); }
 
-      for ( const name of names ) {
-        let channel = this.__channels[ name ];
-        if ( !channel ) { channel = this.createChannel( name ); }
-        channel.markAsUsed();
-      }
-
-    } else { // the first argument is string
-      const name = args[ 0 ] as string;
-
-      let channel = this.__channels[ name ];
-      if ( !channel ) { channel = this.createChannel( name ); }
-      channel.markAsUsed();
+    if ( listener ) {
+      channel.subscribe( listener );
     }
 
-    return super.__auto( args[ 0 ], args[ 1 ] );
+    channel.markAsUsed();
+
+    return channel.value;
   }
 }
 
@@ -440,6 +487,8 @@ export interface AutomatonWithGUIEvents {
   update: { time: number };
   createChannel: { name: string; channel: ChannelWithGUI };
   removeChannel: { name: string };
+  createCurve: { index: number; curve: CurveWithGUI };
+  removeCurve: { index: number };
   addFxDefinition: { name: string; fxDefinition: FxDefinition };
   changeLength: { length: number; resolution: number };
   updateGUISettings: { settings: GUISettings };

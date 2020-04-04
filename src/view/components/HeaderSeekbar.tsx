@@ -1,12 +1,38 @@
+import { Action, State } from '../states/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { Colors } from '../constants/Colors';
+import { Dispatch } from 'redux';
 import React from 'react';
-import { State } from '../states/store';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
 import styled from 'styled-components';
 
+// == microcomponent ===============================================================================
+const CurrentTime = ( { className }: { className?: string } ): JSX.Element => {
+  const time = useSelector( ( state: State ) => state.automaton.time );
+  return (
+    <span className={ className }>
+      { time.toFixed( 3 ) }
+    </span>
+  );
+};
+
+const BarFG = ( { className }: { className?: string } ): JSX.Element => {
+  const { time, length } = useSelector( ( state: State ) => ( {
+    time: state.automaton.time,
+    length: state.automaton.length
+  } ) );
+  const progress = time / length;
+
+  return (
+    <div
+      className={ className }
+      style={ { width: progress * 100.0 + '%' } }
+    />
+  );
+};
+
 // == styles =======================================================================================
-const CurrentTime = styled.span`
+const StyledCurrentTime = styled( CurrentTime )`
   font-size: 0.8rem;
   pointer-events: none;
 `;
@@ -25,7 +51,7 @@ const BarBG = styled.div`
   pointer-events: none;
 `;
 
-const BarFG = styled.div<{ isSeeking: boolean; isHovering: boolean }>`
+const StyledBarFG = styled( BarFG )<{ isSeeking: boolean; isHovering: boolean }>`
   position: absolute;
   bottom: 0.25rem;
   height: 0.125rem;
@@ -41,15 +67,14 @@ const Root = styled.div`
   cursor: pointer;
 `;
 
-// == element ======================================================================================
+// == component ====================================================================================
 export interface HeaderSeekbarProps {
   className?: string;
 }
 
-export const HeaderSeekbar = ( { className }: HeaderSeekbarProps ): JSX.Element => {
-  const dispatch = useDispatch();
+const HeaderSeekbar = ( { className }: HeaderSeekbarProps ): JSX.Element => {
+  const dispatch = useDispatch<Dispatch<Action>>();
   const automaton = useSelector( ( state: State ) => state.automaton.instance );
-  const time = useSelector( ( state: State ) => state.automaton.time );
   const length = useSelector( ( state: State ) => state.automaton.length );
   const isSeeking = useSelector( ( state: State ) => state.header.isSeeking );
   const isSeekbarHovered = useSelector( ( state: State ) => state.header.isSeekbarHovered );
@@ -87,8 +112,6 @@ export const HeaderSeekbar = ( { className }: HeaderSeekbarProps ): JSX.Element 
     dispatch( { type: 'Header/SeekbarLeave' } );
   }
 
-  const progress = time / length;
-
   return (
     <Root
       className={ className }
@@ -96,14 +119,15 @@ export const HeaderSeekbar = ( { className }: HeaderSeekbarProps ): JSX.Element 
       onMouseEnter={ handleMouseEnter }
       onMouseLeave={ handleMouseLeave }
     >
-      <CurrentTime>{ time.toFixed( 3 ) }</CurrentTime>
+      <StyledCurrentTime />
       <TotalTime> / { length.toFixed( 3 ) }</TotalTime>
       <BarBG />
-      <BarFG
-        style={ { width: progress * 100.0 + '%' } }
+      <StyledBarFG
         isSeeking={ isSeeking }
         isHovering={ isSeekbarHovered }
       />
     </Root>
   );
 };
+
+export { HeaderSeekbar };

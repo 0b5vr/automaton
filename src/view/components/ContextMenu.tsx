@@ -1,8 +1,9 @@
+import { Action, State } from '../states/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { Colors } from '../constants/Colors';
 import { ContextMenuEntry } from './ContextMenuEntry';
+import { Dispatch } from 'redux';
 import React from 'react';
-import { State } from '../states/store';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
@@ -39,8 +40,8 @@ export interface ContextMenuProps {
   className?: string;
 }
 
-export const ContextMenu = ( { className }: ContextMenuProps ): JSX.Element => {
-  const dispatch = useDispatch();
+const ContextMenu = ( { className }: ContextMenuProps ): JSX.Element => {
+  const dispatch = useDispatch<Dispatch<Action>>();
 
   const position = useSelector( ( state: State ) => state.contextMenu.position );
 
@@ -72,3 +73,5 @@ export const ContextMenu = ( { className }: ContextMenuProps ): JSX.Element => {
     </Container>
   </Root>;
 };
+
+export { ContextMenu };

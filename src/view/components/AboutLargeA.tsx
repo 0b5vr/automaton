@@ -24,17 +24,23 @@ export interface AboutLargeAProps {
   className?: string;
 }
 
-export const AboutLargeA = ( { className }: AboutLargeAProps ): JSX.Element => {
-  const { time, automaton, selectedChannel } = useSelector( ( state: State ) => ( {
-    time: state.automaton.time,
+const AboutLargeA = ( { className }: AboutLargeAProps ): JSX.Element => {
+  const {
+    selectedChannel,
+    automaton,
+    time
+  } = useSelector( ( state: State ) => ( {
+    selectedChannel: state.timeline.selectedChannel,
     automaton: state.automaton.instance,
-    selectedChannel: state.curveEditor.selectedChannel
+    time: state.automaton.time
   } ) );
-  const channel = automaton && selectedChannel && automaton.getChannel( selectedChannel )!;
+  const channel = automaton && selectedChannel != null && automaton.getChannel( selectedChannel )!;
 
   const values = useMemo(
     () => new Array( 10 ).fill( 0 ).map( ( _, i ) => {
-      const t = time - i * 0.00166;
+      if ( time == null ) { return 0.0; }
+
+      const t = Math.max( time - i * 0.00166, 0.0 );
       return channel ? ( 360.0 * channel.getValue( t ) ) : 0.0;
     } ),
     [ time, channel ]
@@ -51,3 +57,5 @@ export const AboutLargeA = ( { className }: AboutLargeAProps ): JSX.Element => {
     ) ) }
   </Root>;
 };
+
+export { AboutLargeA };

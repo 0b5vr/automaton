@@ -1,18 +1,16 @@
+import { Action, State } from '../states/store';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Colors } from '../constants/Colors';
+import { Dispatch } from 'redux';
 import { InspectorHeader } from './InspectorHeader';
 import { InspectorHr } from './InspectorHr';
 import { InspectorItem } from './InspectorItem';
 import { NumberParam } from './NumberParam';
-import { State } from '../states/store';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
-const Root = styled.div`
-`;
-
-export const ConfirmNotice = styled.div`
+const ConfirmNotice = styled.div`
   margin: 0.15rem;
   font-size: 0.7rem;
   line-height: 1em;
@@ -20,7 +18,7 @@ export const ConfirmNotice = styled.div`
   text-align: center;
 `;
 
-export const ConfirmButton = styled.div`
+const ConfirmButton = styled.div`
   margin: 0.15rem auto;
   font-size: 0.8rem;
   line-height: 1.2rem;
@@ -43,8 +41,8 @@ export interface InspectorGeneralProps {
   className?: string;
 }
 
-export const InspectorGeneral = ( { className }: InspectorGeneralProps ): JSX.Element => {
-  const dispatch = useDispatch();
+const InspectorGeneral = (): JSX.Element => {
+  const dispatch = useDispatch<Dispatch<Action>>();
   const {
     automaton,
     settingsMode,
@@ -70,47 +68,47 @@ export const InspectorGeneral = ( { className }: InspectorGeneralProps ): JSX.El
   );
 
   return <>
-    { automaton && (
-      <Root className={ className }>
-        <InspectorHeader text="General Config" />
+    { automaton && <>
+      <InspectorHeader text="General Config" />
 
-        <InspectorHr />
+      <InspectorHr />
 
-        <InspectorItem name="Length">
-          <NumberParam
-            type="float"
-            value={ length }
-            onChange={ ( value ) => {
-              setLength( Math.max( 0.0, value ) );
-            } }
-          />
-        </InspectorItem>
-
-        <InspectorItem name="Resolution">
-          <NumberParam
-            type="int"
-            value={ resolution }
-            onChange={ ( value ) => {
-              setResolution( Math.max( 0.0, value ) );
-            } }
-          />
-        </InspectorItem>
-
-        <InspectorHr />
-
-        <ConfirmNotice>This cannot be undone!</ConfirmNotice>
-        <ConfirmButton
-          onClick={ () => {
-            automaton.setLength( length, resolution );
-
-            dispatch( {
-              type: 'History/Drop'
-            } );
+      <InspectorItem name="Length">
+        <NumberParam
+          type="float"
+          value={ length }
+          onChange={ ( value ) => {
+            setLength( Math.max( 0.0, value ) );
           } }
-        >
-          Apply
-        </ConfirmButton>
-      </Root>
-    ) }
+        />
+      </InspectorItem>
+
+      <InspectorItem name="Resolution">
+        <NumberParam
+          type="int"
+          value={ resolution }
+          onChange={ ( value ) => {
+            setResolution( Math.max( 0.0, value ) );
+          } }
+        />
+      </InspectorItem>
+
+      <InspectorHr />
+
+      <ConfirmNotice>This cannot be undone!</ConfirmNotice>
+      <ConfirmButton
+        onClick={ () => {
+          automaton.setLength( length, resolution );
+
+          dispatch( {
+            type: 'History/Drop'
+          } );
+        } }
+      >
+        Apply
+      </ConfirmButton>
+    </> }
   </>;
 };
+
+export { InspectorGeneral };

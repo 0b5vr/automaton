@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { Action } from '../states/store';
 import { Colors } from '../constants/Colors';
+import { Dispatch } from 'redux';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
 import styled from 'styled-components';
 import { useDispatch } from 'react-redux';
@@ -75,8 +77,8 @@ export interface NumberParamProps {
   onChange?: ( value: number ) => void;
 }
 
-export const NumberParam = ( props: NumberParamProps ): JSX.Element => {
-  const dispatch = useDispatch();
+const NumberParam = ( props: NumberParamProps ): JSX.Element => {
+  const dispatch = useDispatch<Dispatch<Action>>();
   const { className, type, value, historyDescription, onChange } = props;
   const [ isInput, setIsInput ] = useState<boolean>( false );
   const refInput = useRef<HTMLInputElement>( null );
@@ -263,3 +265,5 @@ export const NumberParam = ( props: NumberParamProps ): JSX.Element => {
     </Root>
   );
 };
+
+export { NumberParam };

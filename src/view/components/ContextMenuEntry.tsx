@@ -3,7 +3,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
-export const Name = styled.div`
+const Name = styled.div`
   padding: 0.1rem 0.2rem;
   font-size: 0.8rem;
   line-height: 1em;
@@ -13,7 +13,7 @@ export const Name = styled.div`
   color: ${ Colors.fore };
 `;
 
-export const Root = styled.div<{ isSelected?: boolean }>`
+const Root = styled.div<{ isSelected?: boolean }>`
   display: flex;
   width: 100%;
   height: 1rem;
@@ -34,14 +34,14 @@ export const Root = styled.div<{ isSelected?: boolean }>`
 `;
 
 // == components ===================================================================================
-export interface ContextMenuEntryProps {
+interface ContextMenuEntryProps {
   className?: string;
   name: string;
   description?: string;
   onClick?: ( event: React.MouseEvent<HTMLDivElement> ) => void;
 }
 
-export const ContextMenuEntry = ( props: ContextMenuEntryProps ): JSX.Element => {
+const ContextMenuEntry = ( props: ContextMenuEntryProps ): JSX.Element => {
   const { className, name: text, description, onClick } = props;
 
   return (
@@ -54,3 +54,5 @@ export const ContextMenuEntry = ( props: ContextMenuEntryProps ): JSX.Element =>
     </Root>
   );
 };
+
+export { ContextMenuEntry };

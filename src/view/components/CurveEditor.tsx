@@ -1,16 +1,18 @@
+import { Action, State } from '../states/store';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { x2t, y2v } from '../utils/CurveEditorUtils';
+import { x2t, y2v } from '../utils/TimeValueRange';
 import { Colors } from '../constants/Colors';
 import { CurveEditorFxs } from './CurveEditorFxs';
 import { CurveEditorGraph } from './CurveEditorGraph';
-import { CurveEditorGrid } from './CurveEditorGrid';
 import { CurveEditorLine } from './CurveEditorLine';
 import { CurveEditorNodes } from './CurveEditorNodes';
-import { State } from '../states/store';
+import { Dispatch } from 'redux';
+import { TimeValueGrid } from './TimeValueGrid';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
 import styled from 'styled-components';
 import { useDoubleClick } from '../utils/useDoubleClick';
+import { useRect } from '../utils/useRect';
 
 // == styles =======================================================================================
 const SVGRoot = styled.svg`
@@ -31,41 +33,30 @@ export interface CurveEditorProps {
   className?: string;
 }
 
-export const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
-  const dispatch = useDispatch();
+const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
+  const dispatch = useDispatch<Dispatch<Action>>();
   const checkDoubleClick = useDoubleClick();
-  const selectedChannel = useSelector( ( state: State ) => state.curveEditor.selectedChannel );
-  const range = useSelector( ( state: State ) => state.curveEditor.range );
-  const size = useSelector( ( state: State ) => state.curveEditor.size );
-  const automaton = useSelector( ( state: State ) => state.automaton.instance );
-  const length = useSelector( ( state: State ) => state.automaton.length );
-  const channel = selectedChannel && automaton?.getChannel( selectedChannel ) || null;
+  const {
+    selectedCurve,
+    range,
+    automaton,
+    length
+  } = useSelector( ( state: State ) => ( {
+    selectedCurve: state.curveEditor.selectedCurve,
+    range: state.curveEditor.range,
+    automaton: state.automaton.instance,
+    length: state.automaton.length
+  } ) );
+
+  const curve = selectedCurve != null && automaton?.getCurve( selectedCurve ) || null;
 
   const refSvgRoot = useRef<SVGSVGElement>( null );
-
-  useEffect( // listen its resize
-    () => {
-      function heck(): void {
-        if ( !refSvgRoot.current ) { return; }
-
-        dispatch( {
-          type: 'CurveEditor/SetSize',
-          size: {
-            width: refSvgRoot.current.clientWidth,
-            height: refSvgRoot.current.clientHeight,
-          }
-        } );
-      }
-
-      heck();
-      window.addEventListener( 'resize', () => heck() );
-    },
-    []
-  );
+  const size = useRect( refSvgRoot );
 
   const move = ( dx: number, dy: number ): void => {
     dispatch( {
       type: 'CurveEditor/MoveRange',
+      size,
       dx,
       dy,
       tmax: length // 🔥
@@ -75,6 +66,7 @@ export const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
   const zoom = ( cx: number, cy: number, dx: number, dy: number ): void => {
     dispatch( {
       type: 'CurveEditor/ZoomRange',
+      size,
       cx,
       cy,
       dx,
@@ -84,12 +76,12 @@ export const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
   };
 
   const createNode = ( x0: number, y0: number ): void => {
-    if ( !channel ) { return; }
+    if ( !curve ) { return; }
 
     let x = x0;
     let y = y0;
 
-    const data = channel.createNode(
+    const data = curve.createNode(
       x2t( x, range, size.width ),
       y2v( y, range, size.height )
     );
@@ -103,24 +95,24 @@ export const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
         x += movementSum.x;
         y += movementSum.y;
 
-        channel.moveNodeTime( data.$id, x2t( x, range, size.width ) );
-        channel.moveNodeValue( data.$id, y2v( y, range, size.height ) );
+        curve.moveNodeTime( data.$id, x2t( x, range, size.width ) );
+        curve.moveNodeValue( data.$id, y2v( y, range, size.height ) );
       },
       () => {
         const t = x2t( x, range, size.width );
         const v = y2v( y, range, size.height );
-        channel.moveNodeTime( data.$id, t );
-        channel.moveNodeValue( data.$id, v );
+        curve.moveNodeTime( data.$id, t );
+        curve.moveNodeValue( data.$id, v );
 
         data.time = t;
         data.value = v;
 
         const undo = (): void => {
-          channel.removeNode( data.$id );
+          curve.removeNode( data.$id );
         };
 
         const redo = (): void => {
-          channel.createNodeFromData( data );
+          curve.createNodeFromData( data );
         };
 
         dispatch( {
@@ -150,7 +142,7 @@ export const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
   };
 
   const handleContextMenu = ( event: React.MouseEvent ): void => {
-    if ( !channel ) { return; }
+    if ( !curve ) { return; }
 
     event.preventDefault();
     event.stopPropagation();
@@ -168,18 +160,18 @@ export const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
           command: () => {
             const t = x2t( x, range, size.width );
             const v = y2v( y, range, size.height );
-            const data = channel.createNode( t, v );
+            const data = curve.createNode( t, v );
             dispatch( {
               type: 'CurveEditor/SelectItems',
               nodes: [ data.$id ]
             } );
 
             const undo = (): void => {
-              channel.removeNode( data.$id );
+              curve.removeNode( data.$id );
             };
 
             const redo = (): void => {
-              channel.createNodeFromData( data );
+              curve.createNodeFromData( data );
             };
 
             dispatch( {
@@ -200,7 +192,7 @@ export const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
               type: 'FxSpawner/Open',
               callback: ( name: string ) => {
                 const t = x2t( x, range, size.width );
-                const data = channel.createFx( t, 1.0, name );
+                const data = curve.createFx( t, 1.0, name );
                 if ( data ) {
                   dispatch( {
                     type: 'CurveEditor/SelectItems',
@@ -208,11 +200,11 @@ export const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
                   } );
 
                   const undo = (): void => {
-                    channel.removeFx( data.$id );
+                    curve.removeFx( data.$id );
                   };
 
                   const redo = (): void => {
-                    channel.createFxFromData( data );
+                    curve.createFxFromData( data );
                   };
 
                   dispatch( {
@@ -262,17 +254,22 @@ export const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
 
   return (
     <Root className={ className }>
+      <TimeValueGrid
+        range={ range }
+        size={ size }
+      />
       <SVGRoot
         ref={ refSvgRoot }
         onMouseDown={ handleMouseDown }
         onContextMenu={ handleContextMenu }
       >
-        <CurveEditorGrid />
-        <CurveEditorFxs />
+        <CurveEditorFxs size={ size } />
         <CurveEditorGraph />
-        <CurveEditorLine />
-        <CurveEditorNodes />
+        <CurveEditorLine size={ size } />
+        <CurveEditorNodes size={ size } />
       </SVGRoot>
     </Root>
   );
 };
+
+export { CurveEditor };

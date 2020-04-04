@@ -1,4 +1,4 @@
-export function compat1( data: any ): any {
+export function v1Compat( data: any ): any {
   const newData = data;
 
   for ( const name in newData.params ) {

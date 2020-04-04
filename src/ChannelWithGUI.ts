@@ -1,13 +1,15 @@
-import { BezierNode, Channel, FxSection, SerializedChannel } from '@fms-cat/automaton';
+import { Channel, SerializedChannel, SerializedChannelItem } from '@fms-cat/automaton';
+import { ChannelItemWithGUI, deserializeChannelItem } from './ChannelItemWithGUI';
 import { AutomatonWithGUI } from './AutomatonWithGUI';
+import { ChannelItemConstantWithGUI } from './ChannelItemConstantWithGUI';
+import { ChannelItemCurveWithGUI } from './ChannelItemCurveWithGUI';
+import { ChannelUpdateEvent } from '@fms-cat/automaton/types/Channel';
 import { EventEmittable } from './mixins/EventEmittable';
 import { Serializable } from './types/Serializable';
 import { WithID } from './types/WithID';
 import { applyMixins } from './utils/applyMixins';
+import { clamp } from './utils/clamp';
 import { genID } from './utils/genID';
-import { hasOverwrap } from './utils/hasOverwrap';
-import { jsonCopy } from './utils/jsonCopy';
-import { removeID } from './utils/removeID';
 
 /**
  * Handles of a new node will be created in this length.
@@ -21,7 +23,6 @@ export const CHANNEL_FX_ROW_MAX = 5;
  */
 export enum ChannelStatusCode {
   NOT_USED,
-  NAN_DETECTED,
 }
 
 /**
@@ -68,14 +69,9 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
   protected __automaton!: AutomatonWithGUI;
 
   /**
-   * List of bezier nodes.
+   * List of channel items.
    */
-  protected __nodes!: Array<BezierNode & WithID>;
-
-  /**
-   * List of fx sections.
-   */
-  protected __fxs!: Array<FxSection & WithID>;
+  protected __items!: Array<ChannelItemWithGUI>;
 
   /**
    * List of status (warning / error).
@@ -84,35 +80,14 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
   private __statusList: ChannelStatus[];
 
   /**
-   * List of bezier nodes.
-   */
-  public get nodes(): Array<BezierNode & WithID> {
-    return this.__nodes;
-  }
-
-  /**
    * List of fx sections.
    */
-  public get fxs(): Array<FxSection & WithID> {
-    return this.__fxs;
+  public get items(): Array<ChannelItemWithGUI> {
+    return this.__items;
   }
 
   public constructor( automaton: AutomatonWithGUI, data?: SerializedChannel ) {
-    super( automaton, data || {
-      nodes: [
-        {
-          time: 0.0,
-          value: 0.0,
-          out: { time: CHANNEL_DEFAULT_HANDLE_LENGTH, value: 0.0 }
-        },
-        {
-          time: automaton.length,
-          value: 0.0,
-          in: { time: -CHANNEL_DEFAULT_HANDLE_LENGTH, value: 0.0 }
-        }
-      ],
-      fxs: []
-    } );
+    super( automaton, data || { items: [] } );
 
     this.__statusList = [
       {
@@ -139,50 +114,37 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
    * @param data Data of channel
    */
   public deserialize( data: SerializedChannel ): void {
-    super.deserialize( jsonCopy( data ) );
+    this.__items = data.items.map( ( item ) => {
+      return deserializeChannelItem( this.__automaton, item );
+    } );
 
-    this.__nodes.forEach( ( node ) => node.$id = genID() );
-    this.__fxs.forEach( ( fx ) => fx.$id = genID() );
+    this.__items.forEach( ( item ) => item.$id = genID() );
   }
 
   /**
-   * Precalculate value of samples.
+   * Reset the internal states.
+   * Call this method when you seek the time.
    */
-  public precalc(): void {
-    super.precalc();
+  public reset(): void {
+    super.reset();
 
-    let b = false;
-    this.__values.forEach( ( v, i ) => {
-      if ( isNaN( v ) ) {
-        this.__values[ i ] = 0.0;
-        b = true;
-      }
-    } );
-    this.__setStatus( b, {
-      code: ChannelStatusCode.NAN_DETECTED,
-      level: ChannelStatusLevel.ERROR,
-      message: 'This channel has NaN value'
-    } );
-
-    this.__emit( 'precalc' );
-    this.__automaton.pokeRenderer();
+    this.__emit( 'reset' );
   }
 
   /**
    * This method is intended to be used by [[Automaton.update]].
    * @param time The current time of the parent [[Automaton]]
-   * @returns whether the value has been changed or not
    */
-  public update( time: number ): boolean {
+  public update( time: number ): void {
+    const prevValue = this.__value;
+
     // update
-    const isChanged = super.update( time );
+    super.update( time );
 
     // emit if the value is changed
-    if ( isChanged ) {
+    if ( prevValue !== this.__value ) {
       this.__emit( 'changeValue' );
     }
-
-    return isChanged;
   }
 
   /**
@@ -196,11 +158,11 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
   }
 
   /**
-   * Return how many node the channel currently have.
-   * @returns Nodes count
+   * Return how many items the channel currently have.
+   * @returns Items count
    */
-  public getNumNode(): number {
-    return this.__nodes.length;
+  public getNumItems(): number {
+    return this.__items.length;
   }
 
   /**
@@ -209,573 +171,252 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
    */
   public serialize(): SerializedChannel {
     return {
-      nodes: this.__serializeNodes(),
-      fxs: this.__serializeFxs()
-    }; // 🔥
+      items: this.__serializeItems()
+    };
   }
 
   /**
-   * Get the nth node.
-   * @param index Index of the node
-   * @returns Data of the node
+   * Get the nth item.
+   * @param index Index of the item
+   * @returns Data of the item
    */
-  public getNodeByIndex( index: number ): BezierNode & WithID {
-    const node = this.__nodes[ index ];
-    if ( !node ) {
-      throw new Error( `Given node index ${index} is invalid (Current count of nodes: ${this.__nodes.length})` );
+  public getItemByIndex( index: number ): ChannelItemWithGUI {
+    const item = this.__items[ index ];
+    if ( !item ) {
+      throw new Error( `Given item index ${index} is invalid (Current count of items: ${this.__items.length})` );
     }
-    return node;
+    return item;
   }
 
   /**
-   * Dump data of a node.
+   * Dump data of an item.
    * @param id Id of the node you want to dump
    * @returns Data of the node
    */
-  public getNode( id: string ): BezierNode & WithID {
-    const index = this.__getNodeIndexById( id );
-    return this.__nodes[ index ];
-  }
-
-  /**
-   * Create a node.
-   * @param time Time of new node
-   * @param value Value of new node
-   * @returns Data of the node
-   */
-  public createNode( time: number, value: number ): BezierNode & WithID {
-    const id = genID();
-    const data = {
-      $id: id,
-      time,
-      value,
-      in: { time: -CHANNEL_DEFAULT_HANDLE_LENGTH, value: 0.0 },
-      out: { time: CHANNEL_DEFAULT_HANDLE_LENGTH, value: 0.0 }
+  public getItem( id: string ): SerializedChannelItem & WithID {
+    const index = this.__getItemIndexById( id );
+    return {
+      ...this.__items[ index ].serialize(),
+      $id: id
     };
-    this.__nodes.push( data );
-    this.__sortNodes();
-
-    this.precalc();
-    this.__emit( 'createNode', { id, node: data } );
-
-    return data;
   }
 
   /**
-   * Create a node from dumped data.
-   * @param node Dumped bezier node object
-   * @returns Data of the node
+   * Create a constant item.
+   * @param time The timepoint you want to add
+   * @returns Data of the item
    */
-  public createNodeFromData( node: BezierNode & WithID ): BezierNode & WithID {
-    const data = jsonCopy( node );
-    this.__nodes.push( data );
-    this.__sortNodes();
+  public createItemConstant( time: number ): ChannelItemConstantWithGUI {
+    const id = genID();
+    const item = new ChannelItemConstantWithGUI( this.__automaton, { time } );
+    item.$id = id;
+    this.__items.push( item );
+    this.__sortItems();
 
-    this.precalc();
-    this.__emit( 'createNode', { id: node.$id, node: data } );
+    this.__emit( 'createItem', { id, item } );
 
-    return data;
+    return item;
   }
 
   /**
-   * Check whether the node is the first / last node or not.
-   * @param id Id of the node you want to check
+   * Create a curve item.
+   * @param curve The curve number you want to add
+   * @param time The timepoint you want to add
+   * @returns Data of the item
    */
-  public isFirstOrLastNode( id: string ): boolean {
-    const index = this.__getNodeIndexById( id );
+  public createItemCurve( curve: number, time: number ): ChannelItemCurveWithGUI {
+    const id = genID();
+    const item = new ChannelItemCurveWithGUI( this.__automaton, { curve, time } );
+    item.$id = id;
+    this.__items.push( item );
+    this.__sortItems();
 
-    if ( index === 0 ) {
-      return true;
-    } else if ( index === this.__nodes.length - 1 ) {
-      return true;
-    }
+    this.__emit( 'createItem', { id, item } );
 
-    return false;
+    return item;
   }
 
   /**
-   * Remove a node.
-   * @param id Id of the node you want to remove
+   * Create an item from dumped data.
+   * @param item Dumped channel item object
+   * @returns Data of the item
    */
-  public removeNode( id: string ): void {
-    const index = this.__getNodeIndexById( id );
+  public createItemFromData( data: SerializedChannelItem & WithID ): ChannelItemWithGUI {
+    const item = deserializeChannelItem( this.__automaton, data );
+    item.$id = data.$id;
+    this.__items.push( item );
+    this.__sortItems();
 
-    // we can't delete the first / last node
-    if ( index === 0 ) {
-      return;
-    } else if ( index === this.__nodes.length - 1 ) {
-      return;
-    }
+    this.__emit( 'createItem', { id: item.$id, item } );
 
-    this.__nodes.splice( index, 1 );
-
-    this.precalc();
-    this.__emit( 'removeNode', { id } );
+    return item;
   }
 
   /**
-   * Move a node in the time axis.
-   * @param id Id of the node you want to move
+   * Remove an item.
+   * @param id Id of the item you want to remove
+   */
+  public removeItem( id: string ): void {
+    const index = this.__getItemIndexById( id );
+
+    this.__items.splice( index, 1 );
+
+    this.__emit( 'removeItem', { id } );
+  }
+
+  /**
+   * Move an item.
+   * @param id Id of the item you want to move
    * @param time Time
    */
-  public moveNodeTime( id: string, time: number ): void {
-    const index = this.__getNodeIndexById( id );
+  public moveItem( id: string, time: number ): void {
+    const index = this.__getItemIndexById( id );
 
-    const node = this.__nodes[ index ];
+    const item = this.__items[ index ];
 
-    let newTime = time;
-    if ( index === 0 ) {
-      newTime = 0;
-    } else if ( index === this.__nodes.length - 1 ) {
-      newTime = this.__automaton.length;
-    } else {
-      newTime = Math.min(
-        Math.max( newTime, this.__nodes[ index - 1 ].time ),
-        this.__nodes[ index + 1 ].time
-      );
-    }
-    node.time = newTime;
-
-    this.precalc();
-    this.__emit( 'updateNode', { id, node } );
-  }
-
-  /**
-   * Move a node in the value axis.
-   * @param id Id of the node you want to move
-   * @param value Value
-   */
-  public moveNodeValue( id: string, value: number ): void {
-    const index = this.__getNodeIndexById( id );
-
-    const node = this.__nodes[ index ];
-
-    node.value = value;
-
-    this.precalc();
-    this.__emit( 'updateNode', { id, node } );
-  }
-
-  /**
-   * Move a handle of a node in the time axis.
-   * @param id Id of the node you want to operate
-   * @param dir Which handle?
-   * @param time Time
-   */
-  public moveHandleTime( id: string, dir: 'in' | 'out', time: number ): void {
-    const index = this.__getNodeIndexById( id );
-
-    if (
-      ( index === 0 && dir === 'in' ) ||
-      ( index === ( this.getNumNode() - 1 ) && dir === 'out' )
-    ) { return; }
-
-    const node = this.__nodes[ index ];
-
-    const newTime = ( dir === 'in' ) ? Math.min( 0.0, time ) : Math.max( 0.0, time );
-
-    const handle = node[ dir ];
-    if ( handle ) {
-      if ( newTime === 0.0 && handle.value === 0.0 ) {
-        delete node[ dir ];
-      } else {
-        handle.time = newTime;
-      }
-    } else if ( newTime !== 0.0 ) {
-      node[ dir ] = { time: newTime, value: 0.0 };
-    }
-
-    this.precalc();
-    this.__emit( 'updateNode', { id, node } );
-  }
-
-  /**
-   * Move a handle of a node in the value axis.
-   * @param id Id of the node you want to operate
-   * @param dir Which handle?
-   * @param value Value
-   */
-  public moveHandleValue( id: string, dir: 'in' | 'out', value: number ): void {
-    const index = this.__getNodeIndexById( id );
-
-    if (
-      ( index === 0 && dir === 'in' ) ||
-      ( index === ( this.getNumNode() - 1 ) && dir === 'out' )
-    ) { return; }
-
-    const node = this.__nodes[ index ];
-
-    const handle = node[ dir ];
-    if ( handle ) {
-      if ( value === 0.0 && handle.time === 0.0 ) {
-        delete node[ dir ];
-      } else {
-        handle.value = value;
-      }
-    } else if ( value !== 0.0 ) {
-      node[ dir ] = { time: 0.0, value };
-    }
-
-    this.precalc();
-    this.__emit( 'updateNode', { id, node } );
-  }
-
-  /**
-   * Reset a handle of a node.
-   * @param id Id of the node you want to operate
-   * @param dir Which handle?
-   */
-  public resetHandle( id: string, dir: 'in' | 'out' ): void {
-    const index = this.__getNodeIndexById( id );
-
-    if (
-      ( index === 0 && dir === 'in' ) ||
-      ( index === ( this.getNumNode() - 1 ) && dir === 'out' )
-    ) { return; }
-
-    const node = this.__nodes[ index ];
-    node[ dir ] = {
-      time: ( ( dir === 'in' ) ? -1.0 : 1.0 ) * CHANNEL_DEFAULT_HANDLE_LENGTH,
-      value: 0.0
-    };
-
-    this.precalc();
-    this.__emit( 'updateNode', { id, node } );
-  }
-
-  /**
-   * Get the nth fx section.
-   * @param index Index of the fx section
-   * @returns Data of the fx section
-   */
-  public getFxByIndex( index: number ): FxSection & WithID {
-    const fx = this.__fxs[ index ];
-    if ( !fx ) {
-      throw new Error( `Given fx section index ${index} is invalid (Current count of fx sections: ${this.__fxs.length})` );
-    }
-    return fx;
-  }
-
-  /**
-   * Dump data of a fx section.
-   * @param id Id of a fx section you want to dump
-   * @returns Data of the fx
-   */
-  public getFx( id: string ): FxSection & WithID {
-    const index = this.__getFxIndexById( id );
-    return this.__fxs[ index ];
-  }
-
-  /**
-   * Create a fx.
-   * If it couldn't create an fx, it will return `null` instead.
-   * @param time Beginning time of new fx
-   * @param length Length of new fx
-   * @param def Definition id (kind) of new fx
-   * @returns Id of the new fx
-   */
-  public createFx( time: number, length: number, def: string ): ( FxSection & WithID ) | null {
-    const row = this.__getFreeRow( time, length );
-    if ( CHANNEL_FX_ROW_MAX <= row ) {
-      console.error( 'Too many fx stacks at here!' );
-      return null;
-    }
-
-    const id = genID();
-    const data: FxSection & WithID = {
-      $id: id,
-      time: time,
-      length: length,
-      row: row,
-      def: def,
-      params: this.__automaton.generateDefaultFxParams( def )
-    };
-    this.__fxs.push( data );
-    this.__sortFxs();
-
-    this.precalc();
-    this.__emit( 'createFx', { id, fx: data } );
-
-    return data;
-  }
-
-  /**
-   * Create a fx from dumped data.
-   * If it couldn't create an fx, it will return empty string instead.
-   * @param fx Dumped fx data
-   * @returns Id of the new fx
-   */
-  public createFxFromData( fx: FxSection & WithID ): ( FxSection & WithID ) | null {
-    const row = this.__getFreeRow( fx.time, fx.length, fx.row );
-    if ( CHANNEL_FX_ROW_MAX <= row ) {
-      console.error( 'Too many fx stacks at here!' );
-      return null;
-    }
-
-    const data = jsonCopy( fx );
-    data.row = row;
-    this.__fxs.push( data );
-    this.__sortFxs();
-
-    this.precalc();
-    this.__emit( 'createFx', { id: data.$id, fx: data } );
-
-    return data;
-  }
-
-  /**
-   * Remove a fx.
-   * @param id Id of the fx you want to remove
-   */
-  public removeFx( id: string ): void {
-    const index = this.__getFxIndexById( id );
-
-    this.__fxs.splice( index, 1 );
-
-    this.precalc();
-    this.__emit( 'removeFx', { id } );
-  }
-
-  /**
-   * Move a fx.
-   * @param id Id of the fx you want to move
-   * @param time Beginning time
-   */
-  public moveFx( id: string, time: number ): void {
-    const index = this.__getFxIndexById( id );
-
-    const fx = this.__fxs[ index ];
-
-    const sameRow = this.__fxs.filter( ( fxOp ) => fxOp.row === fx.row );
-    const indexInRow = sameRow.indexOf( fx );
-    const prev = sameRow[ indexInRow - 1 ];
-    const next = sameRow[ indexInRow + 1 ];
+    const prev = this.__items[ index - 1 ];
+    const next = this.__items[ index + 1 ];
 
     const left = prev ? ( prev.time + prev.length ) : 0.0;
     const right = next ? next.time : this.__automaton.length;
-    fx.time = Math.min( Math.max( time, left ), right - fx.length );
+    item.time = Math.min( Math.max( time, left ), right - item.length );
 
-    this.precalc();
-    this.__emit( 'updateFx', { id, fx } );
+    this.__sortItems();
+
+    this.__emit( 'updateItem', { id, item } );
   }
 
   /**
-   * Change row of a fx.
-   * @param id Id of the fx you want to move
-   * @param row Row
+   * Move an item --force.
+   * Best for undo-redo operation. probably.
+   * @param id Id of the item you want to move
+   * @param time Beginning time
    */
-  public changeFxRow( id: string, row: number ): void {
-    const index = this.__getFxIndexById( id );
+  public forceMoveItem( id: string, time: number ): void {
+    const index = this.__getItemIndexById( id );
 
-    if ( row < 0 || CHANNEL_FX_ROW_MAX <= row ) {
-      throw new Error( `Row number ${row} is invalid` );
+    const item = this.__items[ index ];
+
+    item.time = time;
+
+    this.__sortItems();
+
+    this.__emit( 'updateItem', { id, item } );
+  }
+
+  /**
+   * Resize an item.
+   * @param id Index of the item you want to resize
+   * @param length Length
+   */
+  public resizeItem( id: string, length: number ): void {
+    const index = this.__getItemIndexById( id );
+
+    const item = this.__items[ index ];
+
+    const next = this.__items[ index + 1 ];
+
+    const right = next ? next.time : this.__automaton.length;
+
+    let lengthMax = right - item.time;
+    if ( item instanceof ChannelItemCurveWithGUI ) {
+      lengthMax = Math.min( lengthMax, ( item.curve.length - item.offset ) / item.speed );
     }
 
-    const fx = this.__fxs[ index ];
-    if ( fx.row === row ) { return; }
+    item.length = Math.min( Math.max( length, 0.0 ), lengthMax );
 
-    const sameRow = this.__fxs.filter( ( fxOp ) => fxOp.row === row );
-    const isValid = sameRow.every( ( fxOp ) =>
-      !hasOverwrap( fx.time, fx.length, fxOp.time, fxOp.length ) );
-
-    if ( !isValid ) { return; }
-
-    fx.row = row;
-    this.__sortFxs();
-
-    this.precalc();
-    this.__emit( 'updateFx', { id, fx } );
+    this.__emit( 'updateItem', { id, item } );
   }
 
   /**
-   * Bypass or unbypass a fx.
-   * @param id Id of the fx you want to change
-   * @param bypass If true, fx will be bypassed
+   * Resize an item by left side of the end.
+   * It's very GUI dev friendly method. yeah.
+   * @param id Index of the item you want to resize
+   * @param length Length
    */
-  public bypassFx( id: string, bypass: boolean ): void {
-    const index = this.__getFxIndexById( id );
+  public resizeItemByLeft( id: string, length: number ): void {
+    const index = this.__getItemIndexById( id );
 
-    const fx = this.__fxs[ index ];
-    if ( bypass ) {
-      fx.bypass = true;
-    } else {
-      delete fx.bypass;
+    const item = this.__items[ index ];
+
+    const prev = this.__items[ index - 1 ];
+
+    const left = prev ? ( prev.time + prev.length ) : 0.0;
+
+    let lengthMax = item.end - left;
+    if ( item instanceof ChannelItemCurveWithGUI ) {
+      lengthMax = Math.min( lengthMax, ( item.curve.length - item.offset ) / item.speed );
     }
 
-    this.precalc();
-    this.__emit( 'updateFx', { id, fx } );
+    const end = item.end;
+    item.length = Math.min( Math.max( length, 0.0 ), lengthMax );
+    item.time = end - item.length;
+
+    this.__emit( 'updateItem', { id, item } );
   }
 
   /**
-   * Change a param of a fx.
-   * @param id Id of the fx you want to change
-   * @param name Name of the param you want to change
+   * Change the value of a constant item.
+   * @param id Id of the item you want to change
    * @param value Your desired value
    */
-  public changeFxParam( id: string, name: string, value: any ): void {
-    const index = this.__getFxIndexById( id );
+  public changeConstantValue( id: string, value: number ): void {
+    const index = this.__getItemIndexById( id );
 
-    const fx = this.__fxs[ index ];
-    const params = this.__automaton.getFxDefinitionParams( fx.def )!;
+    const item = this.__items[ index ] as ChannelItemConstantWithGUI;
 
-    let newValue = value;
-    if ( params[ name ].min !== undefined ) {
-      newValue = Math.max( params[ name ].min!, newValue );
-    }
-    if ( params[ name ].max !== undefined ) {
-      newValue = Math.min( params[ name ].max!, newValue );
-    }
-    fx.params[ name ] = newValue;
+    item.value = value;
 
-    this.precalc();
-    this.__emit( 'updateFx', { id, fx } );
+    this.__emit( 'updateItem', { id, item } );
   }
 
   /**
-   * Move a fx --force.
-   * Best for undo-redo operation. probably.
-   * @param id Id of the fx you want to move
-   * @param time Beginning time
-   * @param row Row
+   * Change the speed and offset of a curve item.
+   * @param id Id of the item you want to change
+   * @param speed Your desired speed
+   * @param offset Your desired offset
    */
-  public forceMoveFx( id: string, time: number, row: number ): void {
-    const index = this.__getFxIndexById( id );
+  public changeCurveSpeedAndOffset( id: string, speed: number, offset: number ): void {
+    const index = this.__getItemIndexById( id );
 
-    const fx = this.__fxs[ index ];
+    const item = this.__items[ index ] as ChannelItemCurveWithGUI;
 
-    fx.time = time;
-    fx.row = row;
-    this.__sortFxs();
+    item.speed = Math.max( speed, 0.0 );
+    item.offset = clamp( offset, 0.0, item.length );
+    item.length = Math.min( item.length, ( item.curve.length - item.offset ) / item.speed );
 
-    this.precalc();
-    this.__emit( 'updateFx', { id, fx } );
-  }
-
-  /**
-   * Resize a fx.
-   * @param id Index of the fx you want to resize
-   * @param length Length
-   */
-  public resizeFx( id: string, length: number ): void {
-    const index = this.__getFxIndexById( id );
-
-    const fx = this.__fxs[ index ];
-
-    const sameRow = this.__fxs.filter( ( fxOp ) => fxOp.row === fx.row );
-    const indexInRow = sameRow.indexOf( fx );
-    const next = sameRow[ indexInRow + 1 ];
-
-    const right = next ? next.time : this.__automaton.length;
-
-    fx.length = Math.min( Math.max( length, 0.0 ), right - fx.time );
-
-    this.precalc();
-    this.__emit( 'updateFx', { id, fx } );
-  }
-
-  /**
-   * Resize a fx by left side of the end.
-   * It's very GUI dev friendly method. yeah.
-   * @param id Index of the fx you want to resize
-   * @param length Length
-   */
-  public resizeFxByLeft( id: string, length: number ): void {
-    const index = this.__getFxIndexById( id );
-
-    const fx = this.__fxs[ index ];
-    const end = fx.time + fx.length;
-
-    const sameRow = this.__fxs.filter( ( fxOp ) => fxOp.row === fx.row );
-    const indexInRow = sameRow.indexOf( fx );
-    const prev = sameRow[ indexInRow - 1 ];
-
-    const left = prev ? ( prev.time + prev.length ) : 0.0;
-
-    fx.length = Math.min( Math.max( length, 0.0 ), end - left );
-    fx.time = end - fx.length;
-
-    this.precalc();
-    this.__emit( 'updateFx', { id, fx } );
+    this.__emit( 'updateItem', { id, item } );
   }
 
   /**
    * Call when you need to change the length of the automaton.
-   * This is very hardcore method. Should not be called by anywhere except {@link AutomatonWithGUI#setLength}.
+   * Should not be called by anywhere except {@link AutomatonWithGUI#setLength}.
    */
   public changeLength(): void {
-    // iterating nodes from the tail
-    for ( let i = this.__nodes.length - 1; 0 <= i; i -- ) {
-      const node = this.__nodes[ i ];
+    // iterating items from the tail
+    for ( let i = this.__items.length - 1; 0 <= i; i -- ) {
+      const item = this.__items[ i ];
 
-      if ( this.__automaton.length < node.time ) {
-        // if the node time is larger than the new length, remove it
-        this.__nodes.splice( i, 1 );
-        this.__emit( 'removeNode', { id: node.$id } );
-
-      } else if ( node.time === this.__automaton.length ) {
-        // if the node time is same as the new length, remove the out handle
-        delete node.out;
-        this.__emit( 'updateNode', { id: node.$id, node } );
-        break;
-
-      } else {
-        // add a out handle to the previous last node
-        if ( node ) {
-          node.out = { time: CHANNEL_DEFAULT_HANDLE_LENGTH, value: 0.0 };
-        }
-        this.__emit( 'updateNode', { id: node.$id, node } );
-
-        // if the node time is smaller than the new length, make a new last node then break
-        const newNode = {
-          time: this.__automaton.length,
-          value: 0.0,
-          in: { time: -CHANNEL_DEFAULT_HANDLE_LENGTH, value: 0.0 },
-          $id: genID()
-        };
-        this.__nodes.push( newNode );
-        this.__emit( 'createNode', { id: newNode.$id, node: newNode } );
-        break;
-
-      }
-    }
-
-    // iterating fxs from the tail
-    for ( let i = this.__fxs.length - 1; 0 <= i; i -- ) {
-      const fx = this.__fxs[ i ];
-
-      if ( this.__automaton.length < fx.time ) {
+      if ( this.__automaton.length < item.time ) {
         // if the beginning time of the fx is larger than the new length, remove it
-        this.__fxs.splice( i, 1 );
-        this.__emit( 'removeFx', { id: fx.$id } );
+        this.__items.splice( i, 1 );
+        this.__emit( 'removeItem', { id: item.$id } );
 
-      } else if ( this.__automaton.length < ( fx.time + fx.length ) ) {
+      } else if ( this.__automaton.length < ( item.time + item.length ) ) {
         // if the ending time of the fx is larger than the new length, shorten it
-        fx.length = this.__automaton.length - fx.time;
-        this.__emit( 'updateFx', { id: fx.$id, fx } );
+        item.length = this.__automaton.length - item.time;
+        this.__emit( 'updateItem', { id: item.$id, item } );
 
       }
     }
-
-    this.__values = new Float32Array(
-      Math.ceil( this.__automaton.resolution * this.__automaton.length )
-    );
-    this.precalc();
   }
 
   /**
-   * Serialize its nodes.
-   * @returns Serialized nodes
+   * Serialize its items.
+   * @returns Serialized items
    */
-  private __serializeNodes(): BezierNode[] {
-    return this.__nodes.map( ( node ) => removeID( jsonCopy( node ) ) );
-  }
-
-  /**
-   * Serialize its fxs.
-   * @returns Serialized fxs
-   */
-  private __serializeFxs(): FxSection[] {
-    return this.__fxs.map( ( fx ) => removeID( jsonCopy( fx ) ) );
+  private __serializeItems(): SerializedChannelItem[] {
+    return this.__items.map( ( item ) => item.serialize() );
   }
 
   /**
@@ -809,73 +450,32 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
   }
 
   /**
-   * Sort nodes by time.
+   * Search for item that has given id then return index of it.
+   * If it couldn't find the item, it will throw an error instead.
+   * @param id Id of item you want to grab
+   * @returns The index of the item
    */
-  private __sortNodes(): void {
-    this.__nodes = this.__nodes.sort( ( a, b ) => a.time - b.time );
-  }
-
-  /**
-   * Search for node that has given id then return index of it.
-   * If it couldn't find the node, it will throw an error instead.
-   * @param id Id of node you want to grab
-   * @returns The index of the node
-   */
-  private __getNodeIndexById( id: string ): number {
-    const index = this.__nodes.findIndex( ( node ) => node.$id === id );
-    if ( index === -1 ) { throw new Error( `Searched for node id: ${id} but not found` ); }
+  private __getItemIndexById( id: string ): number {
+    const index = this.__items.findIndex( ( item ) => item.$id === id );
+    if ( index === -1 ) { throw new Error( `Searched for item id: ${id} but not found` ); }
     return index;
   }
 
   /**
-   * Sort fxs by time.
+   * Sort items by time.
    */
-  private __sortFxs(): void {
-    this.__fxs = this.__fxs.sort( ( a, b ) => a.time - b.time ).sort( ( a, b ) => a.row - b.row );
-  }
-
-  /**
-   * Search for fx section that has given id then return index of it.
-   * If it couldn't find the section, it will throw an error instead.
-   * @param id Id of section you want to grab
-   * @returns The index of the section
-   */
-  private __getFxIndexById( id: string ): number {
-    const index = this.__fxs.findIndex( ( fx ) => fx.$id === id );
-    if ( index === -1 ) { throw new Error( `Searched for fx id: ${id} but not found` ); }
-    return index;
-  }
-
-  /**
-   * Search for vacance fx row for given time and length.
-   * @param time Beginning time of fx
-   * @param length Length of fx
-   * @param row If given, rows lower than this value will not be searched.
-   * @returns Minimal free fx row
-   */
-  private __getFreeRow( _time: number, _length: number, _row: number = 0 ): number {
-    let row = _row || 0;
-    for ( let iFx = 0; iFx < this.__fxs.length; iFx ++ ) {
-      const fx = this.__fxs[ iFx ];
-      if ( fx.row < row ) { continue; }
-      if ( row < fx.row ) { break; }
-      if ( hasOverwrap( _time, _length, fx.time, fx.length ) ) {
-        row ++;
-      }
-    }
-    return row;
+  private __sortItems(): void {
+    this.__items = this.__items.sort( ( a, b ) => ( a.time || 0.0 ) - ( b.time || 0.0 ) );
   }
 }
 
 export interface ChannelWithGUIEvents {
-  createNode: { id: string; node: BezierNode & WithID };
-  updateNode: { id: string; node: BezierNode & WithID };
-  removeNode: { id: string };
-  createFx: { id: string; fx: FxSection & WithID };
-  updateFx: { id: string; fx: FxSection & WithID };
-  removeFx: { id: string };
+  createItem: { id: string; item: ChannelItemWithGUI };
+  updateItem: { id: string; item: ChannelItemWithGUI };
+  removeItem: { id: string };
   changeValue: void;
-  precalc: void;
+  reset: void;
+  update: { id: string; item: ChannelItemWithGUI; event: ChannelUpdateEvent };
   updateStatus: void;
 }
 

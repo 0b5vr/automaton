@@ -8,37 +8,94 @@ import { ChannelList } from './ChannelList';
 import { Colors } from '../constants/Colors';
 import { ContextMenu } from './ContextMenu';
 import { CurveEditor } from './CurveEditor';
+import { CurveList } from './CurveList';
+import { DopeSheet } from './DopeSheet';
+import { DopeSheetOverlay } from './DopeSheetOverlay';
+import { DopeSheetUnderlay } from './DopeSheetUnderlay';
 import { FxSpawner } from './FxSpawner';
 import { Header } from './Header';
 import { Inspector } from './Inspector';
 import { Metrics } from '../constants/Metrics';
 import React from 'react';
+import { Scrollable } from './Scrollable';
 import { Stalker } from './Stalker';
+import { Timeline } from './Timeline';
 
 // == styles =======================================================================================
 const GlobalStyle = createGlobalStyle`
   @import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900');
+
+  * {
+    box-sizing: border-box;
+  }
 `;
 
 const StyledHeader = styled( Header )`
   position: absolute;
   top: 0;
-  width: calc( 100% - 0.25rem );
-  height: calc( ${ Metrics.headerHeight } - 0.25rem );
+  width: 100%;
+  height: ${ Metrics.headerHeight };
 `;
 
 const StyledChannelList = styled( ChannelList )`
+  width: ${ Metrics.channelListWidth - 4 }px;
+  margin: 0 2px;
+`;
+
+const StyledDopeSheetUnderlay = styled( DopeSheetUnderlay )`
+  position: absolute;
+  width: calc( 100% - ${ Metrics.channelListWidth }px - ${ Metrics.inspectorWidth } );
+  height: calc( 100% - ${ Metrics.headerHeight } );
+  left: ${ Metrics.channelListWidth }px;
+  top: ${ Metrics.headerHeight };
+`;
+
+const StyledDopeSheetOverlay = styled( DopeSheetOverlay )`
+  position: absolute;
+  width: calc( 100% - ${ Metrics.channelListWidth }px - ${ Metrics.inspectorWidth } );
+  height: calc( 100% - ${ Metrics.headerHeight } );
+  left: ${ Metrics.channelListWidth }px;
+  top: ${ Metrics.headerHeight };
+  pointer-events: none;
+`;
+
+const StyledDopeSheet = styled( DopeSheet )`
+  width: calc( 100% - ${ Metrics.channelListWidth }px );
+  flex-grow: 1;
+`;
+
+const StyledTimeline = styled( Timeline )`
+  position: absolute;
+  left: ${ Metrics.channelListWidth }px;
+  top: ${ Metrics.headerHeight };
+  width: calc( 100% - ${ Metrics.channelListWidth }px - ${ Metrics.inspectorWidth } );
+  height: calc( 100% - ${ Metrics.headerHeight } );
+`;
+
+const ChannelListAndDopeSheetContainer = styled.div`
+  display: flex;
+`;
+
+const ChannelListAndDopeSheetScrollable = styled( Scrollable )`
+  position: absolute;
+  left: 0;
+  top: ${ Metrics.headerHeight };
+  width: calc( 100% - ${ Metrics.inspectorWidth } );
+  height: calc( 100% - ${ Metrics.headerHeight } );
+`;
+
+const StyledCurveList = styled( CurveList )`
   position: absolute;
   bottom: 0;
-  width: ${ Metrics.channelListWidth };
+  width: ${ Metrics.curveListWidth }px;
   height: calc( 100% - ${ Metrics.headerHeight } );
 `;
 
 const StyledCurveEditor = styled( CurveEditor )`
   position: absolute;
-  left: ${ Metrics.channelListWidth };
+  left: ${ Metrics.curveListWidth }px;
   bottom: 0;
-  width: calc( 100% - ${ Metrics.channelListWidth } - ${ Metrics.inspectorWidth } );
+  width: calc( 100% - ${ Metrics.curveListWidth }px - ${ Metrics.inspectorWidth } );
   height: calc( 100% - ${ Metrics.headerHeight } );
 `;
 
@@ -71,7 +128,7 @@ const Root = styled.div`
   font-family: 'Roboto', sans-serif;
   font-weight: 300;
   font-size: ${ Metrics.rootFontSize };
-  background: ${ Colors.black };
+  background: ${ Colors.back2 };
   color: ${ Colors.fore };
   user-select: none;
 `;
@@ -90,8 +147,16 @@ const Fuck = ( { automaton }: AppProps ): JSX.Element => {
     <Root>
       <AutomatonStateListener automaton={ automaton } />
       <StyledHeader />
-      <StyledChannelList />
-      <StyledCurveEditor />
+      <StyledDopeSheetUnderlay />
+      <ChannelListAndDopeSheetScrollable barPosition='left'>
+        <ChannelListAndDopeSheetContainer>
+          <StyledChannelList />
+          <StyledDopeSheet />
+        </ChannelListAndDopeSheetContainer>
+      </ChannelListAndDopeSheetScrollable>
+      <StyledDopeSheetOverlay />
+      <StyledTimeline />
+      {/* <StyledCurveEditor /> */}
       <StyledInspector />
       { isFxSpawnerVisible && <StyledFxSpawner /> }
       { isAboutVisible && <StyledAbout /> }
@@ -102,9 +167,11 @@ const Fuck = ( { automaton }: AppProps ): JSX.Element => {
   );
 };
 
-export const App = ( props: AppProps ): JSX.Element => <>
+const App = ( props: AppProps ): JSX.Element => <>
   <GlobalStyle />
   <Provider store={ store }>
     <Fuck { ...props } />
   </Provider>
 </>;
+
+export { App };

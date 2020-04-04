@@ -1,11 +1,13 @@
-import React, { useCallback } from 'react';
-import { dt2dx, dx2dt, snapTime, t2x } from '../utils/CurveEditorUtils';
+import { Action, State } from '../states/store';
+import React, { Dispatch, useCallback } from 'react';
+import { dt2dx, dx2dt, snapTime, t2x } from '../utils/TimeValueRange';
 import { useDispatch, useSelector } from 'react-redux';
 import { CHANNEL_FX_ROW_MAX } from '../../ChannelWithGUI';
 import { Colors } from '../constants/Colors';
 import { FxSection } from '@fms-cat/automaton';
-import { State } from '../states/store';
+import { Resolution } from '../utils/Resolution';
 import { WithID } from '../../types/WithID';
+import { clamp } from '../../utils/clamp';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
 import styled from 'styled-components';
 import { useDoubleClick } from '../utils/useDoubleClick';
@@ -73,35 +75,35 @@ const Root = styled.g`
 // == element ======================================================================================
 export interface CurveEditorFxsProps {
   className?: string;
+  size: Resolution;
 }
 
-export const CurveEditorFxs = ( props: CurveEditorFxsProps ): JSX.Element => {
-  const dispatch = useDispatch();
+const CurveEditorFxs = ( props: CurveEditorFxsProps ): JSX.Element => {
+  const { className, size } = props;
+  const dispatch = useDispatch<Dispatch<Action>>();
   const checkDoubleClick = useDoubleClick();
   const {
-    selectedChannel,
+    selectedCurve,
     range,
-    size,
     guiSettings,
     automaton,
     fxDefinitions
   } = useSelector( ( s: State ) => ( {
-    selectedChannel: s.curveEditor.selectedChannel,
+    selectedCurve: s.curveEditor.selectedCurve,
     range: s.curveEditor.range,
-    size: s.curveEditor.size,
     guiSettings: s.automaton.guiSettings,
     automaton: s.automaton.instance,
     fxDefinitions: s.automaton.fxDefinitions
   } ) );
   const stateFxs = useSelector( ( s: State ) => (
-    selectedChannel && s.automaton.channels[ selectedChannel ].fxs
+    selectedCurve != null && s.automaton.curves[ selectedCurve ].fxs
   ) );
-  const channel = selectedChannel && automaton?.getChannel( selectedChannel ) || null;
+  const curve = selectedCurve != null && automaton?.getCurve( selectedCurve ) || null;
   const selectedFxs = useSelector( ( state: State ) => state.curveEditor.selectedItems.fxs );
 
   const grabFxBody = useCallback(
     ( fx: FxSection & WithID ): void => {
-      if ( !channel ) { return; }
+      if ( !curve ) { return; }
 
       const tPrev = fx.time;
       const rPrev = fx.row;
@@ -124,26 +126,26 @@ export const CurveEditorFxs = ( props: CurveEditorFxsProps ): JSX.Element => {
           t = holdTime ? tPrev : ( tPrev + dx2dt( dx, range, size.width ) );
           r = holdRow
             ? rPrev
-            : Math.min( Math.max( rPrev + Math.round( dy / FX_HEIGHT ), 0 ), CHANNEL_FX_ROW_MAX - 1 );
+            : clamp( rPrev + Math.round( dy / FX_HEIGHT ), 0, CHANNEL_FX_ROW_MAX - 1 );
 
           if ( !ignoreSnap ) {
             if ( !holdTime ) { t = snapTime( t, range, size.width, guiSettings ); }
           }
 
-          channel.moveFx( fx.$id, t );
-          channel.changeFxRow( fx.$id, r );
+          curve.moveFx( fx.$id, t );
+          curve.changeFxRow( fx.$id, r );
         },
         () => {
           if ( !hasMoved ) { return; }
 
           const redo = (): void => {
-            channel.moveFx( fx.$id, t );
-            channel.changeFxRow( fx.$id, r );
+            curve.moveFx( fx.$id, t );
+            curve.changeFxRow( fx.$id, r );
           };
 
           const undo = (): void => {
-            channel.moveFx( fx.$id, tPrev );
-            channel.changeFxRow( fx.$id, rPrev );
+            curve.moveFx( fx.$id, tPrev );
+            curve.changeFxRow( fx.$id, rPrev );
           };
 
           dispatch( {
@@ -158,19 +160,19 @@ export const CurveEditorFxs = ( props: CurveEditorFxsProps ): JSX.Element => {
         }
       );
     },
-    [ channel, range, size, guiSettings ]
+    [ curve, range, size, guiSettings ]
   );
 
   const removeFx = useCallback(
     ( fx: FxSection & WithID ): void => {
-      if ( !channel ) { return; }
+      if ( !curve ) { return; }
 
       const redo = (): void => {
-        channel.removeFx( fx.$id );
+        curve.removeFx( fx.$id );
       };
 
       const undo = (): void => {
-        channel.createFxFromData( fx );
+        curve.createFxFromData( fx );
       };
 
       dispatch( {
@@ -183,7 +185,7 @@ export const CurveEditorFxs = ( props: CurveEditorFxsProps ): JSX.Element => {
       } );
       redo();
     },
-    [ channel ]
+    [ curve ]
   );
 
   const handleFxBodyClick = useCallback(
@@ -209,7 +211,7 @@ export const CurveEditorFxs = ( props: CurveEditorFxsProps ): JSX.Element => {
 
   const grabFxSide = useCallback(
     ( fx: FxSection & WithID, side: 'left' | 'right' ): void => {
-      if ( !channel ) { return; }
+      if ( !curve ) { return; }
 
       const tPrev = side === 'left' ? fx.time : ( fx.time + fx.length );
       const otherEnd = side === 'left' ? ( fx.time + fx.length ) : fx.time;
@@ -231,9 +233,9 @@ export const CurveEditorFxs = ( props: CurveEditorFxsProps ): JSX.Element => {
           }
 
           if ( side === 'left' ) {
-            channel.resizeFxByLeft( fx.$id, otherEnd - t );
+            curve.resizeFxByLeft( fx.$id, otherEnd - t );
           } else {
-            channel.resizeFx( fx.$id, t - otherEnd );
+            curve.resizeFx( fx.$id, t - otherEnd );
           }
         },
         () => {
@@ -241,17 +243,17 @@ export const CurveEditorFxs = ( props: CurveEditorFxsProps ): JSX.Element => {
 
           const redo = (): void => {
             if ( side === 'left' ) {
-              channel.resizeFxByLeft( fx.$id, otherEnd - t );
+              curve.resizeFxByLeft( fx.$id, otherEnd - t );
             } else {
-              channel.resizeFx( fx.$id, t - otherEnd );
+              curve.resizeFx( fx.$id, t - otherEnd );
             }
           };
 
           const undo = (): void => {
             if ( side === 'left' ) {
-              channel.resizeFxByLeft( fx.$id, otherEnd - tPrev );
+              curve.resizeFxByLeft( fx.$id, otherEnd - tPrev );
             } else {
-              channel.resizeFx( fx.$id, tPrev - otherEnd );
+              curve.resizeFx( fx.$id, tPrev - otherEnd );
             }
           };
 
@@ -267,7 +269,7 @@ export const CurveEditorFxs = ( props: CurveEditorFxsProps ): JSX.Element => {
         }
       );
     },
-    [ channel, range, size, guiSettings ]
+    [ curve, range, size, guiSettings ]
   );
 
   const handleFxSideClick = useCallback(
@@ -287,7 +289,7 @@ export const CurveEditorFxs = ( props: CurveEditorFxsProps ): JSX.Element => {
   );
 
   return (
-    <Root className={ props.className }>
+    <Root className={ className }>
       <g>
         {
           stateFxs && Object.values( stateFxs ).map( ( fx ) => {
@@ -390,3 +392,5 @@ export const CurveEditorFxs = ( props: CurveEditorFxsProps ): JSX.Element => {
     </Root>
   );
 };
+
+export { CurveEditorFxs };

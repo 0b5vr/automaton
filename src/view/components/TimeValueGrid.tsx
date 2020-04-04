@@ -1,9 +1,8 @@
 import React, { useMemo } from 'react';
-import { t2x, v2y } from '../utils/CurveEditorUtils';
+import { TimeValueRange, t2x, v2y } from '../utils/TimeValueRange';
 import { Colors } from '../constants/Colors';
-import { State } from '../states/store';
+import { Resolution } from '../utils/Resolution';
 import styled from 'styled-components';
-import { useSelector } from 'react-redux';
 
 // == styles =======================================================================================
 const GridLine = styled.line`
@@ -16,12 +15,16 @@ const GridText = styled.text`
   font-size: 0.6rem;
 `;
 
-const Root = styled.g`
+const Root = styled.svg`
+  position: absolute;
 `;
 
 // == element ======================================================================================
-export interface CurveEditorGridProps {
+export interface TimeValueGridProps {
   className?: string;
+  range: TimeValueRange;
+  size: Resolution;
+  hideValue?: boolean;
 }
 
 interface GridLineEntry {
@@ -30,9 +33,8 @@ interface GridLineEntry {
   opacity: number;
 }
 
-export const CurveEditorGrid = ( { className }: CurveEditorGridProps ): JSX.Element => {
-  const range = useSelector( ( state: State ) => state.curveEditor.range );
-  const size = useSelector( ( state: State ) => state.curveEditor.size );
+const TimeValueGrid = ( props: TimeValueGridProps ): JSX.Element => {
+  const { className, range, size, hideValue } = props;
 
   const hlines: GridLineEntry[] = useMemo(
     (): GridLineEntry[] => {
@@ -102,7 +104,13 @@ export const CurveEditorGrid = ( { className }: CurveEditorGridProps ): JSX.Elem
   );
 
   return (
-    <Root className={ className }>
+    <Root
+      style={ {
+        width: `${ size.width }px`,
+        height: `${ size.height }px`
+      } }
+      className={ className }
+    >
       { useMemo( () => (
         hlines.map( ( hline, i ): JSX.Element => (
           <g
@@ -115,7 +123,7 @@ export const CurveEditorGrid = ( { className }: CurveEditorGridProps ): JSX.Elem
           </g>
         ) )
       ), [ hlines, size ] ) }
-      { useMemo( () => (
+      { useMemo( () => !hideValue && (
         vlines.map( ( vline, i ): JSX.Element => (
           <g
             key={ i }
@@ -130,3 +138,5 @@ export const CurveEditorGrid = ( { className }: CurveEditorGridProps ): JSX.Elem
     </Root>
   );
 };
+
+export { TimeValueGrid };

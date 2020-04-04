@@ -1,6 +1,7 @@
-import { t2x, v2y } from '../utils/CurveEditorUtils';
+import { t2x, v2y } from '../utils/TimeValueRange';
 import { Colors } from '../constants/Colors';
 import React from 'react';
+import { Resolution } from '../utils/Resolution';
 import { State } from '../states/store';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
@@ -26,19 +27,37 @@ const Root = styled.g`
 // == element ======================================================================================
 export interface CurveEditorLineProps {
   className?: string;
+  size: Resolution;
 }
 
-export const CurveEditorLine = ( { className }: CurveEditorLineProps ): JSX.Element => {
-  const selectedChannel = useSelector( ( state: State ) => state.curveEditor.selectedChannel );
-  const range = useSelector( ( state: State ) => state.curveEditor.range );
-  const size = useSelector( ( state: State ) => state.curveEditor.size );
-  const automaton = useSelector( ( state: State ) => state.automaton.instance );
-  const channel = selectedChannel && automaton?.getChannel( selectedChannel ) || null;
+const CurveEditorLine = ( props: CurveEditorLineProps ): JSX.Element => {
+  const { className, size } = props;
+  const {
+    selectedCurve,
+    range,
+    automaton
+  } = useSelector( ( state: State ) => ( {
+    selectedCurve: state.curveEditor.selectedCurve,
+    range: state.curveEditor.range,
+    automaton: state.automaton.instance
+  } ) );
+  const {
+    time,
+    value
+  } = useSelector( ( state: State ) => ( {
+    time: selectedCurve != null && state.automaton.curves[ selectedCurve ].previewTime || null,
+    value: selectedCurve != null && state.automaton.curves[ selectedCurve ].previewValue || null
+  } ) );
+  const curve = selectedCurve != null && automaton?.getCurve( selectedCurve ) || null;
 
-  const t = useSelector( ( state: State ) => state.automaton.time );
-  const v = channel?.value || 0.0;
-  const x = t2x( t, range, size.width );
-  const y = v2y( v, range, size.height );
+  if ( time == null || value == null ) {
+    return <></>;
+  }
+
+  console.error('Replace with TimeValueLines!!!!!!!!!!');
+
+  const x = t2x( time, range, size.width );
+  const y = v2y( value, range, size.height );
 
   return (
     <Root className={ className }>
@@ -46,15 +65,15 @@ export const CurveEditorLine = ( { className }: CurveEditorLineProps ): JSX.Elem
         transform={ `translate(${ x },${ size.height })` }
       >
         <Line y2={ -size.height } />
-        <Text x="2" y="-2">{ t.toFixed( 3 ) }</Text>
+        <Text x="2" y="-2">{ time.toFixed( 3 ) }</Text>
       </g>
 
-      { channel && <>
+      { curve && <>
         <g
           transform={ `translate(0,${ y })` }
         >
           <Line x2={ size.width } />
-          <Text x="2" y="-2">{ v.toFixed( 3 ) }</Text>
+          <Text x="2" y="-2">{ value.toFixed( 3 ) }</Text>
         </g>
 
         <Circle
@@ -65,3 +84,5 @@ export const CurveEditorLine = ( { className }: CurveEditorLineProps ): JSX.Elem
     </Root>
   );
 };
+
+export { CurveEditorLine };

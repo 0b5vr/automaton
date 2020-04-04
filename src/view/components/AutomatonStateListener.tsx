@@ -2,9 +2,27 @@ import React, { useEffect } from 'react';
 import { Action } from '../states/store';
 import { AutomatonWithGUI } from '../../AutomatonWithGUI';
 import { ChannelWithGUI } from '../../ChannelWithGUI';
+import { CurveWithGUI } from '../../CurveWithGUI';
 import { Dispatch } from 'redux';
 import styled from 'styled-components';
 import { useDispatch } from 'react-redux';
+
+// == utils ========================================================================================
+const CURVE_RESO = 1000;
+
+function genCurvePath( curve: CurveWithGUI ): string {
+  let path = '';
+
+  for ( let i = 0; i < CURVE_RESO; i ++ ) {
+    const t = i / CURVE_RESO * curve.length;
+    const v = curve.getValue( t );
+    const x = t / curve.length;
+    const y = v;
+    path += `${ x },${ y } `;
+  }
+
+  return path;
+}
 
 // == styles =======================================================================================
 const Root = styled.div`
@@ -16,7 +34,7 @@ export interface AutomatonStateListenerProps {
   automaton: AutomatonWithGUI;
 }
 
-export const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Element => {
+const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Element => {
   const dispatch = useDispatch<Dispatch<Action>>();
   const automaton = props.automaton;
 
@@ -38,21 +56,12 @@ export const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JS
       status: channel.status
     } );
 
-    channel.nodes.forEach( ( node ) => {
+    channel.items.forEach( ( item ) => {
       dispatch( {
-        type: 'Automaton/UpdateChannelNode',
+        type: 'Automaton/UpdateChannelItem',
         channel: name,
-        id: node.$id,
-        node
-      } );
-    } );
-
-    channel.fxs.forEach( ( fx ) => {
-      dispatch( {
-        type: 'Automaton/UpdateChannelFx',
-        channel: name,
-        id: fx.$id,
-        fx
+        id: item.$id,
+        item: item.serializeGUI()
       } );
     } );
 
@@ -72,63 +81,147 @@ export const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JS
       } );
     } );
 
-    channel.on( 'createNode', ( { id, node } ) => {
+    channel.on( 'createItem', ( { id, item } ) => {
       dispatch( {
-        type: 'Automaton/UpdateChannelNode',
+        type: 'Automaton/UpdateChannelItem',
         channel: name,
+        id,
+        item: item.serializeGUI()
+      } );
+    } );
+
+    channel.on( 'updateItem', ( { id, item } ) => {
+      dispatch( {
+        type: 'Automaton/UpdateChannelItem',
+        channel: name,
+        id,
+        item: item.serializeGUI()
+      } );
+    } );
+
+    channel.on( 'removeItem', ( { id } ) => {
+      dispatch( {
+        type: 'Automaton/RemoveChannelItem',
+        channel: name,
+        id
+      } );
+    } );
+  }
+
+  function createCurve( index: number, curve: CurveWithGUI ): void {
+    dispatch( {
+      type: 'Automaton/CreateCurve',
+      curve: index,
+      length: curve.length,
+      path: genCurvePath( curve )
+    } );
+
+    dispatch( {
+      type: 'Automaton/UpdateCurveStatus',
+      curve: index,
+      status: curve.status
+    } );
+
+    curve.nodes.forEach( ( node ) => {
+      dispatch( {
+        type: 'Automaton/UpdateCurveNode',
+        curve: index,
+        id: node.$id,
+        node
+      } );
+    } );
+
+    curve.fxs.forEach( ( fx ) => {
+      dispatch( {
+        type: 'Automaton/UpdateCurveFx',
+        curve: index,
+        id: fx.$id,
+        fx
+      } );
+    } );
+
+    curve.on( 'precalc', () => {
+      dispatch( {
+        type: 'Automaton/UpdateCurvePath',
+        curve: index,
+        path: genCurvePath( curve )
+      } );
+    } );
+
+    curve.on( 'previewValue', ( { time, value } ) => {
+      dispatch( {
+        type: 'Automaton/UpdateCurvePreviewValue',
+        curve: index,
+        time,
+        value
+      } );
+    } );
+
+    curve.on( 'updateStatus', () => {
+      dispatch( {
+        type: 'Automaton/UpdateCurveStatus',
+        curve: index,
+        status: curve.status
+      } );
+    } );
+
+    curve.on( 'createNode', ( { id, node } ) => {
+      dispatch( {
+        type: 'Automaton/UpdateCurveNode',
+        curve: index,
         id,
         node
       } );
     } );
 
-    channel.on( 'updateNode', ( { id, node } ) => {
+    curve.on( 'updateNode', ( { id, node } ) => {
       dispatch( {
-        type: 'Automaton/UpdateChannelNode',
-        channel: name,
+        type: 'Automaton/UpdateCurveNode',
+        curve: index,
         id,
         node
       } );
     } );
 
-    channel.on( 'removeNode', ( { id } ) => {
+    curve.on( 'removeNode', ( { id } ) => {
       dispatch( {
-        type: 'CurveEditor/SelectItemsSub',
-        nodes: [ id ]
-      } );
-      dispatch( {
-        type: 'Automaton/RemoveChannelNode',
-        channel: name,
+        type: 'Automaton/RemoveCurveNode',
+        curve: index,
         id
       } );
     } );
 
-    channel.on( 'createFx', ( { id, fx } ) => {
+    curve.on( 'createFx', ( { id, fx } ) => {
       dispatch( {
-        type: 'Automaton/UpdateChannelFx',
-        channel: name,
+        type: 'Automaton/UpdateCurveFx',
+        curve: index,
         id,
         fx
       } );
     } );
 
-    channel.on( 'updateFx', ( { id, fx } ) => {
+    curve.on( 'updateFx', ( { id, fx } ) => {
       dispatch( {
-        type: 'Automaton/UpdateChannelFx',
-        channel: name,
+        type: 'Automaton/UpdateCurveFx',
+        curve: index,
         id,
         fx
       } );
     } );
 
-    channel.on( 'removeFx', ( { id } ) => {
+    curve.on( 'removeFx', ( { id } ) => {
       dispatch( {
-        type: 'CurveEditor/SelectItemsSub',
-        fxs: [ id ]
-      } );
-      dispatch( {
-        type: 'Automaton/RemoveChannelFx',
-        channel: name,
+        type: 'Automaton/RemoveCurveFx',
+        curve: index,
         id
+      } );
+    } );
+
+    curve.on( 'changeLength', ( { length } ) => {
+      dispatch( {
+        type: 'Automaton/ChangeCurveLength',
+        curve: index,
+        length
       } );
     } );
   }
@@ -166,6 +259,16 @@ export const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JS
 
       Object.entries( automaton.channels ).forEach( ( [ name, channel ] ) => {
         createChannel( name, channel );
+      } );
+
+      Object.values( automaton.curves ).forEach( ( curve, iCurve ) => {
+        createCurve( iCurve, curve );
+      } );
+
+      automaton.on( 'load', () => {
+        dispatch( {
+          type: 'History/Drop'
+        } );
       } );
 
       automaton.on( 'update', ( { time } ) => {
@@ -220,6 +323,10 @@ export const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JS
       automaton.on( 'createChannel', ( event ) => {
         createChannel( event.name, event.channel );
       } );
+
+      automaton.on( 'createCurve', ( event ) => {
+        createCurve( event.index, event.curve );
+      } );
     },
     [ automaton ]
   );
@@ -228,3 +335,5 @@ export const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JS
     <Root />
   );
 };
+
+export { AutomatonStateListener };

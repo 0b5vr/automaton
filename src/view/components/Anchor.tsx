@@ -7,8 +7,10 @@ export interface AnchorProps {
   children: React.ReactNode;
 }
 
-export const Anchor = ( { className, href, children }: AnchorProps ): JSX.Element => (
+const Anchor = ( { className, href, children }: AnchorProps ): JSX.Element => (
   <a className={ className } rel="noopener noreferrer" target="_blank" href={ href }>
     { children }
   </a>
 );
+
+export { Anchor };

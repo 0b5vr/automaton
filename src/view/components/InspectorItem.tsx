@@ -2,7 +2,7 @@ import React, { ReactNode } from 'react';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
-export const Label = styled.div`
+const Label = styled.div`
   margin: 0.15rem;
   font-size: 0.7rem;
   line-height: 1em;
@@ -12,7 +12,7 @@ export const Label = styled.div`
   white-space: nowrap;
 `;
 
-export const Root = styled.div`
+const Root = styled.div`
   display: flex;
   justify-content: space-between;
   margin: 0.125rem 0;
@@ -25,7 +25,7 @@ export interface InspectorItemProps {
   name?: string;
 }
 
-export const InspectorItem = ( { className, children, name }: InspectorItemProps ): JSX.Element => (
+const InspectorItem = ( { className, children, name }: InspectorItemProps ): JSX.Element => (
   <Root
     className={ className }
     data-stalker={ name }
@@ -34,3 +34,5 @@ export const InspectorItem = ( { className, children, name }: InspectorItemProps
     { children }
   </Root>
 );
+
+export { InspectorItem };

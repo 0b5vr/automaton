@@ -1,21 +1,21 @@
-import { CurveEditorRange, CurveEditorSize, x2t, y2v } from '../utils/CurveEditorUtils';
+import { TimeValueRange, x2t, y2v } from '../utils/TimeValueRange';
 import { Action as ContextAction } from './store';
 import { Reducer } from 'redux';
+import { Resolution } from '../utils/Resolution';
 import { produce } from 'immer';
 
 // == state ========================================================================================
 export interface State {
-  selectedChannel: string | null;
+  selectedCurve: number | null;
   selectedItems: {
     nodes: string[];
     fxs: string[];
   };
-  range: CurveEditorRange;
-  size: CurveEditorSize;
+  range: TimeValueRange;
 }
 
 export const initialState: State = {
-  selectedChannel: null,
+  selectedCurve: null,
   selectedItems: {
     nodes: [],
     fxs: []
@@ -25,17 +25,13 @@ export const initialState: State = {
     v0: -0.2,
     t1: 5.0,
     v1: 1.2
-  },
-  size: {
-    width: 1,
-    height: 1
   }
 };
 
 // == action =======================================================================================
 export type Action = {
-  type: 'CurveEditor/SelectChannel';
-  channel: string | null;
+  type: 'CurveEditor/SelectCurve';
+  curve: number | null;
 } | {
   type: 'CurveEditor/SelectItems';
   nodes?: string[];
@@ -50,26 +46,25 @@ export type Action = {
   fxs?: string[];
 } | {
   type: 'CurveEditor/MoveRange';
+  size: Resolution;
   dx: number;
   dy: number;
   tmax: number;
 } | {
   type: 'CurveEditor/ZoomRange';
+  size: Resolution;
   cx: number;
   cy: number;
   dx: number;
   dy: number;
   tmax: number;
-} | {
-  type: 'CurveEditor/SetSize';
-  size: CurveEditorSize;
 };
 
 // == reducer ======================================================================================
 export const reducer: Reducer<State, ContextAction> = ( state = initialState, action ) => {
   return produce( state, ( newState: State ) => {
-    if ( action.type === 'CurveEditor/SelectChannel' ) {
-      newState.selectedChannel = action.channel;
+    if ( action.type === 'CurveEditor/SelectCurve' ) {
+      newState.selectedCurve = action.curve;
       newState.selectedItems = {
         nodes: [],
         fxs: []
@@ -98,7 +93,8 @@ export const reducer: Reducer<State, ContextAction> = ( state = initialState, ac
         index !== -1 && newState.selectedItems.fxs.splice( index, 1 );
       } );
     } else if ( action.type === 'CurveEditor/MoveRange' ) {
-      const { range, size } = state;
+      const { range } = state;
+      const { size } = action;
       const length = action.tmax;
 
       let dt = x2t( 0.0, range, size.width ) - x2t( action.dx, range, size.width );
@@ -113,7 +109,8 @@ export const reducer: Reducer<State, ContextAction> = ( state = initialState, ac
         v1: state.range.v1 + dv,
       };
     } else if ( action.type === 'CurveEditor/ZoomRange' ) {
-      const { range, size } = state;
+      const { range } = state;
+      const { size } = action;
       const length = action.tmax;
 
       const ct = x2t( action.cx, range, size.width );
@@ -148,9 +145,7 @@ export const reducer: Reducer<State, ContextAction> = ( state = initialState, ac
       if ( length < newState.range.t1 ) {
         newState.range.t1 = length;
       }
-    } else if ( action.type === 'CurveEditor/SetSize' ) {
-      newState.size = action.size;
-    } else if ( action.type === 'Automaton/UpdateLength' ) { // WHOA, REALLY
+    } else if ( action.type === 'Automaton/ChangeCurveLength' ) { // WHOA, REALLY
       if ( action.length < state.range.t0 ) {
         // if t0 is larger than the new length, reset the range
         newState.range = {

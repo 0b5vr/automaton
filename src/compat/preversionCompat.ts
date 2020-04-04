@@ -1,4 +1,4 @@
-export function compatPreVersions( data: any ): any {
+export function preversionCompat( data: any ): any {
   if ( data.gui ) {
     delete data.gui; // the gui settings are incompatible
     return data;
