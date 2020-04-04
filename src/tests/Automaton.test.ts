@@ -4,7 +4,7 @@ import { Automaton } from '../Automaton';
 import { ChannelUpdateEvent } from '../Channel';
 import { SerializedAutomaton } from '../types';
 
-const mostSimpleData: SerializedAutomaton = {
+const data: SerializedAutomaton = {
   length: 1.0,
   resolution: 100.0,
   curves: [
@@ -19,16 +19,16 @@ const mostSimpleData: SerializedAutomaton = {
 
 describe( 'Automaton', () => {
   it( 'must be instantiated correctly', () => {
-    const automaton = new Automaton( mostSimpleData );
+    const automaton = new Automaton( data );
     expect( automaton ).toBeInstanceOf( Automaton );
   } );
 
   describe( 'auto', () => {
-    let automaton = new Automaton( mostSimpleData );
+    let automaton = new Automaton( data );
     let auto = automaton.auto;
 
     beforeEach( () => {
-      automaton = new Automaton( mostSimpleData );
+      automaton = new Automaton( data );
       auto = automaton.auto;
     } );
 
@@ -64,11 +64,11 @@ describe( 'Automaton', () => {
   } );
 
   describe( 'update', () => {
-    let automaton = new Automaton( mostSimpleData );
+    let automaton = new Automaton( data );
     let auto = automaton.auto;
 
     beforeEach( () => {
-      automaton = new Automaton( mostSimpleData );
+      automaton = new Automaton( data );
       auto = automaton.auto;
     } );
 
