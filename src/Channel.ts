@@ -122,10 +122,17 @@ export class Channel {
    * @returns Result value
    */
   public getValue( time: number ): number {
-    const next = this.__items.findIndex( ( item ) => ( time < item.time ) );
+    let next = this.__items.findIndex( ( item ) => ( time < item.time ) );
 
     // it's the first one!
-    if ( next === 0 ) { return 0.0; }
+    if ( next === 0 ) {
+      return 0.0;
+    }
+
+    // it's the last one!
+    if ( next === -1 ) {
+      next = this.__items.length;
+    }
 
     const item = this.__items[ next - 1 ];
     if ( item.end < time ) {
