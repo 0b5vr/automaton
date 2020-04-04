@@ -9,6 +9,11 @@ import { SerializedChannel } from './types/SerializedChannel';
  */
 export interface ChannelUpdateEvent {
   /**
+   * Current time in the current item.
+   */
+  time: number;
+
+  /**
    * Current value of the channel.
    */
   value: number;
@@ -153,15 +158,17 @@ export class Channel {
 
     for ( let i = this.__head; i < this.__items.length; i ++ ) {
       const item = this.__items[ i ];
+      let itemTime = time - item.time;
 
-      if ( time < item.time ) {
+      if ( itemTime < 0.0 ) {
         break;
       } else {
         let progress: number;
         let init: true | undefined;
         let uninit: true | undefined;
 
-        if ( item.end < time ) {
+        if ( item.length <= itemTime ) {
+          itemTime = item.length;
           progress = 1.0;
           uninit = true;
 
@@ -170,7 +177,7 @@ export class Channel {
           }
         } else {
           progress = item.length !== 0.0
-            ? ( time - item.time ) / item.length
+            ? itemTime / item.length
             : 1.0;
         }
 
@@ -178,9 +185,10 @@ export class Channel {
           init = true;
         }
 
-        value = item.getValue( time );
+        value = item.getValue( itemTime );
 
         this.__listeners.forEach( ( listener ) => listener( {
+          time: itemTime,
           value,
           progress,
           init,
