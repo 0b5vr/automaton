@@ -91,6 +91,7 @@ const DopeSheet = ( { className }: DopeSheetProps ): JSX.Element => {
         <StyledDopeSheetEntry
           key={ channel }
           channel={ channel }
+          width={ rect.width }
         />
       ) ) }
     </Root>

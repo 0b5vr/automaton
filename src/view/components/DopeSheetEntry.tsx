@@ -1,8 +1,7 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { State } from '../states/store';
 import { TimelineItem } from './TimelineItem';
 import styled from 'styled-components';
-import { useRect } from '../utils/useRect';
 import { useSelector } from 'react-redux';
 
 // == styles =======================================================================================
@@ -15,32 +14,30 @@ const Root = styled.div`
   display: block;
   position: relative;
   width: 100%;
-  height: 24px;
+  height: 20px;
   overflow: hidden;
 `;
 
-// == element ======================================================================================
-export interface DopeSheetEntryProps {
+// == component ====================================================================================
+interface Props {
   className?: string;
   channel: string;
+  width: number;
 }
 
-const DopeSheetEntry = ( props: DopeSheetEntryProps ): JSX.Element => {
-  const { className, channel } = props;
-  const { range } = useSelector( ( state: State ) => ( {
+const DopeSheetEntry = ( props: Props ): JSX.Element => {
+  const { className, channel, width } = props;
+  const { range, stateItems } = useSelector( ( state: State ) => ( {
     range: state.timeline.range,
-  } ) );
-  const { stateItems } = useSelector( ( state: State ) => ( {
     stateItems: state.automaton.channels[ channel ].items
   } ) );
-  const refRoot = useRef<HTMLDivElement>( null );
-  const size = useRect( refRoot );
+  const size = {
+    width,
+    height: 20 // kinda chaotic, but better than using useRect for each channels
+  };
 
   return (
-    <Root
-      ref={ refRoot }
-      className={ className }
-    >
+    <Root className={ className }>
       <SVGRoot>
         { Object.entries( stateItems ).map( ( [ id, item ] ) => (
           <TimelineItem
