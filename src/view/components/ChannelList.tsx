@@ -21,7 +21,7 @@ export interface ChannelListProps {
 
 const ChannelList = ( { className }: ChannelListProps ): JSX.Element => {
   const { channelNames } = useSelector( ( state: State ) => ( {
-    channelNames: Array.from( state.automaton.channelNames )
+    channelNames: Array.from( state.automaton.channelNames ).sort()
   } ) );
 
   return (

@@ -25,7 +25,7 @@ const DopeSheet = ( { className }: DopeSheetProps ): JSX.Element => {
   const refRoot = useRef<HTMLDivElement>( null );
   const rect = useRect( refRoot );
   const { channelNames, length } = useSelector( ( state: State ) => ( {
-    channelNames: Array.from( state.automaton.channelNames ),
+    channelNames: Array.from( state.automaton.channelNames ).sort(),
     length: state.automaton.length
   } ) );
 
