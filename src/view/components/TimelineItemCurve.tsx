@@ -298,10 +298,10 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
 
   const handleClickBody = useCallback(
     ( event: React.MouseEvent ): void => {
-      event.preventDefault();
-      event.stopPropagation();
-
       if ( event.buttons === 1 ) {
+        event.preventDefault();
+        event.stopPropagation();
+
         if ( checkDoubleClick() ) {
           removeItem();
         } else {
@@ -322,10 +322,10 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
 
   const handleClickLeft = useCallback(
     ( event: React.MouseEvent ): void => {
-      event.preventDefault();
-      event.stopPropagation();
-
       if ( event.buttons === 1 ) {
+        event.preventDefault();
+        event.stopPropagation();
+
         grabLeft();
       }
     },
@@ -334,10 +334,10 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
 
   const handleClickRight = useCallback(
     ( event: React.MouseEvent ): void => {
-      event.preventDefault();
-      event.stopPropagation();
-
       if ( event.buttons === 1 ) {
+        event.preventDefault();
+        event.stopPropagation();
+
         grabRight();
       }
     },
