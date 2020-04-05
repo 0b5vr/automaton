@@ -331,13 +331,13 @@ const TimelineItemConstant = ( props: TimelineItemConstantProps ): JSX.Element =
         width: `${ w }px`,
         height: `${ HEIGHT }px`
       } }
-      onMouseDown={ handleClickBody }
     >
       <Body
         width={ w }
         height={ HEIGHT }
         isSelected={ isSelected }
         isTrigger={ item.length === 0 }
+        onMouseDown={ handleClickBody }
       />
       { item.length === 0
         ? <>
