@@ -3,9 +3,10 @@ import React, { useCallback, useEffect, useRef } from 'react';
 import { TimeValueRange, x2t, y2v } from '../utils/TimeValueRange';
 import { useDispatch, useSelector } from 'react-redux';
 import { Colors } from '../constants/Colors';
-import { CurveEditorFxs } from './CurveEditorFxs';
+import { CurveEditorFx } from './CurveEditorFx';
+import { CurveEditorFxBg } from './CruveEditorFxBg';
 import { CurveEditorGraph } from './CurveEditorGraph';
-import { CurveEditorNodes } from './CurveEditorNodes';
+import { CurveEditorNode } from './CurveEditorNode';
 import { Dispatch } from 'redux';
 import { Resolution } from '../utils/Resolution';
 import { TimeValueGrid } from './TimeValueGrid';
@@ -34,6 +35,59 @@ const Lines = ( { className, range, size }: {
     time={ time ?? undefined }
     value={ value ?? undefined }
   />;
+};
+
+const Nodes = ( { curve, range, size }: {
+  curve: number;
+  range: TimeValueRange;
+  size: Resolution;
+} ): JSX.Element => {
+  const { nodes } = useSelector( ( state: State ) => ( {
+    nodes: state.automaton.curves[ curve ].nodes
+  } ) );
+
+  return <>
+    { nodes && Object.values( nodes ).map( ( node ) => (
+      <CurveEditorNode
+        key={ node.$id }
+        curve={ curve }
+        node={ node }
+        range={ range }
+        size={ size }
+      />
+    ) ) }
+  </>;
+};
+
+const Fxs = ( { curve, range, size }: {
+  curve: number;
+  range: TimeValueRange;
+  size: Resolution;
+} ): JSX.Element => {
+  const { fxs } = useSelector( ( state: State ) => ( {
+    fxs: state.automaton.curves[ curve ].fxs
+  } ) );
+
+  return <>
+    { fxs && Object.values( fxs ).map( ( fx ) => (
+      <CurveEditorFxBg
+        key={ fx.$id }
+        curve={ curve }
+        fx={ fx }
+        range={ range }
+        size={ size }
+      />
+    ) ) }
+    { fxs && Object.values( fxs ).map( ( fx ) => (
+      <CurveEditorFx
+        key={ fx.$id }
+        curve={ curve }
+        fx={ fx }
+        range={ range }
+        size={ size }
+      />
+    ) ) }
+  </>;
 };
 
 // == styles =======================================================================================
@@ -316,9 +370,23 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
         onMouseDown={ handleMouseDown }
         onContextMenu={ handleContextMenu }
       >
-        <CurveEditorFxs size={ rect } />
-        <CurveEditorGraph />
-        <CurveEditorNodes size={ rect } />
+        { selectedCurve != null && <>
+          <Fxs
+            curve={ selectedCurve }
+            range={ range }
+            size={ rect }
+          />
+          <CurveEditorGraph
+            curve={ selectedCurve }
+            range={ range }
+            size={ rect }
+          />
+          <Nodes
+            curve={ selectedCurve }
+            range={ range }
+            size={ rect }
+          />
+        </> }
       </SVGRoot>
       <StyledLines
         range={ range }

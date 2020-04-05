@@ -1,6 +1,6 @@
 import { Action, State } from '../states/store';
 import React, { Dispatch, useCallback } from 'react';
-import { dt2dx, dx2dt, snapTime, t2x } from '../utils/TimeValueRange';
+import { TimeValueRange, dt2dx, dx2dt, snapTime, t2x } from '../utils/TimeValueRange';
 import { useDispatch, useSelector } from 'react-redux';
 import { CHANNEL_FX_ROW_MAX } from '../../ChannelWithGUI';
 import { Colors } from '../constants/Colors';
@@ -16,17 +16,6 @@ import { useDoubleClick } from '../utils/useDoubleClick';
 export const FX_HEIGHT = 16.0;
 
 // == styles =======================================================================================
-const FxBgFill = styled.rect`
-  fill: ${ Colors.fx };
-  opacity: 0.1;
-`;
-
-const FxBgLine = styled.line`
-  stroke: ${ Colors.fx };
-  stroke-width: 0.0625rem;
-  stroke-dasharray: 0.25rem;
-`;
-
 const FxBody = styled.rect<{ isSelected: boolean; isBypassed: boolean | undefined }>`
   fill: ${ ( { isSelected, isBypassed } ) => (
     isSelected
@@ -73,32 +62,28 @@ const Root = styled.g`
 `;
 
 // == element ======================================================================================
-export interface CurveEditorFxsProps {
-  className?: string;
+interface Props {
+  curve: number;
+  fx: FxSection & WithID;
+  range: TimeValueRange;
   size: Resolution;
 }
 
-const CurveEditorFxs = ( props: CurveEditorFxsProps ): JSX.Element => {
-  const { className, size } = props;
-  const dispatch = useDispatch<Dispatch<Action>>();
-  const checkDoubleClick = useDoubleClick();
+const CurveEditorFx = ( props: Props ): JSX.Element => {
+  const { fx, range, size } = props;
+  const curveIndex = props.curve;
   const {
-    selectedCurve,
-    range,
     guiSettings,
     automaton,
     fxDefinitions
-  } = useSelector( ( s: State ) => ( {
-    selectedCurve: s.curveEditor.selectedCurve,
-    range: s.curveEditor.range,
-    guiSettings: s.automaton.guiSettings,
-    automaton: s.automaton.instance,
-    fxDefinitions: s.automaton.fxDefinitions
+  } = useSelector( ( state: State ) => ( {
+    guiSettings: state.automaton.guiSettings,
+    automaton: state.automaton.instance,
+    fxDefinitions: state.automaton.fxDefinitions
   } ) );
-  const stateFxs = useSelector( ( s: State ) => (
-    selectedCurve != null && s.automaton.curves[ selectedCurve ].fxs
-  ) );
-  const curve = selectedCurve != null && automaton?.getCurve( selectedCurve ) || null;
+  const dispatch = useDispatch<Dispatch<Action>>();
+  const checkDoubleClick = useDoubleClick();
+  const curve = automaton?.getCurve( curveIndex ) || null;
   const selectedFxs = useSelector( ( state: State ) => state.curveEditor.selectedItems.fxs );
 
   const grabFxBody = useCallback(
@@ -288,109 +273,66 @@ const CurveEditorFxs = ( props: CurveEditorFxsProps ): JSX.Element => {
     [ grabFxSide ]
   );
 
+  const x = t2x( fx.time, range, size.width );
+  const w = dt2dx( fx.length, range, size.width );
+
   return (
-    <Root className={ className }>
-      <g>
-        {
-          stateFxs && Object.values( stateFxs ).map( ( fx ) => {
-            if ( fx.bypass ) { return null; }
-
-            const x = t2x( fx.time, range, size.width );
-
-            return (
-              <g key={ fx.$id }
-                transform={ `translate(${ x }, 0)` }
-              >
-                <FxBgFill
-                  width={ dt2dx( fx.length, range, size.width ) }
-                  height={ size.height }
-                />
-                <FxBgLine
-                  x1="0"
-                  y1="0.25rem"
-                  x2="0"
-                  y2={ size.height }
-                />
-                <FxBgLine
-                  transform={ `translate(${ dt2dx( fx.length, range, size.width ) }, 0)` }
-                  x1="0"
-                  y1="0.25rem"
-                  x2="0"
-                  y2={ size.height }
-                />
-              </g>
-            );
-          } )
-        }
-      </g>
-      <g>
-        {
-          stateFxs && Object.values( stateFxs ).map( ( fx ) => {
-            const x = t2x( fx.time, range, size.width );
-            const w = dt2dx( fx.length, range, size.width );
-
-            return (
-              <g key={ fx.$id }
-                style={ {
-                  transform: `translate(0, calc(0.0625rem + ${ fx.row * FX_HEIGHT }px))`
-                } }
-              >
-                <g transform={ `translate(${ x }, 0)` }>
-                  <clipPath
-                    id={ `fxclip${ fx.$id }` }
-                  >
-                    <rect
-                      width={ w }
-                      height={ FX_HEIGHT }
-                    />
-                  </clipPath>
-                  <FxBody
-                    width={ w }
-                    height={ FX_HEIGHT }
-                    isSelected={
-                      selectedFxs.indexOf( fx.$id ) !== -1
-                    }
-                    isBypassed={ fx.bypass }
-                    onMouseDown={ ( event ) => handleFxBodyClick( event, fx ) }
-                  />
-                  <FxSide
-                    width="0.25rem"
-                    height={ FX_HEIGHT }
-                    onMouseDown={ ( event ) => handleFxSideClick( event, fx, 'left' ) }
-                  />
-                  <FxSide
-                    transform={ `translate(${ w }, 0)` }
-                    x="-0.25rem"
-                    width="0.25rem"
-                    height={ FX_HEIGHT }
-                    onMouseDown={ ( event ) => handleFxSideClick( event, fx, 'right' ) }
-                  />
-                  <g
-                    clipPath={ `url(#fxclip${ fx.$id })` }
-                  >
-                    <g
-                      transform={ `translate(${ Math.max( 0.0, x ) - x }, 0)` }
-                    >
-                      <FxText
-                        x="0.125rem"
-                        y="0.75rem"
-                        isSelected={
-                          selectedFxs.indexOf( fx.$id ) !== -1
-                        }
-                        isBypassed={ fx.bypass }
-                      >
-                        { fxDefinitions[ fx.def ].name }
-                      </FxText>
-                    </g>
-                  </g>
-                </g>
-              </g>
-            );
-          } )
-        }
+    <Root key={ fx.$id }
+      style={ {
+        transform: `translate(0, calc(0.0625rem + ${ fx.row * FX_HEIGHT }px))`
+      } }
+    >
+      <g transform={ `translate(${ x }, 0)` }>
+        <clipPath
+          id={ `fxclip${ fx.$id }` }
+        >
+          <rect
+            width={ w }
+            height={ FX_HEIGHT }
+          />
+        </clipPath>
+        <FxBody
+          width={ w }
+          height={ FX_HEIGHT }
+          isSelected={
+            selectedFxs.indexOf( fx.$id ) !== -1
+          }
+          isBypassed={ fx.bypass }
+          onMouseDown={ ( event ) => handleFxBodyClick( event, fx ) }
+        />
+        <FxSide
+          width="0.25rem"
+          height={ FX_HEIGHT }
+          onMouseDown={ ( event ) => handleFxSideClick( event, fx, 'left' ) }
+        />
+        <FxSide
+          transform={ `translate(${ w }, 0)` }
+          x="-0.25rem"
+          width="0.25rem"
+          height={ FX_HEIGHT }
+          onMouseDown={ ( event ) => handleFxSideClick( event, fx, 'right' ) }
+        />
+        <g
+          clipPath={ `url(#fxclip${ fx.$id })` }
+        >
+          <g
+            transform={ `translate(${ Math.max( 0.0, x ) - x }, 0)` }
+          >
+            <FxText
+              x="0.125rem"
+              y="0.75rem"
+              isSelected={
+                selectedFxs.indexOf( fx.$id ) !== -1
+              }
+              isBypassed={ fx.bypass }
+            >
+              { fxDefinitions[ fx.def ].name }
+            </FxText>
+          </g>
+        </g>
       </g>
     </Root>
   );
 };
 
-export { CurveEditorFxs };
+export { CurveEditorFx };

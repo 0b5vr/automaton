@@ -1,5 +1,8 @@
+import React, { useEffect, useMemo, useState } from 'react';
+import { TimeValueRange, v2y, x2t } from '../utils/TimeValueRange';
 import { Colors } from '../constants/Colors';
-import React from 'react';
+import { CurveWithGUI } from '../../CurveWithGUI';
+import { Resolution } from '../utils/Resolution';
 import { State } from '../states/store';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
@@ -13,29 +16,54 @@ const GraphLine = styled.polyline`
   stroke-linejoin: round;
 `;
 
-const Root = styled.g`
-`;
-
-// == element ======================================================================================
-export interface CurveEditorGraphProps {
-  className?: string;
+// == functions ====================================================================================
+function calcPoints(
+  curve: CurveWithGUI,
+  range: TimeValueRange,
+  size: Resolution
+): string {
+  let newPoints = '';
+  for ( let x = 0; x < size.width; x ++ ) {
+    const t = x2t( x, range, size.width );
+    const v = curve.getValue( t );
+    const y = v2y( isNaN( v ) ? 0.0 : v, range, size.height );
+    newPoints += `${ x },${ y } `;
+  }
+  return newPoints;
 }
 
-const CurveEditorGraph = ( { className }: CurveEditorGraphProps ): JSX.Element => {
-  const { selectedCurve } = useSelector( ( state: State ) => ( {
-    selectedCurve: state.curveEditor.selectedCurve,
-  } ) );
-  const { path } = useSelector( ( state: State ) => ( {
-    path: selectedCurve != null && state.automaton.curves[ selectedCurve ].path || null
-  } ) );
+// == component ====================================================================================
+interface Props {
+  curve: number;
+  range: TimeValueRange;
+  size: Resolution;
+}
 
-  if ( !path ) { return <></>; }
+const CurveEditorGraph = ( props: Props ): JSX.Element => {
+  const { curve, range, size } = props;
+  const automaton = useSelector( ( state: State ) => state.automaton.instance );
+  const channel = automaton?.getCurve( curve );
 
-  return (
-    <Root className={ className }>
-      <GraphLine points={ path } />
-    </Root>
+  const [ points, setPoints ] = useState( '' );
+
+  useEffect( // update points when precalc happened
+    () => {
+      if ( !channel ) { return; }
+
+      const handlePrecalc = (): void => setPoints( calcPoints( channel, range, size ) );
+      handlePrecalc();
+
+      channel.on( 'precalc', handlePrecalc );
+      return () => channel.off( 'precalc', handlePrecalc );
+    },
+    [ channel, range, size ]
   );
+
+  return <>
+    { useMemo( () => (
+      <GraphLine points={ points } />
+    ), [ points ] ) }
+  </>;
 };
 
 export { CurveEditorGraph };
