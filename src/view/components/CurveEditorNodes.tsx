@@ -353,7 +353,7 @@ const CurveEditorNodes = ( props: CurveEditorNodesProps ): JSX.Element => {
               isSelected={
                 selectedNodes.indexOf( node.$id ) !== -1
               }
-              onMouseDown={ ( event ) => handleNodeClick( event, node ) }
+              onMouseDown={ ( event: React.MouseEvent ) => handleNodeClick( event, node ) }
             />
           </g>
         ) )

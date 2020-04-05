@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "types": [ "react", "node" ],
     "target": "es5",
     "module": "commonjs",
     "strict": true,
