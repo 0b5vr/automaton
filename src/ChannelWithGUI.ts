@@ -3,7 +3,6 @@ import { ChannelItemWithGUI, deserializeChannelItem } from './ChannelItemWithGUI
 import { AutomatonWithGUI } from './AutomatonWithGUI';
 import { ChannelItemConstantWithGUI } from './ChannelItemConstantWithGUI';
 import { ChannelItemCurveWithGUI } from './ChannelItemCurveWithGUI';
-import { ChannelUpdateEvent } from '@fms-cat/automaton/types/Channel';
 import { EventEmittable } from './mixins/EventEmittable';
 import { Serializable } from './types/Serializable';
 import { WithID } from './types/WithID';
@@ -179,12 +178,12 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
    * @param index Index of the item
    * @returns Data of the item
    */
-  public getItemByIndex( index: number ): ChannelItemWithGUI {
+  public getItemByIndex( index: number ): Required<SerializedChannelItem> & WithID {
     const item = this.__items[ index ];
     if ( !item ) {
       throw new Error( `Given item index ${index} is invalid (Current count of items: ${this.__items.length})` );
     }
-    return item;
+    return item.serializeGUI();
   }
 
   /**
@@ -192,12 +191,42 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
    * @param id Id of the node you want to dump
    * @returns Data of the node
    */
-  public getItem( id: string ): SerializedChannelItem & WithID {
+  public getItem( id: string ): Required<SerializedChannelItem> & WithID {
     const index = this.__getItemIndexById( id );
-    return {
-      ...this.__items[ index ].serialize(),
-      $id: id
-    };
+    return this.__items[ index ].serializeGUI();
+  }
+
+  /**
+   * [[getItem]], but can return null when it cannot find the item.
+   * @param id Id of the node you want to dump
+   * @returns Data of the node
+   */
+  public tryGetItem( id: string ): ( Required<SerializedChannelItem> & WithID ) | null {
+    const index = this.__tryGetItemIndexById( id );
+    if ( index === -1 ) { return null; }
+    return this.__items[ index ].serializeGUI();
+  }
+
+  /**
+   * Duplicate an item.
+   * @param time The timepoint you want to add
+   * @param item The item you want to duplicate
+   * @returns Data of the item
+   */
+  public duplicateItem(
+    time: number,
+    item: SerializedChannelItem
+  ): Required<SerializedChannelItem> & WithID {
+    const id = genID();
+    const newItem = deserializeChannelItem( this.__automaton, item );
+    newItem.$id = id;
+    newItem.time = time;
+    this.__items.push( newItem );
+    this.__sortItems();
+
+    this.__emit( 'createItem', { id, item: newItem.serializeGUI() } );
+
+    return newItem.serializeGUI();
   }
 
   /**
@@ -205,16 +234,16 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
    * @param time The timepoint you want to add
    * @returns Data of the item
    */
-  public createItemConstant( time: number ): ChannelItemConstantWithGUI {
+  public createItemConstant( time: number ): Required<SerializedChannelItem> & WithID {
     const id = genID();
     const item = new ChannelItemConstantWithGUI( this.__automaton, { time } );
     item.$id = id;
     this.__items.push( item );
     this.__sortItems();
 
-    this.__emit( 'createItem', { id, item } );
+    this.__emit( 'createItem', { id, item: item.serializeGUI() } );
 
-    return item;
+    return item.serializeGUI();
   }
 
   /**
@@ -223,16 +252,16 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
    * @param time The timepoint you want to add
    * @returns Data of the item
    */
-  public createItemCurve( curve: number, time: number ): ChannelItemCurveWithGUI {
+  public createItemCurve( curve: number, time: number ): Required<SerializedChannelItem> & WithID {
     const id = genID();
     const item = new ChannelItemCurveWithGUI( this.__automaton, { curve, time } );
     item.$id = id;
     this.__items.push( item );
     this.__sortItems();
 
-    this.__emit( 'createItem', { id, item } );
+    this.__emit( 'createItem', { id, item: item.serializeGUI() } );
 
-    return item;
+    return item.serializeGUI();
   }
 
   /**
@@ -240,15 +269,17 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
    * @param item Dumped channel item object
    * @returns Data of the item
    */
-  public createItemFromData( data: SerializedChannelItem & WithID ): ChannelItemWithGUI {
+  public createItemFromData(
+    data: SerializedChannelItem & WithID
+  ): Required<SerializedChannelItem> & WithID {
     const item = deserializeChannelItem( this.__automaton, data );
     item.$id = data.$id;
     this.__items.push( item );
     this.__sortItems();
 
-    this.__emit( 'createItem', { id: item.$id, item } );
+    this.__emit( 'createItem', { id: item.$id, item: item.serializeGUI() } );
 
-    return item;
+    return item.serializeGUI();
   }
 
   /**
@@ -282,7 +313,7 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
 
     this.__sortItems();
 
-    this.__emit( 'updateItem', { id, item } );
+    this.__emit( 'updateItem', { id, item: item.serializeGUI() } );
   }
 
   /**
@@ -300,7 +331,7 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
 
     this.__sortItems();
 
-    this.__emit( 'updateItem', { id, item } );
+    this.__emit( 'updateItem', { id, item: item.serializeGUI() } );
   }
 
   /**
@@ -321,7 +352,7 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
 
     item.length = Math.min( Math.max( length, 0.0 ), lengthMax );
 
-    this.__emit( 'updateItem', { id, item } );
+    this.__emit( 'updateItem', { id, item: item.serializeGUI() } );
   }
 
   /**
@@ -345,7 +376,7 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
     item.length = Math.min( Math.max( length, 0.0 ), lengthMax );
     item.time = end - item.length;
 
-    this.__emit( 'updateItem', { id, item } );
+    this.__emit( 'updateItem', { id, item: item.serializeGUI() } );
   }
 
   /**
@@ -360,7 +391,7 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
 
     item.value = value;
 
-    this.__emit( 'updateItem', { id, item } );
+    this.__emit( 'updateItem', { id, item: item.serializeGUI() } );
   }
 
   /**
@@ -377,7 +408,7 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
     item.speed = Math.max( speed, 0.0 );
     item.offset = offset;
 
-    this.__emit( 'updateItem', { id, item } );
+    this.__emit( 'updateItem', { id, item: item.serializeGUI() } );
   }
 
   /**
@@ -397,7 +428,7 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
       } else if ( this.__automaton.length < ( item.time + item.length ) ) {
         // if the ending time of the fx is larger than the new length, shorten it
         item.length = this.__automaton.length - item.time;
-        this.__emit( 'updateItem', { id: item.$id, item } );
+        this.__emit( 'updateItem', { id: item.$id, item: item.serializeGUI() } );
 
       }
     }
@@ -442,13 +473,20 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
   }
 
   /**
+   * [[__getItemIndexById]], but can return -1 when it cannot find the item.
+   */
+  private __tryGetItemIndexById( id: string ): number {
+    return this.__items.findIndex( ( item ) => item.$id === id );
+  }
+
+  /**
    * Search for item that has given id then return index of it.
    * If it couldn't find the item, it will throw an error instead.
    * @param id Id of item you want to grab
    * @returns The index of the item
    */
   private __getItemIndexById( id: string ): number {
-    const index = this.__items.findIndex( ( item ) => item.$id === id );
+    const index = this.__tryGetItemIndexById( id );
     if ( index === -1 ) { throw new Error( `Searched for item id: ${id} but not found` ); }
     return index;
   }
@@ -462,12 +500,11 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
 }
 
 export interface ChannelWithGUIEvents {
-  createItem: { id: string; item: ChannelItemWithGUI };
-  updateItem: { id: string; item: ChannelItemWithGUI };
+  createItem: { id: string; item: Required<SerializedChannelItem> & WithID };
+  updateItem: { id: string; item: Required<SerializedChannelItem> & WithID };
   removeItem: { id: string };
   changeValue: void;
   reset: void;
-  update: { id: string; item: ChannelItemWithGUI; event: ChannelUpdateEvent };
   updateStatus: void;
 }
 

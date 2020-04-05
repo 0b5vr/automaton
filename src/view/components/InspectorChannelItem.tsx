@@ -100,10 +100,9 @@ const InspectorChannelItem = ( props: Props ): JSX.Element => {
     stateItem: state.automaton.channels[ channelName ].items[ itemId ]
   } ) );
   const channel = automaton?.getChannel( channelName ) || null;
-  const item = channel?.getItem( itemId );
 
   return <>
-    { automaton && channel && item && (
+    { automaton && channel && (
       <Root className={ className }>
         <InspectorHeader text={ 'Curve' } />
 

@@ -11,12 +11,17 @@ export interface State {
     id: string;
     channel: string;
   }>;
+  lastSelectedItem: {
+    id: string;
+    channel: string;
+  } | null;
   range: TimeValueRange;
 }
 
 export const initialState: State = {
   selectedChannel: null,
   selectedItems: new Map(),
+  lastSelectedItem: null,
   range: {
     t0: 0.0,
     v0: -0.2,
@@ -71,6 +76,10 @@ export const reducer: Reducer<State, ContextAction> = ( state = initialState, ac
       action.items.forEach( ( item ) => {
         newState.selectedItems.set( item.id, item );
       } );
+
+      if ( action.items.length === 1 ) {
+        newState.lastSelectedItem = action.items[ 0 ];
+      }
     } else if ( action.type === 'Timeline/SelectItemsAdd' ) {
       action.items.forEach( ( item ) => {
         newState.selectedItems.set( item.id, item );

@@ -1,5 +1,6 @@
 import { Action, State } from '../states/store';
 import React, { useCallback, useEffect, useRef } from 'react';
+import { SerializedChannelItem, SerializedChannelItemConstant } from '@fms-cat/automaton';
 import { TimeValueRange, x2t, y2v } from '../utils/TimeValueRange';
 import { useDispatch, useSelector } from 'react-redux';
 import { Colors } from '../constants/Colors';
@@ -9,9 +10,9 @@ import { Resolution } from '../utils/Resolution';
 import { TimeValueGrid } from './TimeValueGrid';
 import { TimeValueLines } from './TimeValueLines';
 import { TimelineItem } from './TimelineItem';
+import { WithID } from '../../types/WithID';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
 import styled from 'styled-components';
-import { useDoubleClick } from '../utils/useDoubleClick';
 import { useRect } from '../utils/useRect';
 
 // == microcomponent ===============================================================================
@@ -89,17 +90,18 @@ export interface TimelineProps {
 // == component ====================================================================================
 const Timeline = ( { className }: TimelineProps ): JSX.Element => {
   const dispatch = useDispatch<Dispatch<Action>>();
-  const checkDoubleClick = useDoubleClick();
   const {
     automaton,
     selectedChannel,
     range,
-    length
+    length,
+    lastSelectedItem
   } = useSelector( ( state: State ) => ( {
     automaton: state.automaton.instance,
     selectedChannel: state.timeline.selectedChannel,
     range: state.timeline.range,
-    length: state.automaton.length
+    length: state.automaton.length,
+    lastSelectedItem: state.timeline.lastSelectedItem
   } ) );
   const channel = selectedChannel != null && automaton?.getChannel( selectedChannel );
   const { stateItems } = useSelector( ( state: State ) => ( {
@@ -139,15 +141,23 @@ const Timeline = ( { className }: TimelineProps ): JSX.Element => {
     [ rect, length ]
   );
 
-  const createConstant = useCallback(
+  const createItem = useCallback(
     ( x0: number, y0: number ): void => {
-      if ( !selectedChannel || !channel ) { return; }
+      if ( !automaton || !lastSelectedItem || !selectedChannel || !channel ) { return; }
 
       let x = x0;
       let y = y0;
 
-      const data = channel.createItemConstant( x2t( x, range, rect.width ) );
-      channel.changeConstantValue( data.$id, y2v( y, range, rect.height ) );
+      const srcChannel = automaton.getChannel( lastSelectedItem.channel );
+      const src = srcChannel?.tryGetItem( lastSelectedItem.id );
+
+      let data: Required<SerializedChannelItem> & WithID;
+      if ( src ) {
+        data = channel.duplicateItem( x2t( x, range, rect.width ), src );
+      } else {
+        data = channel.createItemConstant( x2t( x, range, rect.width ) );
+        channel.changeConstantValue( data.$id, y2v( y, range, rect.height ) );
+      }
 
       dispatch( {
         type: 'Timeline/SelectItems',
@@ -163,16 +173,21 @@ const Timeline = ( { className }: TimelineProps ): JSX.Element => {
           y += movementSum.y;
 
           channel.moveItem( data.$id, x2t( x, range, rect.width ) );
-          channel.changeConstantValue( data.$id, y2v( y, range, rect.height ) );
+
+          if ( 'value' in data ) {
+            channel.changeConstantValue( data.$id, y2v( y, range, rect.height ) );
+          }
         },
         () => {
           const t = x2t( x, range, rect.width );
-          const v = y2v( y, range, rect.height );
           channel.moveItem( data.$id, t );
-          channel.changeConstantValue( data.$id, v );
-
           data.time = t;
-          data.value = v;
+
+          if ( 'value' in data ) {
+            const v = y2v( y, range, rect.height );
+            channel.changeConstantValue( data.$id, v );
+            ( data as SerializedChannelItemConstant ).value = v;
+          }
 
           const undo = (): void => {
             channel.removeItem( data.$id );
@@ -193,7 +208,7 @@ const Timeline = ( { className }: TimelineProps ): JSX.Element => {
         }
       );
     },
-    [ range, rect, channel ]
+    [ automaton, lastSelectedItem, range, rect, selectedChannel, channel ]
   );
 
   const handleMouseDown = useCallback(
@@ -201,19 +216,17 @@ const Timeline = ( { className }: TimelineProps ): JSX.Element => {
       event.preventDefault();
 
       if ( event.buttons === 1 ) {
-        if ( checkDoubleClick() ) {
-          createConstant(
-            event.clientX - rect.left,
-            event.clientY - rect.top
-          );
-        }
+        createItem(
+          event.clientX - rect.left,
+          event.clientY - rect.top
+        );
       } else if ( event.buttons === 4 ) {
         registerMouseEvent(
           ( event, movementSum ) => move( movementSum.x, movementSum.y )
         );
       }
     },
-    [ createConstant, rect, move ]
+    [ createItem, rect, move ]
   );
 
   const handleWheel = useCallback(

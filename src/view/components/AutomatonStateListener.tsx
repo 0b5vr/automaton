@@ -86,7 +86,7 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
         type: 'Automaton/UpdateChannelItem',
         channel: name,
         id,
-        item: item.serializeGUI()
+        item
       } );
     } );
 
@@ -95,7 +95,7 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
         type: 'Automaton/UpdateChannelItem',
         channel: name,
         id,
-        item: item.serializeGUI()
+        item
       } );
     } );
 
