@@ -132,6 +132,8 @@ export const reducer: Reducer<State, ContextAction> = ( state = initialState, ac
       if ( length < newState.range.t1 ) {
         newState.range.t1 = length;
       }
+    } else if ( action.type === 'Automaton/RemoveChannelItem' ) {
+      newState.selectedItems.delete( action.id );
     } else if ( action.type === 'Automaton/UpdateLength' ) { // WHOA, REALLY
       if ( action.length < state.range.t0 ) {
         // if t0 is larger than the new length, reset the range
