@@ -294,9 +294,7 @@ const CurveEditorFx = ( props: Props ): JSX.Element => {
         <FxBody
           width={ w }
           height={ FX_HEIGHT }
-          isSelected={
-            selectedFxs.indexOf( fx.$id ) !== -1
-          }
+          isSelected={ selectedFxs.has( fx.$id ) }
           isBypassed={ fx.bypass }
           onMouseDown={ ( event ) => handleFxBodyClick( event, fx ) }
         />
@@ -321,9 +319,7 @@ const CurveEditorFx = ( props: Props ): JSX.Element => {
             <FxText
               x="0.125rem"
               y="0.75rem"
-              isSelected={
-                selectedFxs.indexOf( fx.$id ) !== -1
-              }
+              isSelected={ selectedFxs.has( fx.$id ) }
               isBypassed={ fx.bypass }
             >
               { fxDefinitions[ fx.def ].name }

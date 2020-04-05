@@ -61,10 +61,12 @@ const Inspector = ( { className }: {
     content = <InspectorSnapping />;
   } else if ( settingsMode === 'general' ) {
     content = <InspectorGeneral />;
-  } else if ( stateSelectedNodes.length === 1 ) {
-    content = <InspectorCurveNode node={ stateCurve.nodes[ 0 ] } />;
-  } else if ( stateSelectedFxs.length === 1 ) {
-    content = <InspectorCurveFx fx={ stateCurve.fxs[ 0 ] } />;
+  } else if ( stateSelectedNodes.size === 1 ) {
+    const node = stateCurve.nodes[ Array.from( stateSelectedNodes )[ 0 ] ];
+    content = <InspectorCurveNode node={ node } />;
+  } else if ( stateSelectedFxs.size === 1 ) {
+    const fx = stateCurve.fxs[ Array.from( stateSelectedFxs )[ 0 ] ];
+    content = <InspectorCurveFx fx={ fx } />;
   } else if ( stateSelectedTimelineItems.size === 1 ) {
     content = <InspectorChannelItem
       item={ Array.from( stateSelectedTimelineItems.values() )[ 0 ] }
