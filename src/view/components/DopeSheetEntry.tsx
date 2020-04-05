@@ -6,8 +6,10 @@ import { useRect } from '../utils/useRect';
 import { useSelector } from 'react-redux';
 
 // == styles =======================================================================================
-const Root = styled.div`
+const Root = styled.svg`
+  display: block;
   position: relative;
+  width: 100%;
   height: 1.25rem;
   overflow: hidden;
 `;
@@ -26,7 +28,7 @@ const DopeSheetEntry = ( props: DopeSheetEntryProps ): JSX.Element => {
   const { stateItems } = useSelector( ( state: State ) => ( {
     stateItems: state.automaton.channels[ channel ].items
   } ) );
-  const refRoot = useRef<HTMLDivElement>( null );
+  const refRoot = useRef<SVGSVGElement>( null );
   const size = useRect( refRoot );
 
   return (

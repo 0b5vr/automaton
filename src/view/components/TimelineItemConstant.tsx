@@ -37,10 +37,7 @@ const Body = styled.rect<{ isSelected: boolean; isTrigger: boolean }>`
   pointer-events: auto;
 `;
 
-const Root = styled.svg`
-  position: absolute;
-  border-radius: 4px;
-  overflow: visible;
+const Root = styled.g`
   pointer-events: none;
 `;
 
@@ -326,10 +323,7 @@ const TimelineItemConstant = ( props: TimelineItemConstantProps ): JSX.Element =
   return (
     <Root
       style={ {
-        left: `${ x }px`,
-        top: `${ y - 0.5 * HEIGHT }px`,
-        width: `${ w }px`,
-        height: `${ HEIGHT }px`
+        transform: `translate( ${ x }px, ${ y - 0.5 * HEIGHT }px )`
       } }
     >
       <Body
@@ -367,7 +361,7 @@ const TimelineItemConstant = ( props: TimelineItemConstantProps ): JSX.Element =
         </> }
       <Side
         style={ {
-          transform: 'translate( -1, 0 )'
+          transform: 'translate( -1px, 0 )'
         } }
         width="4"
         height={ HEIGHT }

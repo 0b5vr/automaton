@@ -7,8 +7,17 @@ import { useRect } from '../utils/useRect';
 import { useSelector } from 'react-redux';
 
 // == styles =======================================================================================
-const Root = styled.div`
+const SVGRoot = styled.svg`
+  display: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: calc( 100% - 0.25em );
   background: ${ Colors.back1 };
+`;
+
+const Root = styled.div`
+  background: ${ Colors.black };
 `;
 
 // == component ====================================================================================
@@ -18,22 +27,21 @@ interface DopeSheetUnderlayProps {
 
 const DopeSheetUnderlay = ( props: DopeSheetUnderlayProps ): JSX.Element => {
   const { className } = props;
-  const refRoot = useRef<HTMLDivElement>( null );
-  const { width, height } = useRect( refRoot );
+  const refSvgRoot = useRef<SVGSVGElement>( null );
+  const rect = useRect( refSvgRoot );
   const { range } = useSelector( ( state: State ) => ( {
     range: state.timeline.range,
   } ) );
 
   return (
-    <Root
-      className={ className }
-      ref={ refRoot }
-    >
-      <TimeValueGrid
-        range={ range }
-        size={ { width, height } }
-        hideValue
-      />
+    <Root className={ className }>
+      <SVGRoot ref={ refSvgRoot }>
+        <TimeValueGrid
+          range={ range }
+          size={ rect }
+          hideValue
+        />
+      </SVGRoot>
     </Root>
   );
 };

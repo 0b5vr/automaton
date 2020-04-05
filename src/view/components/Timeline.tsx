@@ -1,9 +1,10 @@
 import { Action, State } from '../states/store';
 import React, { useCallback, useEffect, useRef } from 'react';
+import { TimeValueRange, x2t, y2v } from '../utils/TimeValueRange';
 import { useDispatch, useSelector } from 'react-redux';
-import { x2t, y2v } from '../utils/TimeValueRange';
 import { Colors } from '../constants/Colors';
 import { Dispatch } from 'redux';
+import { Resolution } from '../utils/Resolution';
 import { TimeValueGrid } from './TimeValueGrid';
 import { TimeValueLines } from './TimeValueLines';
 import { TimelineItem } from './TimelineItem';
@@ -12,10 +13,59 @@ import styled from 'styled-components';
 import { useDoubleClick } from '../utils/useDoubleClick';
 import { useRect } from '../utils/useRect';
 
+// == microcomponent ===============================================================================
+const Lines = ( { channel, range, size }: {
+  channel?: string;
+  range: TimeValueRange;
+  size: Resolution;
+} ): JSX.Element => {
+  const { time, value } = useSelector( ( state: State ) => ( {
+    time: state.automaton.time,
+    value: channel != null ? state.automaton.channels[ channel ].value : null
+  } ) );
+
+  return <TimeValueLines
+    range={ range }
+    size={ size }
+    time={ time }
+    value={ value ?? undefined }
+  />;
+};
+
+const Items = ( { channel, range, size }: {
+  channel: string;
+  range: TimeValueRange;
+  size: Resolution;
+} ): JSX.Element => {
+  const { items } = useSelector( ( state: State ) => ( {
+    items: state.automaton.channels[ channel ].items
+  } ) );
+
+  return <>
+    { Object.entries( items ).map( ( [ id, item ] ) => (
+      <TimelineItem
+        key={ id }
+        channel={ channel }
+        item={ item }
+        range={ range }
+        size={ size }
+      />
+    ) ) }
+  </>;
+};
+
 // == styles =======================================================================================
-const Root = styled.div`
+const SVGRoot = styled.svg`
+  display: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: calc( 100% - 0.25em );
   background: ${ Colors.back1 };
-  overflow: hidden;
+  pointer-events: auto;
+`;
+
+const Root = styled.div`
 `;
 
 // == props ========================================================================================
@@ -29,22 +79,17 @@ const Timeline = ( { className }: TimelineProps ): JSX.Element => {
   const checkDoubleClick = useDoubleClick();
   const {
     automaton,
-    time,
     selectedChannel,
     range,
     length
   } = useSelector( ( state: State ) => ( {
     automaton: state.automaton.instance,
-    time: state.automaton.time,
     selectedChannel: state.timeline.selectedChannel,
     range: state.timeline.range,
     length: state.automaton.length
   } ) );
   const channel = selectedChannel != null && automaton?.getChannel( selectedChannel );
-  const { channelValue, stateItems } = useSelector( ( state: State ) => ( {
-    channelValue: selectedChannel != null
-      ? state.automaton.channels[ selectedChannel ].value
-      : null,
+  const { stateItems } = useSelector( ( state: State ) => ( {
     stateItems: selectedChannel != null
       ? state.automaton.channels[ selectedChannel ].items
       : null
@@ -197,25 +242,22 @@ const Timeline = ( { className }: TimelineProps ): JSX.Element => {
       className={ className }
       onMouseDown={ handleMouseDown }
     >
-      <TimeValueGrid
-        range={ range }
-        size={ rect }
-      />
-      { Object.entries( stateItems ).map( ( [ id, item ] ) => (
-        <TimelineItem
-          key={ id }
-          channel={ selectedChannel }
-          item={ item }
+      <SVGRoot>
+        <TimeValueGrid
           range={ range }
           size={ rect }
         />
-      ) ) }
-      <TimeValueLines
-        time={ time }
-        value={ channelValue != null ? channelValue : undefined }
-        range={ range }
-        size={ rect }
-      />
+        <Items
+          channel={ selectedChannel }
+          range={ range }
+          size={ rect }
+        />
+        <Lines
+          channel={ selectedChannel }
+          range={ range }
+          size={ rect }
+        />
+      </SVGRoot>
     </Root>
   );
 };

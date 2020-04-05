@@ -15,14 +15,8 @@ const GridText = styled.text`
   font-size: 0.6rem;
 `;
 
-const Root = styled.svg`
-  position: absolute;
-  pointer-events: none;
-`;
-
 // == element ======================================================================================
 export interface TimeValueGridProps {
-  className?: string;
   range: TimeValueRange;
   size: Resolution;
   hideValue?: boolean;
@@ -35,7 +29,7 @@ interface GridLineEntry {
 }
 
 const TimeValueGrid = ( props: TimeValueGridProps ): JSX.Element => {
-  const { className, range, size, hideValue } = props;
+  const { range, size, hideValue } = props;
 
   const hlines: GridLineEntry[] = useMemo(
     (): GridLineEntry[] => {
@@ -104,40 +98,32 @@ const TimeValueGrid = ( props: TimeValueGridProps ): JSX.Element => {
     [ range, size ]
   );
 
-  return (
-    <Root
-      style={ {
-        width: `${ size.width }px`,
-        height: `${ size.height }px`
-      } }
-      className={ className }
-    >
-      { useMemo( () => (
-        hlines.map( ( hline, i ): JSX.Element => (
-          <g
-            key={ i }
-            opacity={ hline.opacity }
-            transform={ `translate(${ hline.position },${ size.height })` }
-          >
-            <GridLine y2={ -size.height } />
-            <GridText x="2" y="-2">{ hline.value }</GridText>
-          </g>
-        ) )
-      ), [ hlines, size ] ) }
-      { useMemo( () => !hideValue && (
-        vlines.map( ( vline, i ): JSX.Element => (
-          <g
-            key={ i }
-            opacity={ vline.opacity }
-            transform={ `translate(0,${ vline.position })` }
-          >
-            <GridLine x2={ size.width } />
-            <GridText x="2" y="-2">{ vline.value }</GridText>
-          </g>
-        ) )
-      ), [ vlines, size ] ) }
-    </Root>
-  );
+  return <>
+    { useMemo( () => (
+      hlines.map( ( hline, i ): JSX.Element => (
+        <g
+          key={ i }
+          opacity={ hline.opacity }
+          transform={ `translate(${ hline.position },${ size.height })` }
+        >
+          <GridLine y2={ -size.height } />
+          <GridText x="2" y="-2">{ hline.value }</GridText>
+        </g>
+      ) )
+    ), [ hlines, size ] ) }
+    { useMemo( () => !hideValue && (
+      vlines.map( ( vline, i ): JSX.Element => (
+        <g
+          key={ i }
+          opacity={ vline.opacity }
+          transform={ `translate(0,${ vline.position })` }
+        >
+          <GridLine x2={ size.width } />
+          <GridText x="2" y="-2">{ vline.value }</GridText>
+        </g>
+      ) )
+    ), [ vlines, size ] ) }
+  </>;
 };
 
 export { TimeValueGrid };

@@ -19,14 +19,8 @@ const Circle = styled.circle`
   fill: ${ Colors.accent };
 `;
 
-const Root = styled.svg`
-  position: absolute;
-  pointer-events: none;
-`;
-
 // == element ======================================================================================
 export interface TimeValueLinesProps {
-  className?: string;
   time?: number;
   value?: number;
   range: TimeValueRange;
@@ -34,19 +28,13 @@ export interface TimeValueLinesProps {
 }
 
 const TimeValueLines = ( props: TimeValueLinesProps ): JSX.Element => {
-  const { className, time, value, range, size } = props;
+  const { time, value, range, size } = props;
 
   const x = time != null && t2x( time, range, size.width ) || 0.0;
   const y = value != null && v2y( value, range, size.height ) || 0.0;
 
   return (
-    <Root
-      style={ {
-        width: `${ size.width }px`,
-        height: `${ size.height }px`
-      } }
-      className={ className }
-    >
+    <>
       { time != null && (
         <g transform={ `translate(${ x },${ size.height })` }>
           <Line y2={ -size.height } />
@@ -67,7 +55,7 @@ const TimeValueLines = ( props: TimeValueLinesProps ): JSX.Element => {
           r="5"
         />
       ) }
-    </Root>
+    </>
   );
 };
 

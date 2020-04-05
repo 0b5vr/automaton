@@ -7,8 +7,7 @@ import { useRect } from '../utils/useRect';
 import { useSelector } from 'react-redux';
 
 // == microcomponent ===============================================================================
-const Line = ( { className, size }: {
-  className?: string;
+const Line = ( { size }: {
   size: Resolution;
 } ): JSX.Element => {
   const { range, time } = useSelector( ( state: State ) => ( {
@@ -18,7 +17,6 @@ const Line = ( { className, size }: {
 
   return (
     <TimeValueLines
-      className={ className }
       range={ range }
       size={ size }
       time={ time }
@@ -27,6 +25,14 @@ const Line = ( { className, size }: {
 };
 
 // == styles =======================================================================================
+const SVGRoot = styled.svg`
+  display: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: calc( 100% - 0.25em );
+`;
+
 const Root = styled.div`
 `;
 
@@ -37,17 +43,16 @@ interface DopeSheetOverlayProps {
 
 const DopeSheetOverlay = ( props: DopeSheetOverlayProps ): JSX.Element => {
   const { className } = props;
-  const refRoot = useRef<HTMLDivElement>( null );
-  const { width, height } = useRect( refRoot );
+  const refSvgRoot = useRef<SVGSVGElement>( null );
+  const rect = useRect( refSvgRoot );
 
   return (
-    <Root
-      className={ className }
-      ref={ refRoot }
-    >
-      <Line
-        size={ { width, height } }
-      />
+    <Root className={ className }>
+      <SVGRoot ref={ refSvgRoot }>
+        <Line
+          size={ rect }
+        />
+      </SVGRoot>
     </Root>
   );
 };

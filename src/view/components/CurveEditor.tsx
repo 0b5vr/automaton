@@ -17,19 +17,17 @@ import { useDoubleClick } from '../utils/useDoubleClick';
 import { useRect } from '../utils/useRect';
 
 // == microcomponent ===============================================================================
-const Lines = ( { className, range, size }: {
-  className?: string;
+const Lines = ( { curve, range, size }: {
+  curve: number;
   range: TimeValueRange;
   size: Resolution;
 } ): JSX.Element => {
-  const selectedCurve = useSelector( ( state: State ) => state.curveEditor.selectedCurve );
   const { time, value } = useSelector( ( state: State ) => ( {
-    time: selectedCurve && state.automaton.curves[ selectedCurve ].previewTime,
-    value: selectedCurve && state.automaton.curves[ selectedCurve ].previewValue
+    time: state.automaton.curves[ curve ].previewTime,
+    value: state.automaton.curves[ curve ].previewValue
   } ) );
 
   return <TimeValueLines
-    className={ className }
     range={ range }
     size={ size }
     time={ time ?? undefined }
@@ -106,6 +104,7 @@ const StyledLines = styled( Lines )`
 `;
 
 const Root = styled.div`
+  background: ${ Colors.black };
 `;
 
 // == element ======================================================================================
@@ -361,15 +360,15 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
 
   return (
     <Root className={ className }>
-      <TimeValueGrid
-        range={ range }
-        size={ rect }
-      />
       <SVGRoot
         ref={ refSvgRoot }
         onMouseDown={ handleMouseDown }
         onContextMenu={ handleContextMenu }
       >
+        <TimeValueGrid
+          range={ range }
+          size={ rect }
+        />
         { selectedCurve != null && <>
           <Fxs
             curve={ selectedCurve }
@@ -386,12 +385,13 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
             range={ range }
             size={ rect }
           />
+          <StyledLines
+            curve={ selectedCurve }
+            range={ range }
+            size={ rect }
+          />
         </> }
       </SVGRoot>
-      <StyledLines
-        range={ range }
-        size={ rect }
-      />
     </Root>
   );
 };

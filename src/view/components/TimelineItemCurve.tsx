@@ -44,10 +44,7 @@ const Stroke = styled.rect`
   ry: 4px;
 `;
 
-const Root = styled.svg`
-  position: absolute;
-  border-radius: 4px;
-  overflow: visible;
+const Root = styled.g`
   pointer-events: none;
 `;
 
@@ -349,10 +346,7 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
   return (
     <Root
       style={ {
-        left: `${ x }px`,
-        top: `${ y }px`,
-        width: `${ w }px`,
-        height: `${ h }px`
+        transform: `translate( ${ x }px, ${ y }px )`
       } }
     >
       <clipPath
@@ -393,7 +387,7 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
       />
       <Side
         style={ {
-          transform: 'translate( -1, 0 )'
+          transform: 'translate( -1px, 0 )'
         } }
         width="4"
         height={ h }
