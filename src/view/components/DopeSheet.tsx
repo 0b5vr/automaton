@@ -29,15 +29,28 @@ const DopeSheet = ( { className }: DopeSheetProps ): JSX.Element => {
     length: state.automaton.length
   } ) );
 
+  const move = useCallback(
+    ( dx: number ): void => {
+      dispatch( {
+        type: 'Timeline/MoveRange',
+        size: rect,
+        dx,
+        dy: 0.0,
+        tmax: length // 🔥
+      } );
+    },
+    [ rect, length ]
+  );
+
   const zoom = useCallback(
-    ( cx: number, cy: number, dx: number, dy: number ): void => {
+    ( cx: number, dx: number ): void => {
       dispatch( {
         type: 'Timeline/ZoomRange',
         size: rect,
         cx,
-        cy,
+        cy: 0.0,
         dx,
-        dy,
+        dy: 0.0,
         tmax: length // 🔥
       } );
     },
@@ -48,12 +61,9 @@ const DopeSheet = ( { className }: DopeSheetProps ): JSX.Element => {
     ( event: WheelEvent ): void => {
       if ( event.shiftKey ) {
         event.preventDefault();
-        zoom(
-          event.clientX - rect.left,
-          event.offsetY - rect.top,
-          event.deltaY,
-          0.0
-        );
+        zoom( event.clientX - rect.left, event.deltaY );
+      } else {
+        move( -event.deltaX );
       }
     },
     [ rect, zoom ]
