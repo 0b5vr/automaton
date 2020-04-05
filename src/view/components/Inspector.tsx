@@ -53,21 +53,24 @@ const Inspector = ( { className }: {
     stateSelectedTimelineItems: state.timeline.selectedItems,
     settingsMode: state.settings.mode
   } ) );
-  const stateCurve = useSelector(
-    ( state ) => state.automaton.curves[ selectedCurve! ]
-  );
 
   let content: JSX.Element | null = null;
   if ( settingsMode === 'snapping' ) {
     content = <InspectorSnapping />;
   } else if ( settingsMode === 'general' ) {
     content = <InspectorGeneral />;
-  } else if ( stateSelectedNodes.length === 1 ) {
-    const node = stateCurve.nodes[ Array.from( stateSelectedNodes )[ 0 ] ];
-    content = <InspectorCurveNode node={ node } />;
-  } else if ( stateSelectedFxs.length === 1 ) {
-    const fx = stateCurve.fxs[ Array.from( stateSelectedFxs )[ 0 ] ];
-    content = <InspectorCurveFx fx={ fx } />;
+  } else if ( selectedCurve != null ) {
+    if ( stateSelectedNodes.length === 1 ) {
+      content = <InspectorCurveNode
+        curve={ selectedCurve }
+        node={ stateSelectedNodes[ 0 ] }
+      />;
+    } else if ( stateSelectedFxs.length === 1 ) {
+      content = <InspectorCurveFx
+        curve={ selectedCurve }
+        fx={ stateSelectedFxs[ 0 ] }
+      />;
+    }
   } else if ( objectMapSize( stateSelectedTimelineItems ) === 1 ) {
     content = <InspectorChannelItem
       item={ objectMapValues( stateSelectedTimelineItems )[ 0 ] }

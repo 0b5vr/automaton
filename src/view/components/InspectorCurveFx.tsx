@@ -1,28 +1,28 @@
 import { BoolParam } from './BoolParam';
 import { CHANNEL_FX_ROW_MAX } from '../../ChannelWithGUI';
-import { FxSection } from '@fms-cat/automaton';
 import { InspectorHeader } from './InspectorHeader';
 import { InspectorHr } from './InspectorHr';
 import { InspectorItem } from './InspectorItem';
 import { NumberParam } from './NumberParam';
 import React from 'react';
-import { WithID } from '../../types/WithID';
 import { useSelector } from '../states/store';
 
 // == component ====================================================================================
 export interface InspectorCurveFxProps {
-  fx: FxSection & WithID;
+  curve: number;
+  fx: string;
 }
 
-const InspectorCurveFx = ( { fx }: InspectorCurveFxProps ): JSX.Element => {
-  const { automaton, selectedCurve } = useSelector( ( state ) => ( {
+const InspectorCurveFx = ( props: InspectorCurveFxProps ): JSX.Element => {
+  const { automaton, curves } = useSelector( ( state ) => ( {
     automaton: state.automaton.instance,
-    selectedCurve: state.curveEditor.selectedCurve
+    curves: state.automaton.curves
   } ) );
-  const channel = automaton && selectedCurve != null && automaton.getCurve( selectedCurve ) || null;
+  const curve = automaton?.getCurve( props.curve ) || null;
+  const fx = curves[ props.curve ].fxs[ props.fx ];
 
   return <>
-    { automaton && channel && <>
+    { automaton && curve && <>
       <InspectorHeader text={ `Fx: ${ automaton.getFxDefinitionName( fx.def ) }` } />
 
       <InspectorHr />
@@ -31,7 +31,7 @@ const InspectorCurveFx = ( { fx }: InspectorCurveFxProps ): JSX.Element => {
         <NumberParam
           type="float"
           value={ fx.time }
-          onChange={ ( value ) => { channel.moveFx( fx.$id, value ); } }
+          onChange={ ( value ) => { curve.moveFx( fx.$id, value ); } }
           historyDescription="Change Fx Time"
         />
       </InspectorItem>
@@ -39,7 +39,7 @@ const InspectorCurveFx = ( { fx }: InspectorCurveFxProps ): JSX.Element => {
         <NumberParam
           type="float"
           value={ fx.length }
-          onChange={ ( value ) => { channel.resizeFx( fx.$id, value ); } }
+          onChange={ ( value ) => { curve.resizeFx( fx.$id, value ); } }
           historyDescription="Change Fx Length"
         />
       </InspectorItem>
@@ -48,7 +48,7 @@ const InspectorCurveFx = ( { fx }: InspectorCurveFxProps ): JSX.Element => {
           type="int"
           value={ fx.row }
           onChange={ ( value ) => {
-            channel.changeFxRow(
+            curve.changeFxRow(
               fx.$id,
               Math.min( Math.max( value, 0.0 ), CHANNEL_FX_ROW_MAX - 1 )
             );
@@ -60,7 +60,7 @@ const InspectorCurveFx = ( { fx }: InspectorCurveFxProps ): JSX.Element => {
         <BoolParam
           value={ !!fx.bypass }
           onChange={ ( value ) => {
-            channel.bypassFx( fx.$id, value );
+            curve.bypassFx( fx.$id, value );
           } }
           historyDescription="Toggle Fx Bypass"
         />
@@ -77,7 +77,7 @@ const InspectorCurveFx = ( { fx }: InspectorCurveFxProps ): JSX.Element => {
                 type={ fxParam.type }
                 value={ fx.params[ name ] }
                 onChange={ ( value ) => {
-                  channel.changeFxParam( fx.$id, name, value );
+                  curve.changeFxParam( fx.$id, name, value );
                 } }
                 historyDescription="Change Fx Param"
               />
@@ -86,7 +86,7 @@ const InspectorCurveFx = ( { fx }: InspectorCurveFxProps ): JSX.Element => {
               <BoolParam
                 value={ fx.params[ name ] }
                 onChange={ ( value ) => {
-                  channel.changeFxParam( fx.$id, name, value );
+                  curve.changeFxParam( fx.$id, name, value );
                 } }
                 historyDescription="Change Fx Param"
               />
