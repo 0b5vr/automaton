@@ -60,6 +60,9 @@ export type Action = {
   type: 'Automaton/CreateChannel';
   channel: string;
 } | {
+  type: 'Automaton/RemoveChannel';
+  channel: string;
+} | {
   type: 'Automaton/UpdateChannelValue';
   channel: string;
   value: number;
@@ -145,6 +148,9 @@ export const reducer: Reducer<State, Action> = ( state = initialState, action ) 
         status: null,
         items: {}
       };
+    } else if ( action.type === 'Automaton/RemoveChannel' ) {
+      newState.channelNames.delete( action.channel );
+      delete newState.channels[ action.channel ];
     } else if ( action.type === 'Automaton/UpdateChannelValue' ) {
       newState.channels[ action.channel ].value = action.value;
     } else if ( action.type === 'Automaton/UpdateChannelStatus' ) {
@@ -152,7 +158,6 @@ export const reducer: Reducer<State, Action> = ( state = initialState, action ) 
     } else if ( action.type === 'Automaton/UpdateChannelItem' ) {
       newState.channels[ action.channel ].items[ action.id ] = action.item;
     } else if ( action.type === 'Automaton/RemoveChannelItem' ) {
-      newState.channelNames.delete( action.channel );
       delete newState.channels[ action.channel ].items[ action.id ];
     } else if ( action.type === 'Automaton/CreateCurve' ) {
       newState.curves[ action.curve ] = {

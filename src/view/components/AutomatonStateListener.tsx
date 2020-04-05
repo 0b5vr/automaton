@@ -324,6 +324,13 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
         createChannel( event.name, event.channel );
       } );
 
+      automaton.on( 'removeChannel', ( event ) => {
+        dispatch( {
+          type: 'Automaton/RemoveChannel',
+          channel: event.name
+        } );
+      } );
+
       automaton.on( 'createCurve', ( event ) => {
         createCurve( event.index, event.curve );
       } );
