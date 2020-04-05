@@ -327,6 +327,26 @@ const TimelineItemConstant = ( props: TimelineItemConstantProps ): JSX.Element =
     [ grabRight ]
   );
 
+  const handleContextMenu = useCallback(
+    ( event: React.MouseEvent ): void => {
+      event.preventDefault();
+      event.stopPropagation();
+
+      dispatch( {
+        type: 'ContextMenu/Open',
+        position: { x: event.clientX, y: event.clientY },
+        commands: [
+          {
+            name: 'Remove',
+            description: 'Remove the curve.',
+            command: () => removeItem()
+          }
+        ]
+      } );
+    },
+    [ removeItem ]
+  );
+
   return (
     <Root
       style={ {
@@ -339,6 +359,7 @@ const TimelineItemConstant = ( props: TimelineItemConstantProps ): JSX.Element =
         isSelected={ isSelected }
         isTrigger={ item.length === 0 }
         onMouseDown={ handleClickBody }
+        onContextMenu={ handleContextMenu }
       />
       { item.length === 0
         ? <>
