@@ -23,7 +23,7 @@ function calcPoints(
   size: Resolution
 ): string {
   let newPoints = '';
-  for ( let x = 0; x < size.width; x ++ ) {
+  for ( let x = 0; x <= size.width; x ++ ) {
     const t = x2t( x, range, size.width );
     const v = curve.getValue( t );
     const y = v2y( isNaN( v ) ? 0.0 : v, range, size.height );

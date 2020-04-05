@@ -8,12 +8,12 @@ import styled from 'styled-components';
 import { useDispatch } from 'react-redux';
 
 // == utils ========================================================================================
-const CURVE_RESO = 1000;
+const CURVE_RESO = 240;
 
 function genCurvePath( curve: CurveWithGUI ): string {
   let path = '';
 
-  for ( let i = 0; i < CURVE_RESO; i ++ ) {
+  for ( let i = 0; i <= CURVE_RESO; i ++ ) {
     const t = i / CURVE_RESO * curve.length;
     const v = curve.getValue( t );
     const x = t / curve.length;
