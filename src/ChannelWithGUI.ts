@@ -8,7 +8,6 @@ import { EventEmittable } from './mixins/EventEmittable';
 import { Serializable } from './types/Serializable';
 import { WithID } from './types/WithID';
 import { applyMixins } from './utils/applyMixins';
-import { clamp } from './utils/clamp';
 import { genID } from './utils/genID';
 
 /**
