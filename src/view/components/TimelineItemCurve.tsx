@@ -344,6 +344,41 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
     [ grabRight ]
   );
 
+  const editCurve = useCallback(
+    (): void => {
+      dispatch( {
+        type: 'CurveEditor/SelectCurve',
+        curve: item.curve
+      } );
+    },
+    [ item.curve ]
+  );
+
+  const handleContextMenu = useCallback(
+    ( event: React.MouseEvent ): void => {
+      event.preventDefault();
+      event.stopPropagation();
+
+      dispatch( {
+        type: 'ContextMenu/Open',
+        position: { x: event.clientX, y: event.clientY },
+        commands: [
+          {
+            name: 'Edit',
+            description: 'Edit the curve.',
+            command: () => editCurve()
+          },
+          {
+            name: 'Remove',
+            description: 'Remove the curve.',
+            command: () => removeItem()
+          }
+        ]
+      } );
+    },
+    [ editCurve, removeItem ]
+  );
+
   return (
     <Root
       style={ {
@@ -366,6 +401,7 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
         height={ h }
         isSelected={ isSelected }
         onMouseDown={ handleClickBody }
+        onContextMenu={ handleContextMenu }
       />
       <g
         clipPath={ `url(#${ curveClipID })` }
