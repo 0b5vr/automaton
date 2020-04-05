@@ -239,6 +239,7 @@ export class AutomatonWithGUI extends Automaton
   /**
    * Create a new channel.
    * @param name Name of channel
+   * @param data Serialized data of the channel
    * @returns Created channel
    */
   public createChannel( name: string, data?: SerializedChannel ): ChannelWithGUI {
@@ -264,14 +265,6 @@ export class AutomatonWithGUI extends Automaton
    */
   public getChannel( name: string ): ChannelWithGUI | null {
     return this.__channels[ name ] || null;
-  }
-
-  /**
-   * Return list of name of channels. Sorted.
-   * @returns List of name of channels
-   */
-  public getChannelNames(): string[] {
-    return Object.keys( this.__channels ).sort();
   }
 
   /**
