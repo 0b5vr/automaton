@@ -12,7 +12,6 @@ export interface State {
     channel: string;
   }>;
   range: TimeValueRange;
-  size: Resolution;
 }
 
 export const initialState: State = {
@@ -23,10 +22,6 @@ export const initialState: State = {
     v0: -0.2,
     t1: 5.0,
     v1: 1.2
-  },
-  size: {
-    width: 1,
-    height: 1
   }
 };
 
@@ -51,19 +46,18 @@ export type Action = {
   items: string[];
 } | {
   type: 'Timeline/MoveRange';
+  size: Resolution;
   dx: number;
   dy: number;
   tmax: number;
 } | {
   type: 'Timeline/ZoomRange';
+  size: Resolution;
   cx: number;
   cy: number;
   dx: number;
   dy: number;
   tmax: number;
-} | {
-  type: 'Timeline/SetSize';
-  size: Resolution;
 };
 
 // == reducer ======================================================================================
@@ -86,7 +80,8 @@ export const reducer: Reducer<State, ContextAction> = ( state = initialState, ac
         newState.selectedItems.delete( item );
       } );
     } else if ( action.type === 'Timeline/MoveRange' ) {
-      const { range, size } = state;
+      const { range } = state;
+      const { size } = action;
       const length = action.tmax;
 
       let dt = -dx2dt( action.dx, range, size.width );
@@ -101,13 +96,16 @@ export const reducer: Reducer<State, ContextAction> = ( state = initialState, ac
         v1: state.range.v1 + dv,
       };
     } else if ( action.type === 'Timeline/ZoomRange' ) {
-      const { range, size } = state;
+      const { range } = state;
+      const { size } = action;
       const length = action.tmax;
 
       const ct = x2t( action.cx, range, size.width );
       const cv = y2v( action.cy, range, size.height );
       const rt = ( ct - range.t0 ) / ( range.t1 - range.t0 );
       const rv = ( cv - range.v0 ) / ( range.v1 - range.v0 );
+
+      console.log( ct );
 
       let dt = range.t1 - range.t0;
       dt *= Math.pow( ( size.width + 1.0 ) / size.width, action.dx * 2.0 );
@@ -136,8 +134,6 @@ export const reducer: Reducer<State, ContextAction> = ( state = initialState, ac
       if ( length < newState.range.t1 ) {
         newState.range.t1 = length;
       }
-    } else if ( action.type === 'Timeline/SetSize' ) {
-      newState.size = action.size;
     } else if ( action.type === 'Automaton/UpdateLength' ) { // WHOA, REALLY
       if ( action.length < state.range.t0 ) {
         // if t0 is larger than the new length, reset the range

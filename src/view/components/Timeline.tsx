@@ -10,6 +10,7 @@ import { TimelineItem } from './TimelineItem';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
 import styled from 'styled-components';
 import { useDoubleClick } from '../utils/useDoubleClick';
+import { useRect } from '../utils/useRect';
 
 // == styles =======================================================================================
 const Root = styled.div`
@@ -31,14 +32,12 @@ const Timeline = ( { className }: TimelineProps ): JSX.Element => {
     time,
     selectedChannel,
     range,
-    size,
     length
   } = useSelector( ( state: State ) => ( {
     automaton: state.automaton.instance,
     time: state.automaton.time,
     selectedChannel: state.timeline.selectedChannel,
     range: state.timeline.range,
-    size: state.timeline.size,
     length: state.automaton.length
   } ) );
   const channel = selectedChannel != null && automaton?.getChannel( selectedChannel );
@@ -52,43 +51,26 @@ const Timeline = ( { className }: TimelineProps ): JSX.Element => {
   } ) );
 
   const refRoot = useRef<HTMLDivElement>( null );
-
-  useEffect( // listen its resize
-    () => {
-      function heck(): void {
-        if ( !refRoot.current ) { return; }
-
-        dispatch( {
-          type: 'Timeline/SetSize',
-          size: {
-            width: refRoot.current.clientWidth,
-            height: refRoot.current.clientHeight,
-          }
-        } );
-      }
-
-      heck();
-      window.addEventListener( 'resize', () => heck() );
-    },
-    [ refRoot.current ]
-  );
+  const rect = useRect( refRoot );
 
   const move = useCallback(
     ( dx: number, dy: number ): void => {
       dispatch( {
         type: 'Timeline/MoveRange',
+        size: rect,
         dx,
         dy,
         tmax: length // 🔥
       } );
     },
-    [ length ]
+    [ rect, length ]
   );
 
   const zoom = useCallback(
     ( cx: number, cy: number, dx: number, dy: number ): void => {
       dispatch( {
         type: 'Timeline/ZoomRange',
+        size: rect,
         cx,
         cy,
         dx,
@@ -96,7 +78,7 @@ const Timeline = ( { className }: TimelineProps ): JSX.Element => {
         tmax: length // 🔥
       } );
     },
-    [ length ]
+    [ rect, length ]
   );
 
   const createConstant = useCallback(
@@ -106,8 +88,8 @@ const Timeline = ( { className }: TimelineProps ): JSX.Element => {
       let x = x0;
       let y = y0;
 
-      const data = channel.createItemConstant( x2t( x, range, size.width ) );
-      channel.changeConstantValue( data.$id, y2v( y, range, size.height ) );
+      const data = channel.createItemConstant( x2t( x, range, rect.width ) );
+      channel.changeConstantValue( data.$id, y2v( y, range, rect.height ) );
 
       dispatch( {
         type: 'Timeline/SelectItems',
@@ -122,12 +104,12 @@ const Timeline = ( { className }: TimelineProps ): JSX.Element => {
           x += movementSum.x;
           y += movementSum.y;
 
-          channel.moveItem( data.$id, x2t( x, range, size.width ) );
-          channel.changeConstantValue( data.$id, y2v( y, range, size.height ) );
+          channel.moveItem( data.$id, x2t( x, range, rect.width ) );
+          channel.changeConstantValue( data.$id, y2v( y, range, rect.height ) );
         },
         () => {
-          const t = x2t( x, range, size.width );
-          const v = y2v( y, range, size.height );
+          const t = x2t( x, range, rect.width );
+          const v = y2v( y, range, rect.height );
           channel.moveItem( data.$id, t );
           channel.changeConstantValue( data.$id, v );
 
@@ -153,7 +135,7 @@ const Timeline = ( { className }: TimelineProps ): JSX.Element => {
         }
       );
     },
-    [ range, size, channel ]
+    [ range, rect, channel ]
   );
 
   const handleMouseDown = useCallback(
@@ -162,7 +144,10 @@ const Timeline = ( { className }: TimelineProps ): JSX.Element => {
 
       if ( event.buttons === 1 ) {
         if ( checkDoubleClick() ) {
-          createConstant( event.nativeEvent.offsetX, event.nativeEvent.offsetY );
+          createConstant(
+            event.clientX - rect.left,
+            event.clientY - rect.top
+          );
         }
       } else if ( event.buttons === 4 ) {
         registerMouseEvent(
@@ -170,22 +155,25 @@ const Timeline = ( { className }: TimelineProps ): JSX.Element => {
         );
       }
     },
-    [ createConstant, move ]
+    [ createConstant, rect, move ]
   );
 
   const handleWheel = useCallback(
     ( event: WheelEvent ): void => {
       event.preventDefault();
 
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+
       if ( event.shiftKey ) {
-        zoom( event.offsetX, event.offsetY, event.deltaY, 0.0 );
+        zoom( x, y, event.deltaY, 0.0 );
       } else if ( event.ctrlKey ) {
-        zoom( event.offsetX, event.offsetY, 0.0, event.deltaY );
+        zoom( x, y, 0.0, event.deltaY );
       } else {
         move( -event.deltaX, -event.deltaY );
       }
     },
-    [ zoom, move ]
+    [ zoom, rect, move ]
   );
 
   useEffect( // 🔥 fuck
@@ -211,7 +199,7 @@ const Timeline = ( { className }: TimelineProps ): JSX.Element => {
     >
       <TimeValueGrid
         range={ range }
-        size={ size }
+        size={ rect }
       />
       { Object.entries( stateItems ).map( ( [ id, item ] ) => (
         <TimelineItem
@@ -219,14 +207,14 @@ const Timeline = ( { className }: TimelineProps ): JSX.Element => {
           channel={ selectedChannel }
           item={ item }
           range={ range }
-          size={ size }
+          size={ rect }
         />
       ) ) }
       <TimeValueLines
         time={ time }
         value={ channelValue != null ? channelValue : undefined }
         range={ range }
-        size={ size }
+        size={ rect }
       />
     </Root>
   );
