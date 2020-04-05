@@ -1,18 +1,40 @@
 import { Action, State } from '../states/store';
 import React, { useCallback, useEffect, useRef } from 'react';
+import { TimeValueRange, x2t, y2v } from '../utils/TimeValueRange';
 import { useDispatch, useSelector } from 'react-redux';
-import { x2t, y2v } from '../utils/TimeValueRange';
 import { Colors } from '../constants/Colors';
 import { CurveEditorFxs } from './CurveEditorFxs';
 import { CurveEditorGraph } from './CurveEditorGraph';
-import { CurveEditorLine } from './CurveEditorLine';
 import { CurveEditorNodes } from './CurveEditorNodes';
 import { Dispatch } from 'redux';
+import { Resolution } from '../utils/Resolution';
 import { TimeValueGrid } from './TimeValueGrid';
+import { TimeValueLines } from './TimeValueLines';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
 import styled from 'styled-components';
 import { useDoubleClick } from '../utils/useDoubleClick';
 import { useRect } from '../utils/useRect';
+
+// == microcomponent ===============================================================================
+const Lines = ( { className, range, size }: {
+  className?: string;
+  range: TimeValueRange;
+  size: Resolution;
+} ): JSX.Element => {
+  const selectedCurve = useSelector( ( state: State ) => state.curveEditor.selectedCurve );
+  const { time, value } = useSelector( ( state: State ) => ( {
+    time: selectedCurve && state.automaton.curves[ selectedCurve ].previewTime,
+    value: selectedCurve && state.automaton.curves[ selectedCurve ].previewValue
+  } ) );
+
+  return <TimeValueLines
+    className={ className }
+    range={ range }
+    size={ size }
+    time={ time ?? undefined }
+    value={ value ?? undefined }
+  />;
+};
 
 // == styles =======================================================================================
 const SVGRoot = styled.svg`
@@ -23,6 +45,10 @@ const SVGRoot = styled.svg`
   height: calc( 100% - 0.25em );
   background: ${ Colors.back1 };
   pointer-events: auto;
+`;
+
+const StyledLines = styled( Lines )`
+  position: absolute;
 `;
 
 const Root = styled.div`
@@ -292,9 +318,12 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
       >
         <CurveEditorFxs size={ rect } />
         <CurveEditorGraph />
-        <CurveEditorLine size={ rect } />
         <CurveEditorNodes size={ rect } />
       </SVGRoot>
+      <StyledLines
+        range={ range }
+        size={ rect }
+      />
     </Root>
   );
 };
