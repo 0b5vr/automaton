@@ -1,13 +1,11 @@
-import { Action, State } from '../states/store';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { TimeValueRange, x2t, y2v } from '../utils/TimeValueRange';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
 import { CurveEditorFx } from './CurveEditorFx';
 import { CurveEditorFxBg } from './CruveEditorFxBg';
 import { CurveEditorGraph } from './CurveEditorGraph';
 import { CurveEditorNode } from './CurveEditorNode';
-import { Dispatch } from 'redux';
 import { RangeBar } from './RangeBar';
 import { Resolution } from '../utils/Resolution';
 import { TimeValueGrid } from './TimeValueGrid';
@@ -23,7 +21,7 @@ const Lines = ( { curve, range, size }: {
   range: TimeValueRange;
   size: Resolution;
 } ): JSX.Element => {
-  const { time, value } = useSelector( ( state: State ) => ( {
+  const { time, value } = useSelector( ( state ) => ( {
     time: state.automaton.curves[ curve ].previewTime,
     value: state.automaton.curves[ curve ].previewValue
   } ) );
@@ -41,7 +39,7 @@ const Nodes = ( { curve, range, size }: {
   range: TimeValueRange;
   size: Resolution;
 } ): JSX.Element => {
-  const { nodes } = useSelector( ( state: State ) => ( {
+  const { nodes } = useSelector( ( state ) => ( {
     nodes: state.automaton.curves[ curve ].nodes
   } ) );
 
@@ -63,7 +61,7 @@ const Fxs = ( { curve, range, size }: {
   range: TimeValueRange;
   size: Resolution;
 } ): JSX.Element => {
-  const { fxs } = useSelector( ( state: State ) => ( {
+  const { fxs } = useSelector( ( state ) => ( {
     fxs: state.automaton.curves[ curve ].fxs
   } ) );
 
@@ -126,18 +124,18 @@ export interface CurveEditorProps {
 }
 
 const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
-  const dispatch = useDispatch<Dispatch<Action>>();
+  const dispatch = useDispatch();
   const checkDoubleClick = useDoubleClick();
   const {
     selectedCurve,
     range,
     automaton
-  } = useSelector( ( state: State ) => ( {
+  } = useSelector( ( state ) => ( {
     selectedCurve: state.curveEditor.selectedCurve,
     range: state.curveEditor.range,
     automaton: state.automaton.instance
   } ) );
-  const { length } = useSelector( ( state: State ) => ( {
+  const { length } = useSelector( ( state ) => ( {
     length: selectedCurve != null ? state.automaton.curves[ selectedCurve ].length : null
   } ) );
 

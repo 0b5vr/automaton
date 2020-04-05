@@ -1,9 +1,7 @@
-import { Action, State } from '../states/store';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from '../states/store';
 import { AboutLargeA } from './AboutLargeA';
 import { Anchor } from './Anchor';
 import { Colors } from '../constants/Colors';
-import { Dispatch } from 'redux';
 import { Icons } from '../icons/Icons';
 import React from 'react';
 import styled from 'styled-components';
@@ -99,8 +97,8 @@ export interface AboutProps {
 }
 
 const About = ( { className }: AboutProps ): JSX.Element => {
-  const dispatch = useDispatch<Dispatch<Action>>();
-  const version = useSelector( ( state: State ) => state.automaton.instance?.version );
+  const dispatch = useDispatch();
+  const version = useSelector( ( state ) => state.automaton.instance?.version );
 
   return <Root className={ className }>
     <OverlayBG

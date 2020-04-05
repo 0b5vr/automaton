@@ -1,8 +1,6 @@
-import { Action, State } from '../states/store';
 import React, { useCallback, useMemo, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
-import { Dispatch } from 'redux';
 import { HeaderSeekbar } from './HeaderSeekbar';
 import { Icons } from '../icons/Icons';
 import { Metrics } from '../constants/Metrics';
@@ -63,14 +61,22 @@ export interface HeaderProps {
 }
 
 const Header = ( { className }: HeaderProps ): JSX.Element => {
-  const dispatch = useDispatch<Dispatch<Action>>();
+  const dispatch = useDispatch();
   const [ cantUndoThis, setCantUndoThis ] = useState( 0 );
   const [ isSavedRecently, setIsSavedRecently ] = useState( false );
-  const automaton = useSelector( ( state: State ) => state.automaton.instance );
-  const isPlaying = useSelector( ( state: State ) => state.automaton.isPlaying );
-  const settingsMode = useSelector( ( state: State ) => state.settings.mode );
-  const historyIndex = useSelector( ( state: State ) => state.history.index );
-  const historyEntries = useSelector( ( state: State ) => state.history.entries );
+  const {
+    automaton,
+    isPlaying,
+    settingsMode,
+    historyIndex,
+    historyEntries
+  } = useSelector( ( state ) => ( {
+    automaton: state.automaton.instance,
+    isPlaying: state.automaton.isPlaying,
+    settingsMode: state.settings.mode,
+    historyIndex: state.history.index,
+    historyEntries: state.history.entries
+  } ) );
 
   const handlePlay = useCallback(
     (): void => {

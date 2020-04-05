@@ -1,14 +1,12 @@
-import { Action, State } from '../states/store';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
-import { Dispatch } from 'redux';
 import React from 'react';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
 import styled from 'styled-components';
 
 // == microcomponent ===============================================================================
 const CurrentTime = ( { className }: { className?: string } ): JSX.Element => {
-  const time = useSelector( ( state: State ) => state.automaton.time );
+  const time = useSelector( ( state ) => state.automaton.time );
   return (
     <span className={ className }>
       { time.toFixed( 3 ) }
@@ -17,7 +15,7 @@ const CurrentTime = ( { className }: { className?: string } ): JSX.Element => {
 };
 
 const BarFG = ( { className }: { className?: string } ): JSX.Element => {
-  const { time, length } = useSelector( ( state: State ) => ( {
+  const { time, length } = useSelector( ( state ) => ( {
     time: state.automaton.time,
     length: state.automaton.length
   } ) );
@@ -73,11 +71,18 @@ export interface HeaderSeekbarProps {
 }
 
 const HeaderSeekbar = ( { className }: HeaderSeekbarProps ): JSX.Element => {
-  const dispatch = useDispatch<Dispatch<Action>>();
-  const automaton = useSelector( ( state: State ) => state.automaton.instance );
-  const length = useSelector( ( state: State ) => state.automaton.length );
-  const isSeeking = useSelector( ( state: State ) => state.header.isSeeking );
-  const isSeekbarHovered = useSelector( ( state: State ) => state.header.isSeekbarHovered );
+  const dispatch = useDispatch();
+  const {
+    automaton,
+    length,
+    isSeeking,
+    isSeekbarHovered
+  } = useSelector( ( state ) => ( {
+    automaton: state.automaton.instance,
+    length: state.automaton.length,
+    isSeeking: state.header.isSeeking,
+    isSeekbarHovered: state.header.isSeekbarHovered
+  } ) );
 
   function handleMouseDown( event: React.MouseEvent ): void {
     event.preventDefault();

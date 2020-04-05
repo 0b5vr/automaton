@@ -4,13 +4,14 @@ import { InspectorHr } from './InspectorHr';
 import { InspectorItem } from './InspectorItem';
 import { NumberParam } from './NumberParam';
 import React from 'react';
-import { State } from '../states/store';
-import { useSelector } from 'react-redux';
+import { useSelector } from '../states/store';
 
 // == component ====================================================================================
 const InspectorSnapping = (): JSX.Element => {
-  const automaton = useSelector( ( state: State ) => state.automaton.instance );
-  const guiSettings = useSelector( ( state: State ) => state.automaton.guiSettings );
+  const { automaton, guiSettings } = useSelector( ( state ) => ( {
+    automaton: state.automaton.instance,
+    guiSettings: state.automaton.guiSettings
+  } ) );
 
   return <>
     { automaton && <>

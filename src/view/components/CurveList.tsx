@@ -2,9 +2,8 @@ import { Colors } from '../constants/Colors';
 import { CurveListEntry } from './CurveListEntry';
 import React from 'react';
 import { Scrollable } from './Scrollable';
-import { State } from '../states/store';
 import styled from 'styled-components';
-import { useSelector } from 'react-redux';
+import { useSelector } from '../states/store';
 
 // == styles =======================================================================================
 const StyledCurveListEntry = styled( CurveListEntry )`
@@ -23,7 +22,7 @@ export interface CurveListProps {
 }
 
 const CurveList = ( { className }: CurveListProps ): JSX.Element => {
-  const { curves } = useSelector( ( state: State ) => ( {
+  const { curves } = useSelector( ( state ) => ( {
     curves: state.automaton.curves
   } ) );
 

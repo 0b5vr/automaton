@@ -1,8 +1,6 @@
-import { Action, State } from '../states/store';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
 import { ContextMenuEntry } from './ContextMenuEntry';
-import { Dispatch } from 'redux';
 import React from 'react';
 import styled from 'styled-components';
 
@@ -41,11 +39,12 @@ export interface ContextMenuProps {
 }
 
 const ContextMenu = ( { className }: ContextMenuProps ): JSX.Element => {
-  const dispatch = useDispatch<Dispatch<Action>>();
+  const dispatch = useDispatch();
 
-  const position = useSelector( ( state: State ) => state.contextMenu.position );
-
-  const commands = useSelector( ( state: State ) => state.contextMenu.commands );
+  const { position, commands } = useSelector( ( state ) => ( {
+    position: state.contextMenu.position,
+    commands: state.contextMenu.commands
+  } ) );
 
   return <Root
     className={ className }

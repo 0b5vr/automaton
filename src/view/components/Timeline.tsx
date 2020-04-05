@@ -1,10 +1,8 @@
-import { Action, State } from '../states/store';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { SerializedChannelItem, SerializedChannelItemConstant } from '@fms-cat/automaton';
 import { TimeValueRange, x2t, y2v } from '../utils/TimeValueRange';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
-import { Dispatch } from 'redux';
 import { RangeBar } from './RangeBar';
 import { Resolution } from '../utils/Resolution';
 import { TimeValueGrid } from './TimeValueGrid';
@@ -21,7 +19,7 @@ const Lines = ( { channel, range, size }: {
   range: TimeValueRange;
   size: Resolution;
 } ): JSX.Element => {
-  const { time, value } = useSelector( ( state: State ) => ( {
+  const { time, value } = useSelector( ( state ) => ( {
     time: state.automaton.time,
     value: channel != null ? state.automaton.channels[ channel ].value : null
   } ) );
@@ -39,7 +37,7 @@ const Items = ( { channel, range, size }: {
   range: TimeValueRange;
   size: Resolution;
 } ): JSX.Element => {
-  const { items } = useSelector( ( state: State ) => ( {
+  const { items } = useSelector( ( state ) => ( {
     items: state.automaton.channels[ channel ].items
   } ) );
 
@@ -89,14 +87,14 @@ export interface TimelineProps {
 
 // == component ====================================================================================
 const Timeline = ( { className }: TimelineProps ): JSX.Element => {
-  const dispatch = useDispatch<Dispatch<Action>>();
+  const dispatch = useDispatch();
   const {
     automaton,
     selectedChannel,
     range,
     length,
     lastSelectedItem
-  } = useSelector( ( state: State ) => ( {
+  } = useSelector( ( state ) => ( {
     automaton: state.automaton.instance,
     selectedChannel: state.timeline.selectedChannel,
     range: state.timeline.range,
@@ -104,7 +102,7 @@ const Timeline = ( { className }: TimelineProps ): JSX.Element => {
     lastSelectedItem: state.timeline.lastSelectedItem
   } ) );
   const channel = selectedChannel != null && automaton?.getChannel( selectedChannel );
-  const { stateItems } = useSelector( ( state: State ) => ( {
+  const { stateItems } = useSelector( ( state ) => ( {
     stateItems: selectedChannel != null
       ? state.automaton.channels[ selectedChannel ].items
       : null

@@ -5,6 +5,7 @@ import { ChannelStatus } from '../../ChannelWithGUI';
 import { CurveStatus } from '../../CurveWithGUI';
 import { Reducer } from 'redux';
 import { WithID } from '../../types/WithID';
+import { arraySetDelete } from '../utils/arraySet';
 import { jsonCopy } from '../../utils/jsonCopy';
 import { produce } from 'immer';
 
@@ -12,7 +13,7 @@ import { produce } from 'immer';
 export interface State {
   instance?: AutomatonWithGUI;
   fxDefinitions: { [ name: string ]: FxDefinition };
-  channelNames: Set<string>;
+  channelNames: string[];
   channels: {
     [ name: string ]: {
       value: number;
@@ -37,7 +38,7 @@ export interface State {
 }
 
 export const initialState: Readonly<State> = {
-  channelNames: new Set(),
+  channelNames: [],
   channels: {},
   curves: [],
   fxDefinitions: {},
@@ -142,14 +143,16 @@ export const reducer: Reducer<State, Action> = ( state = initialState, action ) 
     } else if ( action.type === 'Automaton/AddFxDefinition' ) {
       newState.fxDefinitions[ action.name ] = action.fxDefinition;
     } else if ( action.type === 'Automaton/CreateChannel' ) {
-      newState.channelNames.add( action.channel );
+      newState.channelNames.push( action.channel );
+      newState.channelNames.sort();
+
       newState.channels[ action.channel ] = {
         value: 0.0,
         status: null,
         items: {}
       };
     } else if ( action.type === 'Automaton/RemoveChannel' ) {
-      newState.channelNames.delete( action.channel );
+      arraySetDelete( newState.channelNames, action.channel );
       delete newState.channels[ action.channel ];
     } else if ( action.type === 'Automaton/UpdateChannelValue' ) {
       newState.channels[ action.channel ].value = action.value;

@@ -1,9 +1,7 @@
-import { Action, State } from '../states/store';
 import React, { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
 import { CurveStatusLevel } from '../../CurveWithGUI';
-import { Dispatch } from 'redux';
 import { Icons } from '../icons/Icons';
 import { Metrics } from '../constants/Metrics';
 import styled from 'styled-components';
@@ -44,13 +42,13 @@ export interface CurveListEntryProps {
 
 const CurveListEntry = ( props: CurveListEntryProps ): JSX.Element => {
   const { className, index } = props;
-  const dispatch = useDispatch<Dispatch<Action>>();
-  const { selectedCurve, status } = useSelector( ( state: State ) => ( {
+  const dispatch = useDispatch();
+  const { selectedCurve, status } = useSelector( ( state ) => ( {
     automaton: state.automaton.instance,
     selectedCurve: state.curveEditor.selectedCurve,
     status: state.automaton.curves[ index ].status
   } ) );
-  const { path } = useSelector( ( state: State ) => ( {
+  const { path } = useSelector( ( state ) => ( {
     path: state.automaton.curves[ index ].path
   } ) );
 

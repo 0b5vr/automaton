@@ -1,4 +1,5 @@
 import { TimeValueRange, x2t, y2v } from '../utils/TimeValueRange';
+import { arraySetDiff, arraySetUnion } from '../utils/arraySet';
 import { Action as ContextAction } from './store';
 import { Reducer } from 'redux';
 import { Resolution } from '../utils/Resolution';
@@ -8,8 +9,8 @@ import { produce } from 'immer';
 export interface State {
   selectedCurve: number | null;
   selectedItems: {
-    nodes: Set<string>;
-    fxs: Set<string>;
+    nodes: string[];
+    fxs: string[];
   };
   range: TimeValueRange;
 }
@@ -17,8 +18,8 @@ export interface State {
 export const initialState: State = {
   selectedCurve: null,
   selectedItems: {
-    nodes: new Set(),
-    fxs: new Set()
+    nodes: [],
+    fxs: []
   },
   range: {
     t0: 0.0,
@@ -65,35 +66,32 @@ export const reducer: Reducer<State, ContextAction> = ( state = initialState, ac
   return produce( state, ( newState: State ) => {
     if ( action.type === 'CurveEditor/SelectCurve' ) {
       newState.selectedCurve = action.curve;
-      newState.selectedItems.nodes.clear();
-      newState.selectedItems.fxs.clear();
+      newState.selectedItems.nodes = [];
+      newState.selectedItems.fxs = [];
     } else if ( action.type === 'CurveEditor/SelectItems' ) {
-      newState.selectedItems.nodes.clear();
-      newState.selectedItems.fxs.clear();
+      if ( action.nodes ) {
+        newState.selectedItems.nodes = action.nodes;
+      }
 
-      action.nodes?.forEach( ( node ) => {
-        newState.selectedItems.nodes.add( node );
-      } );
-
-      action.fxs?.forEach( ( fx ) => {
-        newState.selectedItems.fxs.add( fx );
-      } );
+      if ( action.fxs ) {
+        newState.selectedItems.fxs = action.fxs;
+      }
     } else if ( action.type === 'CurveEditor/SelectItemsAdd' ) {
-      action.nodes?.forEach( ( node ) => {
-        newState.selectedItems.nodes.add( node );
-      } );
+      if ( action.nodes ) {
+        newState.selectedItems.nodes = arraySetUnion( state.selectedItems.nodes, action.nodes );
+      }
 
-      action.fxs?.forEach( ( fx ) => {
-        newState.selectedItems.fxs.add( fx );
-      } );
+      if ( action.fxs ) {
+        newState.selectedItems.fxs = arraySetUnion( state.selectedItems.fxs, action.fxs );
+      }
     } else if ( action.type === 'CurveEditor/SelectItemsSub' ) {
-      action.nodes?.forEach( ( node ) => {
-        newState.selectedItems.nodes.delete( node );
-      } );
+      if ( action.nodes ) {
+        newState.selectedItems.nodes = arraySetDiff( state.selectedItems.nodes, action.nodes );
+      }
 
-      action.fxs?.forEach( ( fx ) => {
-        newState.selectedItems.fxs.delete( fx );
-      } );
+      if ( action.fxs ) {
+        newState.selectedItems.fxs = arraySetDiff( state.selectedItems.fxs, action.fxs );
+      }
     } else if ( action.type === 'CurveEditor/MoveRange' ) {
       const { range } = state;
       const { size } = action;
@@ -148,9 +146,9 @@ export const reducer: Reducer<State, ContextAction> = ( state = initialState, ac
         newState.range.t1 = length;
       }
     } else if ( action.type === 'Automaton/RemoveCurveNode' ) {
-      newState.selectedItems.nodes.delete( action.id );
+      newState.selectedItems.nodes = arraySetDiff( newState.selectedItems.nodes, [ action.id ] );
     } else if ( action.type === 'Automaton/RemoveCurveFx' ) {
-      newState.selectedItems.fxs.delete( action.id );
+      newState.selectedItems.fxs = arraySetDiff( newState.selectedItems.fxs, [ action.id ] );
     } else if ( action.type === 'Automaton/ChangeCurveLength' ) { // WHOA, REALLY
       if ( action.length < state.range.t0 ) {
         // if t0 is larger than the new length, reset the range

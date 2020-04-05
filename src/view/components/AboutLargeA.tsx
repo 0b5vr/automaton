@@ -1,9 +1,8 @@
 import React, { useMemo } from 'react';
 import { Colors } from '../constants/Colors';
 import { Icons } from '../icons/Icons';
-import { State } from '../states/store';
 import styled from 'styled-components';
-import { useSelector } from 'react-redux';
+import { useSelector } from '../states/store';
 
 // == styles =======================================================================================
 const LargeA = styled( Icons.AutomatonA )`
@@ -29,7 +28,7 @@ const AboutLargeA = ( { className }: AboutLargeAProps ): JSX.Element => {
     selectedChannel,
     automaton,
     time
-  } = useSelector( ( state: State ) => ( {
+  } = useSelector( ( state ) => ( {
     selectedChannel: state.timeline.selectedChannel,
     automaton: state.automaton.instance,
     time: state.automaton.time

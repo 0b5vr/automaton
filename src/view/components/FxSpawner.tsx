@@ -1,8 +1,6 @@
-import { Action, State } from '../states/store';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
-import { Dispatch } from 'redux';
 import { FxSpawnerEntry } from './FxSpawnerEntry';
 import { Scrollable } from './Scrollable';
 import { combineArraysUnique } from '../utils/combineArraysUnique';
@@ -56,22 +54,23 @@ export interface FxSpawnerProps {
 }
 
 const FxSpawner = ( { className }: FxSpawnerProps ): JSX.Element => {
-  const dispatch = useDispatch<Dispatch<Action>>();
+  const dispatch = useDispatch();
   const [ query, setQuery ] = useState<string>( '' );
   const [ focus, setFocus ] = useState<number>( 0 );
   const refInput = useRef<HTMLInputElement>( null );
-  const isVisible = useSelector( ( state: State ) => state.fxSpawner.isVisible );
-  const recently = useSelector( ( state: State ) => state.fxSpawner.recently );
-  const callback = useSelector( ( state: State ) => state.fxSpawner.callback );
+  const { isVisible, recently, callback, automaton, fxDefinitions } = useSelector( ( state ) => ( {
+    isVisible: state.fxSpawner.isVisible,
+    recently: state.fxSpawner.recently,
+    callback: state.fxSpawner.callback,
+    automaton: state.automaton.instance,
+    fxDefinitions: state.automaton.fxDefinitions
+  } ) );
 
   useEffect( () => { // focus the input when it gets activated
     if ( isVisible ) {
       refInput.current?.focus();
     }
   }, [ isVisible ] );
-
-  const automaton = useSelector( ( state: State ) => state.automaton.instance );
-  const fxDefinitions = useSelector( ( state: State ) => state.automaton.fxDefinitions );
 
   const fxs = useMemo( () => (
     combineArraysUnique(

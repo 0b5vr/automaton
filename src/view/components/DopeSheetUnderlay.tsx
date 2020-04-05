@@ -1,10 +1,9 @@
 import React, { useRef } from 'react';
 import { Colors } from '../constants/Colors';
-import { State } from '../states/store';
 import { TimeValueGrid } from './TimeValueGrid';
 import styled from 'styled-components';
 import { useRect } from '../utils/useRect';
-import { useSelector } from 'react-redux';
+import { useSelector } from '../states/store';
 
 // == styles =======================================================================================
 const SVGRoot = styled.svg`
@@ -33,7 +32,7 @@ const DopeSheetUnderlay = ( props: DopeSheetUnderlayProps ): JSX.Element => {
   const { className } = props;
   const refBody = useRef<HTMLDivElement>( null );
   const rect = useRect( refBody );
-  const { range } = useSelector( ( state: State ) => ( {
+  const { range } = useSelector( ( state ) => ( {
     range: state.timeline.range
   } ) );
 

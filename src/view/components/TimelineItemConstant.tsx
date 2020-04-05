@@ -1,12 +1,11 @@
-import { Action, State } from '../states/store';
 import React, { useCallback, useMemo } from 'react';
 import { TimeValueRange, dt2dx, dx2dt, snapTime, snapValue, t2x, v2y, x2t, y2v } from '../utils/TimeValueRange';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
-import { Dispatch } from 'redux';
 import { Resolution } from '../utils/Resolution';
 import { SerializedChannelItemConstant } from '@fms-cat/automaton';
 import { WithID } from '../../types/WithID';
+import { objectMapHas } from '../utils/objectMap';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
 import styled from 'styled-components';
 import { useDoubleClick } from '../utils/useDoubleClick';
@@ -62,7 +61,7 @@ const TimelineItemConstant = ( props: TimelineItemConstantProps ): JSX.Element =
   const { item, range, size, dopeSheetMode } = props;
   const channelName = props.channel;
 
-  const dispatch = useDispatch<Dispatch<Action>>();
+  const dispatch = useDispatch();
   const checkDoubleClick = useDoubleClick();
   const textClipID = 'textClip' + useID();
 
@@ -70,7 +69,7 @@ const TimelineItemConstant = ( props: TimelineItemConstantProps ): JSX.Element =
     automaton,
     selectedItems,
     guiSettings
-  } = useSelector( ( state: State ) => ( {
+  } = useSelector( ( state ) => ( {
     automaton: state.automaton.instance,
     selectedItems: state.timeline.selectedItems,
     guiSettings: state.automaton.guiSettings
@@ -82,7 +81,7 @@ const TimelineItemConstant = ( props: TimelineItemConstantProps ): JSX.Element =
     () => dopeSheetMode ? ( 0.5 * size.height ) : v2y( item.value, range, size.height ),
     [ item, range, size ]
   );
-  const isSelected = selectedItems.has( item.$id );
+  const isSelected = objectMapHas( selectedItems, item.$id );
 
   if ( item.length === 0.0 ) {
     x = x - 0.5 * HEIGHT;

@@ -1,12 +1,11 @@
-import { Action, State } from '../states/store';
 import React, { useCallback } from 'react';
 import { TimeValueRange, dt2dx, dv2dy, dx2dt, dy2dv, snapTime, snapValue, t2x, v2y, x2t, y2v } from '../utils/TimeValueRange';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from '../states/store';
 import { BezierNode } from '@fms-cat/automaton';
 import { Colors } from '../constants/Colors';
-import { Dispatch } from 'redux';
 import { Resolution } from '../utils/Resolution';
 import { WithID } from '../../types/WithID';
+import { arraySetHas } from '../utils/arraySet';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
 import styled from 'styled-components';
 import { useDoubleClick } from '../utils/useDoubleClick';
@@ -49,14 +48,14 @@ const CurveEditorNode = ( props: Props ): JSX.Element => {
   const {
     guiSettings,
     automaton
-  } = useSelector( ( state: State ) => ( {
+  } = useSelector( ( state ) => ( {
     guiSettings: state.automaton.guiSettings,
     automaton: state.automaton.instance
   } ) );
-  const dispatch = useDispatch<Dispatch<Action>>();
+  const dispatch = useDispatch();
   const checkDoubleClick = useDoubleClick();
   const curve = automaton?.getCurve( curveIndex ) || null;
-  const selectedNodes = useSelector( ( state: State ) => state.curveEditor.selectedItems.nodes );
+  const selectedNodes = useSelector( ( state ) => state.curveEditor.selectedItems.nodes );
 
   const grabNode = useCallback(
     ( node: BezierNode & WithID ): void => {
@@ -341,7 +340,7 @@ const CurveEditorNode = ( props: Props ): JSX.Element => {
       <NodeBody
         as="circle"
         r="5"
-        isSelected={ selectedNodes.has( node.$id ) }
+        isSelected={ arraySetHas( selectedNodes, node.$id ) }
         onMouseDown={ ( event: React.MouseEvent ) => handleNodeClick( event, node ) }
       />
     </Root>

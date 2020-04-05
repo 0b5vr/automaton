@@ -1,7 +1,5 @@
-import { Action, State } from '../states/store';
-import React, { useCallback, useEffect, useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Dispatch } from 'redux';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useDispatch, useSelector } from '../states/store';
 import { DopeSheetEntry } from './DopeSheetEntry';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
 import styled from 'styled-components';
@@ -22,13 +20,18 @@ export interface DopeSheetProps {
 
 // == component ====================================================================================
 const DopeSheet = ( { className }: DopeSheetProps ): JSX.Element => {
-  const dispatch = useDispatch<Dispatch<Action>>();
+  const dispatch = useDispatch();
   const refRoot = useRef<HTMLDivElement>( null );
   const rect = useRect( refRoot );
-  const { channelNames, length } = useSelector( ( state: State ) => ( {
-    channelNames: Array.from( state.automaton.channelNames ).sort(),
+  const { channelNames, length } = useSelector( ( state ) => ( {
+    channelNames: state.automaton.channelNames,
     length: state.automaton.length
   } ) );
+
+  const sortedChannelNames = useMemo(
+    () => Array.from( channelNames ).sort(),
+    [ channelNames ]
+  );
 
   const move = useCallback(
     ( dx: number ): void => {
@@ -103,7 +106,7 @@ const DopeSheet = ( { className }: DopeSheetProps ): JSX.Element => {
       ref={ refRoot }
       onMouseDown={ handleMouseDown }
     >
-      { channelNames.map( ( channel ) => (
+      { sortedChannelNames.map( ( channel ) => (
         <StyledDopeSheetEntry
           key={ channel }
           channel={ channel }

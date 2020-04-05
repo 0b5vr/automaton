@@ -1,3 +1,4 @@
+import { objectMapSize, objectMapValues } from '../utils/objectMap';
 import { Colors } from '../constants/Colors';
 import { Icons } from '../icons/Icons';
 import { InspectorChannelItem } from './InspectorChannelItem';
@@ -8,9 +9,8 @@ import { InspectorSnapping } from './InspectorSnapping';
 import { Metrics } from '../constants/Metrics';
 import React from 'react';
 import { Scrollable } from './Scrollable';
-import { State } from '../states/store';
 import styled from 'styled-components';
-import { useSelector } from 'react-redux';
+import { useSelector } from '../states/store';
 
 // == styles =======================================================================================
 const Logo = styled.img`
@@ -44,32 +44,33 @@ const Inspector = ( { className }: {
     selectedCurve,
     stateSelectedNodes,
     stateSelectedFxs,
-    stateSelectedTimelineItems
-  } = useSelector( ( state: State ) => ( {
+    stateSelectedTimelineItems,
+    settingsMode
+  } = useSelector( ( state ) => ( {
     selectedCurve: state.curveEditor.selectedCurve,
     stateSelectedNodes: state.curveEditor.selectedItems.nodes,
     stateSelectedFxs: state.curveEditor.selectedItems.fxs,
-    stateSelectedTimelineItems: state.timeline.selectedItems
+    stateSelectedTimelineItems: state.timeline.selectedItems,
+    settingsMode: state.settings.mode
   } ) );
   const stateCurve = useSelector(
-    ( state: State ) => state.automaton.curves[ selectedCurve! ]
+    ( state ) => state.automaton.curves[ selectedCurve! ]
   );
-  const settingsMode = useSelector( ( state: State ) => state.settings.mode );
 
   let content: JSX.Element | null = null;
   if ( settingsMode === 'snapping' ) {
     content = <InspectorSnapping />;
   } else if ( settingsMode === 'general' ) {
     content = <InspectorGeneral />;
-  } else if ( stateSelectedNodes.size === 1 ) {
+  } else if ( stateSelectedNodes.length === 1 ) {
     const node = stateCurve.nodes[ Array.from( stateSelectedNodes )[ 0 ] ];
     content = <InspectorCurveNode node={ node } />;
-  } else if ( stateSelectedFxs.size === 1 ) {
+  } else if ( stateSelectedFxs.length === 1 ) {
     const fx = stateCurve.fxs[ Array.from( stateSelectedFxs )[ 0 ] ];
     content = <InspectorCurveFx fx={ fx } />;
-  } else if ( stateSelectedTimelineItems.size === 1 ) {
+  } else if ( objectMapSize( stateSelectedTimelineItems ) === 1 ) {
     content = <InspectorChannelItem
-      item={ Array.from( stateSelectedTimelineItems.values() )[ 0 ] }
+      item={ objectMapValues( stateSelectedTimelineItems )[ 0 ] }
     />;
   }
 

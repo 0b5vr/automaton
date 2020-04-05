@@ -1,12 +1,12 @@
-import { Action, State } from '../states/store';
-import React, { Dispatch, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { TimeValueRange, dt2dx, dx2dt, snapTime, t2x } from '../utils/TimeValueRange';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from '../states/store';
 import { CHANNEL_FX_ROW_MAX } from '../../ChannelWithGUI';
 import { Colors } from '../constants/Colors';
 import { FxSection } from '@fms-cat/automaton';
 import { Resolution } from '../utils/Resolution';
 import { WithID } from '../../types/WithID';
+import { arraySetHas } from '../utils/arraySet';
 import { clamp } from '../../utils/clamp';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
 import styled from 'styled-components';
@@ -76,15 +76,15 @@ const CurveEditorFx = ( props: Props ): JSX.Element => {
     guiSettings,
     automaton,
     fxDefinitions
-  } = useSelector( ( state: State ) => ( {
+  } = useSelector( ( state ) => ( {
     guiSettings: state.automaton.guiSettings,
     automaton: state.automaton.instance,
     fxDefinitions: state.automaton.fxDefinitions
   } ) );
-  const dispatch = useDispatch<Dispatch<Action>>();
+  const dispatch = useDispatch();
   const checkDoubleClick = useDoubleClick();
   const curve = automaton?.getCurve( curveIndex ) || null;
-  const selectedFxs = useSelector( ( state: State ) => state.curveEditor.selectedItems.fxs );
+  const selectedFxs = useSelector( ( state ) => state.curveEditor.selectedItems.fxs );
 
   const grabFxBody = useCallback(
     ( fx: FxSection & WithID ): void => {
@@ -294,7 +294,7 @@ const CurveEditorFx = ( props: Props ): JSX.Element => {
         <FxBody
           width={ w }
           height={ FX_HEIGHT }
-          isSelected={ selectedFxs.has( fx.$id ) }
+          isSelected={ arraySetHas( selectedFxs, fx.$id ) }
           isBypassed={ fx.bypass }
           onMouseDown={ ( event ) => handleFxBodyClick( event, fx ) }
         />
@@ -319,7 +319,7 @@ const CurveEditorFx = ( props: Props ): JSX.Element => {
             <FxText
               x="0.125rem"
               y="0.75rem"
-              isSelected={ selectedFxs.has( fx.$id ) }
+              isSelected={ arraySetHas( selectedFxs, fx.$id ) }
               isBypassed={ fx.bypass }
             >
               { fxDefinitions[ fx.def ].name }

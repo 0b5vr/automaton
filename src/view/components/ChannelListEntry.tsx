@@ -1,9 +1,7 @@
-import { Action, State } from '../states/store';
 import React, { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from '../states/store';
 import { ChannelStatusLevel } from '../../ChannelWithGUI';
 import { Colors } from '../constants/Colors';
-import { Dispatch } from 'redux';
 import { Icons } from '../icons/Icons';
 import { duplicateName } from '../utils/duplicateName';
 import styled from 'styled-components';
@@ -13,7 +11,7 @@ const Value = ( { className, name }: {
   className?: string;
   name: string;
 } ): JSX.Element => {
-  const { value } = useSelector( ( state: State ) => ( {
+  const { value } = useSelector( ( state ) => ( {
     value: state.automaton.channels[ name ].value
   } ) );
 
@@ -62,8 +60,8 @@ export interface ChannelListEntryProps {
 
 const ChannelListEntry = ( props: ChannelListEntryProps ): JSX.Element => {
   const { className, name } = props;
-  const dispatch = useDispatch<Dispatch<Action>>();
-  const { automaton, selectedChannel, status } = useSelector( ( state: State ) => ( {
+  const dispatch = useDispatch();
+  const { automaton, selectedChannel, status } = useSelector( ( state ) => ( {
     automaton: state.automaton.instance,
     selectedChannel: state.timeline.selectedChannel,
     status: state.automaton.channels[ name ].status

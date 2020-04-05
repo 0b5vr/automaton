@@ -7,10 +7,12 @@ import { produce } from 'immer';
 // == state ========================================================================================
 export interface State {
   selectedChannel: string | null;
-  selectedItems: Map<string, { // key is an id
-    id: string;
-    channel: string;
-  }>;
+  selectedItems: {
+    [ id: string ]: {
+      id: string;
+      channel: string;
+    };
+  };
   lastSelectedItem: {
     id: string;
     channel: string;
@@ -20,7 +22,7 @@ export interface State {
 
 export const initialState: State = {
   selectedChannel: null,
-  selectedItems: new Map(),
+  selectedItems: {},
   lastSelectedItem: null,
   range: {
     t0: 0.0,
@@ -70,23 +72,25 @@ export const reducer: Reducer<State, ContextAction> = ( state = initialState, ac
   return produce( state, ( newState: State ) => {
     if ( action.type === 'Timeline/SelectChannel' ) {
       newState.selectedChannel = action.channel;
-      newState.selectedItems.clear();
+      newState.selectedItems = {};
     } else if ( action.type === 'Timeline/SelectItems' ) {
-      newState.selectedItems.clear();
+      newState.selectedItems = {};
       action.items.forEach( ( item ) => {
-        newState.selectedItems.set( item.id, item );
+        newState.selectedItems[ item.id ] = item;
       } );
 
       if ( action.items.length === 1 ) {
         newState.lastSelectedItem = action.items[ 0 ];
       }
     } else if ( action.type === 'Timeline/SelectItemsAdd' ) {
+      newState.selectedItems = { ...state.selectedItems };
       action.items.forEach( ( item ) => {
-        newState.selectedItems.set( item.id, item );
+        newState.selectedItems[ item.id ] = item;
       } );
     } else if ( action.type === 'Timeline/SelectItemsSub' ) {
+      newState.selectedItems = { ...state.selectedItems };
       action.items?.forEach( ( item ) => {
-        newState.selectedItems.delete( item );
+        delete newState.selectedItems[ item ];
       } );
     } else if ( action.type === 'Timeline/MoveRange' ) {
       const { range } = state;
@@ -142,7 +146,8 @@ export const reducer: Reducer<State, ContextAction> = ( state = initialState, ac
         newState.range.t1 = length;
       }
     } else if ( action.type === 'Automaton/RemoveChannelItem' ) {
-      newState.selectedItems.delete( action.id );
+      newState.selectedItems = { ...state.selectedItems };
+      delete newState.selectedItems[ action.id ];
     } else if ( action.type === 'Automaton/UpdateLength' ) { // WHOA, REALLY
       if ( action.length < state.range.t0 ) {
         // if t0 is larger than the new length, reset the range

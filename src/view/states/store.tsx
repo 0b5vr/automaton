@@ -7,11 +7,8 @@ import * as Header from './Header';
 import * as History from './History';
 import * as Settings from './Settings';
 import * as Timeline from './Timeline';
-import { combineReducers, createStore } from 'redux';
-import { enableMapSet } from 'immer';
-
-// haha
-enableMapSet();
+import { Dispatch, combineReducers, createStore } from 'redux';
+import { shallowEqual, useDispatch as useReduxDispatch, useSelector as useReduxSelector } from 'react-redux';
 
 // == state ========================================================================================
 export interface State {
@@ -58,3 +55,12 @@ export const store = createStore(
   reducer,
   devtools && devtools()
 );
+
+// == utils ========================================================================================
+export function useSelector<T>( selector: ( state: State ) => T ): T {
+  return useReduxSelector( selector, shallowEqual );
+}
+
+export function useDispatch(): Dispatch<Action> {
+  return useReduxDispatch<Dispatch<Action>>();
+}

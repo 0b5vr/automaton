@@ -1,5 +1,4 @@
-import { Provider, useSelector } from 'react-redux';
-import { State, store } from '../states/store';
+import { store, useSelector } from '../states/store';
 import styled, { createGlobalStyle } from 'styled-components';
 import { About } from './About';
 import { AutomatonStateListener } from './AutomatonStateListener';
@@ -16,6 +15,7 @@ import { FxSpawner } from './FxSpawner';
 import { Header } from './Header';
 import { Inspector } from './Inspector';
 import { Metrics } from '../constants/Metrics';
+import { Provider } from 'react-redux';
 import React from 'react';
 import { Scrollable } from './Scrollable';
 import { Stalker } from './Stalker';
@@ -140,24 +140,45 @@ export interface AppProps {
 }
 
 const Fuck = ( { automaton }: AppProps ): JSX.Element => {
-  const isFxSpawnerVisible = useSelector( ( state: State ) => state.fxSpawner.isVisible );
-  const isAboutVisible = useSelector( ( state: State ) => state.about.isVisible );
-  const isContextMenuVisible = useSelector( ( state: State ) => state.contextMenu.isVisible );
+  const {
+    isFxSpawnerVisible,
+    isAboutVisible,
+    isContextMenuVisible,
+    selectedChannel,
+    selectedCurve
+  } = useSelector( ( state ) => ( {
+    isFxSpawnerVisible: state.fxSpawner.isVisible,
+    isAboutVisible: state.about.isVisible,
+    isContextMenuVisible: state.contextMenu.isVisible,
+    selectedChannel: state.timeline.selectedChannel,
+    selectedCurve: state.curveEditor.selectedCurve
+  } ) );
+
+  const realm: 'dopeSheet' | 'timeline' | 'curveEditor' = (
+    selectedCurve != null ? 'curveEditor' :
+    selectedChannel != null ? 'timeline' :
+    'dopeSheet'
+  );
+
+  const shouldShowChannelList = realm === 'dopeSheet' || realm === 'timeline';
 
   return (
     <Root>
       <AutomatonStateListener automaton={ automaton } />
       <StyledHeader />
-      <StyledDopeSheetUnderlay />
+      { realm === 'dopeSheet' && <StyledDopeSheetUnderlay /> }
       <ChannelListAndDopeSheetScrollable barPosition='left'>
         <ChannelListAndDopeSheetContainer>
-          <StyledChannelList />
-          <StyledDopeSheet />
+          { shouldShowChannelList && <StyledChannelList /> }
+          { realm === 'dopeSheet' && <StyledDopeSheet /> }
         </ChannelListAndDopeSheetContainer>
       </ChannelListAndDopeSheetScrollable>
-      <StyledDopeSheetOverlay />
+      { realm === 'dopeSheet' && <StyledDopeSheetOverlay /> }
       <StyledTimeline />
-      {/* <StyledCurveEditor /> */}
+      { realm === 'curveEditor' && <>
+        <StyledCurveList />
+        <StyledCurveEditor />
+      </> }
       <StyledInspector />
       { isFxSpawnerVisible && <StyledFxSpawner /> }
       { isAboutVisible && <StyledAbout /> }

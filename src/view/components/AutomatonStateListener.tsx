@@ -1,11 +1,9 @@
 import React, { useEffect } from 'react';
-import { Action } from '../states/store';
 import { AutomatonWithGUI } from '../../AutomatonWithGUI';
 import { ChannelWithGUI } from '../../ChannelWithGUI';
 import { CurveWithGUI } from '../../CurveWithGUI';
-import { Dispatch } from 'redux';
 import styled from 'styled-components';
-import { useDispatch } from 'react-redux';
+import { useDispatch } from '../states/store';
 
 // == utils ========================================================================================
 const CURVE_RESO = 240;
@@ -35,7 +33,7 @@ export interface AutomatonStateListenerProps {
 }
 
 const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Element => {
-  const dispatch = useDispatch<Dispatch<Action>>();
+  const dispatch = useDispatch();
   const automaton = props.automaton;
 
   function createChannel( name: string, channel: ChannelWithGUI ): void {

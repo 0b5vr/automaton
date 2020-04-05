@@ -1,8 +1,7 @@
+import React, { useMemo } from 'react';
 import { ChannelListEntry } from './ChannelListEntry';
-import React from 'react';
-import { State } from '../states/store';
 import styled from 'styled-components';
-import { useSelector } from 'react-redux';
+import { useSelector } from '../states/store';
 
 // == styles =======================================================================================
 const StyledChannelListEntry = styled( ChannelListEntry )`
@@ -20,13 +19,18 @@ export interface ChannelListProps {
 }
 
 const ChannelList = ( { className }: ChannelListProps ): JSX.Element => {
-  const { channelNames } = useSelector( ( state: State ) => ( {
-    channelNames: Array.from( state.automaton.channelNames ).sort()
+  const { channelNames } = useSelector( ( state ) => ( {
+    channelNames: state.automaton.channelNames
   } ) );
+
+  const sortedChannelNames = useMemo(
+    () => Array.from( channelNames ).sort(),
+    [ channelNames ]
+  );
 
   return (
     <Root className={ className }>
-      { channelNames.map( ( channel ) => (
+      { sortedChannelNames.map( ( channel ) => (
         <StyledChannelListEntry
           key={ channel }
           name={ channel }

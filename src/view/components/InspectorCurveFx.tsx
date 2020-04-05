@@ -6,9 +6,8 @@ import { InspectorHr } from './InspectorHr';
 import { InspectorItem } from './InspectorItem';
 import { NumberParam } from './NumberParam';
 import React from 'react';
-import { State } from '../states/store';
 import { WithID } from '../../types/WithID';
-import { useSelector } from 'react-redux';
+import { useSelector } from '../states/store';
 
 // == component ====================================================================================
 export interface InspectorCurveFxProps {
@@ -16,8 +15,10 @@ export interface InspectorCurveFxProps {
 }
 
 const InspectorCurveFx = ( { fx }: InspectorCurveFxProps ): JSX.Element => {
-  const automaton = useSelector( ( state: State ) => state.automaton.instance );
-  const selectedCurve = useSelector( ( state: State ) => state.curveEditor.selectedCurve );
+  const { automaton, selectedCurve } = useSelector( ( state ) => ( {
+    automaton: state.automaton.instance,
+    selectedCurve: state.curveEditor.selectedCurve
+  } ) );
   const channel = automaton && selectedCurve != null && automaton.getCurve( selectedCurve ) || null;
 
   return <>

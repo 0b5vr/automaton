@@ -1,8 +1,6 @@
-import { Action, State } from '../states/store';
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
-import { Dispatch } from 'redux';
 import { InspectorHeader } from './InspectorHeader';
 import { InspectorHr } from './InspectorHr';
 import { InspectorItem } from './InspectorItem';
@@ -42,13 +40,13 @@ export interface InspectorGeneralProps {
 }
 
 const InspectorGeneral = (): JSX.Element => {
-  const dispatch = useDispatch<Dispatch<Action>>();
+  const dispatch = useDispatch();
   const {
     automaton,
     settingsMode,
     initLength,
     initResolution
-  } = useSelector( ( state: State ) => ( {
+  } = useSelector( ( state ) => ( {
     automaton: state.automaton.instance,
     settingsMode: state.settings.mode,
     initLength: state.automaton.length,

@@ -5,10 +5,9 @@ import { InspectorHr } from './InspectorHr';
 import { InspectorItem } from './InspectorItem';
 import { NumberParam } from './NumberParam';
 import React from 'react';
-import { State } from '../states/store';
 import { WithID } from '../../types/WithID';
 import styled from 'styled-components';
-import { useSelector } from 'react-redux';
+import { useSelector } from '../states/store';
 
 // == microcomponents ==============================================================================
 interface Props {
@@ -95,7 +94,7 @@ const InspectorChannelItem = ( props: Props ): JSX.Element => {
   const { className } = props;
   const itemId = props.item.id;
   const channelName = props.item.channel;
-  const { automaton, stateItem } = useSelector( ( state: State ) => ( {
+  const { automaton, stateItem } = useSelector( ( state ) => ( {
     automaton: state.automaton.instance,
     stateItem: state.automaton.channels[ channelName ].items[ itemId ]
   } ) );

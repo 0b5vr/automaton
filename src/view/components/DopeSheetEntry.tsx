@@ -1,8 +1,7 @@
 import React from 'react';
-import { State } from '../states/store';
 import { TimelineItem } from './TimelineItem';
 import styled from 'styled-components';
-import { useSelector } from 'react-redux';
+import { useSelector } from '../states/store';
 
 // == styles =======================================================================================
 const SVGRoot = styled.svg`
@@ -27,7 +26,7 @@ interface Props {
 
 const DopeSheetEntry = ( props: Props ): JSX.Element => {
   const { className, channel, width } = props;
-  const { range, stateItems } = useSelector( ( state: State ) => ( {
+  const { range, stateItems } = useSelector( ( state ) => ( {
     range: state.timeline.range,
     stateItems: state.automaton.channels[ channel ].items
   } ) );

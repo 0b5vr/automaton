@@ -3,9 +3,8 @@ import { TimeValueRange, v2y, x2t } from '../utils/TimeValueRange';
 import { Colors } from '../constants/Colors';
 import { CurveWithGUI } from '../../CurveWithGUI';
 import { Resolution } from '../utils/Resolution';
-import { State } from '../states/store';
 import styled from 'styled-components';
-import { useSelector } from 'react-redux';
+import { useSelector } from '../states/store';
 
 // == styles =======================================================================================
 const GraphLine = styled.polyline`
@@ -41,7 +40,7 @@ interface Props {
 
 const CurveEditorGraph = ( props: Props ): JSX.Element => {
   const { curve, range, size } = props;
-  const automaton = useSelector( ( state: State ) => state.automaton.instance );
+  const automaton = useSelector( ( state ) => state.automaton.instance );
   const channel = automaton?.getCurve( curve );
 
   const [ points, setPoints ] = useState( '' );
