@@ -17,6 +17,7 @@ const GridText = styled.text`
 
 const Root = styled.svg`
   position: absolute;
+  pointer-events: none;
 `;
 
 // == element ======================================================================================
