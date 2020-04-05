@@ -57,11 +57,16 @@ const Items = ( { channel, range, size }: {
 
 // == styles =======================================================================================
 const SVGRoot = styled.svg`
+  width: 100%;
+  height: 100%;
+`;
+
+const Body = styled.div`
   position: absolute;
   left: 0;
   top: 0;
   width: 100%;
-  height: calc( 100% - 0.25em );
+  height: calc( 100% - 4px );
   background: ${ Colors.back1 };
   pointer-events: auto;
 `;
@@ -103,8 +108,8 @@ const Timeline = ( { className }: TimelineProps ): JSX.Element => {
       : null
   } ) );
 
-  const refRoot = useRef<HTMLDivElement>( null );
-  const rect = useRect( refRoot );
+  const refBody = useRef<HTMLDivElement>( null );
+  const rect = useRect( refBody );
 
   const move = useCallback(
     ( dx: number, dy: number ): void => {
@@ -231,41 +236,44 @@ const Timeline = ( { className }: TimelineProps ): JSX.Element => {
 
   useEffect( // 🔥 fuck
     () => {
-      const svgRoot = refRoot.current;
-      if ( !svgRoot ) { return; }
+      const body = refBody.current;
+      if ( !body ) { return; }
 
-      svgRoot.addEventListener( 'wheel', handleWheel, { passive: false } );
+      body.addEventListener( 'wheel', handleWheel, { passive: false } );
       return () => (
-        svgRoot.removeEventListener( 'wheel', handleWheel )
+        body.removeEventListener( 'wheel', handleWheel )
       );
     },
-    [ refRoot.current, handleWheel ]
+    [ refBody.current, handleWheel ]
   );
 
   if ( !automaton || !selectedChannel || !channel || !stateItems ) { return <></>; }
 
   return (
     <Root
-      ref={ refRoot }
       className={ className }
-      onMouseDown={ handleMouseDown }
     >
-      <SVGRoot>
-        <TimeValueGrid
-          range={ range }
-          size={ rect }
-        />
-        <Items
-          channel={ selectedChannel }
-          range={ range }
-          size={ rect }
-        />
-        <Lines
-          channel={ selectedChannel }
-          range={ range }
-          size={ rect }
-        />
-      </SVGRoot>
+      <Body
+        ref={ refBody }
+        onMouseDown={ handleMouseDown }
+      >
+        <SVGRoot>
+          <TimeValueGrid
+            range={ range }
+            size={ rect }
+          />
+          <Items
+            channel={ selectedChannel }
+            range={ range }
+            size={ rect }
+          />
+          <Lines
+            channel={ selectedChannel }
+            range={ range }
+            size={ rect }
+          />
+        </SVGRoot>
+      </Body>
       <StyledRangeBar
         range={ range }
         width={ rect.width }

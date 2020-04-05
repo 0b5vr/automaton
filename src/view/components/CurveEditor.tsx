@@ -91,11 +91,16 @@ const Fxs = ( { curve, range, size }: {
 
 // == styles =======================================================================================
 const SVGRoot = styled.svg`
+  width: 100%;
+  height: 100%;
+`;
+
+const Body = styled.div`
   position: absolute;
   left: 0;
   top: 0;
   width: 100%;
-  height: calc( 100% - 0.25em );
+  height: calc( 100% - 4px );
   background: ${ Colors.back1 };
   pointer-events: auto;
 `;
@@ -138,8 +143,8 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
 
   const curve = selectedCurve != null && automaton?.getCurve( selectedCurve ) || null;
 
-  const refSvgRoot = useRef<SVGSVGElement>( null );
-  const rect = useRect( refSvgRoot );
+  const refBody = useRef<HTMLDivElement>( null );
+  const rect = useRect( refBody );
 
   const move = useCallback(
     ( dx: number, dy: number ): void => {
@@ -360,12 +365,12 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
 
   useEffect( // 🔥 fuck
     () => {
-      const svgRoot = refSvgRoot.current;
-      if ( !svgRoot ) { return; }
+      const body = refBody.current;
+      if ( !body ) { return; }
 
-      svgRoot.addEventListener( 'wheel', handleWheel, { passive: false } );
+      body.addEventListener( 'wheel', handleWheel, { passive: false } );
       return () => (
-        svgRoot.removeEventListener( 'wheel', handleWheel )
+        body.removeEventListener( 'wheel', handleWheel )
       );
     },
     [ handleWheel ]
@@ -373,38 +378,39 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
 
   return (
     <Root className={ className }>
-      <SVGRoot
-        ref={ refSvgRoot }
-        onMouseDown={ handleMouseDown }
-        onContextMenu={ handleContextMenu }
-      >
-        <TimeValueGrid
-          range={ range }
-          size={ rect }
-        />
-        { selectedCurve != null && <>
-          <Fxs
-            curve={ selectedCurve }
+      <Body ref={ refBody }>
+        <SVGRoot
+          onMouseDown={ handleMouseDown }
+          onContextMenu={ handleContextMenu }
+        >
+          <TimeValueGrid
             range={ range }
             size={ rect }
           />
-          <CurveEditorGraph
-            curve={ selectedCurve }
-            range={ range }
-            size={ rect }
-          />
-          <Nodes
-            curve={ selectedCurve }
-            range={ range }
-            size={ rect }
-          />
-          <StyledLines
-            curve={ selectedCurve }
-            range={ range }
-            size={ rect }
-          />
-        </> }
-      </SVGRoot>
+          { selectedCurve != null && <>
+            <Fxs
+              curve={ selectedCurve }
+              range={ range }
+              size={ rect }
+            />
+            <CurveEditorGraph
+              curve={ selectedCurve }
+              range={ range }
+              size={ rect }
+            />
+            <Nodes
+              curve={ selectedCurve }
+              range={ range }
+              size={ rect }
+            />
+            <StyledLines
+              curve={ selectedCurve }
+              range={ range }
+              size={ rect }
+            />
+          </> }
+        </SVGRoot>
+      </Body>
       { length != null && (
         <StyledRangeBar
           range={ range }

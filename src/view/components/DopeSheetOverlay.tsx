@@ -26,11 +26,16 @@ const Line = ( { size }: {
 
 // == styles =======================================================================================
 const SVGRoot = styled.svg`
+  width: 100%;
+  height: 100%;
+`;
+
+const Body = styled.div`
   position: absolute;
   left: 0;
   top: 0;
   width: 100%;
-  height: calc( 100% - 0.25em );
+  height: calc( 100% - 4px );
 `;
 
 const Root = styled.div`
@@ -43,16 +48,18 @@ interface DopeSheetOverlayProps {
 
 const DopeSheetOverlay = ( props: DopeSheetOverlayProps ): JSX.Element => {
   const { className } = props;
-  const refSvgRoot = useRef<SVGSVGElement>( null );
-  const rect = useRect( refSvgRoot );
+  const refBody = useRef<HTMLDivElement>( null );
+  const rect = useRect( refBody );
 
   return (
     <Root className={ className }>
-      <SVGRoot ref={ refSvgRoot }>
-        <Line
-          size={ rect }
-        />
-      </SVGRoot>
+      <Body ref={ refBody }>
+        <SVGRoot>
+          <Line
+            size={ rect }
+          />
+        </SVGRoot>
+      </Body>
     </Root>
   );
 };

@@ -12,24 +12,24 @@ export interface RectResult {
   width: number;
 }
 
-const createNullResult = (): RectResult => ( {
+const nullResult: RectResult = {
   bottom: 0,
   height: 0,
   left: 0,
   right: 0,
   top: 0,
   width: 0
-} );
+};
 
-function getRect<T extends Element>( element?: T ): RectResult {
+function getRect<T extends HTMLElement>( element?: T ): RectResult {
   if ( element ) { return element.getBoundingClientRect(); }
-  else { return createNullResult(); }
+  else { return nullResult; }
 }
 
-export function useRect<T extends Element>(
+export function useRect<T extends HTMLElement>(
   ref: React.RefObject<T>
 ): RectResult {
-  const [ rect, setRect ] = useState<RectResult>( createNullResult() );
+  const [ rect, setRect ] = useState<RectResult>( nullResult );
 
   const handleResize = useCallback( () => {
     if ( !ref.current ) { return; }

@@ -9,11 +9,16 @@ import { useSelector } from 'react-redux';
 
 // == styles =======================================================================================
 const SVGRoot = styled.svg`
+  width: 100%;
+  height: 100%;
+`;
+
+const Body = styled.div`
   position: absolute;
   left: 0;
   top: 0;
   width: 100%;
-  height: calc( 100% - 0.25em );
+  height: calc( 100% - 4px );
   background: ${ Colors.back1 };
 `;
 
@@ -34,8 +39,8 @@ interface DopeSheetUnderlayProps {
 
 const DopeSheetUnderlay = ( props: DopeSheetUnderlayProps ): JSX.Element => {
   const { className } = props;
-  const refSvgRoot = useRef<SVGSVGElement>( null );
-  const rect = useRect( refSvgRoot );
+  const refBody = useRef<HTMLDivElement>( null );
+  const rect = useRect( refBody );
   const { range, length } = useSelector( ( state: State ) => ( {
     range: state.timeline.range,
     length: state.automaton.length
@@ -43,18 +48,20 @@ const DopeSheetUnderlay = ( props: DopeSheetUnderlayProps ): JSX.Element => {
 
   return (
     <Root className={ className }>
-      <SVGRoot ref={ refSvgRoot }>
-        <TimeValueGrid
+      <Body ref={ refBody }>
+        <SVGRoot>
+          <TimeValueGrid
+            range={ range }
+            size={ rect }
+            hideValue
+          />
+        </SVGRoot>
+        <StyledRangeBar
           range={ range }
-          size={ rect }
-          hideValue
+          width={ rect.width }
+          length={ length }
         />
-      </SVGRoot>
-      <StyledRangeBar
-        range={ range }
-        width={ rect.width }
-        length={ length }
-      />
+      </Body>
     </Root>
   );
 };

@@ -6,11 +6,16 @@ import { useRect } from '../utils/useRect';
 import { useSelector } from 'react-redux';
 
 // == styles =======================================================================================
-const Root = styled.svg`
+const SVGRoot = styled.svg`
+  width: 100%;
+  height: 100%;
+`;
+
+const Root = styled.div`
   display: block;
   position: relative;
   width: 100%;
-  height: 1.25rem;
+  height: 24px;
   overflow: hidden;
 `;
 
@@ -28,7 +33,7 @@ const DopeSheetEntry = ( props: DopeSheetEntryProps ): JSX.Element => {
   const { stateItems } = useSelector( ( state: State ) => ( {
     stateItems: state.automaton.channels[ channel ].items
   } ) );
-  const refRoot = useRef<SVGSVGElement>( null );
+  const refRoot = useRef<HTMLDivElement>( null );
   const size = useRect( refRoot );
 
   return (
@@ -36,16 +41,18 @@ const DopeSheetEntry = ( props: DopeSheetEntryProps ): JSX.Element => {
       ref={ refRoot }
       className={ className }
     >
-      { Object.entries( stateItems ).map( ( [ id, item ] ) => (
-        <TimelineItem
-          channel={ channel }
-          key={ id }
-          item={ item }
-          range={ range }
-          size={ size }
-          dopeSheetMode
-        />
-      ) ) }
+      <SVGRoot>
+        { Object.entries( stateItems ).map( ( [ id, item ] ) => (
+          <TimelineItem
+            channel={ channel }
+            key={ id }
+            item={ item }
+            range={ range }
+            size={ size }
+            dopeSheetMode
+          />
+        ) ) }
+      </SVGRoot>
     </Root>
   );
 };
