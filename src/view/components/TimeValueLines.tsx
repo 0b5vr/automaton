@@ -8,15 +8,18 @@ import styled from 'styled-components';
 const Line = styled.line`
   stroke: ${ Colors.accent };
   stroke-width: 2px;
+  pointer-events: none;
 `;
 
 const Text = styled.text`
   fill: ${ Colors.accent };
   font-size: 10px;
+  pointer-events: none;
 `;
 
 const Circle = styled.circle`
   fill: ${ Colors.accent };
+  pointer-events: none;
 `;
 
 // == element ======================================================================================

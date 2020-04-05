@@ -8,11 +8,13 @@ import styled from 'styled-components';
 const GridLine = styled.line`
   stroke: ${ Colors.fore };
   stroke-width: 0.0625rem;
+  pointer-events: none;
 `;
 
 const GridText = styled.text`
   fill: ${ Colors.fore };
   font-size: 0.6rem;
+  pointer-events: none;
 `;
 
 // == element ======================================================================================
