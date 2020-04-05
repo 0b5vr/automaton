@@ -67,7 +67,7 @@ const Root = styled.div`
 export interface ScrollableProps {
   className?: string;
   children?: ReactNode;
-  barPosition?: 'left' | 'right';
+  barPosition?: 'left' | 'right' | 'none';
 }
 
 const Scrollable = ( props: ScrollableProps ): JSX.Element => {
@@ -83,14 +83,16 @@ const Scrollable = ( props: ScrollableProps ): JSX.Element => {
 
   const handleWheel = useCallback(
     ( event: WheelEvent ): void => {
-      event.preventDefault();
-      event.stopPropagation();
+      if ( !event.shiftKey && !event.ctrlKey && !event.altKey ) {
+        event.preventDefault();
+        event.stopPropagation();
 
-      const visibleHeight = refRoot.current?.clientHeight || 0.0;
-      const contentHeight = refContainer.current?.clientHeight || 1.0;
+        const visibleHeight = refRoot.current?.clientHeight || 0.0;
+        const contentHeight = refContainer.current?.clientHeight || 1.0;
 
-      const scrollMax = contentHeight - visibleHeight;
-      setTop( Math.min( Math.max( top - event.deltaY, -scrollMax ), 0.0 ) );
+        const scrollMax = contentHeight - visibleHeight;
+        setTop( Math.min( Math.max( top - event.deltaY, -scrollMax ), 0.0 ) );
+      }
     },
     [ top ]
   );
@@ -121,15 +123,17 @@ const Scrollable = ( props: ScrollableProps ): JSX.Element => {
       >
         { children }
       </Container>
-      <StyledBar
-        top={ top }
-        style={ {
-          height: `${ 100.0 * barHeight }%`,
-          top: `${ -100.0 * barTop }%`,
-          left: barPosition === 'left' ? 0 : undefined,
-          right: barPosition !== 'left' ? 0 : undefined,
-        } }
-      />
+      { barPosition !== 'none' && (
+        <StyledBar
+          top={ top }
+          style={ {
+            height: `${ 100.0 * barHeight }%`,
+            top: `${ -100.0 * barTop }%`,
+            left: barPosition === 'left' ? 0 : undefined,
+            right: barPosition !== 'left' ? 0 : undefined,
+          } }
+        />
+      ) }
     </Root>
   );
 };
