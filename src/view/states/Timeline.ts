@@ -105,8 +105,6 @@ export const reducer: Reducer<State, ContextAction> = ( state = initialState, ac
       const rt = ( ct - range.t0 ) / ( range.t1 - range.t0 );
       const rv = ( cv - range.v0 ) / ( range.v1 - range.v0 );
 
-      console.log( ct );
-
       let dt = range.t1 - range.t0;
       dt *= Math.pow( ( size.width + 1.0 ) / size.width, action.dx * 2.0 );
       dt = Math.min( Math.max( dt, 0.01 ), 1000.0 );
