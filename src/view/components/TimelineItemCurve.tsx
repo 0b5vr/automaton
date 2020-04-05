@@ -23,15 +23,16 @@ const CurvePath = styled.polyline`
 `;
 
 const Side = styled.rect`
-  rx: 2px;
-  ry: 2px;
   opacity: 0.0;
   cursor: ew-resize;
   pointer-events: auto;
 `;
 
 const Body = styled.rect<{ isSelected: boolean }>`
-  fill: ${ ( { isSelected } ) => ( isSelected ? Colors.accentdark : Colors.back1 ) };
+  fill: ${ ( { isSelected } ) => ( isSelected ? Colors.accentdark : Colors.black ) };
+  opacity: 0.5;
+  rx: 4px;
+  ry: 4px;
   cursor: pointer;
   pointer-events: auto;
 `;

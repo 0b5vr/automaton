@@ -29,12 +29,19 @@ const Text = styled.text`
 
 const Body = styled.rect<{ isSelected: boolean; isTrigger: boolean }>`
   fill: ${ ( { isSelected } ) => ( isSelected ? Colors.accentdark : Colors.back1 ) };
-  stroke: ${ Colors.accent };
-  stroke-width: 2px;
-  cursor: pointer;
+  opacity: 0.5;
   rx: ${ ( { isTrigger } ) => ( isTrigger ? '8px' : '4px' ) };
   ry: ${ ( { isTrigger } ) => ( isTrigger ? '8px' : '4px' ) };
+  cursor: pointer;
   pointer-events: auto;
+`;
+
+const Stroke = styled.rect<{ isTrigger: boolean }>`
+  fill: none;
+  stroke: ${ Colors.accent };
+  stroke-width: 2px;
+  rx: ${ ( { isTrigger } ) => ( isTrigger ? '8px' : '4px' ) };
+  ry: ${ ( { isTrigger } ) => ( isTrigger ? '8px' : '4px' ) };
 `;
 
 const Root = styled.g`
@@ -359,6 +366,11 @@ const TimelineItemConstant = ( props: TimelineItemConstantProps ): JSX.Element =
             </Text>
           </g>
         </> }
+      <Stroke
+        width={ w }
+        height={ HEIGHT }
+        isTrigger={ item.length === 0 }
+      />
       <Side
         style={ {
           transform: 'translate( -1px, 0 )'
