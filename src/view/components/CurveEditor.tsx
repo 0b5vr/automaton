@@ -225,8 +225,6 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
 
   const handleContextMenu = useCallback(
     ( event: React.MouseEvent ): void => {
-      if ( !curve ) { return; }
-
       event.preventDefault();
       event.stopPropagation();
 
@@ -250,7 +248,7 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
         ]
       } );
     },
-    [ curve, rect, range, createNode ]
+    [ rect, createNode, createFx ]
   );
 
   const handleWheel = useCallback(
