@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Dispatch } from 'redux';
 import { DopeSheetEntry } from './DopeSheetEntry';
+import { registerMouseEvent } from '../utils/registerMouseEvent';
 import styled from 'styled-components';
 import { useRect } from '../utils/useRect';
 
@@ -57,6 +58,20 @@ const DopeSheet = ( { className }: DopeSheetProps ): JSX.Element => {
     [ rect, length ]
   );
 
+  const handleMouseDown = useCallback(
+    ( event: React.MouseEvent ): void => {
+      if ( event.buttons === 4 ) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        registerMouseEvent(
+          ( event, movementSum ) => move( movementSum.x )
+        );
+      }
+    },
+    [ move ]
+  );
+
   const handleWheel = useCallback(
     ( event: WheelEvent ): void => {
       if ( event.shiftKey ) {
@@ -71,12 +86,12 @@ const DopeSheet = ( { className }: DopeSheetProps ): JSX.Element => {
 
   useEffect( // 🔥 fuck
     () => {
-      const svgRoot = refRoot.current;
-      if ( !svgRoot ) { return; }
+      const root = refRoot.current;
+      if ( !root ) { return; }
 
-      svgRoot.addEventListener( 'wheel', handleWheel, { passive: false } );
+      root.addEventListener( 'wheel', handleWheel, { passive: false } );
       return () => (
-        svgRoot.removeEventListener( 'wheel', handleWheel )
+        root.removeEventListener( 'wheel', handleWheel )
       );
     },
     [ refRoot.current, handleWheel ]
@@ -86,6 +101,7 @@ const DopeSheet = ( { className }: DopeSheetProps ): JSX.Element => {
     <Root
       className={ className }
       ref={ refRoot }
+      onMouseDown={ handleMouseDown }
     >
       { channelNames.map( ( channel ) => (
         <StyledDopeSheetEntry
