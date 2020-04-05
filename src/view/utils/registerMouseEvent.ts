@@ -2,12 +2,12 @@ export function registerMouseEvent(
   move: ( event: MouseEvent, movementSum: { x: number; y: number } ) => void,
   up?: ( event: MouseEvent ) => void
 ): void {
-  let shouldUpdate = true;
+  let isDone = false;
   let moveEvent: MouseEvent | undefined;
   let movementSum = { x: 0.0, y: 0.0 };
 
   const update = (): void => {
-    if ( !shouldUpdate ) { return; }
+    if ( isDone ) { return; }
     requestAnimationFrame( update );
 
     if ( moveEvent ) {
@@ -25,8 +25,10 @@ export function registerMouseEvent(
   };
 
   const upt = ( event: MouseEvent ): void => {
-    up && up( event );
-    shouldUpdate = false;
+    if ( !isDone ) {
+      up && up( event );
+      isDone = true;
+    }
     window.removeEventListener( 'mousemove', movet );
     window.removeEventListener( 'mouseup', upt );
     window.removeEventListener( 'mousedown', upt );
