@@ -5,6 +5,7 @@ import { ChannelStatusLevel } from '../../ChannelWithGUI';
 import { Colors } from '../constants/Colors';
 import { Dispatch } from 'redux';
 import { Icons } from '../icons/Icons';
+import { duplicateName } from '../utils/duplicateName';
 import styled from 'styled-components';
 
 // == microcomponent ===============================================================================
@@ -62,7 +63,8 @@ export interface ChannelListEntryProps {
 const ChannelListEntry = ( props: ChannelListEntryProps ): JSX.Element => {
   const { className, name } = props;
   const dispatch = useDispatch<Dispatch<Action>>();
-  const { selectedChannel, status } = useSelector( ( state: State ) => ( {
+  const { automaton, selectedChannel, status } = useSelector( ( state: State ) => ( {
+    automaton: state.automaton.instance,
     selectedChannel: state.timeline.selectedChannel,
     status: state.automaton.channels[ name ].status
   } ) );
@@ -77,10 +79,91 @@ const ChannelListEntry = ( props: ChannelListEntryProps ): JSX.Element => {
     [ selectedChannel ]
   );
 
+  const duplicateChannel = useCallback(
+    () => {
+      if ( !automaton ) { return; }
+
+      const dupName = duplicateName( name, new Set( Object.keys( automaton.channels ) ) );
+      const data = automaton.getChannel( name )!.serialize();
+
+      const undo = (): void => {
+        automaton.removeChannel( dupName );
+      };
+
+      const redo = (): void => {
+        automaton.createChannel( dupName, data );
+      };
+
+      dispatch( {
+        type: 'History/Push',
+        entry: {
+          description: `Duplicate Channel: ${ dupName }`,
+          redo,
+          undo
+        }
+      } );
+      redo();
+    },
+    [ automaton, name ]
+  );
+
+  const removeChannel = useCallback(
+    () => {
+      if ( !automaton ) { return; }
+
+      const data = automaton.getChannel( name )!.serialize();
+
+      const undo = (): void => {
+        automaton.createChannel( name, data );
+      };
+
+      const redo = (): void => {
+        automaton.removeChannel( name );
+      };
+
+      dispatch( {
+        type: 'History/Push',
+        entry: {
+          description: `Remove Channel: ${ name }`,
+          redo,
+          undo
+        }
+      } );
+      redo();
+    },
+    [ automaton, name ]
+  );
+
+  const handleContextMenu = useCallback(
+    ( event: React.MouseEvent ): void => {
+      event.preventDefault();
+      event.stopPropagation();
+
+      dispatch( {
+        type: 'ContextMenu/Open',
+        position: { x: event.clientX, y: event.clientY },
+        commands: [
+          {
+            name: 'Duplicate',
+            description: 'Duplicate the channel.',
+            command: () => duplicateChannel()
+          },
+          {
+            name: 'Remove',
+            description: 'Remove the channel.',
+            command: () => removeChannel()
+          }
+        ]
+      } );
+    },
+    [ duplicateChannel, removeChannel ]
+  );
+
   return (
     <Root
       className={ className }
       onClick={ handleClick }
+      onContextMenu={ handleContextMenu }
       isSelected={ selectedChannel === name }
       data-stalker={ name }
     >
