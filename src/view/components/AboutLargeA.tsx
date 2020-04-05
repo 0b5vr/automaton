@@ -40,7 +40,7 @@ const AboutLargeA = ( { className }: AboutLargeAProps ): JSX.Element => {
       if ( time == null ) { return 0.0; }
 
       const t = Math.max( time - i * 0.00166, 0.0 );
-      return channel ? ( 360.0 * channel.getValue( t ) ) : 0.0;
+      return channel ? ( 360.0 * channel.getValueFromGUI( t ) ) : 0.0;
     } ),
     [ time, channel ]
   );

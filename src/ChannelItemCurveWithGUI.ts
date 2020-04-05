@@ -10,10 +10,12 @@ export class ChannelItemCurveWithGUI extends ChannelItemCurve {
 
   public curve!: CurveWithGUI;
 
-  public getValue( time: number ): number {
+  public getValue( time: number, isFromGUI?: boolean ): number {
     const value = super.getValue( time );
-    this.curve.setPreviewTimeValue( time, value );
-    this.curve.markAsUsed();
+    if ( !isFromGUI ) {
+      this.curve.setPreviewTimeValue( time, value );
+      this.curve.markAsUsed();
+    }
     return value;
   }
 

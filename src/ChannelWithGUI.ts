@@ -130,6 +130,33 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
   }
 
   /**
+   * If you want to grab a value from GUI for some reasons, use this.
+   * This supresses updating the preview value for curves.
+   * @param time Time at the point you want to grab the value.
+   * @returns Result value
+   */
+  public getValueFromGUI( time: number ): number {
+    let next = this.__items.findIndex( ( item ) => ( time < item.time ) );
+
+    // it's the first one!
+    if ( next === 0 ) {
+      return 0.0;
+    }
+
+    // it's the last one!
+    if ( next === -1 ) {
+      next = this.__items.length;
+    }
+
+    const item = this.__items[ next - 1 ];
+    if ( item.end < time ) {
+      return item.getValue( item.length, true );
+    } else {
+      return item.getValue( time - item.time, true );
+    }
+  }
+
+  /**
    * This method is intended to be used by [[Automaton.update]].
    * @param time The current time of the parent [[Automaton]]
    */
