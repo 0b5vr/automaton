@@ -174,7 +174,7 @@ const Fuck = ( { automaton }: AppProps ): JSX.Element => {
         </ChannelListAndDopeSheetContainer>
       </ChannelListAndDopeSheetScrollable>
       { realm === 'dopeSheet' && <StyledDopeSheetOverlay /> }
-      <StyledTimeline />
+      { realm === 'timeline' && <StyledTimeline /> }
       { realm === 'curveEditor' && <>
         <StyledCurveList />
         <StyledCurveEditor />
