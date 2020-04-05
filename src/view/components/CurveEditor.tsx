@@ -51,178 +51,207 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
   const curve = selectedCurve != null && automaton?.getCurve( selectedCurve ) || null;
 
   const refSvgRoot = useRef<SVGSVGElement>( null );
-  const size = useRect( refSvgRoot );
+  const rect = useRect( refSvgRoot );
 
-  const move = ( dx: number, dy: number ): void => {
-    dispatch( {
-      type: 'CurveEditor/MoveRange',
-      size,
-      dx,
-      dy,
-      tmax: length // 🔥
-    } );
-  };
+  const move = useCallback(
+    ( dx: number, dy: number ): void => {
+      dispatch( {
+        type: 'CurveEditor/MoveRange',
+        size: rect,
+        dx,
+        dy,
+        tmax: length // 🔥
+      } );
+    },
+    [ rect, length ]
+  );
 
-  const zoom = ( cx: number, cy: number, dx: number, dy: number ): void => {
-    dispatch( {
-      type: 'CurveEditor/ZoomRange',
-      size,
-      cx,
-      cy,
-      dx,
-      dy,
-      tmax: length // 🔥
-    } );
-  };
+  const zoom = useCallback(
+    ( cx: number, cy: number, dx: number, dy: number ): void => {
+      dispatch( {
+        type: 'CurveEditor/ZoomRange',
+        size: rect,
+        cx,
+        cy,
+        dx,
+        dy,
+        tmax: length // 🔥
+      } );
+    },
+    [ rect, length ]
+  );
 
-  const createNode = ( x0: number, y0: number ): void => {
-    if ( !curve ) { return; }
+  const createNodeAndGrab = useCallback(
+    ( x0: number, y0: number ): void => {
+      if ( !curve ) { return; }
 
-    let x = x0;
-    let y = y0;
+      let x = x0;
+      let y = y0;
 
-    const data = curve.createNode(
-      x2t( x, range, size.width ),
-      y2v( y, range, size.height )
-    );
-    dispatch( {
-      type: 'CurveEditor/SelectItems',
-      nodes: [ data.$id ]
-    } );
-
-    registerMouseEvent(
-      ( event, movementSum ) => {
-        x += movementSum.x;
-        y += movementSum.y;
-
-        curve.moveNodeTime( data.$id, x2t( x, range, size.width ) );
-        curve.moveNodeValue( data.$id, y2v( y, range, size.height ) );
-      },
-      () => {
-        const t = x2t( x, range, size.width );
-        const v = y2v( y, range, size.height );
-        curve.moveNodeTime( data.$id, t );
-        curve.moveNodeValue( data.$id, v );
-
-        data.time = t;
-        data.value = v;
-
-        const undo = (): void => {
-          curve.removeNode( data.$id );
-        };
-
-        const redo = (): void => {
-          curve.createNodeFromData( data );
-        };
-
-        dispatch( {
-          type: 'History/Push',
-          entry: {
-            description: 'Add Node',
-            redo,
-            undo
-          }
-        } );
-      }
-    );
-  };
-
-  const handleMouseDown = ( event: React.MouseEvent ): void => {
-    event.preventDefault();
-
-    if ( event.buttons === 1 ) {
-      if ( checkDoubleClick() ) {
-        createNode( event.nativeEvent.offsetX, event.nativeEvent.offsetY );
-      }
-    } else if ( event.buttons === 4 ) {
-      registerMouseEvent(
-        ( event, movementSum ) => move( movementSum.x, movementSum.y )
+      const data = curve.createNode(
+        x2t( x, range, rect.width ),
+        y2v( y, range, rect.height )
       );
-    }
-  };
+      dispatch( {
+        type: 'CurveEditor/SelectItems',
+        nodes: [ data.$id ]
+      } );
 
-  const handleContextMenu = ( event: React.MouseEvent ): void => {
-    if ( !curve ) { return; }
+      registerMouseEvent(
+        ( event, movementSum ) => {
+          x += movementSum.x;
+          y += movementSum.y;
 
-    event.preventDefault();
-    event.stopPropagation();
+          curve.moveNodeTime( data.$id, x2t( x, range, rect.width ) );
+          curve.moveNodeValue( data.$id, y2v( y, range, rect.height ) );
+        },
+        () => {
+          const t = x2t( x, range, rect.width );
+          const v = y2v( y, range, rect.height );
+          curve.moveNodeTime( data.$id, t );
+          curve.moveNodeValue( data.$id, v );
 
-    const x = event.nativeEvent.offsetX;
-    const y = event.nativeEvent.offsetY;
+          data.time = t;
+          data.value = v;
 
-    dispatch( {
-      type: 'ContextMenu/Open',
-      position: { x: event.clientX, y: event.clientY },
-      commands: [
-        {
-          name: 'Add Node',
-          description: 'Add a new bezier curve node.',
-          command: () => {
-            const t = x2t( x, range, size.width );
-            const v = y2v( y, range, size.height );
-            const data = curve.createNode( t, v );
+          const undo = (): void => {
+            curve.removeNode( data.$id );
+          };
+
+          const redo = (): void => {
+            curve.createNodeFromData( data );
+          };
+
+          dispatch( {
+            type: 'History/Push',
+            entry: {
+              description: 'Add Node',
+              redo,
+              undo
+            }
+          } );
+        }
+      );
+    },
+    [ range, rect, curve ]
+  );
+
+  const handleMouseDown = useCallback(
+    ( event: React.MouseEvent ): void => {
+      event.preventDefault();
+
+      if ( event.buttons === 1 ) {
+        if ( checkDoubleClick() ) {
+          createNodeAndGrab( event.clientX - rect.left, event.clientY - rect.top );
+        }
+      } else if ( event.buttons === 4 ) {
+        registerMouseEvent(
+          ( event, movementSum ) => move( movementSum.x, movementSum.y )
+        );
+      }
+    },
+    [ createNodeAndGrab, rect, move ]
+  );
+
+  const createNode = useCallback(
+    ( x: number, y: number ) => {
+      if ( !curve ) { return; }
+
+      const t = x2t( x, range, rect.width );
+      const v = y2v( y, range, rect.height );
+      const data = curve.createNode( t, v );
+      dispatch( {
+        type: 'CurveEditor/SelectItems',
+        nodes: [ data.$id ]
+      } );
+
+      const undo = (): void => {
+        curve.removeNode( data.$id );
+      };
+
+      const redo = (): void => {
+        curve.createNodeFromData( data );
+      };
+
+      dispatch( {
+        type: 'History/Push',
+        entry: {
+          description: 'Add Node',
+          redo,
+          undo
+        }
+      } );
+    },
+    [ range, rect, curve ]
+  );
+
+  const createFx = useCallback(
+    ( x: number ) => {
+      if ( !curve ) { return; }
+
+      dispatch( {
+        type: 'FxSpawner/Open',
+        callback: ( name: string ) => {
+          const t = x2t( x, range, rect.width );
+          const data = curve.createFx( t, 1.0, name );
+          if ( data ) {
             dispatch( {
               type: 'CurveEditor/SelectItems',
-              nodes: [ data.$id ]
+              fxs: [ data.$id ]
             } );
 
             const undo = (): void => {
-              curve.removeNode( data.$id );
+              curve.removeFx( data.$id );
             };
 
             const redo = (): void => {
-              curve.createNodeFromData( data );
+              curve.createFxFromData( data );
             };
 
             dispatch( {
               type: 'History/Push',
               entry: {
-                description: 'Add Node',
+                description: 'Add Fx',
                 redo,
                 undo
               }
             } );
           }
-        },
-        {
-          name: 'Add Fx',
-          description: 'Add a new fx section.',
-          command: () => {
-            dispatch( {
-              type: 'FxSpawner/Open',
-              callback: ( name: string ) => {
-                const t = x2t( x, range, size.width );
-                const data = curve.createFx( t, 1.0, name );
-                if ( data ) {
-                  dispatch( {
-                    type: 'CurveEditor/SelectItems',
-                    fxs: [ data.$id ]
-                  } );
-
-                  const undo = (): void => {
-                    curve.removeFx( data.$id );
-                  };
-
-                  const redo = (): void => {
-                    curve.createFxFromData( data );
-                  };
-
-                  dispatch( {
-                    type: 'History/Push',
-                    entry: {
-                      description: 'Add Fx',
-                      redo,
-                      undo
-                    }
-                  } );
-                }
-              }
-            } );
-          }
         }
-      ]
-    } );
-  };
+      } );
+    },
+    [ range, rect, curve ]
+  );
+
+  const handleContextMenu = useCallback(
+    ( event: React.MouseEvent ): void => {
+      if ( !curve ) { return; }
+
+      event.preventDefault();
+      event.stopPropagation();
+
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+
+      dispatch( {
+        type: 'ContextMenu/Open',
+        position: { x: event.clientX, y: event.clientY },
+        commands: [
+          {
+            name: 'Add Node',
+            description: 'Add a new bezier curve node.',
+            command: () => createNode( x, y )
+          },
+          {
+            name: 'Add Fx',
+            description: 'Add a new fx section.',
+            command: () => createFx( x )
+          }
+        ]
+      } );
+    },
+    [ curve, rect, range, createNode ]
+  );
 
   const handleWheel = useCallback(
     ( event: WheelEvent ): void => {
@@ -256,17 +285,17 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
     <Root className={ className }>
       <TimeValueGrid
         range={ range }
-        size={ size }
+        size={ rect }
       />
       <SVGRoot
         ref={ refSvgRoot }
         onMouseDown={ handleMouseDown }
         onContextMenu={ handleContextMenu }
       >
-        <CurveEditorFxs size={ size } />
+        <CurveEditorFxs size={ rect } />
         <CurveEditorGraph />
-        <CurveEditorLine size={ size } />
-        <CurveEditorNodes size={ size } />
+        <CurveEditorLine size={ rect } />
+        <CurveEditorNodes size={ rect } />
       </SVGRoot>
     </Root>
   );
