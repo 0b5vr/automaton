@@ -1,4 +1,4 @@
-import { SerializedChannelItem, SerializedChannelItemCurve } from '@fms-cat/automaton';
+import { SerializedChannelItem, SerializedChannelItemConstant, SerializedChannelItemCurve } from '@fms-cat/automaton';
 import { ChannelWithGUI } from '../../ChannelWithGUI';
 import { InspectorHeader } from './InspectorHeader';
 import { InspectorHr } from './InspectorHr';
@@ -46,6 +46,32 @@ const InspectorChannelItemCurveParams = ( props: {
           channel.changeCurveSpeedAndOffset( itemId, stateItem.speed, value );
         } }
         historyDescription="Change Curve Offset"
+      />
+    </InspectorItem>
+  </>;
+};
+
+const InspectorChannelItemConstantParams = ( props: {
+  channel: ChannelWithGUI;
+  stateItem: Required<SerializedChannelItem> & WithID;
+  itemId: string;
+} ): JSX.Element => {
+  if ( ( 'curve' in props.stateItem ) ) { return <></>; }
+
+  const { channel, itemId } = props;
+  const stateItem = props.stateItem as Required<SerializedChannelItemConstant> & WithID;
+
+  return <>
+    <InspectorHr />
+
+    <InspectorItem name="Value">
+      <NumberParam
+        type="float"
+        value={ stateItem.value }
+        onChange={ ( value ) => {
+          channel.changeConstantValue( itemId, value );
+        } }
+        historyDescription="Change Constant Value"
       />
     </InspectorItem>
   </>;
@@ -101,6 +127,11 @@ const InspectorChannelItem = ( props: Props ): JSX.Element => {
         </InspectorItem>
 
         <InspectorChannelItemCurveParams
+          channel={ channel }
+          stateItem={ stateItem }
+          itemId={ itemId }
+        />
+        <InspectorChannelItemConstantParams
           channel={ channel }
           stateItem={ stateItem }
           itemId={ itemId }
