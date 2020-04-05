@@ -56,12 +56,19 @@ const CurveListEntry = ( props: CurveListEntryProps ): JSX.Element => {
 
   const handleClick = useCallback(
     () => {
-      dispatch( {
-        type: 'CurveEditor/SelectCurve',
-        curve: index
-      } );
+      if ( selectedCurve === index ) {
+        dispatch( {
+          type: 'CurveEditor/SelectCurve',
+          curve: null
+        } );
+      } else {
+        dispatch( {
+          type: 'CurveEditor/SelectCurve',
+          curve: index
+        } );
+      }
     },
-    []
+    [ selectedCurve ]
   );
 
   return (
