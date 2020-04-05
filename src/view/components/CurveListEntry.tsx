@@ -9,16 +9,6 @@ import { Metrics } from '../constants/Metrics';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
-const Name = styled.div`
-  position: absolute;
-  left: 0.2rem;
-  top: 0;
-  width: calc( 100 - 2rem );
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-`;
-
 const SvgRoot = styled.svg`
   display: absolute;
   left: 0;
@@ -80,7 +70,6 @@ const CurveListEntry = ( props: CurveListEntryProps ): JSX.Element => {
       onClick={ handleClick }
       isSelected={ selectedCurve === index }
     >
-      <Name>{ index }</Name>
       <SvgRoot
         width="100%"
         height="100%"
@@ -88,6 +77,9 @@ const CurveListEntry = ( props: CurveListEntryProps ): JSX.Element => {
         preserveAspectRatio="none"
       >
         <GraphLine
+          style={ {
+            transform: 'translate(0, 1px) scale(1, -1)'
+          } }
           points={ path }
           vectorEffect="non-scaling-stroke"
         />
