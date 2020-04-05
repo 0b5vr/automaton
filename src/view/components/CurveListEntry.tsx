@@ -10,7 +10,7 @@ import styled from 'styled-components';
 
 // == styles =======================================================================================
 const SvgRoot = styled.svg`
-  display: absolute;
+  position: absolute;
   left: 0;
   top: 0;
 `;

@@ -8,7 +8,7 @@ import { useSelector } from 'react-redux';
 
 // == styles =======================================================================================
 const SVGRoot = styled.svg`
-  display: absolute;
+  position: absolute;
   left: 0;
   top: 0;
   width: 100%;
