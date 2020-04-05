@@ -74,6 +74,7 @@ const StyledTimeline = styled( Timeline )`
 
 const ChannelListAndDopeSheetContainer = styled.div`
   display: flex;
+  padding-bottom: 4px;
 `;
 
 const ChannelListAndDopeSheetScrollable = styled( Scrollable )`
