@@ -3,6 +3,6 @@ export const Metrics = {
   headerHeight: '2rem',
   channelListWidth: 128,
   inspectorWidth: '12rem',
-  curveListWidth: 160,
-  curveListEntryHeight: 48,
+  curveListWidth: 128,
+  curveListEntryHeight: 36,
 };
