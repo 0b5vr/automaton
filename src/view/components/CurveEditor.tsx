@@ -8,6 +8,7 @@ import { CurveEditorFxBg } from './CruveEditorFxBg';
 import { CurveEditorGraph } from './CurveEditorGraph';
 import { CurveEditorNode } from './CurveEditorNode';
 import { Dispatch } from 'redux';
+import { RangeBar } from './RangeBar';
 import { Resolution } from '../utils/Resolution';
 import { TimeValueGrid } from './TimeValueGrid';
 import { TimeValueLines } from './TimeValueLines';
@@ -103,6 +104,13 @@ const StyledLines = styled( Lines )`
   position: absolute;
 `;
 
+const StyledRangeBar = styled( RangeBar )`
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 4px;
+`;
+
 const Root = styled.div`
   background: ${ Colors.black };
 `;
@@ -118,13 +126,14 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
   const {
     selectedCurve,
     range,
-    automaton,
-    length
+    automaton
   } = useSelector( ( state: State ) => ( {
     selectedCurve: state.curveEditor.selectedCurve,
     range: state.curveEditor.range,
-    automaton: state.automaton.instance,
-    length: state.automaton.length
+    automaton: state.automaton.instance
+  } ) );
+  const { length } = useSelector( ( state: State ) => ( {
+    length: selectedCurve != null ? state.automaton.curves[ selectedCurve ].length : null
   } ) );
 
   const curve = selectedCurve != null && automaton?.getCurve( selectedCurve ) || null;
@@ -134,6 +143,8 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
 
   const move = useCallback(
     ( dx: number, dy: number ): void => {
+      if ( !length ) { return; }
+
       dispatch( {
         type: 'CurveEditor/MoveRange',
         size: rect,
@@ -147,6 +158,8 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
 
   const zoom = useCallback(
     ( cx: number, cy: number, dx: number, dy: number ): void => {
+      if ( !length ) { return; }
+
       dispatch( {
         type: 'CurveEditor/ZoomRange',
         size: rect,
@@ -392,6 +405,13 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
           />
         </> }
       </SVGRoot>
+      { length != null && (
+        <StyledRangeBar
+          range={ range }
+          width={ rect.width }
+          length={ length }
+        />
+      ) }
     </Root>
   );
 };

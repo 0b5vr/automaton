@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import { Colors } from '../constants/Colors';
+import { RangeBar } from './RangeBar';
 import { State } from '../states/store';
 import { TimeValueGrid } from './TimeValueGrid';
 import styled from 'styled-components';
@@ -16,8 +17,14 @@ const SVGRoot = styled.svg`
   background: ${ Colors.back1 };
 `;
 
+const StyledRangeBar = styled( RangeBar )`
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 4px;
+`;
+
 const Root = styled.div`
-  background: ${ Colors.black };
 `;
 
 // == component ====================================================================================
@@ -29,8 +36,9 @@ const DopeSheetUnderlay = ( props: DopeSheetUnderlayProps ): JSX.Element => {
   const { className } = props;
   const refSvgRoot = useRef<SVGSVGElement>( null );
   const rect = useRect( refSvgRoot );
-  const { range } = useSelector( ( state: State ) => ( {
+  const { range, length } = useSelector( ( state: State ) => ( {
     range: state.timeline.range,
+    length: state.automaton.length
   } ) );
 
   return (
@@ -42,6 +50,11 @@ const DopeSheetUnderlay = ( props: DopeSheetUnderlayProps ): JSX.Element => {
           hideValue
         />
       </SVGRoot>
+      <StyledRangeBar
+        range={ range }
+        width={ rect.width }
+        length={ length }
+      />
     </Root>
   );
 };

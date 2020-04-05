@@ -4,6 +4,7 @@ import { TimeValueRange, x2t, y2v } from '../utils/TimeValueRange';
 import { useDispatch, useSelector } from 'react-redux';
 import { Colors } from '../constants/Colors';
 import { Dispatch } from 'redux';
+import { RangeBar } from './RangeBar';
 import { Resolution } from '../utils/Resolution';
 import { TimeValueGrid } from './TimeValueGrid';
 import { TimeValueLines } from './TimeValueLines';
@@ -63,6 +64,13 @@ const SVGRoot = styled.svg`
   height: calc( 100% - 0.25em );
   background: ${ Colors.back1 };
   pointer-events: auto;
+`;
+
+const StyledRangeBar = styled( RangeBar )`
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 4px;
 `;
 
 const Root = styled.div`
@@ -258,6 +266,11 @@ const Timeline = ( { className }: TimelineProps ): JSX.Element => {
           size={ rect }
         />
       </SVGRoot>
+      <StyledRangeBar
+        range={ range }
+        width={ rect.width }
+        length={ length }
+      />
     </Root>
   );
 };
