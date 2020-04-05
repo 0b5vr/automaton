@@ -318,10 +318,7 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
 
     const right = next ? next.time : this.__automaton.length;
 
-    let lengthMax = right - item.time;
-    if ( item instanceof ChannelItemCurveWithGUI ) {
-      lengthMax = Math.min( lengthMax, ( item.curve.length - item.offset ) / item.speed );
-    }
+    const lengthMax = right - item.time;
 
     item.length = Math.min( Math.max( length, 0.0 ), lengthMax );
 
@@ -343,10 +340,7 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
 
     const left = prev ? ( prev.time + prev.length ) : 0.0;
 
-    let lengthMax = item.end - left;
-    if ( item instanceof ChannelItemCurveWithGUI ) {
-      lengthMax = Math.min( lengthMax, ( item.curve.length - item.offset ) / item.speed );
-    }
+    const lengthMax = item.end - left;
 
     const end = item.end;
     item.length = Math.min( Math.max( length, 0.0 ), lengthMax );
@@ -382,8 +376,7 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
     const item = this.__items[ index ] as ChannelItemCurveWithGUI;
 
     item.speed = Math.max( speed, 0.0 );
-    item.offset = clamp( offset, 0.0, item.length );
-    item.length = Math.min( item.length, ( item.curve.length - item.offset ) / item.speed );
+    item.offset = offset;
 
     this.__emit( 'updateItem', { id, item } );
   }
