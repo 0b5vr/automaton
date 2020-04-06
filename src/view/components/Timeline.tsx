@@ -9,6 +9,7 @@ import { TimeValueGrid } from './TimeValueGrid';
 import { TimeValueLines } from './TimeValueLines';
 import { TimelineItem } from './TimelineItem';
 import { WithID } from '../../types/WithID';
+import { hasOverwrap } from '../../utils/hasOverwrap';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
 import styled from 'styled-components';
 import { useRect } from '../utils/useRect';
@@ -146,14 +147,22 @@ const Timeline = ( { className }: TimelineProps ): JSX.Element => {
       let x = x0;
       let y = y0;
 
+      const t0 = x2t( x, range, rect.width );
+
+      const thereAreNoOtherItemsHere = channel.items.every( ( item ) => (
+        !hasOverwrap( item.time, item.length, t0, 0.0 )
+      ) );
+
+      if ( !thereAreNoOtherItemsHere ) { return; }
+
       const srcChannel = automaton.getChannel( lastSelectedItem.channel );
       const src = srcChannel?.tryGetItem( lastSelectedItem.id );
 
       let data: Required<SerializedChannelItem> & WithID;
       if ( src ) {
-        data = channel.duplicateItem( x2t( x, range, rect.width ), src );
+        data = channel.duplicateItem( t0, src );
       } else {
-        data = channel.createItemConstant( x2t( x, range, rect.width ) );
+        data = channel.createItemConstant( t0 );
         channel.changeConstantValue( data.$id, y2v( y, range, rect.height ) );
       }
 
