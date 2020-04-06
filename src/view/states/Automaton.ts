@@ -22,13 +22,15 @@ export interface State {
     };
   };
   curves: Array<{
-    previewTime: number | null;
-    previewValue: number | null;
     status: CurveStatus | null;
     length: number;
     path: string;
     nodes: { [ id: string ]: BezierNode & WithID };
     fxs: { [ id: string ]: FxSection & WithID };
+  }>;
+  curvesPreview: Array<{
+    previewTime: number | null;
+    previewValue: number | null;
   }>;
   isPlaying: boolean;
   time: number;
@@ -41,6 +43,7 @@ export const initialState: Readonly<State> = {
   channelNames: [],
   channels: {},
   curves: [],
+  curvesPreview: [],
   fxDefinitions: {},
   isPlaying: false,
   time: 0.0,
@@ -164,21 +167,23 @@ export const reducer: Reducer<State, Action> = ( state = initialState, action ) 
       delete newState.channels[ action.channel ].items[ action.id ];
     } else if ( action.type === 'Automaton/CreateCurve' ) {
       newState.curves[ action.curve ] = {
-        previewTime: null,
-        previewValue: null,
         status: null,
         length: action.length,
         path: action.path,
         nodes: {},
         fxs: {}
       };
+      newState.curvesPreview[ action.curve ] = {
+        previewTime: null,
+        previewValue: null
+      };
     } else if ( action.type === 'Automaton/UpdateCurvePath' ) {
       newState.curves[ action.curve ].path = action.path;
     } else if ( action.type === 'Automaton/UpdateCurveStatus' ) {
       newState.curves[ action.curve ].status = action.status;
     } else if ( action.type === 'Automaton/UpdateCurvePreviewValue' ) {
-      newState.curves[ action.curve ].previewTime = action.time;
-      newState.curves[ action.curve ].previewValue = action.value;
+      newState.curvesPreview[ action.curve ].previewTime = action.time;
+      newState.curvesPreview[ action.curve ].previewValue = action.value;
     } else if ( action.type === 'Automaton/UpdateCurveNode' ) {
       newState.curves[ action.curve ].nodes[ action.id ] = jsonCopy( action.node );
     } else if ( action.type === 'Automaton/RemoveCurveNode' ) {

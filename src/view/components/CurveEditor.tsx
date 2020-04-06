@@ -22,8 +22,8 @@ const Lines = ( { curve, range, size }: {
   size: Resolution;
 } ): JSX.Element => {
   const { time, value } = useSelector( ( state ) => ( {
-    time: state.automaton.curves[ curve ].previewTime,
-    value: state.automaton.curves[ curve ].previewValue
+    time: state.automaton.curvesPreview[ curve ].previewTime,
+    value: state.automaton.curvesPreview[ curve ].previewValue
   } ) );
 
   return <TimeValueLines
