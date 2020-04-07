@@ -3,6 +3,7 @@ import styled, { createGlobalStyle } from 'styled-components';
 import { About } from './About';
 import { AutomatonStateListener } from './AutomatonStateListener';
 import { AutomatonWithGUI } from '../../AutomatonWithGUI';
+import { ChannelEditor } from './ChannelEditor';
 import { ChannelList } from './ChannelList';
 import { Colors } from '../constants/Colors';
 import { ContextMenu } from './ContextMenu';
@@ -19,7 +20,6 @@ import { Provider } from 'react-redux';
 import React from 'react';
 import { Scrollable } from './Scrollable';
 import { Stalker } from './Stalker';
-import { Timeline } from './Timeline';
 
 // == styles =======================================================================================
 const GlobalStyle = createGlobalStyle`
@@ -64,7 +64,7 @@ const StyledDopeSheet = styled( DopeSheet )`
   flex-grow: 1;
 `;
 
-const StyledTimeline = styled( Timeline )`
+const StyledChannelEditor = styled( ChannelEditor )`
   position: absolute;
   left: ${ Metrics.channelListWidth }px;
   top: ${ Metrics.headerHeight };
@@ -174,7 +174,7 @@ const Fuck = ( { automaton }: AppProps ): JSX.Element => {
         </ChannelListAndDopeSheetContainer>
       </ChannelListAndDopeSheetScrollable>
       { realm === 'dopeSheet' && <StyledDopeSheetOverlay /> }
-      { realm === 'timeline' && <StyledTimeline /> }
+      { realm === 'timeline' && <StyledChannelEditor /> }
       { realm === 'curveEditor' && <>
         <StyledCurveList />
         <StyledCurveEditor />

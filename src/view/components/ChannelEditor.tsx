@@ -82,12 +82,12 @@ const Root = styled.div`
 `;
 
 // == props ========================================================================================
-export interface TimelineProps {
+interface Props {
   className?: string;
 }
 
 // == component ====================================================================================
-const Timeline = ( { className }: TimelineProps ): JSX.Element => {
+const ChannelEditor = ( { className }: Props ): JSX.Element => {
   const dispatch = useDispatch();
   const {
     automaton,
@@ -303,4 +303,4 @@ const Timeline = ( { className }: TimelineProps ): JSX.Element => {
   );
 };
 
-export { Timeline };
+export { ChannelEditor };
