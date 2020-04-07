@@ -48,12 +48,53 @@ const DopeSheetEntry = ( props: Props ): JSX.Element => {
   const refRoot = useRef<HTMLDivElement>( null );
   const rect = useRect( refRoot );
 
-  const createItem = useCallback(
-    ( x0: number, y0: number ): void => {
+  const createConstant = useCallback(
+    ( x: number ): void => {
+      if ( !channel ) { return; }
+
+      const t = x2t( x, range, rect.width );
+
+      const thereAreNoOtherItemsHere = channel.items.every( ( item ) => (
+        !hasOverwrap( item.time, item.length, t, 0.0 )
+      ) );
+
+      if ( !thereAreNoOtherItemsHere ) { return; }
+
+      const data = channel.createItemConstant( t );
+
+      dispatch( {
+        type: 'Timeline/SelectItems',
+        items: [ {
+          id: data.$id,
+          channel: channelName
+        } ]
+      } );
+
+      const undo = (): void => {
+        channel.removeItem( data.$id );
+      };
+
+      const redo = (): void => {
+        channel.createItemFromData( data );
+      };
+
+      dispatch( {
+        type: 'History/Push',
+        entry: {
+          description: 'Add Constant',
+          redo,
+          undo
+        }
+      } );
+    },
+    [ range, rect, channelName, channel ]
+  );
+
+  const createItemAndGrab = useCallback(
+    ( x0: number ): void => {
       if ( !automaton || !lastSelectedItem || !channel ) { return; }
 
       let x = x0;
-      let y = y0;
 
       const t0 = x2t( x, range, rect.width );
 
@@ -71,7 +112,6 @@ const DopeSheetEntry = ( props: Props ): JSX.Element => {
         data = channel.duplicateItem( t0, src );
       } else {
         data = channel.createItemConstant( t0 );
-        channel.changeConstantValue( data.$id, y2v( y, range, rect.height ) );
       }
 
       dispatch( {
@@ -85,24 +125,13 @@ const DopeSheetEntry = ( props: Props ): JSX.Element => {
       registerMouseEvent(
         ( event, movementSum ) => {
           x += movementSum.x;
-          y += movementSum.y;
 
           channel.moveItem( data.$id, x2t( x, range, rect.width ) );
-
-          if ( 'value' in data ) {
-            channel.changeConstantValue( data.$id, y2v( y, range, rect.height ) );
-          }
         },
         () => {
           const t = x2t( x, range, rect.width );
           channel.moveItem( data.$id, t );
           data.time = t;
-
-          if ( 'value' in data ) {
-            const v = y2v( y, range, rect.height );
-            channel.changeConstantValue( data.$id, v );
-            ( data as SerializedChannelItemConstant ).value = v;
-          }
 
           const undo = (): void => {
             channel.removeItem( data.$id );
@@ -132,13 +161,32 @@ const DopeSheetEntry = ( props: Props ): JSX.Element => {
         event.preventDefault();
         event.stopPropagation();
 
-        createItem(
-          event.clientX - rect.left,
-          event.clientY - rect.top
-        );
+        createItemAndGrab( event.clientX - rect.left );
       }
     },
-    [ createItem, rect ]
+    [ createItemAndGrab, rect ]
+  );
+
+  const handleContextMenu = useCallback(
+    ( event: React.MouseEvent ): void => {
+      event.preventDefault();
+      event.stopPropagation();
+
+      const x = event.clientX - rect.left;
+
+      dispatch( {
+        type: 'ContextMenu/Open',
+        position: { x: event.clientX, y: event.clientY },
+        commands: [
+          {
+            name: 'Create Constant',
+            description: 'Create a new constant item.',
+            command: () => createConstant( x )
+          }
+        ]
+      } );
+    },
+    [ rect, createConstant ]
   );
 
   return (
@@ -146,6 +194,7 @@ const DopeSheetEntry = ( props: Props ): JSX.Element => {
       className={ className }
       ref={ refRoot }
       onMouseDown={ handleMouseDown }
+      onContextMenu={ handleContextMenu }
     >
       <SVGRoot>
         { Object.entries( stateItems ).map( ( [ id, item ] ) => (

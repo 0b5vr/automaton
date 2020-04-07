@@ -140,7 +140,52 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
     [ rect, length ]
   );
 
-  const createItem = useCallback(
+  const createConstant = useCallback(
+    ( x: number, y: number ): void => {
+      if ( !selectedChannel || !channel ) { return; }
+
+      const t = x2t( x, range, rect.width );
+      const v = y2v( y, range, rect.height );
+
+      const thereAreNoOtherItemsHere = channel.items.every( ( item ) => (
+        !hasOverwrap( item.time, item.length, t, 0.0 )
+      ) );
+
+      if ( !thereAreNoOtherItemsHere ) { return; }
+
+      const data = channel.createItemConstant( t );
+      channel.changeConstantValue( data.$id, v );
+      ( data as SerializedChannelItemConstant ).value = v;
+
+      dispatch( {
+        type: 'Timeline/SelectItems',
+        items: [ {
+          id: data.$id,
+          channel: selectedChannel
+        } ]
+      } );
+
+      const undo = (): void => {
+        channel.removeItem( data.$id );
+      };
+
+      const redo = (): void => {
+        channel.createItemFromData( data );
+      };
+
+      dispatch( {
+        type: 'History/Push',
+        entry: {
+          description: 'Add Constant',
+          redo,
+          undo
+        }
+      } );
+    },
+    [ range, rect, selectedChannel, channel ]
+  );
+
+  const createItemAndGrab = useCallback(
     ( x0: number, y0: number ): void => {
       if ( !automaton || !lastSelectedItem || !selectedChannel || !channel ) { return; }
 
@@ -224,7 +269,7 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
         event.preventDefault();
         event.stopPropagation();
 
-        createItem(
+        createItemAndGrab(
           event.clientX - rect.left,
           event.clientY - rect.top
         );
@@ -237,7 +282,30 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
         );
       }
     },
-    [ createItem, rect, move ]
+    [ createItemAndGrab, rect, move ]
+  );
+
+  const handleContextMenu = useCallback(
+    ( event: React.MouseEvent ): void => {
+      event.preventDefault();
+      event.stopPropagation();
+
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+
+      dispatch( {
+        type: 'ContextMenu/Open',
+        position: { x: event.clientX, y: event.clientY },
+        commands: [
+          {
+            name: 'Create Constant',
+            description: 'Create a new constant item.',
+            command: () => createConstant( x, y )
+          }
+        ]
+      } );
+    },
+    [ rect, createConstant ]
   );
 
   const handleWheel = useCallback(
@@ -280,6 +348,7 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
       <Body
         ref={ refBody }
         onMouseDown={ handleMouseDown }
+        onContextMenu={ handleContextMenu }
       >
         <SVGRoot>
           <TimeValueGrid
