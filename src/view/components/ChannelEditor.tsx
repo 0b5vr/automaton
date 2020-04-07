@@ -220,14 +220,18 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
 
   const handleMouseDown = useCallback(
     ( event: React.MouseEvent ): void => {
-      event.preventDefault();
-
       if ( event.buttons === 1 ) {
+        event.preventDefault();
+        event.stopPropagation();
+
         createItem(
           event.clientX - rect.left,
           event.clientY - rect.top
         );
       } else if ( event.buttons === 4 ) {
+        event.preventDefault();
+        event.stopPropagation();
+
         registerMouseEvent(
           ( event, movementSum ) => move( movementSum.x, movementSum.y )
         );
