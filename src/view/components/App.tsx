@@ -1,5 +1,4 @@
 import { store, useSelector } from '../states/store';
-import styled, { createGlobalStyle } from 'styled-components';
 import { About } from './About';
 import { AutomatonStateListener } from './AutomatonStateListener';
 import { AutomatonWithGUI } from '../../AutomatonWithGUI';
@@ -20,16 +19,9 @@ import { Provider } from 'react-redux';
 import React from 'react';
 import { Scrollable } from './Scrollable';
 import { Stalker } from './Stalker';
+import styled from 'styled-components';
 
 // == styles =======================================================================================
-const GlobalStyle = createGlobalStyle`
-  @import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900');
-
-  * {
-    box-sizing: border-box;
-  }
-`;
-
 const StyledHeader = styled( Header )`
   position: absolute;
   top: 0;
@@ -121,6 +113,10 @@ const StyledAbout = styled( About )`
 `;
 
 const Root = styled.div`
+  * {
+    box-sizing: border-box;
+  }
+
   margin: 0;
   padding: 0;
   width: 100%;
@@ -136,10 +132,11 @@ const Root = styled.div`
 
 // == element ======================================================================================
 export interface AppProps {
+  className?: string;
   automaton: AutomatonWithGUI;
 }
 
-const Fuck = ( { automaton }: AppProps ): JSX.Element => {
+const Fuck = ( { className, automaton }: AppProps ): JSX.Element => {
   const {
     isFxSpawnerVisible,
     isAboutVisible,
@@ -163,7 +160,7 @@ const Fuck = ( { automaton }: AppProps ): JSX.Element => {
   const shouldShowChannelList = realm === 'dopeSheet' || realm === 'timeline';
 
   return (
-    <Root>
+    <Root className={ className }>
       <AutomatonStateListener automaton={ automaton } />
       <StyledHeader />
       { realm === 'dopeSheet' && <StyledDopeSheetUnderlay /> }
@@ -190,7 +187,6 @@ const Fuck = ( { automaton }: AppProps ): JSX.Element => {
 };
 
 const App = ( props: AppProps ): JSX.Element => <>
-  <GlobalStyle />
   <Provider store={ store }>
     <Fuck { ...props } />
   </Provider>
