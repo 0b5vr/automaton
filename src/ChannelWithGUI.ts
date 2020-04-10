@@ -295,6 +295,15 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
     this.__items.push( item );
     this.__sortItems();
 
+    // shorten the item when the next item is too close
+    const itemIndex = this.__items.findIndex( ( item ) => item.$id === id );
+    const nextTime = itemIndex === ( this.__items.length - 1 )
+      ? this.__automaton.length
+      : this.__items[ itemIndex + 1 ].time;
+    if ( nextTime < item.end ) {
+      item.length = nextTime - item.time;
+    }
+
     this.__emit( 'createItem', { id, item: item.serializeGUI() } );
 
     return item.serializeGUI();

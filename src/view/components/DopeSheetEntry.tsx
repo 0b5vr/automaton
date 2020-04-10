@@ -90,6 +90,50 @@ const DopeSheetEntry = ( props: Props ): JSX.Element => {
     [ range, rect, channelName, channel ]
   );
 
+  const createNewCurve = useCallback(
+    ( x: number ): void => {
+      if ( !automaton || !channel ) { return; }
+
+      const t = x2t( x, range, rect.width );
+
+      const thereAreNoOtherItemsHere = channel.items.every( ( item ) => (
+        !hasOverwrap( item.time, item.length, t, 0.0 )
+      ) );
+
+      if ( !thereAreNoOtherItemsHere ) { return; }
+
+      const curve = automaton.createCurve();
+      const curveId = automaton.getCurveIndex( curve );
+      const data = channel.createItemCurve( curveId, t );
+
+      dispatch( {
+        type: 'Timeline/SelectItems',
+        items: [ {
+          id: data.$id,
+          channel: channelName
+        } ]
+      } );
+
+      const undo = (): void => {
+        channel.removeItem( data.$id );
+      };
+
+      const redo = (): void => {
+        channel.createItemFromData( data );
+      };
+
+      dispatch( {
+        type: 'History/Push',
+        entry: {
+          description: 'Add Curve',
+          redo,
+          undo
+        }
+      } );
+    },
+    [ automaton, range, rect, channelName, channel ]
+  );
+
   const createItemAndGrab = useCallback(
     ( x0: number ): void => {
       if ( !automaton || !lastSelectedItem || !channel ) { return; }
@@ -182,11 +226,16 @@ const DopeSheetEntry = ( props: Props ): JSX.Element => {
             name: 'Create Constant',
             description: 'Create a new constant item.',
             command: () => createConstant( x )
+          },
+          {
+            name: 'Create New Curve',
+            description: 'Create a new curve and an item.',
+            command: () => createNewCurve( x )
           }
         ]
       } );
     },
-    [ rect, createConstant ]
+    [ rect, createConstant, createNewCurve ]
   );
 
   return (
