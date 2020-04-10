@@ -1,7 +1,7 @@
 export * from './types';
 
 export { Automaton } from './Automaton';
-export { Channel } from './Channel';
+export { Channel, ChannelUpdateEvent } from './Channel';
 export { ChannelItem } from './ChannelItem';
 export { ChannelItemConstant } from './ChannelItemConstant';
 export { ChannelItemCurve } from './ChannelItemCurve';
