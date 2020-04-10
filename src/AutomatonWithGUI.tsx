@@ -1,8 +1,7 @@
-import { Automaton, FxDefinition, FxParam, SerializedChannel, SerializedCurve } from '@fms-cat/automaton';
+import { Automaton, ChannelUpdateEvent, FxDefinition, FxParam, SerializedChannel, SerializedCurve } from '@fms-cat/automaton';
 import { GUISettings, defaultGUISettings } from './types/GUISettings';
 import { SerializedAutomatonWithGUI, defaultDataWithGUI } from './types/SerializedAutomatonWithGUI';
 import { App } from './view/components/App';
-import { ChannelUpdateEvent } from '@fms-cat/automaton/types/Channel';
 import { ChannelWithGUI } from './ChannelWithGUI';
 import { CurveWithGUI } from './CurveWithGUI';
 import { EventEmittable } from './mixins/EventEmittable';

@@ -1,13 +1,13 @@
 import React, { useCallback, useRef } from 'react';
-import { SerializedChannelItem, SerializedChannelItemConstant } from '@fms-cat/automaton';
 import { useDispatch, useSelector } from '../states/store';
-import { x2t, y2v } from '../utils/TimeValueRange';
+import { SerializedChannelItem } from '@fms-cat/automaton';
 import { TimelineItem } from './TimelineItem';
 import { WithID } from '../../types/WithID';
 import { hasOverwrap } from '../../utils/hasOverwrap';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
 import styled from 'styled-components';
 import { useRect } from '../utils/useRect';
+import { x2t } from '../utils/TimeValueRange';
 
 // == styles =======================================================================================
 const SVGRoot = styled.svg`
