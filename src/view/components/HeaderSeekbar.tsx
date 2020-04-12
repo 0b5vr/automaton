@@ -1,6 +1,6 @@
+import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
-import React from 'react';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
 import styled from 'styled-components';
 
@@ -59,10 +59,10 @@ const StyledBarFG = styled( BarFG )<{ isSeeking: boolean; isHovering: boolean }>
   pointer-events: none;
 `;
 
-const Root = styled.div`
+const Root = styled.div<{ isDisabledTimeControls: boolean }>`
   text-align: right;
   position: relative;
-  cursor: pointer;
+  cursor: ${ ( { isDisabledTimeControls } ) => isDisabledTimeControls ? 'auto' : 'pointer' };
 `;
 
 // == component ====================================================================================
@@ -74,52 +74,70 @@ const HeaderSeekbar = ( { className }: HeaderSeekbarProps ): JSX.Element => {
   const dispatch = useDispatch();
   const {
     automaton,
+    isDisabledTimeControls,
     length,
+    isPlaying,
     isSeeking,
     isSeekbarHovered
   } = useSelector( ( state ) => ( {
     automaton: state.automaton.instance,
+    isDisabledTimeControls: state.automaton.isDisabledTimeControls,
     length: state.automaton.length,
+    isPlaying: state.automaton.isPlaying,
     isSeeking: state.header.isSeeking,
     isSeekbarHovered: state.header.isSeekbarHovered
   } ) );
 
-  function handleMouseDown( event: React.MouseEvent ): void {
-    event.preventDefault();
+  const handleMouseDown = useCallback(
+    ( event: React.MouseEvent ) => {
+      event.preventDefault();
 
-    if ( event.buttons === 1 ) {
-      const width = ( event.target as HTMLDivElement ).clientWidth;
-      const x = event.clientX - event.nativeEvent.offsetX;
-      const isPlaying = automaton!.isPlaying;
+      if ( event.buttons === 1 ) {
+        if ( !automaton ) { return; }
+        if ( isDisabledTimeControls ) { return; }
 
-      automaton!.pause();
-      automaton!.seek( ( event.clientX - x ) / width * length );
-      dispatch( { type: 'Header/SeekDown' } );
+        const width = ( event.target as HTMLDivElement ).clientWidth;
+        const x = event.clientX - event.nativeEvent.offsetX;
 
-      registerMouseEvent(
-        ( event ) => {
-          automaton!.seek( ( event.clientX - x ) / width * length );
-        },
-        ( event ) => {
-          automaton!.seek( ( event.clientX - x ) / width * length );
-          if ( isPlaying ) { automaton!.play(); }
-          dispatch( { type: 'Header/SeekUp' } );
-        }
-      );
-    }
-  }
+        automaton.pause();
+        automaton.seek( ( event.clientX - x ) / width * length );
+        dispatch( { type: 'Header/SeekDown' } );
 
-  function handleMouseEnter(): void {
-    dispatch( { type: 'Header/SeekbarEnter' } );
-  }
+        registerMouseEvent(
+          ( event ) => {
+            automaton.seek( ( event.clientX - x ) / width * length );
+          },
+          ( event ) => {
+            automaton.seek( ( event.clientX - x ) / width * length );
+            if ( isPlaying ) { automaton.play(); }
+            dispatch( { type: 'Header/SeekUp' } );
+          }
+        );
+      }
+    },
+    [ isDisabledTimeControls, automaton, isPlaying ]
+  );
 
-  function handleMouseLeave(): void {
-    dispatch( { type: 'Header/SeekbarLeave' } );
-  }
+  const handleMouseEnter = useCallback(
+    () => {
+      if ( isDisabledTimeControls ) { return; }
+      dispatch( { type: 'Header/SeekbarEnter' } );
+    },
+    [ isDisabledTimeControls ]
+  );
+
+  const handleMouseLeave = useCallback(
+    () => {
+      if ( isDisabledTimeControls ) { return; }
+      dispatch( { type: 'Header/SeekbarLeave' } );
+    },
+    [ isDisabledTimeControls ]
+  );
 
   return (
     <Root
       className={ className }
+      isDisabledTimeControls={ isDisabledTimeControls }
       onMouseDown={ handleMouseDown }
       onMouseEnter={ handleMouseEnter }
       onMouseLeave={ handleMouseLeave }

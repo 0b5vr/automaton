@@ -36,6 +36,7 @@ export interface State {
   time: number;
   length: number;
   resolution: number;
+  isDisabledTimeControls: boolean;
   guiSettings: GUISettings;
 }
 
@@ -49,6 +50,7 @@ export const initialState: Readonly<State> = {
   time: 0.0,
   length: 1.0,
   resolution: 10.0,
+  isDisabledTimeControls: true,
   guiSettings: jsonCopy( defaultGUISettings )
 };
 
@@ -143,6 +145,7 @@ export const reducer: Reducer<State, Action> = ( state = initialState, action ) 
   return produce( state, ( newState: State ) => {
     if ( action.type === 'Automaton/SetInstance' ) {
       newState.instance = action.automaton;
+      newState.isDisabledTimeControls = action.automaton.isDisabledTimeControls;
     } else if ( action.type === 'Automaton/AddFxDefinition' ) {
       newState.fxDefinitions[ action.name ] = action.fxDefinition;
     } else if ( action.type === 'Automaton/CreateChannel' ) {

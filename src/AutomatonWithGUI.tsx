@@ -27,6 +27,11 @@ export interface AutomatonWithGUIOptions {
    * Initial state of play / pause. `false` by default.
    */
   isPlaying?: boolean;
+
+  /**
+   * Hide play button / disable seeking interactions.
+   */
+  disableTimeControls?: boolean;
 }
 
 /**
@@ -65,6 +70,12 @@ export class AutomatonWithGUI extends Automaton
   private __historyIndex: number = 0;
 
   /**
+   * Whether it disables any time controls or not.
+   * Can be specified via {@link AutomatonWithGUIOptions}.
+   */
+  private __isDisabledTimeControls: boolean = false;
+
+  /**
    * It's currently playing or not.
    */
   public get isPlaying(): boolean {
@@ -93,6 +104,14 @@ export class AutomatonWithGUI extends Automaton
   }
 
   /**
+   * Whether it disables any time controls or not.
+   * Can be specified via {@link AutomatonWithGUIOptions}.
+   */
+  public get isDisabledTimeControls(): boolean {
+    return this.__isDisabledTimeControls;
+  }
+
+  /**
    * Create a new Automaton instance.
    * @param data Serialized data of the automaton
    * @param options Options for this Automaton instance
@@ -108,6 +127,8 @@ export class AutomatonWithGUI extends Automaton
     fxDefinitions.map( ( fxDef: [ string, FxDefinition ] /* TODO */ ) => {
       this.addFxDefinition( ...fxDef );
     } );
+
+    this.__isDisabledTimeControls = options.disableTimeControls || false;
 
     if ( options.gui ) { this.__prepareGUI( options.gui ); }
 

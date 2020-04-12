@@ -66,12 +66,14 @@ const Header = ( { className }: HeaderProps ): JSX.Element => {
   const [ isSavedRecently, setIsSavedRecently ] = useState( false );
   const {
     automaton,
+    isDisabledTimeControls,
     isPlaying,
     settingsMode,
     historyIndex,
     historyEntries
   } = useSelector( ( state ) => ( {
     automaton: state.automaton.instance,
+    isDisabledTimeControls: state.automaton.isDisabledTimeControls,
     isPlaying: state.automaton.isPlaying,
     settingsMode: state.settings.mode,
     historyIndex: state.history.index,
@@ -135,12 +137,14 @@ const Header = ( { className }: HeaderProps ): JSX.Element => {
   return (
     <Root className={ className }>
       <Section>
-        <Button
-          as={ isPlaying ? Icons.Pause : Icons.Play }
-          active={ 1 as any as boolean } // fuck
-          onClick={ handlePlay }
-          data-stalker="Play / Pause"
-        />
+        { !isDisabledTimeControls && (
+          <Button
+            as={ isPlaying ? Icons.Pause : Icons.Play }
+            active={ 1 as any as boolean } // fuck
+            onClick={ handlePlay }
+            data-stalker="Play / Pause"
+          />
+        ) }
         <StyledHeaderSeekbar />
       </Section>
       <Logo as={ Icons.Automaton }
