@@ -84,6 +84,17 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
     return this.__items;
   }
 
+  /**
+   * Its current status (warning / error).
+   */
+  public get status(): ChannelStatus | null {
+    if ( this.__statusList.length === 0 ) {
+      return null;
+    }
+
+    return this.__statusList[ 0 ];
+  }
+
   public constructor( automaton: AutomatonWithGUI, data?: SerializedChannel ) {
     super( automaton, data || { items: [] } );
 
@@ -94,17 +105,6 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
         message: 'This channel has not been used yet'
       }
     ];
-  }
-
-  /**
-   * Its current status (warning / error).
-   */
-  public get status(): ChannelStatus | null {
-    if ( this.__statusList.length === 0 ) {
-      return null;
-    }
-
-    return this.__statusList[ 0 ];
   }
 
   /**
