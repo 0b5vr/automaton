@@ -45,7 +45,7 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
     dispatch( {
       type: 'Automaton/UpdateChannelValue',
       channel: name,
-      value: channel.value
+      value: channel.currentValue
     } );
 
     dispatch( {
@@ -67,7 +67,7 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
       dispatch( {
         type: 'Automaton/UpdateChannelValue',
         channel: name,
-        value: channel.value
+        value: channel.currentValue
       } );
     } );
 

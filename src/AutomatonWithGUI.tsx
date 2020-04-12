@@ -467,7 +467,7 @@ export class AutomatonWithGUI extends Automaton
 
     channel.markAsUsed();
 
-    return channel.value;
+    return channel.currentValue;
   }
 }
 
