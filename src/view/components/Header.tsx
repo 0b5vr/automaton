@@ -116,6 +116,25 @@ const Header = ( { className }: HeaderProps ): JSX.Element => {
     [ historyIndex, historyEntries ]
   );
 
+  const handleSave = useCallback(
+    () => {
+      if ( !automaton ) { return; }
+
+      const data = automaton.serialize();
+
+      if ( automaton.overrideSave ) {
+        automaton.overrideSave( data );
+      } else {
+        writeClipboard( JSON.stringify( data ) );
+        setIsSavedRecently( true );
+        setTimeout( () => {
+          setIsSavedRecently( false );
+        }, 3000 );
+      }
+    },
+    [ automaton ]
+  );
+
   const undoText = useMemo(
     () => (
       historyIndex !== 0
@@ -187,15 +206,8 @@ const Header = ( { className }: HeaderProps ): JSX.Element => {
           data-stalker="General Settings"
         />
         <Button as={ Icons.Save }
-          onClick={ () => {
-            const data = automaton!.serialize();
-            writeClipboard( JSON.stringify( data ) );
-            setIsSavedRecently( true );
-            setTimeout( () => {
-              setIsSavedRecently( false );
-            }, 3000 );
-          } }
-          data-stalker={ isSavedRecently ? 'Copied!' : 'Copy current status as JSON' }
+          onClick={ handleSave }
+          data-stalker={ isSavedRecently ? 'Copied to clipboard!' : 'Save' }
         />
       </Section>
     </Root>

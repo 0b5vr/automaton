@@ -32,6 +32,12 @@ export interface AutomatonWithGUIOptions {
    * Hide play button / disable seeking interactions.
    */
   disableTimeControls?: boolean;
+
+  /**
+   * Overrides the save procedure.
+   * Originally intended to be used by automaton-electron.
+   */
+  overrideSave?: ( serialized: SerializedAutomatonWithGUI ) => void;
 }
 
 /**
@@ -43,6 +49,12 @@ export class AutomatonWithGUI extends Automaton
    * GUI settings for this automaton.
    */
   public guiSettings: GUISettings = jsonCopy( defaultGUISettings );
+
+  /**
+   * Overrided save procedure.
+   * Can also be specified via {@link AutomatonWithGUIOptions}.
+   */
+  public overrideSave?: ( serialized: SerializedAutomatonWithGUI ) => void;
 
   /**
    * Version of the automaton.
@@ -128,6 +140,7 @@ export class AutomatonWithGUI extends Automaton
       this.addFxDefinition( ...fxDef );
     } );
 
+    this.overrideSave = options.overrideSave;
     this.__isDisabledTimeControls = options.disableTimeControls || false;
 
     if ( options.gui ) { this.__prepareGUI( options.gui ); }
