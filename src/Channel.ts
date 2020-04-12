@@ -82,12 +82,12 @@ export class Channel {
   /**
    * A cache of last calculated value.
    */
-  public get value(): number { return this.__value; }
+  public get currentValue(): number { return this.__value; }
 
   /**
    * The time that was used for the calculation of [[__lastValue]].
    */
-  public get time(): number { return this.__time; }
+  public get currentTime(): number { return this.__time; }
 
   /**
    * Load a serialized data of a channel.

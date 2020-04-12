@@ -169,6 +169,6 @@ export class Automaton {
       this.__channels[ name ].subscribe( listener );
     }
 
-    return this.__channels[ name ].value;
+    return this.__channels[ name ].currentValue;
   }
 }
