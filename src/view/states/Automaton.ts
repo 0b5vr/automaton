@@ -150,7 +150,7 @@ export const reducer: Reducer<State, Action> = ( state = initialState, action ) 
       newState.fxDefinitions[ action.name ] = action.fxDefinition;
     } else if ( action.type === 'Automaton/CreateChannel' ) {
       newState.channelNames.push( action.channel );
-      newState.channelNames.sort();
+      newState.channelNames = newState.channelNames.sort();
 
       newState.channels[ action.channel ] = {
         value: 0.0,
