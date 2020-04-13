@@ -1,7 +1,7 @@
+import React, { useMemo } from 'react';
 import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
 import { ContextMenuEntry } from './ContextMenuEntry';
-import React from 'react';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
@@ -46,6 +46,23 @@ const ContextMenu = ( { className }: ContextMenuProps ): JSX.Element => {
     commands: state.contextMenu.commands
   } ) );
 
+  const style: React.CSSProperties = useMemo(
+    () => {
+      const width = document.documentElement.clientWidth;
+      const height = document.documentElement.clientHeight;
+
+      const ret: React.CSSProperties = {};
+      ( position.x < width - 240 )
+        ? ( ret.left = position.x )
+        : ( ret.right = width - position.x );
+      ( position.y < height - 120 )
+        ? ( ret.top = position.y )
+        : ( ret.bottom = height - position.y );
+      return ret;
+    },
+    [ position ]
+  );
+
   return <Root
     className={ className }
   >
@@ -53,10 +70,7 @@ const ContextMenu = ( { className }: ContextMenuProps ): JSX.Element => {
       onClick={ () => dispatch( { type: 'ContextMenu/Close' } ) }
     />
     <Container
-      style={ {
-        left: `${ position.x }px`,
-        top: `${ position.y }px`
-      } }
+      style={ style }
     >
       { commands.map( ( command ) => (
         <ContextMenuEntry
