@@ -449,11 +449,11 @@ export class AutomatonWithGUI extends Automaton
     this.__resolution = convertedData.resolution;
 
     this.__curves = convertedData.curves.map(
-      ( data ) => this.createCurve( data )
+      ( data ) => new CurveWithGUI( this, data )
     );
 
     for ( const name in convertedData.channels ) {
-      this.__channels[ name ] = this.createChannel( name, convertedData.channels[ name ] );
+      this.__channels[ name ] = new ChannelWithGUI( this, convertedData.channels[ name ] );
     }
 
     this.guiSettings = convertedData.guiSettings;

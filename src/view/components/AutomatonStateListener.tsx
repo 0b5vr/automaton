@@ -230,11 +230,11 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
     } );
 
     dispatch( {
-      type: 'CurveEditor/Reset'
+      type: 'Timeline/Reset'
     } );
 
     dispatch( {
-      type: 'Timeline/Reset'
+      type: 'CurveEditor/Reset'
     } );
 
     dispatch( {
@@ -273,12 +273,12 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
       } );
     } );
 
-    Object.entries( automaton.channels ).forEach( ( [ name, channel ] ) => {
-      createChannel( name, channel );
-    } );
-
     Object.values( automaton.curves ).forEach( ( curve, iCurve ) => {
       createCurve( iCurve, curve );
+    } );
+
+    Object.entries( automaton.channels ).forEach( ( [ name, channel ] ) => {
+      createChannel( name, channel );
     } );
 
     dispatch( {
