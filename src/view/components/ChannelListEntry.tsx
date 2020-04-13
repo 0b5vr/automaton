@@ -144,12 +144,12 @@ const ChannelListEntry = ( props: ChannelListEntryProps ): JSX.Element => {
           {
             name: 'Duplicate',
             description: 'Duplicate the channel.',
-            command: () => duplicateChannel()
+            callback: () => duplicateChannel()
           },
           {
             name: 'Remove',
             description: 'Remove the channel.',
-            command: () => removeChannel()
+            callback: () => removeChannel()
           }
         ]
       } );

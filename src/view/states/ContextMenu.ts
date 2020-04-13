@@ -2,10 +2,10 @@ import { Reducer } from 'redux';
 import { produce } from 'immer';
 
 // == state ========================================================================================
-interface ContextMenuCommand {
+export interface ContextMenuCommand {
   name: string;
   description?: string;
-  command: () => void;
+  callback: () => void;
 }
 
 export interface State {

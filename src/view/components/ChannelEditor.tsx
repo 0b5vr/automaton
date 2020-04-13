@@ -344,12 +344,12 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
           {
             name: 'Create Constant',
             description: 'Create a new constant item.',
-            command: () => createConstant( x, y )
+            callback: () => createConstant( x, y )
           },
           {
             name: 'Create New Curve',
             description: 'Create a new curve and an item.',
-            command: () => createNewCurve( x )
+            callback: () => createNewCurve( x )
           }
         ]
       } );

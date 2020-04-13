@@ -3,6 +3,7 @@ import { GUISettings, defaultGUISettings } from './types/GUISettings';
 import { SerializedAutomatonWithGUI, defaultDataWithGUI } from './types/SerializedAutomatonWithGUI';
 import { App } from './view/components/App';
 import { ChannelWithGUI } from './ChannelWithGUI';
+import { ContextMenuCommand } from './view/states/ContextMenu';
 import { CurveWithGUI } from './CurveWithGUI';
 import { EventEmittable } from './mixins/EventEmittable';
 import React from 'react';
@@ -38,6 +39,12 @@ export interface AutomatonWithGUIOptions {
    * Originally intended to be used by automaton-electron.
    */
   overrideSave?: ( serialized: SerializedAutomatonWithGUI ) => void;
+
+  /**
+   * Define what to do with the context menu when you click the save icon on the header.
+   * Originally intended to be used by automaton-electron.
+   */
+  saveContextMenuCommands?: Array<ContextMenuCommand>;
 }
 
 /**
@@ -52,9 +59,17 @@ export class AutomatonWithGUI extends Automaton
 
   /**
    * Overrided save procedure.
+   * Originally intended to be used by automaton-electron.
    * Can also be specified via {@link AutomatonWithGUIOptions}.
    */
   public overrideSave?: ( serialized: SerializedAutomatonWithGUI ) => void;
+
+  /**
+   * Define what to do with the context menu when you click the save icon on the header.
+   * Originally intended to be used by automaton-electron.
+   * Can also be specified via {@link AutomatonWithGUIOptions}.
+   */
+  public saveContextMenuCommands?: Array<ContextMenuCommand>;
 
   /**
    * Version of the automaton.
@@ -141,6 +156,7 @@ export class AutomatonWithGUI extends Automaton
     } );
 
     this.overrideSave = options.overrideSave;
+    this.saveContextMenuCommands = options.saveContextMenuCommands;
     this.__isDisabledTimeControls = options.disableTimeControls || false;
 
     if ( options.gui ) { this.__prepareGUI( options.gui ); }

@@ -333,12 +333,12 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
           {
             name: 'Add Node',
             description: 'Add a new bezier curve node.',
-            command: () => createNode( x, y )
+            callback: () => createNode( x, y )
           },
           {
             name: 'Add Fx',
             description: 'Add a new fx section.',
-            command: () => createFx( x )
+            callback: () => createFx( x )
           }
         ]
       } );

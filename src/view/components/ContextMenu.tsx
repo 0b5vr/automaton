@@ -64,7 +64,7 @@ const ContextMenu = ( { className }: ContextMenuProps ): JSX.Element => {
           name={ command.name }
           description={ command.description }
           onClick={ () => {
-            command.command();
+            command.callback();
             dispatch( { type: 'ContextMenu/Close' } );
           } }
         />

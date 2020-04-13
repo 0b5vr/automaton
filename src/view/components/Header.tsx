@@ -135,6 +135,24 @@ const Header = ( { className }: HeaderProps ): JSX.Element => {
     [ automaton ]
   );
 
+  const handleSaveContextMenu = useCallback(
+    ( event: MouseEvent ) => {
+      if ( !automaton ) { return; }
+
+      if ( automaton.saveContextMenuCommands ) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        dispatch( {
+          type: 'ContextMenu/Open',
+          position: { x: event.clientX, y: event.clientY },
+          commands: automaton.saveContextMenuCommands
+        } );
+      }
+    },
+    [ automaton ]
+  );
+
   const undoText = useMemo(
     () => (
       historyIndex !== 0
@@ -207,6 +225,7 @@ const Header = ( { className }: HeaderProps ): JSX.Element => {
         />
         <Button as={ Icons.Save }
           onClick={ handleSave }
+          onContextMenu={ handleSaveContextMenu }
           data-stalker={ isSavedRecently ? 'Copied to clipboard!' : 'Save' }
         />
       </Section>

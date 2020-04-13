@@ -338,7 +338,7 @@ const TimelineItemConstant = ( props: TimelineItemConstantProps ): JSX.Element =
           {
             name: 'Remove',
             description: 'Remove the curve.',
-            command: () => removeItem()
+            callback: () => removeItem()
           }
         ]
       } );

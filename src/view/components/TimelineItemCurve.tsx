@@ -365,12 +365,12 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
           {
             name: 'Edit',
             description: 'Edit the curve.',
-            command: () => editCurve()
+            callback: () => editCurve()
           },
           {
             name: 'Remove',
             description: 'Remove the curve.',
-            command: () => removeItem()
+            callback: () => removeItem()
           }
         ]
       } );

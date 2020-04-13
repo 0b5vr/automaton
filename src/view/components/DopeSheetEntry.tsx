@@ -225,12 +225,12 @@ const DopeSheetEntry = ( props: Props ): JSX.Element => {
           {
             name: 'Create Constant',
             description: 'Create a new constant item.',
-            command: () => createConstant( x )
+            callback: () => createConstant( x )
           },
           {
             name: 'Create New Curve',
             description: 'Create a new curve and an item.',
-            command: () => createNewCurve( x )
+            callback: () => createNewCurve( x )
           }
         ]
       } );
