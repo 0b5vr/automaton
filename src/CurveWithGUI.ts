@@ -165,7 +165,6 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
     } );
 
     this.__emit( 'precalc' );
-    this.__automaton.pokeRenderer();
   }
 
   /**
