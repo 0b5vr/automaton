@@ -262,6 +262,8 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
 
     this.__emit( 'createItem', { id, item: newItem.serializeGUI() } );
 
+    this.__automaton.shouldSave = true;
+
     return newItem.serializeGUI();
   }
 
@@ -278,6 +280,8 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
     this.__sortItems();
 
     this.__emit( 'createItem', { id, item: item.serializeGUI() } );
+
+    this.__automaton.shouldSave = true;
 
     return item.serializeGUI();
   }
@@ -306,6 +310,8 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
 
     this.__emit( 'createItem', { id, item: item.serializeGUI() } );
 
+    this.__automaton.shouldSave = true;
+
     return item.serializeGUI();
   }
 
@@ -324,6 +330,8 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
 
     this.__emit( 'createItem', { id: item.$id, item: item.serializeGUI() } );
 
+    this.__automaton.shouldSave = true;
+
     return item.serializeGUI();
   }
 
@@ -337,6 +345,8 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
     this.__items.splice( index, 1 );
 
     this.__emit( 'removeItem', { id } );
+
+    this.__automaton.shouldSave = true;
   }
 
   /**
@@ -359,6 +369,8 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
     this.__sortItems();
 
     this.__emit( 'updateItem', { id, item: item.serializeGUI() } );
+
+    this.__automaton.shouldSave = true;
   }
 
   /**
@@ -377,6 +389,8 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
     this.__sortItems();
 
     this.__emit( 'updateItem', { id, item: item.serializeGUI() } );
+
+    this.__automaton.shouldSave = true;
   }
 
   /**
@@ -398,6 +412,8 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
     item.length = Math.min( Math.max( length, 0.0 ), lengthMax );
 
     this.__emit( 'updateItem', { id, item: item.serializeGUI() } );
+
+    this.__automaton.shouldSave = true;
   }
 
   /**
@@ -422,6 +438,8 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
     item.time = end - item.length;
 
     this.__emit( 'updateItem', { id, item: item.serializeGUI() } );
+
+    this.__automaton.shouldSave = true;
   }
 
   /**
@@ -437,6 +455,8 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
     item.value = value;
 
     this.__emit( 'updateItem', { id, item: item.serializeGUI() } );
+
+    this.__automaton.shouldSave = true;
   }
 
   /**
@@ -454,6 +474,8 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
     item.offset = offset;
 
     this.__emit( 'updateItem', { id, item: item.serializeGUI() } );
+
+    this.__automaton.shouldSave = true;
   }
 
   /**
@@ -477,6 +499,8 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
 
       }
     }
+
+    this.__automaton.shouldSave = true;
   }
 
   /**

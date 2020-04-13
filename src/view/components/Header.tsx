@@ -7,6 +7,21 @@ import { Metrics } from '../constants/Metrics';
 import styled from 'styled-components';
 import { writeClipboard } from '../utils/clipboard';
 
+// == microcomponent ===============================================================================
+const ShouldSaveIndicator = ( { className }: {
+  className?: string;
+} ): JSX.Element => {
+  const shouldSave = useSelector( ( state ) => state.automaton.shouldSave );
+
+  return <div
+    className={ className }
+    style={ {
+      visibility: shouldSave ? 'visible' : 'hidden'
+    } }
+    data-stalker={ 'You might want to save the file before leave' }
+  />;
+};
+
 // == styles =======================================================================================
 const StyledHeaderSeekbar = styled( HeaderSeekbar )`
   width: 8rem;
@@ -46,6 +61,14 @@ const Logo = styled.img`
   &:active {
     opacity: 0.5;
   }
+`;
+
+const StyledShouldSaveIndicator = styled( ShouldSaveIndicator )`
+  width: 6px;
+  height: 6px;
+  border-radius: 3px;
+  margin: auto 0 auto 6px;
+  background: ${ Colors.accent };
 `;
 
 const Root = styled.div`
@@ -126,6 +149,9 @@ const Header = ( { className }: HeaderProps ): JSX.Element => {
         automaton.overrideSave( data );
       } else {
         writeClipboard( JSON.stringify( data ) );
+
+        automaton.shouldSave = false;
+
         setIsSavedRecently( true );
         setTimeout( () => {
           setIsSavedRecently( false );
@@ -184,10 +210,13 @@ const Header = ( { className }: HeaderProps ): JSX.Element => {
         ) }
         <StyledHeaderSeekbar />
       </Section>
-      <Logo as={ Icons.Automaton }
-        onClick={ () => dispatch( { type: 'About/Open' } ) }
-        data-stalker={ `Automaton v${ process.env.VERSION! }` }
-      />
+      <Section>
+        <Logo as={ Icons.Automaton }
+          onClick={ () => dispatch( { type: 'About/Open' } ) }
+          data-stalker={ `Automaton v${ process.env.VERSION! }` }
+        />
+        <StyledShouldSaveIndicator />
+      </Section>
       <Section>
         <Button
           as={ Icons.Undo }

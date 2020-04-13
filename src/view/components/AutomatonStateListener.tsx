@@ -268,6 +268,11 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
         isDisabledTimeControls: automaton.isDisabledTimeControls
       } );
 
+      dispatch( {
+        type: 'Automaton/SetShouldSave',
+        shouldSave: automaton.shouldSave
+      } );
+
       automaton.on( 'load', () => {
         dispatch( {
           type: 'History/Drop'
@@ -336,6 +341,13 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
 
       automaton.on( 'createCurve', ( event ) => {
         createCurve( event.index, event.curve );
+      } );
+
+      automaton.on( 'changeShouldSave', ( event ) => {
+        dispatch( {
+          type: 'Automaton/SetShouldSave',
+          shouldSave: event.shouldSave
+        } );
       } );
     },
     [ automaton ]

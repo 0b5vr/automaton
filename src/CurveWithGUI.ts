@@ -248,7 +248,10 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
     this.__sortNodes();
 
     this.precalc();
+
     this.__emit( 'createNode', { id, node: data } );
+
+    this.__automaton.shouldSave = true;
 
     return data;
   }
@@ -264,7 +267,10 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
     this.__sortNodes();
 
     this.precalc();
+
     this.__emit( 'createNode', { id: node.$id, node: data } );
+
+    this.__automaton.shouldSave = true;
 
     return data;
   }
@@ -302,7 +308,10 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
     this.__nodes.splice( index, 1 );
 
     this.precalc();
+
     this.__emit( 'removeNode', { id } );
+
+    this.__automaton.shouldSave = true;
   }
 
   /**
@@ -329,7 +338,10 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
     node.time = newTime;
 
     this.precalc();
+
     this.__emit( 'updateNode', { id, node } );
+
+    this.__automaton.shouldSave = true;
   }
 
   /**
@@ -345,7 +357,10 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
     node.value = value;
 
     this.precalc();
+
     this.__emit( 'updateNode', { id, node } );
+
+    this.__automaton.shouldSave = true;
   }
 
   /**
@@ -378,7 +393,10 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
     }
 
     this.precalc();
+
     this.__emit( 'updateNode', { id, node } );
+
+    this.__automaton.shouldSave = true;
   }
 
   /**
@@ -409,7 +427,10 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
     }
 
     this.precalc();
+
     this.__emit( 'updateNode', { id, node } );
+
+    this.__automaton.shouldSave = true;
   }
 
   /**
@@ -432,7 +453,10 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
     };
 
     this.precalc();
+
     this.__emit( 'updateNode', { id, node } );
+
+    this.__automaton.shouldSave = true;
   }
 
   /**
@@ -486,7 +510,10 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
     this.__sortFxs();
 
     this.precalc();
+
     this.__emit( 'createFx', { id, fx: data } );
+
+    this.__automaton.shouldSave = true;
 
     return data;
   }
@@ -510,7 +537,10 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
     this.__sortFxs();
 
     this.precalc();
+
     this.__emit( 'createFx', { id: data.$id, fx: data } );
+
+    this.__automaton.shouldSave = true;
 
     return data;
   }
@@ -525,7 +555,10 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
     this.__fxs.splice( index, 1 );
 
     this.precalc();
+
     this.__emit( 'removeFx', { id } );
+
+    this.__automaton.shouldSave = true;
   }
 
   /**
@@ -548,7 +581,10 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
     fx.time = Math.min( Math.max( time, left ), right - fx.length );
 
     this.precalc();
+
     this.__emit( 'updateFx', { id, fx } );
+
+    this.__automaton.shouldSave = true;
   }
 
   /**
@@ -576,7 +612,10 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
     this.__sortFxs();
 
     this.precalc();
+
     this.__emit( 'updateFx', { id, fx } );
+
+    this.__automaton.shouldSave = true;
   }
 
   /**
@@ -595,7 +634,10 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
     }
 
     this.precalc();
+
     this.__emit( 'updateFx', { id, fx } );
+
+    this.__automaton.shouldSave = true;
   }
 
   /**
@@ -620,7 +662,10 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
     fx.params[ name ] = newValue;
 
     this.precalc();
+
     this.__emit( 'updateFx', { id, fx } );
+
+    this.__automaton.shouldSave = true;
   }
 
   /**
@@ -640,7 +685,10 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
     this.__sortFxs();
 
     this.precalc();
+
     this.__emit( 'updateFx', { id, fx } );
+
+    this.__automaton.shouldSave = true;
   }
 
   /**
@@ -662,7 +710,10 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
     fx.length = Math.min( Math.max( length, 0.0 ), right - fx.time );
 
     this.precalc();
+
     this.__emit( 'updateFx', { id, fx } );
+
+    this.__automaton.shouldSave = true;
   }
 
   /**
@@ -687,7 +738,10 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
     fx.time = end - fx.length;
 
     this.precalc();
+
     this.__emit( 'updateFx', { id, fx } );
+
+    this.__automaton.shouldSave = true;
   }
 
   /**
@@ -754,6 +808,8 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
     this.precalc();
 
     this.__emit( 'changeLength', { length } );
+
+    this.__automaton.shouldSave = true;
   }
 
   /**

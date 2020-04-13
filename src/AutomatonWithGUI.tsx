@@ -92,15 +92,15 @@ export class AutomatonWithGUI extends Automaton
   protected __isPlaying: boolean;
 
   /**
-   * Current position of history stack.
-   */
-  private __historyIndex: number = 0;
-
-  /**
    * Whether it disables any time controls or not.
    * Can be specified via {@link AutomatonWithGUIOptions}.
    */
   private __isDisabledTimeControls: boolean = false;
+
+  /**
+   * Whether it has any changes that is not saved yet or not.
+   */
+  private __shouldSave = false;
 
   /**
    * It's currently playing or not.
@@ -139,6 +139,21 @@ export class AutomatonWithGUI extends Automaton
   }
 
   /**
+   * Whether it has any changes that is not saved yet or not.
+   */
+  public get shouldSave(): boolean {
+    return this.__shouldSave;
+  }
+
+  /**
+   * Whether it has any changes that is not saved yet or not.
+   */
+  public set shouldSave( shouldSave: boolean ) {
+    this.__shouldSave = shouldSave;
+    this.__emit( 'changeShouldSave', { shouldSave } );
+  }
+
+  /**
    * Create a new Automaton instance.
    * @param data Serialized data of the automaton
    * @param options Options for this Automaton instance
@@ -162,7 +177,7 @@ export class AutomatonWithGUI extends Automaton
     if ( options.gui ) { this.__prepareGUI( options.gui ); }
 
     window.addEventListener( 'beforeunload', ( event ) => {
-      if ( this.__historyIndex !== 0 ) {
+      if ( this.shouldSave ) {
         const confirmationMessage = 'Automaton: Did you saved your progress?';
         event.returnValue = confirmationMessage;
         return confirmationMessage;
@@ -276,13 +291,8 @@ export class AutomatonWithGUI extends Automaton
     // emit an event
     this.__emit( 'changeLength', { length, resolution } );
 
-    // It's irreversible operation, sorry
-    // this.dropHistory();
-
-    // Poke vue 🔥
-    // if ( this.__vue ) {
-    //   this.__vue.$emit( 'changedLength' );
-    // }
+    // mark as should save
+    this.shouldSave = true;
   }
 
   /**
@@ -294,7 +304,11 @@ export class AutomatonWithGUI extends Automaton
   public createChannel( name: string, data?: SerializedChannel ): ChannelWithGUI {
     const channel = new ChannelWithGUI( this, data );
     this.__channels[ name ] = channel;
+
     this.__emit( 'createChannel', { name, channel: channel } );
+
+    this.shouldSave = true;
+
     return channel;
   }
 
@@ -304,7 +318,10 @@ export class AutomatonWithGUI extends Automaton
    */
   public removeChannel( name: string ): void {
     delete this.__channels[ name ];
+
     this.__emit( 'removeChannel', { name } );
+
+    this.shouldSave = true;
   }
 
   /**
@@ -324,7 +341,11 @@ export class AutomatonWithGUI extends Automaton
     const curve = new CurveWithGUI( this, data );
     const index = this.__curves.length;
     this.__curves.push( curve );
+
     this.__emit( 'createCurve', { index, curve } );
+
+    this.shouldSave = true;
+
     return curve;
   }
 
@@ -334,7 +355,10 @@ export class AutomatonWithGUI extends Automaton
    */
   public removeCurve( index: number ): void {
     delete this.__curves[ index ];
+
     this.__emit( 'removeCurve', { index } );
+
+    this.shouldSave = true;
   }
 
   /**
@@ -435,6 +459,8 @@ export class AutomatonWithGUI extends Automaton
     this.guiSettings = convertedData.guiSettings;
 
     this.__emit( 'load' );
+
+    this.shouldSave = false;
   }
 
   /**
@@ -463,6 +489,8 @@ export class AutomatonWithGUI extends Automaton
     } );
 
     this.__emit( 'updateGUISettings', { settings: this.guiSettings } );
+
+    this.shouldSave = true;
   }
 
   /**
@@ -524,6 +552,7 @@ export interface AutomatonWithGUIEvents {
   addFxDefinition: { name: string; fxDefinition: FxDefinition };
   changeLength: { length: number; resolution: number };
   updateGUISettings: { settings: GUISettings };
+  changeShouldSave: { shouldSave: boolean };
 }
 
 export interface AutomatonWithGUI extends EventEmittable<AutomatonWithGUIEvents> {}
