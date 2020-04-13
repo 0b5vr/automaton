@@ -453,16 +453,6 @@ export class AutomatonWithGUI extends Automaton
   }
 
   /**
-   * Poke the vue renderer.
-   */
-  public pokeRenderer(): void {
-    // 🔥
-    // if ( this.__vue ) {
-    //   this.__vue.$emit( 'poke' );
-    // }
-  }
-
-  /**
    * Set a property of gui settings.
    * @param key The parameter key you want to set
    * @param value The parameter value you want to set
