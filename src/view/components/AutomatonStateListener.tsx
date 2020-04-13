@@ -263,6 +263,11 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
         createCurve( iCurve, curve );
       } );
 
+      dispatch( {
+        type: 'Automaton/UpdateIsDisabledTimeControls',
+        isDisabledTimeControls: automaton.isDisabledTimeControls
+      } );
+
       automaton.on( 'load', () => {
         dispatch( {
           type: 'History/Drop'

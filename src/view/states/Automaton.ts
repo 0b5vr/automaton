@@ -136,6 +136,9 @@ export type Action = {
   length: number;
   resolution: number;
 } | {
+  type: 'Automaton/UpdateIsDisabledTimeControls';
+  isDisabledTimeControls: boolean;
+} | {
   type: 'Automaton/UpdateGUISettings';
   settings: GUISettings;
 };
@@ -145,7 +148,6 @@ export const reducer: Reducer<State, Action> = ( state = initialState, action ) 
   return produce( state, ( newState: State ) => {
     if ( action.type === 'Automaton/SetInstance' ) {
       newState.instance = action.automaton;
-      newState.isDisabledTimeControls = action.automaton.isDisabledTimeControls;
     } else if ( action.type === 'Automaton/AddFxDefinition' ) {
       newState.fxDefinitions[ action.name ] = action.fxDefinition;
     } else if ( action.type === 'Automaton/CreateChannel' ) {
@@ -204,6 +206,8 @@ export const reducer: Reducer<State, Action> = ( state = initialState, action ) 
     } else if ( action.type === 'Automaton/UpdateLength' ) {
       newState.length = action.length;
       newState.resolution = action.resolution;
+    } else if ( action.type === 'Automaton/UpdateIsDisabledTimeControls' ) {
+      newState.isDisabledTimeControls = action.isDisabledTimeControls;
     } else if ( action.type === 'Automaton/UpdateGUISettings' ) {
       newState.guiSettings = action.settings;
     }
