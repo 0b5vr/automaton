@@ -34,6 +34,8 @@ export const initialState: State = {
 
 // == action =======================================================================================
 export type Action = {
+  type: 'Timeline/Reset';
+} | {
   type: 'Timeline/SelectChannel';
   channel: string | null;
 } | {
@@ -70,7 +72,12 @@ export type Action = {
 // == reducer ======================================================================================
 export const reducer: Reducer<State, ContextAction> = ( state = initialState, action ) => {
   return produce( state, ( newState: State ) => {
-    if ( action.type === 'Timeline/SelectChannel' ) {
+    if ( action.type === 'Timeline/Reset' ) {
+      newState.selectedChannel = initialState.selectedChannel;
+      newState.selectedItems = initialState.selectedItems;
+      newState.lastSelectedItem = initialState.lastSelectedItem;
+      newState.range = initialState.range;
+    } else if ( action.type === 'Timeline/SelectChannel' ) {
       newState.selectedChannel = action.channel;
       newState.selectedItems = {};
     } else if ( action.type === 'Timeline/SelectItems' ) {

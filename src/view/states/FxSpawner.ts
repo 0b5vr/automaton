@@ -17,6 +17,8 @@ export const initialState: Readonly<State> = {
 
 // == action =======================================================================================
 export type Action = {
+  type: 'FxSpawner/Reset';
+} | {
   type: 'FxSpawner/Open';
   callback: ( name: string ) => void;
 } | {
@@ -29,7 +31,11 @@ export type Action = {
 // == reducer ======================================================================================
 export const reducer: Reducer<State, Action> = ( state = initialState, action ) => {
   return produce( state, ( newState: State ) => {
-    if ( action.type === 'FxSpawner/Open' ) {
+    if ( action.type === 'FxSpawner/Reset' ) {
+      newState.isVisible = initialState.isVisible;
+      newState.recently = initialState.recently;
+      newState.callback = initialState.callback;
+    } else if ( action.type === 'FxSpawner/Open' ) {
       newState.isVisible = true;
       newState.callback = action.callback;
     } else if ( action.type === 'FxSpawner/Close' ) {

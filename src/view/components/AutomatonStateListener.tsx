@@ -224,6 +224,79 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
     } );
   }
 
+  function initAutomaton(): void {
+    dispatch( {
+      type: 'History/Drop'
+    } );
+
+    dispatch( {
+      type: 'CurveEditor/Reset'
+    } );
+
+    dispatch( {
+      type: 'Timeline/Reset'
+    } );
+
+    dispatch( {
+      type: 'FxSpawner/Reset'
+    } );
+
+    dispatch( {
+      type: 'ContextMenu/Close'
+    } );
+
+    dispatch( {
+      type: 'Automaton/Purge'
+    } );
+
+    dispatch( {
+      type: 'Automaton/UpdateTime',
+      time: automaton.time
+    } );
+
+    dispatch( {
+      type: 'Automaton/UpdateLength',
+      length: automaton.length,
+      resolution: automaton.resolution
+    } );
+
+    dispatch( {
+      type: 'Automaton/UpdateIsPlaying',
+      isPlaying: automaton.isPlaying
+    } );
+
+    Object.entries( automaton.fxDefinitions ).forEach( ( [ name, fxDefinition ] ) => {
+      dispatch( {
+        type: 'Automaton/AddFxDefinition',
+        name,
+        fxDefinition
+      } );
+    } );
+
+    Object.entries( automaton.channels ).forEach( ( [ name, channel ] ) => {
+      createChannel( name, channel );
+    } );
+
+    Object.values( automaton.curves ).forEach( ( curve, iCurve ) => {
+      createCurve( iCurve, curve );
+    } );
+
+    dispatch( {
+      type: 'Automaton/UpdateIsDisabledTimeControls',
+      isDisabledTimeControls: automaton.isDisabledTimeControls
+    } );
+
+    dispatch( {
+      type: 'Automaton/SetShouldSave',
+      shouldSave: automaton.shouldSave
+    } );
+
+    dispatch( {
+      type: 'Automaton/UpdateGUISettings',
+      settings: automaton.guiSettings
+    } );
+  }
+
   useEffect(
     () => {
       dispatch( {
@@ -231,62 +304,20 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
         automaton
       } );
 
-      dispatch( {
-        type: 'Automaton/UpdateTime',
-        time: automaton.time
+      initAutomaton();
+
+      const handleLoad = automaton.on( 'load', () => {
+        initAutomaton();
       } );
 
-      dispatch( {
-        type: 'Automaton/UpdateLength',
-        length: automaton.length,
-        resolution: automaton.resolution
-      } );
-
-      dispatch( {
-        type: 'Automaton/UpdateIsPlaying',
-        isPlaying: automaton.isPlaying
-      } );
-
-      Object.entries( automaton.fxDefinitions ).forEach( ( [ name, fxDefinition ] ) => {
-        dispatch( {
-          type: 'Automaton/AddFxDefinition',
-          name,
-          fxDefinition
-        } );
-      } );
-
-      Object.entries( automaton.channels ).forEach( ( [ name, channel ] ) => {
-        createChannel( name, channel );
-      } );
-
-      Object.values( automaton.curves ).forEach( ( curve, iCurve ) => {
-        createCurve( iCurve, curve );
-      } );
-
-      dispatch( {
-        type: 'Automaton/UpdateIsDisabledTimeControls',
-        isDisabledTimeControls: automaton.isDisabledTimeControls
-      } );
-
-      dispatch( {
-        type: 'Automaton/SetShouldSave',
-        shouldSave: automaton.shouldSave
-      } );
-
-      automaton.on( 'load', () => {
-        dispatch( {
-          type: 'History/Drop'
-        } );
-      } );
-
-      automaton.on( 'update', ( { time } ) => {
+      const handleUpdate = automaton.on( 'update', ( { time } ): void => {
         dispatch( {
           type: 'Automaton/UpdateTime',
           time
         } );
       } );
 
-      automaton.on( 'changeLength', ( { length, resolution } ) => {
+      const handleChangeLength = automaton.on( 'changeLength', ( { length, resolution } ) => {
         dispatch( {
           type: 'Automaton/UpdateLength',
           length,
@@ -294,21 +325,21 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
         } );
       } );
 
-      automaton.on( 'play', () => {
+      const handlePlay = automaton.on( 'play', () => {
         dispatch( {
           type: 'Automaton/UpdateIsPlaying',
           isPlaying: true
         } );
       } );
 
-      automaton.on( 'pause', () => {
+      const handlePause = automaton.on( 'pause', () => {
         dispatch( {
           type: 'Automaton/UpdateIsPlaying',
           isPlaying: false
         } );
       } );
 
-      automaton.on( 'addFxDefinition', ( { name, fxDefinition } ) => {
+      const handleAddFxDefinition = automaton.on( 'addFxDefinition', ( { name, fxDefinition } ) => {
         dispatch( {
           type: 'Automaton/AddFxDefinition',
           name,
@@ -316,39 +347,48 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
         } );
       } );
 
-      dispatch( {
-        type: 'Automaton/UpdateGUISettings',
-        settings: automaton.guiSettings
-      } );
-
-      automaton.on( 'updateGUISettings', ( { settings } ) => {
+      const handleUpdateGUISettings = automaton.on( 'updateGUISettings', ( { settings } ) => {
         dispatch( {
           type: 'Automaton/UpdateGUISettings',
           settings
         } );
       } );
 
-      automaton.on( 'createChannel', ( event ) => {
+      const handleCreateChannel = automaton.on( 'createChannel', ( event ) => {
         createChannel( event.name, event.channel );
       } );
 
-      automaton.on( 'removeChannel', ( event ) => {
+      const handleRemoveChannel = automaton.on( 'removeChannel', ( event ) => {
         dispatch( {
           type: 'Automaton/RemoveChannel',
           channel: event.name
         } );
       } );
 
-      automaton.on( 'createCurve', ( event ) => {
+      const handleCreateCurve = automaton.on( 'createCurve', ( event ) => {
         createCurve( event.index, event.curve );
       } );
 
-      automaton.on( 'changeShouldSave', ( event ) => {
+      const handleChangeShouldSave = automaton.on( 'changeShouldSave', ( event ) => {
         dispatch( {
           type: 'Automaton/SetShouldSave',
           shouldSave: event.shouldSave
         } );
       } );
+
+      return () => {
+        automaton.off( 'load', handleLoad );
+        automaton.off( 'update', handleUpdate );
+        automaton.off( 'changeLength', handleChangeLength );
+        automaton.off( 'play', handlePlay );
+        automaton.off( 'pause', handlePause );
+        automaton.off( 'addFxDefinition', handleAddFxDefinition );
+        automaton.off( 'updateGUISettings', handleUpdateGUISettings );
+        automaton.off( 'createChannel', handleCreateChannel );
+        automaton.off( 'removeChannel', handleRemoveChannel );
+        automaton.off( 'createCurve', handleCreateCurve );
+        automaton.off( 'changeShouldSave', handleChangeShouldSave );
+      };
     },
     [ automaton ]
   );

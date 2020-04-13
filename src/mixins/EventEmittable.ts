@@ -8,7 +8,7 @@ export class EventEmittable<TEvents extends { [ type: string ]: any }> {
   public on<TType extends keyof TEvents & string>(
     type: TType,
     listener: EventListener<TEvents[ TType ]>
-  ): void {
+  ): EventListener<TEvents[ TType ]> {
     this.__eventListeners = this.__eventListeners || new Map();
     let array = this.__eventListeners.get( type );
     if ( !array ) {
@@ -17,6 +17,8 @@ export class EventEmittable<TEvents extends { [ type: string ]: any }> {
     }
 
     array.push( listener );
+
+    return listener;
   }
 
   public off<TType extends keyof TEvents & string>(

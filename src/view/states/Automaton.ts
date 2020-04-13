@@ -58,6 +58,8 @@ export const initialState: Readonly<State> = {
 
 // == action =======================================================================================
 export type Action = {
+  type: 'Automaton/Purge';
+} | {
   type: 'Automaton/SetInstance';
   automaton: AutomatonWithGUI;
 } | {
@@ -151,7 +153,20 @@ export type Action = {
 // == reducer ======================================================================================
 export const reducer: Reducer<State, Action> = ( state = initialState, action ) => {
   return produce( state, ( newState: State ) => {
-    if ( action.type === 'Automaton/SetInstance' ) {
+    if ( action.type === 'Automaton/Purge' ) {
+      newState.channelNames = initialState.channelNames;
+      newState.channels = initialState.channels;
+      newState.curves = initialState.curves;
+      newState.curvesPreview = initialState.curvesPreview;
+      newState.fxDefinitions = initialState.fxDefinitions;
+      newState.isPlaying = initialState.isPlaying;
+      newState.time = initialState.time;
+      newState.length = initialState.length;
+      newState.resolution = initialState.resolution;
+      newState.isDisabledTimeControls = initialState.isDisabledTimeControls;
+      newState.shouldSave = initialState.shouldSave;
+      newState.guiSettings = initialState.guiSettings;
+    } else if ( action.type === 'Automaton/SetInstance' ) {
       newState.instance = action.automaton;
     } else if ( action.type === 'Automaton/AddFxDefinition' ) {
       newState.fxDefinitions[ action.name ] = action.fxDefinition;
