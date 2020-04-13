@@ -17,7 +17,7 @@ export const CHANNEL_DEFAULT_HANDLE_LENGTH = 0.5;
 export const CHANNEL_FX_ROW_MAX = 5;
 
 /**
- * Represents "Status code" of a {@link ChannelStatus}.
+ * Represents "Status code" of a {@link CurveStatus}.
  */
 export enum CurveStatusCode {
   NOT_USED,
@@ -25,7 +25,7 @@ export enum CurveStatusCode {
 }
 
 /**
- * Represents fatality of a {@link ChannelStatus}.
+ * Represents fatality of a {@link CurveStatus}.
  */
 export enum CurveStatusLevel {
   INFO,
@@ -34,7 +34,7 @@ export enum CurveStatusLevel {
 }
 
 /**
- * Interface represents a status of a {@link ChannelWithGUI}.
+ * Interface represents a status of a {@link CurveWithGUI}.
  * Status: info / warning / error...
  */
 export interface CurveStatus {
