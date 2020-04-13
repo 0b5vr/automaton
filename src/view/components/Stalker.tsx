@@ -21,8 +21,9 @@ export interface StalkerProps {
 const Stalker = ( { className }: StalkerProps ): JSX.Element => {
   const [ position, setPosition ] = useState( { x: 0, y: 0 } );
   const [ target, setTarget ] = useState<EventTarget | null>( null );
+  const [ text, setText ] = useState<string | null>( null );
 
-  useEffect( // add event listener
+  useEffect( // mouse listener
     () => {
       function handleMouseMove( event: MouseEvent ): void {
         setPosition( { x: event.clientX, y: event.clientY } );
@@ -33,6 +34,37 @@ const Stalker = ( { className }: StalkerProps ): JSX.Element => {
       return () => window.removeEventListener( 'mousemove', handleMouseMove );
     },
     []
+  );
+
+  useEffect( // kinda lame but call setTimeout to update the message while it's on something
+    () => {
+      let currentTarget: HTMLElement | null = target as HTMLElement;
+      while ( ( currentTarget != null ) && !( currentTarget?.dataset?.stalker ) ) {
+        currentTarget = currentTarget?.parentElement || null;
+      }
+
+      /**
+       * The New Text T-shirt is available @ my BOOTH shop, check this out:
+       * https://fms-cat.booth.pm/items/1874699
+       */
+      const newText = currentTarget?.dataset?.stalker;
+      if ( newText ) {
+        setText( newText );
+
+        let halt = false;
+        const update = (): void => {
+          if ( halt ) { return; }
+          setText( currentTarget!.dataset!.stalker! );
+          setTimeout( update, 50 );
+        };
+        update();
+
+        return () => { halt = true; };
+      } else {
+        setText( null );
+      }
+    },
+    [ target ]
   );
 
   const style: React.CSSProperties = useMemo(
@@ -51,15 +83,6 @@ const Stalker = ( { className }: StalkerProps ): JSX.Element => {
     },
     [ position ]
   );
-
-  let text: string | null = null;
-  if ( target ) {
-    let currentTarget: HTMLElement | null = target as HTMLElement;
-    while ( !text && currentTarget ) {
-      text = currentTarget.dataset.stalker || null;
-      currentTarget = currentTarget.parentElement;
-    }
-  }
 
   return <>
     { text && (
