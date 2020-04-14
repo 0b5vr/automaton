@@ -143,11 +143,11 @@ const Header = ( { className }: HeaderProps ): JSX.Element => {
     () => {
       if ( !automaton ) { return; }
 
-      const data = automaton.serialize();
-
       if ( automaton.overrideSave ) {
-        automaton.overrideSave( data );
+        automaton.overrideSave();
       } else {
+        const data = automaton.serialize();
+
         writeClipboard( JSON.stringify( data ) );
 
         automaton.shouldSave = false;

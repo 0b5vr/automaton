@@ -38,7 +38,7 @@ export interface AutomatonWithGUIOptions {
    * Overrides the save procedure.
    * Originally intended to be used by automaton-electron.
    */
-  overrideSave?: ( serialized: SerializedAutomatonWithGUI ) => void;
+  overrideSave?: () => void;
 
   /**
    * Define what to do with the context menu when you click the save icon on the header.
@@ -62,7 +62,7 @@ export class AutomatonWithGUI extends Automaton
    * Originally intended to be used by automaton-electron.
    * Can also be specified via {@link AutomatonWithGUIOptions}.
    */
-  public overrideSave?: ( serialized: SerializedAutomatonWithGUI ) => void;
+  public overrideSave?: () => void;
 
   /**
    * Define what to do with the context menu when you click the save icon on the header.
