@@ -11,11 +11,13 @@ interface HistoryEntry {
 export interface State {
   entries: HistoryEntry[];
   index: number;
+  cantUndoThis: number;
 }
 
 export const initialState: Readonly<State> = {
   entries: [],
-  index: 0
+  index: 0,
+  cantUndoThis: 0
 };
 
 // == action =======================================================================================
@@ -28,6 +30,9 @@ export type Action = {
   type: 'History/Undo';
 } | {
   type: 'History/Redo';
+} | {
+  type: 'History/SetCantUndoThis';
+  cantUndoThis: number;
 };
 
 // == reducer ======================================================================================
@@ -44,6 +49,8 @@ export const reducer: Reducer<State, Action> = ( state = initialState, action ) 
       newState.index --;
     } else if ( action.type === 'History/Redo' ) {
       newState.index ++;
+    } else if ( action.type === 'History/SetCantUndoThis' ) {
+      newState.cantUndoThis = action.cantUndoThis;
     }
   } );
 };

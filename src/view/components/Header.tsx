@@ -85,7 +85,6 @@ export interface HeaderProps {
 
 const Header = ( { className }: HeaderProps ): JSX.Element => {
   const dispatch = useDispatch();
-  const [ cantUndoThis, setCantUndoThis ] = useState( 0 );
   const [ isSavedRecently, setIsSavedRecently ] = useState( false );
   const {
     automaton,
@@ -93,14 +92,16 @@ const Header = ( { className }: HeaderProps ): JSX.Element => {
     isPlaying,
     settingsMode,
     historyIndex,
-    historyEntries
+    historyEntries,
+    cantUndoThis
   } = useSelector( ( state ) => ( {
     automaton: state.automaton.instance,
     isDisabledTimeControls: state.automaton.isDisabledTimeControls,
     isPlaying: state.automaton.isPlaying,
     settingsMode: state.settings.mode,
     historyIndex: state.history.index,
-    historyEntries: state.history.entries
+    historyEntries: state.history.entries,
+    cantUndoThis: state.history.cantUndoThis
   } ) );
 
   const handlePlay = useCallback(
@@ -119,9 +120,15 @@ const Header = ( { className }: HeaderProps ): JSX.Element => {
       } else {
         if ( cantUndoThis === 9 ) {
           window.open( 'https://youtu.be/bzY7J0Xle08', '_blank' );
-          setCantUndoThis( 0 );
+          dispatch( {
+            type: 'History/SetCantUndoThis',
+            cantUndoThis: 0
+          } );
         } else {
-          setCantUndoThis( cantUndoThis + 1 );
+          dispatch( {
+            type: 'History/SetCantUndoThis',
+            cantUndoThis: cantUndoThis + 1
+          } );
         }
       }
     },
@@ -134,7 +141,10 @@ const Header = ( { className }: HeaderProps ): JSX.Element => {
         historyEntries[ historyIndex ].redo();
         dispatch( { type: 'History/Redo' } );
       }
-      setCantUndoThis( 0 );
+      dispatch( {
+        type: 'History/SetCantUndoThis',
+        cantUndoThis: 0
+      } );
     },
     [ historyIndex, historyEntries ]
   );

@@ -13,9 +13,10 @@ const GUIRemoconListener = ( { guiRemocon }: {
   guiRemocon: GUIRemocon;
 } ): JSX.Element => {
   const dispatch = useDispatch();
-  const { historyIndex, historyEntries } = useSelector( ( state ) => ( {
+  const { historyIndex, historyEntries, cantUndoThis } = useSelector( ( state ) => ( {
     historyIndex: state.history.index,
-    historyEntries: state.history.entries
+    historyEntries: state.history.entries,
+    cantUndoThis: state.history.cantUndoThis
   } ) );
 
   useEffect(
@@ -24,12 +25,25 @@ const GUIRemoconListener = ( { guiRemocon }: {
         if ( historyIndex !== 0 ) {
           historyEntries[ historyIndex - 1 ].undo();
           dispatch( { type: 'History/Undo' } );
+        } else {
+          if ( cantUndoThis === 9 ) {
+            window.open( 'https://youtu.be/bzY7J0Xle08', '_blank' );
+            dispatch( {
+              type: 'History/SetCantUndoThis',
+              cantUndoThis: 0
+            } );
+          } else {
+            dispatch( {
+              type: 'History/SetCantUndoThis',
+              cantUndoThis: cantUndoThis + 1
+            } );
+          }
         }
       } );
 
       return () => guiRemocon.off( 'undo', handleUndo );
     },
-    [ guiRemocon, historyIndex, historyEntries ]
+    [ guiRemocon, historyIndex, historyEntries, cantUndoThis ]
   );
 
   useEffect(
@@ -39,6 +53,10 @@ const GUIRemoconListener = ( { guiRemocon }: {
           historyEntries[ historyIndex ].redo();
           dispatch( { type: 'History/Redo' } );
         }
+        dispatch( {
+          type: 'History/SetCantUndoThis',
+          cantUndoThis: 0
+        } );
       } );
 
       return () => guiRemocon.off( 'redo', handle );
