@@ -6,6 +6,7 @@ import { ChannelWithGUI } from './ChannelWithGUI';
 import { ContextMenuCommand } from './view/states/ContextMenu';
 import { CurveWithGUI } from './CurveWithGUI';
 import { EventEmittable } from './mixins/EventEmittable';
+import { GUIRemocon } from './GUIRemocon';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Serializable } from './types/Serializable';
@@ -103,6 +104,11 @@ export class AutomatonWithGUI extends Automaton
   private __shouldSave = false;
 
   /**
+   * This enables the Automaton instance to be able to communicate with GUI.
+   */
+  private __guiRemocon?: GUIRemocon;
+
+  /**
    * It's currently playing or not.
    */
   public get isPlaying(): boolean {
@@ -174,7 +180,10 @@ export class AutomatonWithGUI extends Automaton
     this.saveContextMenuCommands = options.saveContextMenuCommands;
     this.__isDisabledTimeControls = options.disableTimeControls || false;
 
-    if ( options.gui ) { this.__prepareGUI( options.gui ); }
+    if ( options.gui ) {
+      this.__guiRemocon = new GUIRemocon();
+      this.__prepareGUI( options.gui );
+    }
 
     window.addEventListener( 'beforeunload', ( event ) => {
       if ( this.shouldSave ) {
@@ -494,12 +503,51 @@ export class AutomatonWithGUI extends Automaton
   }
 
   /**
+   * Undo a step.
+   * You cannot call this function when you are not using GUI.
+   */
+  public undo(): void {
+    if ( !this.__guiRemocon ) {
+      throw new Error( 'Automaton: You cannot call `undo` when you are not using GUI!' );
+    }
+
+    this.__guiRemocon.undo();
+  }
+
+  /**
+   * Redo a step.
+   * You cannot call this function when you are not using GUI.
+   */
+  public redo(): void {
+    if ( !this.__guiRemocon ) {
+      throw new Error( 'Automaton: You cannot call `redo` when you are not using GUI!' );
+    }
+
+    this.__guiRemocon.redo();
+  }
+
+  /**
+   * Open an about screen.
+   * You cannot call this function when you are not using GUI.
+   */
+  public openAbout(): void {
+    if ( !this.__guiRemocon ) {
+      throw new Error( 'Automaton: You cannot call `openAbout` when you are not using GUI!' );
+    }
+
+    this.__guiRemocon.openAbout();
+  }
+
+  /**
    * Prepare GUI.
    * @param target DOM element where you want to attach the Automaton GUI
    */
   private __prepareGUI( target: HTMLElement ): void {
     ReactDOM.render(
-      <App automaton={ this } />,
+      <App
+        automaton={ this }
+        guiRemocon={ this.__guiRemocon! }
+      />,
       target
     );
   }

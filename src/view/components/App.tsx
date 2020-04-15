@@ -12,6 +12,8 @@ import { DopeSheet } from './DopeSheet';
 import { DopeSheetOverlay } from './DopeSheetOverlay';
 import { DopeSheetUnderlay } from './DopeSheetUnderlay';
 import { FxSpawner } from './FxSpawner';
+import { GUIRemocon } from '../../GUIRemocon';
+import { GUIRemoconListener } from './GUIRemoconListener';
 import { Header } from './Header';
 import { Inspector } from './Inspector';
 import { Metrics } from '../constants/Metrics';
@@ -131,12 +133,13 @@ const Root = styled.div`
 `;
 
 // == element ======================================================================================
-export interface AppProps {
+interface AppProps {
   className?: string;
   automaton: AutomatonWithGUI;
+  guiRemocon: GUIRemocon;
 }
 
-const Fuck = ( { className, automaton }: AppProps ): JSX.Element => {
+const Fuck = ( { className, automaton, guiRemocon }: AppProps ): JSX.Element => {
   const {
     isFxSpawnerVisible,
     isAboutVisible,
@@ -162,6 +165,7 @@ const Fuck = ( { className, automaton }: AppProps ): JSX.Element => {
   return (
     <Root className={ className }>
       <AutomatonStateListener automaton={ automaton } />
+      <GUIRemoconListener guiRemocon={ guiRemocon } />
       <StyledHeader />
       { realm === 'dopeSheet' && <StyledDopeSheetUnderlay /> }
       <ChannelListAndDopeSheetScrollable barPosition='left'>
