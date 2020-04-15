@@ -1,7 +1,5 @@
 import { Automaton } from './Automaton';
 import { ChannelItem } from './ChannelItem';
-import { ChannelItemConstant } from './ChannelItemConstant';
-import { ChannelItemCurve } from './ChannelItemCurve';
 import { SerializedChannel } from './types/SerializedChannel';
 
 /**
@@ -94,13 +92,7 @@ export class Channel {
    * @param data Data of a channel
    */
   public deserialize( data: SerializedChannel ): void {
-    this.__items = data.items.map( ( item ) => {
-      if ( 'curve' in item ) {
-        return new ChannelItemCurve( this.__automaton, item );
-      } else {
-        return new ChannelItemConstant( this.__automaton, item );
-      }
-    } );
+    this.__items = data.items.map( ( item ) => new ChannelItem( this.__automaton, item ) );
   }
 
   /**

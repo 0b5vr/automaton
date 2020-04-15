@@ -4,6 +4,4 @@ export * from './FxSection';
 export * from './SerializedAutomaton';
 export * from './SerializedChannel';
 export * from './SerializedChannelItem';
-export * from './SerializedChannelItemConstant';
-export * from './SerializedChannelItemCurve';
 export * from './SerializedCurve';
