@@ -3,7 +3,7 @@ import { TimeValueRange, dt2dx, dx2dt, snapTime, t2x, v2y, x2t } from '../utils/
 import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
 import { Resolution } from '../utils/Resolution';
-import { SerializedChannelItemCurve } from '@fms-cat/automaton';
+import { SerializedChannelItem } from '@fms-cat/automaton';
 import { WithID } from '../../types/WithID';
 import { objectMapHas } from '../utils/objectMap';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
@@ -51,7 +51,7 @@ const Root = styled.g`
 // == props ========================================================================================
 export interface TimelineItemCurveProps {
   channel: string;
-  item: Required<SerializedChannelItemCurve> & WithID;
+  item: Required<SerializedChannelItem> & WithID;
   range: TimeValueRange;
   size: Resolution;
   dopeSheetMode?: boolean;
@@ -75,8 +75,8 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
   } = useSelector( ( state ) => ( {
     automaton: state.automaton.instance,
     selectedItems: state.timeline.selectedItems,
-    path: state.automaton.curves[ item.curve ].path,
-    curveLength: state.automaton.curves[ item.curve ].length,
+    path: state.automaton.curves[ item.curve! ].path,
+    curveLength: state.automaton.curves[ item.curve! ].length,
     guiSettings: state.automaton.guiSettings
   } ) );
 

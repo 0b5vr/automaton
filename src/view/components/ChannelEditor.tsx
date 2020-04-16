@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useRef } from 'react';
-import { SerializedChannelItem, SerializedChannelItemConstant } from '@fms-cat/automaton';
 import { TimeValueRange, x2t, y2v } from '../utils/TimeValueRange';
 import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
 import { RangeBar } from './RangeBar';
 import { Resolution } from '../utils/Resolution';
+import { SerializedChannelItem } from '@fms-cat/automaton';
 import { TimeValueGrid } from './TimeValueGrid';
 import { TimeValueLines } from './TimeValueLines';
 import { TimelineItem } from './TimelineItem';
@@ -154,8 +154,8 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
       if ( !thereAreNoOtherItemsHere ) { return; }
 
       const data = channel.createItemConstant( t );
-      channel.changeConstantValue( data.$id, v );
-      ( data as SerializedChannelItemConstant ).value = v;
+      channel.changeItemValue( data.$id, v );
+      data.value = v;
 
       dispatch( {
         type: 'Timeline/SelectItems',
@@ -252,7 +252,7 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
         data = channel.duplicateItem( t0, src );
       } else {
         data = channel.createItemConstant( t0 );
-        channel.changeConstantValue( data.$id, y2v( y, range, rect.height ) );
+        channel.changeItemValue( data.$id, y2v( y, range, rect.height ) );
       }
 
       dispatch( {
@@ -269,21 +269,16 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
           y += movementSum.y;
 
           channel.moveItem( data.$id, x2t( x, range, rect.width ) );
-
-          if ( 'value' in data ) {
-            channel.changeConstantValue( data.$id, y2v( y, range, rect.height ) );
-          }
+          channel.changeItemValue( data.$id, y2v( y, range, rect.height ) );
         },
         () => {
           const t = x2t( x, range, rect.width );
           channel.moveItem( data.$id, t );
           data.time = t;
 
-          if ( 'value' in data ) {
-            const v = y2v( y, range, rect.height );
-            channel.changeConstantValue( data.$id, v );
-            ( data as SerializedChannelItemConstant ).value = v;
-          }
+          const v = y2v( y, range, rect.height );
+          channel.changeItemValue( data.$id, v );
+          data.value = v;
 
           const undo = (): void => {
             channel.removeItem( data.$id );

@@ -1,8 +1,6 @@
 import { Channel, SerializedChannel, SerializedChannelItem } from '@fms-cat/automaton';
-import { ChannelItemWithGUI, deserializeChannelItem } from './ChannelItemWithGUI';
 import { AutomatonWithGUI } from './AutomatonWithGUI';
-import { ChannelItemConstantWithGUI } from './ChannelItemConstantWithGUI';
-import { ChannelItemCurveWithGUI } from './ChannelItemCurveWithGUI';
+import { ChannelItemWithGUI } from './ChannelItemWithGUI';
 import { EventEmittable } from './mixins/EventEmittable';
 import { Serializable } from './types/Serializable';
 import { WithID } from './types/WithID';
@@ -112,9 +110,9 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
    * @param data Data of channel
    */
   public deserialize( data: SerializedChannel ): void {
-    this.__items = data.items.map( ( item ) => {
-      return deserializeChannelItem( this.__automaton, item );
-    } );
+    this.__items = data.items.map( ( item ) => (
+      new ChannelItemWithGUI( this.__automaton, item )
+    ) );
 
     this.__items.forEach( ( item ) => item.$id = genID() );
   }
@@ -245,7 +243,7 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
     item: SerializedChannelItem
   ): Required<SerializedChannelItem> & WithID {
     const id = genID();
-    const newItem = deserializeChannelItem( this.__automaton, item );
+    const newItem = new ChannelItemWithGUI( this.__automaton, item );
     newItem.$id = id;
     newItem.time = time;
     this.__items.push( newItem );
@@ -274,7 +272,7 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
    */
   public createItemConstant( time: number ): Required<SerializedChannelItem> & WithID {
     const id = genID();
-    const item = new ChannelItemConstantWithGUI( this.__automaton, { time } );
+    const item = new ChannelItemWithGUI( this.__automaton, { time } );
     item.$id = id;
     this.__items.push( item );
     this.__sortItems();
@@ -294,7 +292,7 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
    */
   public createItemCurve( curve: number, time: number ): Required<SerializedChannelItem> & WithID {
     const id = genID();
-    const item = new ChannelItemCurveWithGUI( this.__automaton, { curve, time } );
+    const item = new ChannelItemWithGUI( this.__automaton, { curve, time } );
     item.$id = id;
     this.__items.push( item );
     this.__sortItems();
@@ -323,7 +321,7 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
   public createItemFromData(
     data: SerializedChannelItem & WithID
   ): Required<SerializedChannelItem> & WithID {
-    const item = deserializeChannelItem( this.__automaton, data );
+    const item = new ChannelItemWithGUI( this.__automaton, data );
     item.$id = data.$id;
     this.__items.push( item );
     this.__sortItems();
@@ -447,10 +445,10 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
    * @param id Id of the item you want to change
    * @param value Your desired value
    */
-  public changeConstantValue( id: string, value: number ): void {
+  public changeItemValue( id: string, value: number ): void {
     const index = this.__getItemIndexById( id );
 
-    const item = this.__items[ index ] as ChannelItemConstantWithGUI;
+    const item = this.__items[ index ];
 
     item.value = value;
 
@@ -468,7 +466,7 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
   public changeCurveSpeedAndOffset( id: string, speed: number, offset: number ): void {
     const index = this.__getItemIndexById( id );
 
-    const item = this.__items[ index ] as ChannelItemCurveWithGUI;
+    const item = this.__items[ index ];
 
     item.speed = Math.max( speed, 0.0 );
     item.offset = offset;

@@ -1,10 +1,10 @@
-import { SerializedChannelItem, SerializedChannelItemConstant, SerializedChannelItemCurve } from '@fms-cat/automaton';
 import { ChannelWithGUI } from '../../ChannelWithGUI';
 import { InspectorHeader } from './InspectorHeader';
 import { InspectorHr } from './InspectorHr';
 import { InspectorItem } from './InspectorItem';
 import { NumberParam } from './NumberParam';
 import React from 'react';
+import { SerializedChannelItem } from '@fms-cat/automaton';
 import { WithID } from '../../types/WithID';
 import styled from 'styled-components';
 import { useSelector } from '../states/store';
@@ -18,10 +18,10 @@ const InspectorChannelItemCurveParams = ( props: {
   stateItem: Required<SerializedChannelItem> & WithID;
   itemId: string;
 } ): JSX.Element => {
-  if ( !( 'curve' in props.stateItem ) ) { return <></>; }
+  if ( props.stateItem.curve == null ) { return <></>; }
 
   const { channel, itemId } = props;
-  const stateItem = props.stateItem as Required<SerializedChannelItemCurve> & WithID;
+  const stateItem = props.stateItem;
 
   return <>
     <InspectorHr />
@@ -55,10 +55,10 @@ const InspectorChannelItemConstantParams = ( props: {
   stateItem: Required<SerializedChannelItem> & WithID;
   itemId: string;
 } ): JSX.Element => {
-  if ( ( 'curve' in props.stateItem ) ) { return <></>; }
+  if ( props.stateItem.curve != null ) { return <></>; }
 
   const { channel, itemId } = props;
-  const stateItem = props.stateItem as Required<SerializedChannelItemConstant> & WithID;
+  const stateItem = props.stateItem;
 
   return <>
     <InspectorHr />
@@ -68,7 +68,7 @@ const InspectorChannelItemConstantParams = ( props: {
         type="float"
         value={ stateItem.value }
         onChange={ ( value ) => {
-          channel.changeConstantValue( itemId, value );
+          channel.changeItemValue( itemId, value );
         } }
         historyDescription="Change Constant Value"
       />

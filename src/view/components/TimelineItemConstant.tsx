@@ -3,7 +3,7 @@ import { TimeValueRange, dt2dx, dx2dt, snapTime, snapValue, t2x, v2y, x2t, y2v }
 import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
 import { Resolution } from '../utils/Resolution';
-import { SerializedChannelItemConstant } from '@fms-cat/automaton';
+import { SerializedChannelItem } from '@fms-cat/automaton';
 import { WithID } from '../../types/WithID';
 import { objectMapHas } from '../utils/objectMap';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
@@ -50,7 +50,7 @@ const Root = styled.g`
 // == props ========================================================================================
 export interface TimelineItemConstantProps {
   channel: string;
-  item: Required<SerializedChannelItemConstant> & WithID;
+  item: Required<SerializedChannelItem> & WithID;
   range: TimeValueRange;
   size: Resolution;
   dopeSheetMode?: boolean;
@@ -121,19 +121,19 @@ const TimelineItemConstant = ( props: TimelineItemConstantProps ): JSX.Element =
           }
 
           channel.moveItem( item.$id, t );
-          channel.changeConstantValue( item.$id, v );
+          channel.changeItemValue( item.$id, v );
         },
         () => {
           if ( !hasMoved ) { return; }
 
           const undo = (): void => {
             channel.moveItem( item.$id, tPrev );
-            channel.changeConstantValue( item.$id, vPrev );
+            channel.changeItemValue( item.$id, vPrev );
           };
 
           const redo = (): void => {
             channel.moveItem( item.$id, t );
-            channel.changeConstantValue( item.$id, v );
+            channel.changeItemValue( item.$id, v );
           };
 
           dispatch( {

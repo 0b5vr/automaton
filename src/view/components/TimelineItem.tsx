@@ -1,6 +1,6 @@
-import { SerializedChannelItem, SerializedChannelItemConstant, SerializedChannelItemCurve } from '@fms-cat/automaton';
 import React from 'react';
 import { Resolution } from '../utils/Resolution';
+import { SerializedChannelItem } from '@fms-cat/automaton';
 import { TimeValueRange } from '../utils/TimeValueRange';
 import { TimelineItemConstant } from './TimelineItemConstant';
 import { TimelineItemCurve } from './TimelineItemCurve';
@@ -19,11 +19,11 @@ export interface TimelineItemProps {
 const TimelineItem = ( props: TimelineItemProps ): JSX.Element => {
   const { channel, item, range, size, dopeSheetMode } = props;
 
-  if ( 'curve' in item ) {
+  if ( item.curve != null ) {
     return (
       <TimelineItemCurve
         channel={ channel }
-        item={ item as Required<SerializedChannelItemCurve> & WithID }
+        item={ item }
         range={ range }
         size={ size }
         dopeSheetMode={ dopeSheetMode }
@@ -33,7 +33,7 @@ const TimelineItem = ( props: TimelineItemProps ): JSX.Element => {
     return (
       <TimelineItemConstant
         channel={ channel }
-        item={ item as Required<SerializedChannelItemConstant> & WithID }
+        item={ item }
         range={ range }
         size={ size }
         dopeSheetMode={ dopeSheetMode }
