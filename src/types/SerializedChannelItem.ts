@@ -17,7 +17,7 @@ export interface SerializedChannelItem {
   /**
    * If it is not defined, interpret the item represents a constant item.
    */
-  curve?: number;
+  curve?: number | null;
 
   /**
    * Only valid when `curve` is specified.
