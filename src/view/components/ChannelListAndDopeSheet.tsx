@@ -1,12 +1,13 @@
+import React, { useCallback } from 'react';
+import { useDispatch, useSelector } from '../states/store';
 import { ChannelList } from './ChannelList';
 import { DopeSheet } from './DopeSheet';
 import { DopeSheetOverlay } from './DopeSheetOverlay';
 import { DopeSheetUnderlay } from './DopeSheetUnderlay';
 import { Metrics } from '../constants/Metrics';
-import React from 'react';
 import { Scrollable } from './Scrollable';
+import { duplicateName } from '../utils/duplicateName';
 import styled from 'styled-components';
-import { useSelector } from '../states/store';
 
 // == styles =======================================================================================
 const StyledChannelList = styled( ChannelList )`
@@ -56,10 +57,14 @@ const Root = styled.div`
 const ChannelListAndDopeSheet = ( props: {
   className?: string;
 } ): JSX.Element => {
+  const { className } = props;
+  const dispatch = useDispatch();
   const {
+    automaton,
     selectedChannel,
     selectedCurve
   } = useSelector( ( state ) => ( {
+    automaton: state.automaton.instance,
     selectedChannel: state.timeline.selectedChannel,
     selectedCurve: state.curveEditor.selectedCurve
   } ) );
@@ -72,10 +77,57 @@ const ChannelListAndDopeSheet = ( props: {
 
   const shouldShowChannelList = realm === 'dopeSheet' || realm === 'timeline';
 
-  const { className } = props;
+  const createChannel = useCallback(
+    (): void => {
+      if ( !automaton ) { return; }
+
+      const name = duplicateName( 'New', new Set( Object.keys( automaton.channels ) ) );
+
+      const redo = (): void => {
+        automaton.createChannel( name );
+      };
+
+      const undo = (): void => {
+        automaton.removeChannel( name );
+      };
+
+      dispatch( {
+        type: 'History/Push',
+        entry: {
+          description: `Create Channel: ${ name }`,
+          redo,
+          undo
+        }
+      } );
+      redo();
+    },
+    [ automaton ]
+  );
+
+  const handleContextMenu = useCallback(
+    ( event: React.MouseEvent ): void => {
+      event.preventDefault();
+      event.stopPropagation();
+
+      dispatch( {
+        type: 'ContextMenu/Open',
+        position: { x: event.clientX, y: event.clientY },
+        commands: [
+          {
+            name: 'Create Channel',
+            description: 'Create a new channel.',
+            callback: () => createChannel()
+          }
+        ]
+      } );
+    },
+    [ createChannel ]
+  );
 
   return (
-    <Root className={ className }>
+    <Root className={ className }
+      onContextMenu={ handleContextMenu }
+    >
       { realm === 'dopeSheet' && <StyledDopeSheetUnderlay /> }
       <ChannelListAndDopeSheetScrollable barPosition='left'>
         <ChannelListAndDopeSheetContainer>
