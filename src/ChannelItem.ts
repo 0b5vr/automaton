@@ -26,14 +26,16 @@ export class ChannelItem {
   public value!: number;
 
   /**
+   * This will only make sense when `curve` is specified.
    * The time offset of the item.
    */
-  public offset?: number;
+  public offset!: number;
 
   /**
+   * This will only make sense when `curve` is specified.
    * The speed rate of the item.
    */
-  public speed?: number;
+  public speed!: number;
 
   /**
    * The curve of the item.
@@ -72,14 +74,14 @@ export class ChannelItem {
    * @param data A serialized item.
    */
   public deserialize( data: SerializedChannelItem ): void {
-    this.time = data.time || 0.0;
-    this.length = data.length || 0.0;
-    this.value = data.value || 0.0;
+    this.time = data.time ?? 0.0;
+    this.length = data.length ?? 0.0;
+    this.value = data.value ?? 0.0;
+    this.offset = data.offset ?? 0.0;
+    this.speed = data.speed ?? 1.0;
     if ( data.curve != null ) {
       this.curve = this.__automaton.getCurve( data.curve )!;
-      this.length = data.length || this.curve.length || 0.0;
-      this.offset = data.offset || 0.0;
-      this.speed = data.speed || 1.0;
+      this.length = data.length ?? this.curve.length ?? 0.0;
     }
   }
 }

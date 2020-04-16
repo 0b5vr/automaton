@@ -20,13 +20,13 @@ export interface SerializedChannelItem {
   curve?: number | null;
 
   /**
-   * Only valid when `curve` is specified.
+   * This will only make sense when `curve` is specified.
    * `1.0` by default.
    */
   speed?: number;
 
   /**
-   * Only valid when `curve` is specified.
+   * This will only make sense when `curve` is specified.
    * `0.0` by default.
    */
   offset?: number;
