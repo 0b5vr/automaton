@@ -17,6 +17,7 @@ import { Metrics } from '../constants/Metrics';
 import { Provider } from 'react-redux';
 import React from 'react';
 import { Stalker } from './Stalker';
+import { TextPrompt } from './TextPrompt';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
@@ -108,12 +109,14 @@ const Fuck = ( { className, automaton, guiRemocon }: AppProps ): JSX.Element => 
     isFxSpawnerVisible,
     isAboutVisible,
     isContextMenuVisible,
+    isTextPromptVisible,
     selectedChannel,
     selectedCurve
   } = useSelector( ( state ) => ( {
     isFxSpawnerVisible: state.fxSpawner.isVisible,
     isAboutVisible: state.about.isVisible,
     isContextMenuVisible: state.contextMenu.isVisible,
+    isTextPromptVisible: state.textPrompt.isVisible,
     selectedChannel: state.timeline.selectedChannel,
     selectedCurve: state.curveEditor.selectedCurve
   } ) );
@@ -139,6 +142,7 @@ const Fuck = ( { className, automaton, guiRemocon }: AppProps ): JSX.Element => 
       { isFxSpawnerVisible && <StyledFxSpawner /> }
       { isAboutVisible && <StyledAbout /> }
       { isContextMenuVisible && <ContextMenu /> }
+      { isTextPromptVisible && <TextPrompt /> }
 
       <Stalker />
     </Root>

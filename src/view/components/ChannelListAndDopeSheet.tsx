@@ -6,7 +6,6 @@ import { DopeSheetOverlay } from './DopeSheetOverlay';
 import { DopeSheetUnderlay } from './DopeSheetUnderlay';
 import { Metrics } from '../constants/Metrics';
 import { Scrollable } from './Scrollable';
-import { duplicateName } from '../utils/duplicateName';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
@@ -78,28 +77,38 @@ const ChannelListAndDopeSheet = ( props: {
   const shouldShowChannelList = realm === 'dopeSheet' || realm === 'timeline';
 
   const createChannel = useCallback(
-    (): void => {
+    ( x: number, y: number ) => {
       if ( !automaton ) { return; }
 
-      const name = duplicateName( 'New', new Set( Object.keys( automaton.channels ) ) );
-
-      const redo = (): void => {
-        automaton.createChannel( name );
-      };
-
-      const undo = (): void => {
-        automaton.removeChannel( name );
-      };
-
       dispatch( {
-        type: 'History/Push',
-        entry: {
-          description: `Create Channel: ${ name }`,
-          redo,
-          undo
+        type: 'TextPrompt/Open',
+        position: { x, y },
+        placeholder: 'Name for the new channel',
+        checkValid: ( name ) => {
+          if ( name === '' ) { return false; }
+          if ( automaton.getChannel( name ) != null ) { return false; }
+          return true;
+        },
+        callback: ( name ) => {
+          const redo = (): void => {
+            automaton.createChannel( name );
+          };
+
+          const undo = (): void => {
+            automaton.removeChannel( name );
+          };
+
+          dispatch( {
+            type: 'History/Push',
+            entry: {
+              description: `Create Channel: ${ name }`,
+              redo,
+              undo
+            }
+          } );
+          redo();
         }
       } );
-      redo();
     },
     [ automaton ]
   );
@@ -109,14 +118,17 @@ const ChannelListAndDopeSheet = ( props: {
       event.preventDefault();
       event.stopPropagation();
 
+      const x = event.clientX;
+      const y = event.clientY;
+
       dispatch( {
         type: 'ContextMenu/Open',
-        position: { x: event.clientX, y: event.clientY },
+        position: { x, y },
         commands: [
           {
             name: 'Create Channel',
             description: 'Create a new channel.',
-            callback: () => createChannel()
+            callback: () => createChannel( x, y )
           }
         ]
       } );

@@ -6,7 +6,7 @@ import { useDispatch } from '../states/store';
 import { useDoubleClick } from '../utils/useDoubleClick';
 
 // == styles =======================================================================================
-const Input = styled.input< { isInvalid?: boolean } >`
+const Input = styled.input< { isInvalid: boolean } >`
   display: block;
   width: calc( 100% - 0.2rem );
   height: calc( 100% - 0.2rem );

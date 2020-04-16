@@ -6,6 +6,7 @@ import * as FxSpawner from './FxSpawner';
 import * as Header from './Header';
 import * as History from './History';
 import * as Settings from './Settings';
+import * as TextPrompt from './TextPrompt';
 import * as Timeline from './Timeline';
 import { Dispatch, combineReducers, createStore } from 'redux';
 import { shallowEqual, useDispatch as useReduxDispatch, useSelector as useReduxSelector } from 'react-redux';
@@ -20,6 +21,7 @@ export interface State {
   header: Header.State;
   history: History.State;
   settings: Settings.State;
+  textPrompt: TextPrompt.State;
   timeline: Timeline.State;
 }
 
@@ -33,6 +35,7 @@ export type Action = (
   Header.Action |
   History.Action |
   Settings.Action |
+  TextPrompt.Action |
   Timeline.Action
 );
 
@@ -46,6 +49,7 @@ const reducer = combineReducers<State>( {
   header: Header.reducer,
   history: History.reducer,
   settings: Settings.reducer,
+  textPrompt: TextPrompt.reducer,
   timeline: Timeline.reducer
 } );
 
