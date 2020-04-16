@@ -141,7 +141,7 @@ const FxSpawner = ( { className }: FxSpawnerProps ): JSX.Element => {
           <Input
             ref={ refInput }
             value={ query }
-            placeholder="Add a fx..."
+            placeholder="Add an fx..."
             onChange={ handleChange }
             onKeyDown={ handleKeyDown }
           />
