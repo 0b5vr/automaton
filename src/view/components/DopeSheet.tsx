@@ -84,7 +84,7 @@ const DopeSheet = ( { className }: DopeSheetProps ): JSX.Element => {
         move( -event.deltaX );
       }
     },
-    [ rect, zoom ]
+    [ rect, zoom, move ]
   );
 
   useEffect( // 🔥 fuck
