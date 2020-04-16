@@ -3,14 +3,11 @@ import { About } from './About';
 import { AutomatonStateListener } from './AutomatonStateListener';
 import { AutomatonWithGUI } from '../../AutomatonWithGUI';
 import { ChannelEditor } from './ChannelEditor';
-import { ChannelList } from './ChannelList';
+import { ChannelListAndDopeSheet } from './ChannelListAndDopeSheet';
 import { Colors } from '../constants/Colors';
 import { ContextMenu } from './ContextMenu';
 import { CurveEditor } from './CurveEditor';
 import { CurveList } from './CurveList';
-import { DopeSheet } from './DopeSheet';
-import { DopeSheetOverlay } from './DopeSheetOverlay';
-import { DopeSheetUnderlay } from './DopeSheetUnderlay';
 import { FxSpawner } from './FxSpawner';
 import { GUIRemocon } from '../../GUIRemocon';
 import { GUIRemoconListener } from './GUIRemoconListener';
@@ -19,7 +16,6 @@ import { Inspector } from './Inspector';
 import { Metrics } from '../constants/Metrics';
 import { Provider } from 'react-redux';
 import React from 'react';
-import { Scrollable } from './Scrollable';
 import { Stalker } from './Stalker';
 import styled from 'styled-components';
 
@@ -31,33 +27,6 @@ const StyledHeader = styled( Header )`
   height: ${ Metrics.headerHeight };
 `;
 
-const StyledChannelList = styled( ChannelList )`
-  width: ${ Metrics.channelListWidth - 4 }px;
-  margin: 0 2px;
-`;
-
-const StyledDopeSheetUnderlay = styled( DopeSheetUnderlay )`
-  position: absolute;
-  width: calc( 100% - ${ Metrics.channelListWidth }px - ${ Metrics.inspectorWidth } );
-  height: calc( 100% - ${ Metrics.headerHeight } );
-  left: ${ Metrics.channelListWidth }px;
-  top: ${ Metrics.headerHeight };
-`;
-
-const StyledDopeSheetOverlay = styled( DopeSheetOverlay )`
-  position: absolute;
-  width: calc( 100% - ${ Metrics.channelListWidth }px - ${ Metrics.inspectorWidth } );
-  height: calc( 100% - ${ Metrics.headerHeight } );
-  left: ${ Metrics.channelListWidth }px;
-  top: ${ Metrics.headerHeight };
-  pointer-events: none;
-`;
-
-const StyledDopeSheet = styled( DopeSheet )`
-  width: calc( 100% - ${ Metrics.channelListWidth }px );
-  flex-grow: 1;
-`;
-
 const StyledChannelEditor = styled( ChannelEditor )`
   position: absolute;
   left: ${ Metrics.channelListWidth }px;
@@ -66,12 +35,7 @@ const StyledChannelEditor = styled( ChannelEditor )`
   height: calc( 100% - ${ Metrics.headerHeight } );
 `;
 
-const ChannelListAndDopeSheetContainer = styled.div`
-  display: flex;
-  padding-bottom: 4px;
-`;
-
-const ChannelListAndDopeSheetScrollable = styled( Scrollable )`
+const StyledChannelListAndDopeSheet = styled( ChannelListAndDopeSheet )`
   position: absolute;
   left: 0;
   top: ${ Metrics.headerHeight };
@@ -160,21 +124,12 @@ const Fuck = ( { className, automaton, guiRemocon }: AppProps ): JSX.Element => 
     'dopeSheet'
   );
 
-  const shouldShowChannelList = realm === 'dopeSheet' || realm === 'timeline';
-
   return (
     <Root className={ className }>
       <AutomatonStateListener automaton={ automaton } />
       <GUIRemoconListener guiRemocon={ guiRemocon } />
       <StyledHeader />
-      { realm === 'dopeSheet' && <StyledDopeSheetUnderlay /> }
-      <ChannelListAndDopeSheetScrollable barPosition='left'>
-        <ChannelListAndDopeSheetContainer>
-          { shouldShowChannelList && <StyledChannelList /> }
-          { realm === 'dopeSheet' && <StyledDopeSheet /> }
-        </ChannelListAndDopeSheetContainer>
-      </ChannelListAndDopeSheetScrollable>
-      { realm === 'dopeSheet' && <StyledDopeSheetOverlay /> }
+      <StyledChannelListAndDopeSheet />
       { realm === 'timeline' && <StyledChannelEditor /> }
       { realm === 'curveEditor' && <>
         <StyledCurveList />
