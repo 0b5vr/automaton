@@ -112,6 +112,7 @@ const TextPrompt = ( { className }: {
     () => {
       if ( isVisible ) {
         refInput.current?.focus();
+        refInput.current?.select();
       }
     },
     [ isVisible ]
