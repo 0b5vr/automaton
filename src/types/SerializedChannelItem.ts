@@ -20,14 +20,20 @@ export interface SerializedChannelItem {
   curve?: number | null;
 
   /**
-   * This will only make sense when `curve` is specified.
+   * This will only make sense when {@link curve} is specified.
    * `1.0` by default.
    */
   speed?: number;
 
   /**
-   * This will only make sense when `curve` is specified.
+   * This will only make sense when {@link curve} is specified.
    * `0.0` by default.
    */
   offset?: number;
+
+  /**
+   * This will only make sense when {@link curve} is specified.
+   * `1.0` by default.
+   */
+  amp?: number;
 }

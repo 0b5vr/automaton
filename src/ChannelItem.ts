@@ -26,16 +26,22 @@ export class ChannelItem {
   public value!: number;
 
   /**
-   * This will only make sense when `curve` is specified.
+   * This will only make sense when {@link curve} is specified.
    * The time offset of the item.
    */
   public offset!: number;
 
   /**
-   * This will only make sense when `curve` is specified.
+   * This will only make sense when {@link curve} is specified.
    * The speed rate of the item.
    */
   public speed!: number;
+
+  /**
+   * This will only make sense when {@link curve} is specified.
+   * The scale of the item in the value axis.
+   */
+  public amp!: number;
 
   /**
    * The curve of the item.
@@ -63,7 +69,7 @@ export class ChannelItem {
   public getValue( time: number ): number {
     if ( this.curve ) {
       const t = this.offset! + time * this.speed!;
-      return this.curve.getValue( t );
+      return this.value + this.amp * this.curve.getValue( t );
     } else {
       return this.value;
     }
@@ -79,6 +85,7 @@ export class ChannelItem {
     this.value = data.value ?? 0.0;
     this.offset = data.offset ?? 0.0;
     this.speed = data.speed ?? 1.0;
+    this.amp = data.amp ?? 1.0;
     if ( data.curve != null ) {
       this.curve = this.__automaton.getCurve( data.curve )!;
       this.length = data.length ?? this.curve.length ?? 0.0;
