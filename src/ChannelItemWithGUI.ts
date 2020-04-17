@@ -38,6 +38,7 @@ export class ChannelItemWithGUI extends ChannelItem {
       data.curve = this.__automaton.getCurveIndex( this.curve );
       if ( this.offset !== 0.0 ) { data.offset = this.offset; }
       if ( this.speed !== 1.0 ) { data.speed = this.speed; }
+      if ( this.amp !== 1.0 ) { data.amp = this.amp; }
     }
 
     return data;
@@ -55,6 +56,7 @@ export class ChannelItemWithGUI extends ChannelItem {
       value: this.value,
       offset: this.offset,
       speed: this.speed,
+      amp: this.amp,
       curve: this.curve ? this.__automaton.getCurveIndex( this.curve ) : null
     };
 

@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import { TimeValueRange, dt2dx, dx2dt, snapTime, t2x, v2y, x2t } from '../utils/TimeValueRange';
+import { TimeValueRange, dt2dx, dx2dt, snapTime, snapValue, t2x, v2y, x2t, y2v } from '../utils/TimeValueRange';
 import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
 import { Resolution } from '../utils/Resolution';
@@ -82,13 +82,13 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
 
   const x = useMemo( () => t2x( item.time, range, size.width ), [ item, range, size ] );
   const y0 = useMemo(
-    () => dopeSheetMode ? size.height : v2y( 0.0, range, size.height ),
-    [ range, size ]
+    () => dopeSheetMode ? size.height : v2y( item.value, range, size.height ),
+    [ item, range, size ]
   );
   const w = useMemo( () => dt2dx( item.length, range, size.width ), [ item, range, size ] );
   const y1 = useMemo(
-    () => dopeSheetMode ? 0.0 : v2y( 1.0, range, size.height ),
-    [ range, size ]
+    () => dopeSheetMode ? 0.0 : v2y( item.value + item.amp, range, size.height ),
+    [ item, range, size ]
   );
 
   const y = Math.min( y0, y1 );
@@ -112,45 +112,45 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
       if ( !channel ) { return; }
 
       const tPrev = item.time;
-      // const vPrev = item.value;
+      const vPrev = item.value;
       let x = t2x( tPrev, range, size.width );
-      // let y = v2y( vPrev, range, size.height );
+      let y = v2y( vPrev, range, size.height );
       let t = tPrev;
-      // let v = vPrev;
+      let v = vPrev;
       let hasMoved = false;
 
       registerMouseEvent(
         ( event, movementSum ) => {
           hasMoved = true;
           x += movementSum.x;
-          // y += movementSum.y;
+          y += movementSum.y;
 
           const holdTime = event.ctrlKey || event.metaKey;
-          // const holdValue = event.shiftKey;
+          const holdValue = dopeSheetMode || event.shiftKey;
           const ignoreSnap = event.altKey;
 
           t = holdTime ? tPrev : x2t( x, range, size.width );
-          // v = holdValue ? vPrev : y2v( y, range, size.height );
+          v = holdValue ? vPrev : y2v( y, range, size.height );
 
           if ( !ignoreSnap ) {
             if ( !holdTime ) { t = snapTime( t, range, size.width, guiSettings ); }
-            // if ( !holdValue ) { v = snapValue( v, range, size.height, guiSettings ); }
+            if ( !holdValue ) { v = snapValue( v, range, size.height, guiSettings ); }
           }
 
           channel.moveItem( item.$id, t );
-          // channel.moveNodeValue( node.$id, v );
+          channel.changeItemValue( item.$id, v );
         },
         () => {
           if ( !hasMoved ) { return; }
 
           const undo = (): void => {
             channel.moveItem( item.$id, tPrev );
-            // channel.moveNodeValue( node.$id, vPrev );
+            channel.changeItemValue( item.$id, vPrev );
           };
 
           const redo = (): void => {
             channel.moveItem( item.$id, t );
-            // channel.moveNodeValue( node.$id, v );
+            channel.changeItemValue( item.$id, v );
           };
 
           dispatch( {

@@ -47,6 +47,17 @@ const InspectorChannelItemCurveParams = ( props: {
         historyDescription="Change Curve Offset"
       />
     </InspectorItem>
+
+    <InspectorItem name="Amp">
+      <NumberParam
+        type="float"
+        value={ stateItem.amp }
+        onChange={ ( value ) => {
+          channel.changeCurveAmp( itemId, value );
+        } }
+        historyDescription="Change Curve Amp"
+      />
+    </InspectorItem>
   </>;
 };
 
@@ -115,12 +126,24 @@ const InspectorChannelItem = ( props: Props ): JSX.Element => {
             historyDescription="Change Item Time"
           />
         </InspectorItem>
+
         <InspectorItem name="Length">
           <NumberParam
             type="float"
             value={ stateItem.length }
             onChange={ ( value ) => { channel.resizeItem( itemId, value ); } }
             historyDescription="Change Item Length"
+          />
+        </InspectorItem>
+
+        <InspectorItem name="Value">
+          <NumberParam
+            type="float"
+            value={ stateItem.value }
+            onChange={ ( value ) => {
+              channel.changeItemValue( itemId, value );
+            } }
+            historyDescription="Change Constant Value"
           />
         </InspectorItem>
 

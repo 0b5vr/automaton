@@ -477,6 +477,23 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
   }
 
   /**
+   * Change the amp a curve item.
+   * @param id Id of the item you want to change
+   * @param amp Your desired amp
+   */
+  public changeCurveAmp( id: string, amp: number ): void {
+    const index = this.__getItemIndexById( id );
+
+    const item = this.__items[ index ];
+
+    item.amp = amp;
+
+    this.__emit( 'updateItem', { id, item: item.serializeGUI() } );
+
+    this.__automaton.shouldSave = true;
+  }
+
+  /**
    * Call when you need to change the length of the automaton.
    * Should not be called by anywhere except {@link AutomatonWithGUI#setLength}.
    */
