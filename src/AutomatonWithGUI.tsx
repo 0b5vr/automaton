@@ -311,6 +311,32 @@ export class AutomatonWithGUI extends Automaton
    * @returns Created channel
    */
   public createChannel( name: string, data?: SerializedChannel ): ChannelWithGUI {
+    if ( this.__channels[ name ] ) {
+      throw new Error( 'AutomatonWithGUI: A channel for the given name already exists' );
+    }
+
+    const channel = new ChannelWithGUI( this, data );
+    this.__channels[ name ] = channel;
+
+    this.__emit( 'createChannel', { name, channel: channel } );
+
+    this.shouldSave = true;
+
+    return channel;
+  }
+
+  /**
+   * Create a new channel, or overwrite the existing one.
+   * Intended to be used by GUI.
+   * @param name Name of channel
+   * @param data Serialized data of the channel
+   * @returns Created channel
+   */
+  public createOrOverwriteChannel( name: string, data?: SerializedChannel ): ChannelWithGUI {
+    if ( this.__channels[ name ] ) {
+      this.removeChannel( name );
+    }
+
     const channel = new ChannelWithGUI( this, data );
     this.__channels[ name ] = channel;
 

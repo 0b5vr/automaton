@@ -77,6 +77,51 @@ const ChannelListEntry = ( props: ChannelListEntryProps ): JSX.Element => {
     [ selectedChannel ]
   );
 
+  const renameChannel = useCallback(
+    ( x: number, y: number ) => {
+      if ( !automaton ) { return; }
+
+      dispatch( {
+        type: 'TextPrompt/Open',
+        position: { x, y },
+        defaultText: name,
+        placeholder: 'New name for the channel',
+        checkValid: ( newName ) => {
+          if ( newName === '' ) { return false; }
+          if ( newName === name ) { return true; }
+          if ( automaton.getChannel( newName ) != null ) { return false; }
+          return true;
+        },
+        callback: ( newName ) => {
+          if ( newName === name ) { return; }
+
+          const data = automaton.getChannel( name )!.serialize();
+
+          const redo = (): void => {
+            automaton.removeChannel( name );
+            automaton.createChannel( newName, data );
+          };
+
+          const undo = (): void => {
+            automaton.removeChannel( newName );
+            automaton.createOrOverwriteChannel( name, data );
+          };
+
+          dispatch( {
+            type: 'History/Push',
+            entry: {
+              description: `Rename Channel: ${ name } -> ${ newName }`,
+              redo,
+              undo
+            }
+          } );
+          redo();
+        }
+      } );
+    },
+    [ automaton, name ]
+  );
+
   const duplicateChannel = useCallback(
     () => {
       if ( !automaton ) { return; }
@@ -137,10 +182,18 @@ const ChannelListEntry = ( props: ChannelListEntryProps ): JSX.Element => {
       event.preventDefault();
       event.stopPropagation();
 
+      const x = event.clientX;
+      const y = event.clientY;
+
       dispatch( {
         type: 'ContextMenu/Open',
-        position: { x: event.clientX, y: event.clientY },
+        position: { x, y },
         commands: [
+          {
+            name: 'Rename',
+            description: 'Rename the channel.',
+            callback: () => renameChannel( x, y )
+          },
           {
             name: 'Duplicate',
             description: 'Duplicate the channel.',
@@ -154,7 +207,7 @@ const ChannelListEntry = ( props: ChannelListEntryProps ): JSX.Element => {
         ]
       } );
     },
-    [ duplicateChannel, removeChannel ]
+    [ renameChannel, duplicateChannel, removeChannel ]
   );
 
   return (
