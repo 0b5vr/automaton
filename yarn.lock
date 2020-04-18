@@ -1050,10 +1050,10 @@
   resolved "https://registry.yarnpkg.com/@emotion/unitless/-/unitless-0.7.5.tgz#77211291c1900a700b8a78cfafda3160d76949ed"
   integrity sha512-OWORNpfjMsSSUBVrRBVGECkhWcULOAJz9ZW8uK9qgxD+87M7jHRcvh/A96XXNhXTLmKcoYSQtBEX7lHMO7YRwg==
 
-"@fms-cat/automaton@^2.1.1":
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/@fms-cat/automaton/-/automaton-2.1.1.tgz#6c5cd157a82f992ce45606859a1a95cd7b557d74"
-  integrity sha512-62vvIw9cB9Nezlp1Apaf3YSqHrgCBp4lFabRratfIONh+x96tIgL3ZdIaBKtgwtKDc//s8cUyUebVSJ7pYhWPg==
+"@fms-cat/automaton@^3.0.0-beta1":
+  version "3.0.0-beta1"
+  resolved "https://registry.yarnpkg.com/@fms-cat/automaton/-/automaton-3.0.0-beta1.tgz#dcb50f72e50025ffb70668da1fa18934f124cda7"
+  integrity sha512-V6u4A7OVfOwzkUhJyt/r0mxq9LcVlmOc1C8XWz7MfzA4NH4UoozQAe8KguXqJMdNccuBNTTkuPbm8FyYUyy1RQ==
 
 "@types/color-name@^1.1.1":
   version "1.1.1"
