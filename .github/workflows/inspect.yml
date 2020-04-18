@@ -4,7 +4,7 @@ jobs:
   fetch:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
     - name: Cache Deps
       uses: actions/cache@v1
       with:
@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: fetch
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
     - name: Cache Deps
       uses: actions/cache@v1
       with:
@@ -34,7 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: fetch
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
     - name: Cache Deps
       uses: actions/cache@v1
       with:
@@ -49,7 +49,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: fetch
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
     - name: Cache Deps
       uses: actions/cache@v1
       with:
@@ -74,7 +74,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: fetch
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
     - name: Cache Deps
       uses: actions/cache@v1
       with:
