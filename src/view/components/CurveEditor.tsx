@@ -231,12 +231,38 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
     [ range, rect, curve ]
   );
 
+  const startSeek = useCallback(
+    ( x: number ): void => {
+      if ( !automaton ) { return; }
+      if ( automaton.isDisabledTimeControls ) { return; }
+
+      const isPlaying = automaton.isPlaying;
+
+      automaton.pause();
+      automaton.seek( x2t( x, range, rect.width ) );
+
+      registerMouseEvent(
+        ( event ) => {
+          automaton.seek( x2t( event.clientX - rect.left, range, rect.width ) );
+        },
+        ( event ) => {
+          automaton.seek( x2t( event.clientX - rect.left, range, rect.width ) );
+          if ( isPlaying ) { automaton.play(); }
+        }
+      );
+    },
+    [ automaton, range, rect ]
+  );
+
   const handleMouseDown = useCallback(
     ( event: React.MouseEvent ): void => {
       event.preventDefault();
+      event.stopPropagation();
 
       if ( event.buttons === 1 ) {
-        if ( checkDoubleClick() ) {
+        if ( event.altKey ) {
+          startSeek( event.clientX - rect.left );
+        } else if ( checkDoubleClick() ) {
           createNodeAndGrab( event.clientX - rect.left, event.clientY - rect.top );
         }
       } else if ( event.buttons === 4 ) {
@@ -245,7 +271,7 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
         );
       }
     },
-    [ createNodeAndGrab, rect, move ]
+    [ createNodeAndGrab, startSeek, rect, move ]
   );
 
   const createNode = useCallback(

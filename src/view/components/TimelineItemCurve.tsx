@@ -298,6 +298,8 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
   const handleClickBody = useCallback(
     ( event: React.MouseEvent ): void => {
       if ( event.buttons === 1 ) {
+        if ( event.altKey ) { return; } // to perform seek
+
         event.preventDefault();
         event.stopPropagation();
 

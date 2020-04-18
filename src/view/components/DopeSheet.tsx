@@ -4,6 +4,7 @@ import { DopeSheetEntry } from './DopeSheetEntry';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
 import styled from 'styled-components';
 import { useRect } from '../utils/useRect';
+import { x2t } from '../utils/TimeValueRange';
 
 // == styles =======================================================================================
 const StyledDopeSheetEntry = styled( DopeSheetEntry )`
@@ -23,8 +24,15 @@ const DopeSheet = ( { className }: DopeSheetProps ): JSX.Element => {
   const dispatch = useDispatch();
   const refRoot = useRef<HTMLDivElement>( null );
   const rect = useRect( refRoot );
-  const { channelNames, length } = useSelector( ( state ) => ( {
+  const {
+    automaton,
+    channelNames,
+    range,
+    length
+  } = useSelector( ( state ) => ( {
+    automaton: state.automaton.instance,
     channelNames: state.automaton.channelNames,
+    range: state.timeline.range,
     length: state.automaton.length
   } ) );
 
@@ -61,9 +69,39 @@ const DopeSheet = ( { className }: DopeSheetProps ): JSX.Element => {
     [ rect, length ]
   );
 
+  const startSeek = useCallback(
+    ( x: number ): void => {
+      if ( !automaton ) { return; }
+      if ( automaton.isDisabledTimeControls ) { return; }
+
+      const isPlaying = automaton.isPlaying;
+
+      automaton.pause();
+      automaton.seek( x2t( x, range, rect.width ) );
+
+      registerMouseEvent(
+        ( event ) => {
+          automaton.seek( x2t( event.clientX - rect.left, range, rect.width ) );
+        },
+        ( event ) => {
+          automaton.seek( x2t( event.clientX - rect.left, range, rect.width ) );
+          if ( isPlaying ) { automaton.play(); }
+        }
+      );
+    },
+    [ automaton, range, rect ]
+  );
+
   const handleMouseDown = useCallback(
     ( event: React.MouseEvent ): void => {
-      if ( event.buttons === 4 ) {
+      if ( event.buttons === 1 ) {
+        if ( event.altKey ) {
+          event.preventDefault();
+          event.stopPropagation();
+
+          startSeek( event.clientX - rect.left );
+        }
+      } else if ( event.buttons === 4 ) {
         event.preventDefault();
         event.stopPropagation();
 
@@ -72,7 +110,7 @@ const DopeSheet = ( { className }: DopeSheetProps ): JSX.Element => {
         );
       }
     },
-    [ move ]
+    [ move, rect, startSeek ]
   );
 
   const handleWheel = useCallback(

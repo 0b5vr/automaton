@@ -202,6 +202,8 @@ const DopeSheetEntry = ( props: Props ): JSX.Element => {
   const handleMouseDown = useCallback(
     ( event: React.MouseEvent ): void => {
       if ( event.buttons === 1 ) {
+        if ( event.altKey ) { return; } // to perform seek
+
         event.preventDefault();
         event.stopPropagation();
 

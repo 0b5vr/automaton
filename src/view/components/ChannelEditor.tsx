@@ -302,16 +302,43 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
     [ automaton, lastSelectedItem, range, rect, selectedChannel, channel ]
   );
 
+  const startSeek = useCallback(
+    ( x: number ): void => {
+      if ( !automaton ) { return; }
+      if ( automaton.isDisabledTimeControls ) { return; }
+
+      const isPlaying = automaton.isPlaying;
+
+      automaton.pause();
+      automaton.seek( x2t( x, range, rect.width ) );
+
+      registerMouseEvent(
+        ( event ) => {
+          automaton.seek( x2t( event.clientX - rect.left, range, rect.width ) );
+        },
+        ( event ) => {
+          automaton.seek( x2t( event.clientX - rect.left, range, rect.width ) );
+          if ( isPlaying ) { automaton.play(); }
+        }
+      );
+    },
+    [ automaton, range, rect ]
+  );
+
   const handleMouseDown = useCallback(
     ( event: React.MouseEvent ): void => {
       if ( event.buttons === 1 ) {
         event.preventDefault();
         event.stopPropagation();
 
-        createItemAndGrab(
-          event.clientX - rect.left,
-          event.clientY - rect.top
-        );
+        if ( event.altKey ) {
+          startSeek( event.clientX - rect.left );
+        } else {
+          createItemAndGrab(
+            event.clientX - rect.left,
+            event.clientY - rect.top
+          );
+        }
       } else if ( event.buttons === 4 ) {
         event.preventDefault();
         event.stopPropagation();
@@ -321,7 +348,7 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
         );
       }
     },
-    [ createItemAndGrab, rect, move ]
+    [ createItemAndGrab, startSeek, rect, move ]
   );
 
   const handleContextMenu = useCallback(
