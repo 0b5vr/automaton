@@ -106,7 +106,7 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
           out: { time: CHANNEL_DEFAULT_HANDLE_LENGTH, value: 0.0 }
         },
         {
-          time: automaton.length,
+          time: 1.0,
           value: 0.0,
           in: { time: -CHANNEL_DEFAULT_HANDLE_LENGTH, value: 0.0 }
         }
@@ -276,19 +276,12 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
   }
 
   /**
-   * Check whether the node is the first / last node or not.
+   * Check whether the node is the first node or not.
    * @param id Id of the node you want to check
    */
-  public isFirstOrLastNode( id: string ): boolean {
+  public isFirstNode( id: string ): boolean {
     const index = this.__getNodeIndexById( id );
-
-    if ( index === 0 ) {
-      return true;
-    } else if ( index === this.__nodes.length - 1 ) {
-      return true;
-    }
-
-    return false;
+    return index === 0;
   }
 
   /**
@@ -298,11 +291,14 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
   public removeNode( id: string ): void {
     const index = this.__getNodeIndexById( id );
 
-    // we can't delete the first / last node
+    // we can't delete the first node
     if ( index === 0 ) {
       return;
-    } else if ( index === this.__nodes.length - 1 ) {
-      return;
+    }
+
+    // if we delete the last node, change the length
+    if ( index === this.__nodes.length - 1 ) {
+      this.__length = this.__nodes[ this.__nodes.length - 2 ].time;
     }
 
     this.__nodes.splice( index, 1 );
@@ -327,15 +323,18 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
     let newTime = time;
     if ( index === 0 ) {
       newTime = 0;
-    } else if ( index === this.__nodes.length - 1 ) {
-      newTime = this.__automaton.length;
     } else {
-      newTime = Math.min(
-        Math.max( newTime, this.__nodes[ index - 1 ].time ),
-        this.__nodes[ index + 1 ].time
-      );
+      newTime = Math.max( newTime, this.__nodes[ index - 1 ].time );
+
+      if ( index !== this.__nodes.length - 1 ) {
+        newTime = Math.min( newTime, this.__nodes[ index + 1 ].time );
+      }
     }
     node.time = newTime;
+
+    if ( index === this.__nodes.length - 1 ) {
+      this.__length = newTime;
+    }
 
     this.precalc();
 
@@ -740,74 +739,6 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
     this.precalc();
 
     this.__emit( 'updateFx', { id, fx } );
-
-    this.__automaton.shouldSave = true;
-  }
-
-  /**
-   * Change the length of the curve.
-   * It's really difficult to undo this.
-   * @param length The desired length
-   */
-  public changeLength( length: number ): void {
-    // iterating nodes from the tail
-    for ( let i = this.__nodes.length - 1; 0 <= i; i -- ) {
-      const node = this.__nodes[ i ];
-
-      if ( length < node.time ) {
-        // if the node time is larger than the new length, remove it
-        this.__nodes.splice( i, 1 );
-        this.__emit( 'removeNode', { id: node.$id } );
-
-      } else if ( node.time === length ) {
-        // if the node time is same as the new length, remove the out handle
-        delete node.out;
-        this.__emit( 'updateNode', { id: node.$id, node } );
-        break;
-
-      } else {
-        // add a out handle to the previous last node
-        if ( node ) {
-          node.out = { time: CHANNEL_DEFAULT_HANDLE_LENGTH, value: 0.0 };
-        }
-        this.__emit( 'updateNode', { id: node.$id, node } );
-
-        // if the node time is smaller than the new length, make a new last node then break
-        const newNode = {
-          time: length,
-          value: 0.0,
-          in: { time: -CHANNEL_DEFAULT_HANDLE_LENGTH, value: 0.0 },
-          $id: genID()
-        };
-        this.__nodes.push( newNode );
-        this.__emit( 'createNode', { id: newNode.$id, node: newNode } );
-        break;
-
-      }
-    }
-
-    // iterating fxs from the tail
-    for ( let i = this.__fxs.length - 1; 0 <= i; i -- ) {
-      const fx = this.__fxs[ i ];
-
-      if ( length < fx.time ) {
-        // if the beginning time of the fx is larger than the new length, remove it
-        this.__fxs.splice( i, 1 );
-        this.__emit( 'removeFx', { id: fx.$id } );
-
-      } else if ( length < ( fx.time + fx.length ) ) {
-        // if the ending time of the fx is larger than the new length, shorten it
-        fx.length = length - fx.time;
-        this.__emit( 'updateFx', { id: fx.$id, fx } );
-
-      }
-    }
-
-    this.__length = length;
-
-    this.precalc();
-
-    this.__emit( 'changeLength', { length } );
 
     this.__automaton.shouldSave = true;
   }

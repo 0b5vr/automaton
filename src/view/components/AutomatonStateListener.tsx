@@ -12,9 +12,9 @@ function genCurvePath( curve: CurveWithGUI ): string {
   let path = '';
 
   for ( let i = 0; i <= CURVE_RESO; i ++ ) {
-    const t = i / CURVE_RESO * curve.length;
+    const x = i / CURVE_RESO;
+    const t = x * curve.length;
     const v = curve.getValue( t );
-    const x = t / curve.length;
     const y = v;
     path += `${ x },${ y } `;
   }

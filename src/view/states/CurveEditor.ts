@@ -52,7 +52,7 @@ export type Action = {
   size: Resolution;
   dx: number;
   dy: number;
-  tmax: number;
+  tmax?: number;
 } | {
   type: 'CurveEditor/ZoomRange';
   size: Resolution;
@@ -60,7 +60,7 @@ export type Action = {
   cy: number;
   dx: number;
   dy: number;
-  tmax: number;
+  tmax?: number;
 };
 
 // == reducer ======================================================================================
@@ -96,7 +96,7 @@ export const reducer: Reducer<State, ContextAction> = ( state = initialState, ac
     } else if ( action.type === 'CurveEditor/MoveRange' ) {
       const { range } = state;
       const { size } = action;
-      const length = action.tmax;
+      const length = action.tmax ?? Infinity;
 
       let dt = x2t( 0.0, range, size.width ) - x2t( action.dx, range, size.width );
       dt = Math.min( Math.max( dt, -range.t0 ), length - range.t1 );
@@ -112,7 +112,7 @@ export const reducer: Reducer<State, ContextAction> = ( state = initialState, ac
     } else if ( action.type === 'CurveEditor/ZoomRange' ) {
       const { range } = state;
       const { size } = action;
-      const length = action.tmax;
+      const length = action.tmax ?? Infinity;
 
       const ct = x2t( action.cx, range, size.width );
       const cv = y2v( action.cy, range, size.height );

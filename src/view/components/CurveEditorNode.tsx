@@ -123,7 +123,7 @@ const CurveEditorNode = ( props: Props ): JSX.Element => {
     (): void => {
       if ( !curve ) { return; }
 
-      if ( curve.isFirstOrLastNode( node.$id ) ) { return; }
+      if ( curve.isFirstNode( node.$id ) ) { return; }
 
       const undo = (): void => {
         curve.createNodeFromData( node );

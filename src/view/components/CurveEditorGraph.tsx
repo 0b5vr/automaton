@@ -24,6 +24,7 @@ function calcPoints(
   let newPoints = '';
   for ( let x = 0; x <= size.width; x ++ ) {
     const t = x2t( x, range, size.width );
+    if ( curve.length < t ) { break; }
     const v = curve.getValue( t );
     const y = v2y( isNaN( v ) ? 0.0 : v, range, size.height );
     newPoints += `${ x },${ y } `;

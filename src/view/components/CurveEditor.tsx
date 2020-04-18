@@ -153,8 +153,7 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
         type: 'CurveEditor/MoveRange',
         size: rect,
         dx,
-        dy,
-        tmax: length // 🔥
+        dy
       } );
     },
     [ rect, length ]
@@ -170,8 +169,7 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
         cx,
         cy,
         dx,
-        dy,
-        tmax: length // 🔥
+        dy
       } );
     },
     [ rect, length ]
