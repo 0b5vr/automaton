@@ -147,8 +147,6 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
 
   const move = useCallback(
     ( dx: number, dy: number ): void => {
-      if ( !length ) { return; }
-
       dispatch( {
         type: 'CurveEditor/MoveRange',
         size: rect,
@@ -161,8 +159,6 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
 
   const zoom = useCallback(
     ( cx: number, cy: number, dx: number, dy: number ): void => {
-      if ( !length ) { return; }
-
       dispatch( {
         type: 'CurveEditor/ZoomRange',
         size: rect,

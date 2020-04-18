@@ -150,25 +150,6 @@ export const reducer: Reducer<State, ContextAction> = ( state = initialState, ac
       newState.selectedItems.nodes = arraySetDiff( newState.selectedItems.nodes, [ action.id ] );
     } else if ( action.type === 'Automaton/RemoveCurveFx' ) {
       newState.selectedItems.fxs = arraySetDiff( newState.selectedItems.fxs, [ action.id ] );
-    } else if ( action.type === 'Automaton/ChangeCurveLength' ) { // WHOA, REALLY
-      if ( action.length < state.range.t0 ) {
-        // if t0 is larger than the new length, reset the range
-        newState.range = {
-          t0: 0.0,
-          t1: action.length,
-          v0: state.range.v0,
-          v1: state.range.v1,
-        };
-
-      } else if ( action.length < state.range.t1 ) {
-        // if t1 is larger than the new length, clamp the t1 to the new length
-        newState.range = {
-          t0: state.range.t0,
-          t1: action.length,
-          v0: state.range.v0,
-          v1: state.range.v1,
-        };
-      }
     }
   } );
 };

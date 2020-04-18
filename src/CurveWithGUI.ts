@@ -299,6 +299,7 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
     // if we delete the last node, change the length
     if ( index === this.__nodes.length - 1 ) {
       this.__length = this.__nodes[ this.__nodes.length - 2 ].time;
+      this.__emit( 'changeLength', { length: this.__length } );
     }
 
     this.__nodes.splice( index, 1 );
@@ -334,6 +335,7 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
 
     if ( index === this.__nodes.length - 1 ) {
       this.__length = newTime;
+      this.__emit( 'changeLength', { length: this.__length } );
     }
 
     this.precalc();
