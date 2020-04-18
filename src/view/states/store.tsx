@@ -8,6 +8,7 @@ import * as History from './History';
 import * as Settings from './Settings';
 import * as TextPrompt from './TextPrompt';
 import * as Timeline from './Timeline';
+import * as Workspace from './Workspace';
 import { Dispatch, combineReducers, createStore } from 'redux';
 import { shallowEqual, useDispatch as useReduxDispatch, useSelector as useReduxSelector } from 'react-redux';
 
@@ -23,6 +24,7 @@ export interface State {
   settings: Settings.State;
   textPrompt: TextPrompt.State;
   timeline: Timeline.State;
+  workspace: Workspace.State;
 }
 
 // == action =======================================================================================
@@ -36,7 +38,8 @@ export type Action = (
   History.Action |
   Settings.Action |
   TextPrompt.Action |
-  Timeline.Action
+  Timeline.Action |
+  Workspace.Action
 );
 
 // == reducer ======================================================================================
@@ -50,7 +53,8 @@ const reducer = combineReducers<State>( {
   history: History.reducer,
   settings: Settings.reducer,
   textPrompt: TextPrompt.reducer,
-  timeline: Timeline.reducer
+  timeline: Timeline.reducer,
+  workspace: Workspace.reducer
 } );
 
 // == store ========================================================================================

@@ -4,5 +4,6 @@ export const Metrics = {
   channelListWidth: 128,
   inspectorWidth: '12rem',
   curveListWidth: 128,
+  modeSelectorWidth: 36,
   curveListEntryHeight: 36,
 };

@@ -10,6 +10,7 @@ export const Colors = {
 
   fore: '#d0edff',
   foresub: '#b9d3e3',
+  foredark: '#97abb9',
 
   gray: '#697681',
 

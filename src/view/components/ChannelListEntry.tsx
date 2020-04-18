@@ -77,6 +77,21 @@ const ChannelListEntry = ( props: ChannelListEntryProps ): JSX.Element => {
     [ selectedChannel ]
   );
 
+  const editChannel = useCallback(
+    (): void => {
+      dispatch( {
+        type: 'Timeline/SelectChannel',
+        channel: name
+      } );
+
+      dispatch( {
+        type: 'Workspace/ChangeMode',
+        mode: 'channel'
+      } );
+    },
+    [ name ]
+  );
+
   const renameChannel = useCallback(
     ( x: number, y: number ) => {
       if ( !automaton ) { return; }
@@ -189,6 +204,11 @@ const ChannelListEntry = ( props: ChannelListEntryProps ): JSX.Element => {
         type: 'ContextMenu/Open',
         position: { x, y },
         commands: [
+          {
+            name: 'Edit',
+            description: 'Edit the channel.',
+            callback: () => editChannel()
+          },
           {
             name: 'Rename',
             description: 'Rename the channel.',

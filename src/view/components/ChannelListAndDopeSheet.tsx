@@ -60,21 +60,13 @@ const ChannelListAndDopeSheet = ( props: {
   const dispatch = useDispatch();
   const {
     automaton,
-    selectedChannel,
-    selectedCurve
+    mode
   } = useSelector( ( state ) => ( {
     automaton: state.automaton.instance,
-    selectedChannel: state.timeline.selectedChannel,
-    selectedCurve: state.curveEditor.selectedCurve
+    mode: state.workspace.mode
   } ) );
 
-  const realm: 'dopeSheet' | 'timeline' | 'curveEditor' = (
-    selectedCurve != null ? 'curveEditor' :
-    selectedChannel != null ? 'timeline' :
-    'dopeSheet'
-  );
-
-  const shouldShowChannelList = realm === 'dopeSheet' || realm === 'timeline';
+  const shouldShowChannelList = mode === 'dope' || mode === 'channel';
 
   const createChannel = useCallback(
     ( x: number, y: number ) => {
@@ -140,14 +132,14 @@ const ChannelListAndDopeSheet = ( props: {
     <Root className={ className }
       onContextMenu={ handleContextMenu }
     >
-      { realm === 'dopeSheet' && <StyledDopeSheetUnderlay /> }
+      { mode === 'dope' && <StyledDopeSheetUnderlay /> }
       <ChannelListAndDopeSheetScrollable barPosition='left'>
         <ChannelListAndDopeSheetContainer>
           { shouldShowChannelList && <StyledChannelList /> }
-          { realm === 'dopeSheet' && <StyledDopeSheet /> }
+          { mode === 'dope' && <StyledDopeSheet /> }
         </ChannelListAndDopeSheetContainer>
       </ChannelListAndDopeSheetScrollable>
-      { realm === 'dopeSheet' && <StyledDopeSheetOverlay /> }
+      { mode === 'dope' && <StyledDopeSheetOverlay /> }
     </Root>
   );
 };

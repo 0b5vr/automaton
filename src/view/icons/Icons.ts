@@ -1,8 +1,11 @@
 export const Icons = {
   Automaton: require( './automaton.svg' ).default,
   AutomatonA: require( './automaton-a.svg' ).default,
+  Channel: require( './channel.svg' ).default,
   Close: require( './close.svg' ).default,
   Cog: require( './cog.svg' ).default,
+  Curve: require( './curve.svg' ).default,
+  DopeSheet: require( './dope-sheet.svg' ).default,
   Error: require( './error.svg' ).default,
   Pause: require( './pause.svg' ).default,
   Play: require( './play.svg' ).default,

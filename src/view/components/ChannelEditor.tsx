@@ -17,7 +17,7 @@ import { useRect } from '../utils/useRect';
 
 // == microcomponent ===============================================================================
 const Lines = ( { channel, range, size }: {
-  channel?: string;
+  channel: string | null;
   range: TimeValueRange;
   size: Resolution;
 } ): JSX.Element => {
@@ -104,11 +104,6 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
     lastSelectedItem: state.timeline.lastSelectedItem
   } ) );
   const channel = selectedChannel != null && automaton?.getChannel( selectedChannel );
-  const { stateItems } = useSelector( ( state ) => ( {
-    stateItems: selectedChannel != null
-      ? state.automaton.channels[ selectedChannel ].items
-      : null
-  } ) );
 
   const refBody = useRef<HTMLDivElement>( null );
   const rect = useRect( refBody );
@@ -405,8 +400,6 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
     [ refBody.current, handleWheel ]
   );
 
-  if ( !automaton || !selectedChannel || !channel || !stateItems ) { return <></>; }
-
   return (
     <Root
       className={ className }
@@ -421,11 +414,13 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
             range={ range }
             size={ rect }
           />
-          <Items
-            channel={ selectedChannel }
-            range={ range }
-            size={ rect }
-          />
+          { selectedChannel && <>
+            <Items
+              channel={ selectedChannel }
+              range={ range }
+              size={ rect }
+            />
+          </> }
           <Lines
             channel={ selectedChannel }
             range={ range }

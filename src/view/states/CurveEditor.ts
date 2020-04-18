@@ -75,13 +75,8 @@ export const reducer: Reducer<State, ContextAction> = ( state = initialState, ac
       newState.selectedItems.nodes = [];
       newState.selectedItems.fxs = [];
     } else if ( action.type === 'CurveEditor/SelectItems' ) {
-      if ( action.nodes ) {
-        newState.selectedItems.nodes = action.nodes;
-      }
-
-      if ( action.fxs ) {
-        newState.selectedItems.fxs = action.fxs;
-      }
+      newState.selectedItems.nodes = action.nodes || [];
+      newState.selectedItems.fxs = action.fxs || [];
     } else if ( action.type === 'CurveEditor/SelectItemsAdd' ) {
       if ( action.nodes ) {
         newState.selectedItems.nodes = arraySetUnion( state.selectedItems.nodes, action.nodes );

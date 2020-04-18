@@ -24,32 +24,42 @@ const ShouldSaveIndicator = ( { className }: {
 
 // == styles =======================================================================================
 const StyledHeaderSeekbar = styled( HeaderSeekbar )`
-  width: 8rem;
-  height: calc( ${ Metrics.headerHeight } - 0.25rem );
+  width: 124px;
+  height: calc( ${ Metrics.headerHeight } - 4px );
+  margin: 2px;
 `;
 
 const Section = styled.div`
   display: flex;
-
-  & > * {
-    margin: 0 0.25rem;
-  }
 `;
 
 const Button = styled.img<{ disabled?: boolean; active?: boolean }>`
-  width: calc( ${ Metrics.headerHeight } - 0.25rem );
-  height: calc( ${ Metrics.headerHeight } - 0.25rem );
+  width: calc( ${ Metrics.headerHeight } - 4px );
+  height: calc( ${ Metrics.headerHeight } - 4px );
   fill: ${ ( { disabled: disabled, active: active } ) => disabled ? Colors.gray : active ? Colors.accent : Colors.fore };
+  cursor: pointer;
+  margin: 2px 4px;
+
+  &:hover {
+    fill: ${ ( { disabled: disabled, active: active } ) => disabled ? Colors.gray : active ? Colors.accentdark : Colors.foredark };
+  }
+`;
+
+const PlayPause = styled.img`
+  width: calc( ${ Metrics.headerHeight } + 4px );
+  height: calc( ${ Metrics.headerHeight } );
+  padding: 2px 4px;
+  fill: ${ Colors.fore };
   cursor: pointer;
 
   &:hover {
-    fill: ${ ( { disabled: disabled, active: active } ) => disabled ? Colors.gray : active ? Colors.accentdark : Colors.foresub };
+    fill: ${ Colors.foredark };
   }
 `;
 
 const Logo = styled.img`
-  height: calc( ( ${ Metrics.headerHeight } - 0.25rem ) * 0.6 );
-  margin: calc( ( ${ Metrics.headerHeight } - 0.25rem ) * 0.2 );
+  height: calc( ${ Metrics.headerHeight } * 0.5 );
+  margin: calc( ${ Metrics.headerHeight } * 0.25 );
   fill: ${ Colors.fore };
   opacity: 0.5;
   cursor: pointer;
@@ -67,14 +77,13 @@ const StyledShouldSaveIndicator = styled( ShouldSaveIndicator )`
   width: 6px;
   height: 6px;
   border-radius: 3px;
-  margin: auto 0 auto 6px;
+  margin: auto 0 auto 4px;
   background: ${ Colors.accent };
 `;
 
 const Root = styled.div`
   display: flex;
   justify-content: space-between;
-  padding: 0.125rem;
   background: ${ Colors.back4 };
 `;
 
@@ -211,9 +220,8 @@ const Header = ( { className }: HeaderProps ): JSX.Element => {
     <Root className={ className }>
       <Section>
         { !isDisabledTimeControls && (
-          <Button
+          <PlayPause
             as={ isPlaying ? Icons.Pause : Icons.Play }
-            active={ 1 as any as boolean } // fuck
             onClick={ handlePlay }
             data-stalker="Play / Pause"
           />

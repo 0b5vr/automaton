@@ -341,6 +341,11 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
         type: 'CurveEditor/SelectCurve',
         curve: item.curve
       } );
+
+      dispatch( {
+        type: 'Workspace/ChangeMode',
+        mode: 'curve'
+      } );
     },
     [ item.curve ]
   );

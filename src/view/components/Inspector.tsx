@@ -45,13 +45,15 @@ const Inspector = ( { className }: {
     stateSelectedNodes,
     stateSelectedFxs,
     stateSelectedTimelineItems,
-    settingsMode
+    settingsMode,
+    mode
   } = useSelector( ( state ) => ( {
     selectedCurve: state.curveEditor.selectedCurve,
     stateSelectedNodes: state.curveEditor.selectedItems.nodes,
     stateSelectedFxs: state.curveEditor.selectedItems.fxs,
     stateSelectedTimelineItems: state.timeline.selectedItems,
-    settingsMode: state.settings.mode
+    settingsMode: state.settings.mode,
+    mode: state.workspace.mode
   } ) );
 
   let content: JSX.Element | null = null;
@@ -59,22 +61,26 @@ const Inspector = ( { className }: {
     content = <InspectorSnapping />;
   } else if ( settingsMode === 'general' ) {
     content = <InspectorGeneral />;
-  } else if ( selectedCurve != null ) {
-    if ( stateSelectedNodes.length === 1 ) {
-      content = <InspectorCurveNode
-        curve={ selectedCurve }
-        node={ stateSelectedNodes[ 0 ] }
-      />;
-    } else if ( stateSelectedFxs.length === 1 ) {
-      content = <InspectorCurveFx
-        curve={ selectedCurve }
-        fx={ stateSelectedFxs[ 0 ] }
+  } else if ( mode === 'curve' ) {
+    if ( selectedCurve != null ) {
+      if ( stateSelectedNodes.length === 1 ) {
+        content = <InspectorCurveNode
+          curve={ selectedCurve }
+          node={ stateSelectedNodes[ 0 ] }
+        />;
+      } else if ( stateSelectedFxs.length === 1 ) {
+        content = <InspectorCurveFx
+          curve={ selectedCurve }
+          fx={ stateSelectedFxs[ 0 ] }
+        />;
+      }
+    }
+  } else if ( mode === 'channel' || mode === 'dope' ) {
+    if ( objectMapSize( stateSelectedTimelineItems ) === 1 ) {
+      content = <InspectorChannelItem
+        item={ objectMapValues( stateSelectedTimelineItems )[ 0 ] }
       />;
     }
-  } else if ( objectMapSize( stateSelectedTimelineItems ) === 1 ) {
-    content = <InspectorChannelItem
-      item={ objectMapValues( stateSelectedTimelineItems )[ 0 ] }
-    />;
   }
 
   return <Root className={ className }>

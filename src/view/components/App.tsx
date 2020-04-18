@@ -14,6 +14,7 @@ import { GUIRemoconListener } from './GUIRemoconListener';
 import { Header } from './Header';
 import { Inspector } from './Inspector';
 import { Metrics } from '../constants/Metrics';
+import { ModeSelector } from './ModeSelector';
 import { Provider } from 'react-redux';
 import React from 'react';
 import { Stalker } from './Stalker';
@@ -28,24 +29,33 @@ const StyledHeader = styled( Header )`
   height: ${ Metrics.headerHeight };
 `;
 
+const StyledModeSelector = styled( ModeSelector )`
+  position: absolute;
+  left: 0;
+  top: ${ Metrics.headerHeight };
+  width: ${ Metrics.modeSelectorWidth }px;
+  height: calc( 100% - ${ Metrics.headerHeight } );
+`;
+
 const StyledChannelEditor = styled( ChannelEditor )`
   position: absolute;
-  left: ${ Metrics.channelListWidth }px;
+  left: ${ Metrics.modeSelectorWidth + Metrics.channelListWidth }px;
   top: ${ Metrics.headerHeight };
-  width: calc( 100% - ${ Metrics.channelListWidth }px - ${ Metrics.inspectorWidth } );
+  width: calc( 100% - ${ Metrics.modeSelectorWidth }px - ${ Metrics.channelListWidth }px - ${ Metrics.inspectorWidth } );
   height: calc( 100% - ${ Metrics.headerHeight } );
 `;
 
 const StyledChannelListAndDopeSheet = styled( ChannelListAndDopeSheet )`
   position: absolute;
-  left: 0;
+  left: ${ Metrics.modeSelectorWidth }px;
   top: ${ Metrics.headerHeight };
-  width: calc( 100% - ${ Metrics.inspectorWidth } );
+  width: calc( 100% - ${ Metrics.modeSelectorWidth }px - ${ Metrics.inspectorWidth } );
   height: calc( 100% - ${ Metrics.headerHeight } );
 `;
 
 const StyledCurveList = styled( CurveList )`
   position: absolute;
+  left: ${ Metrics.modeSelectorWidth }px;
   bottom: 0;
   width: ${ Metrics.curveListWidth }px;
   height: calc( 100% - ${ Metrics.headerHeight } );
@@ -53,9 +63,9 @@ const StyledCurveList = styled( CurveList )`
 
 const StyledCurveEditor = styled( CurveEditor )`
   position: absolute;
-  left: ${ Metrics.curveListWidth }px;
+  left: ${ Metrics.modeSelectorWidth + Metrics.curveListWidth }px;
   bottom: 0;
-  width: calc( 100% - ${ Metrics.curveListWidth }px - ${ Metrics.inspectorWidth } );
+  width: calc( 100% - ${ Metrics.modeSelectorWidth }px - ${ Metrics.curveListWidth }px - ${ Metrics.inspectorWidth } );
   height: calc( 100% - ${ Metrics.headerHeight } );
 `;
 
@@ -110,31 +120,24 @@ const Fuck = ( { className, automaton, guiRemocon }: AppProps ): JSX.Element => 
     isAboutVisible,
     isContextMenuVisible,
     isTextPromptVisible,
-    selectedChannel,
-    selectedCurve
+    mode
   } = useSelector( ( state ) => ( {
     isFxSpawnerVisible: state.fxSpawner.isVisible,
     isAboutVisible: state.about.isVisible,
     isContextMenuVisible: state.contextMenu.isVisible,
     isTextPromptVisible: state.textPrompt.isVisible,
-    selectedChannel: state.timeline.selectedChannel,
-    selectedCurve: state.curveEditor.selectedCurve
+    mode: state.workspace.mode
   } ) );
-
-  const realm: 'dopeSheet' | 'timeline' | 'curveEditor' = (
-    selectedCurve != null ? 'curveEditor' :
-    selectedChannel != null ? 'timeline' :
-    'dopeSheet'
-  );
 
   return (
     <Root className={ className }>
       <AutomatonStateListener automaton={ automaton } />
       <GUIRemoconListener guiRemocon={ guiRemocon } />
       <StyledHeader />
+      <StyledModeSelector />
       <StyledChannelListAndDopeSheet />
-      { realm === 'timeline' && <StyledChannelEditor /> }
-      { realm === 'curveEditor' && <>
+      { mode === 'channel' && <StyledChannelEditor /> }
+      { mode === 'curve' && <>
         <StyledCurveList />
         <StyledCurveEditor />
       </> }
