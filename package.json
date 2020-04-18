@@ -10,10 +10,8 @@
   "private": false,
   "scripts": {
     "dev": "webpack-dev-server --hot --mode development",
-    "all": "yarn lint && yarn clean && yarn build && yarn docs",
-    "preversion": "git-branch-is master",
+    "all": "yarn lint && yarn test && yarn clean && yarn build && yarn docs",
     "version": "yarn all",
-    "postpublish": "yarn gh-pages",
     "clean": "rimraf dist docs types",
     "build": "yarn build-dev && yarn build-prod && yarn types",
     "build-dev": "webpack --mode development",
@@ -21,7 +19,7 @@
     "types": "tsc --emitDeclarationOnly",
     "docs": "typedoc --out docs --mode file --excludeNotExported",
     "lint": "eslint \"src/**/*.{ts,tsx}\"",
-    "gh-pages": "node ./utils/gh-pages.js"
+    "test": "echo ナイヨー"
   },
   "files": [
     "dist",
