@@ -1,11 +1,13 @@
 module.exports = {
     "root": true,
 
-    "plugins": [ "@typescript-eslint" ],
+    "plugins": [
+        "@typescript-eslint",
+        "jest"
+    ],
 
     "env": {
         "es6": true,
-        "browser": true,
         "commonjs": true
     },
 
@@ -16,7 +18,11 @@ module.exports = {
         "ecmaVersion": 2017
     },
 
-    "extends": "eslint:recommended",
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/eslint-recommended",
+        "plugin:@typescript-eslint/recommended"
+    ],
 
     "globals": {
         "process": true // since gulp has envify
@@ -24,13 +30,13 @@ module.exports = {
 
     "rules": {
         // basics
-        "indent": [ "error", 2, { // indentation should be 2 spaces
+        "@typescript-eslint/indent": [ "error", 2, { // indentation should be 2 spaces
             "flatTernaryExpressions": true, // ternary should be performed in flat
             "MemberExpression": 0 // member chain should be performed in flat
         } ], // it forces 2 spaces indentation
         "linebreak-style": [ "error", "unix" ], // fuck you, CRLF
         "quotes": [ "error", "single" ], // quotes must be single
-        "eqeqeq": [ "error", "always" ], // fuck you, `==`
+        "eqeqeq": [ "error", "smart" ], // fuck you, `==`
         "max-len": [ "error", { // don't be too long, code
             "code": 100,
             "ignoreComments": true, // comments are okay
@@ -80,6 +86,11 @@ module.exports = {
         "no-console": [ "error", { allow: [ "info", "warn", "error" ] } ], // don't forget to remove `console.log` !
 
         // typescript-specifics
+        "@typescript-eslint/no-explicit-any": [ "off" ], // yea
+        "@typescript-eslint/no-inferrable-types": [ "off" ], // it's ok
+        "@typescript-eslint/no-non-null-assertion": [ "off" ], // bang is sometimes required
+        "@typescript-eslint/no-empty-interface": [ "off" ], // we need to perform mixins
+        "@typescript-eslint/explicit-function-return-type": [ "error", { "allowExpressions": true } ], // return type is required
         "@typescript-eslint/explicit-member-accessibility": [ "error" ], // `public` / `private` for members and methods are required
     }
 };

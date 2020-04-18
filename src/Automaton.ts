@@ -1,52 +1,30 @@
-import { Clock } from './Clock';
-import { ClockFrame } from './ClockFrame';
-import { ClockRealtime } from './ClockRealtime';
-import { EventEmitter } from 'eventemitter3';
+import { Channel, ChannelUpdateEvent } from './Channel';
+import { Curve } from './Curve';
 import { FxDefinition } from './types/FxDefinition';
-import { Param } from './Param';
-import { SerializedData } from './types/SerializedData';
-import { SerializedParam } from './types/SerializedParam';
-
-/**
- * Interface for options of {@link Automaton}.
- */
-export interface AutomatonOptions {
-  /**
-   * Whether let the time loop or not.
-   */
-  loop?: boolean;
-
-  /**
-   * If this is set, the clock will become frame mode.
-   */
-  fps?: number;
-
-  /**
-   * If this is true, the clock will become realtime mode.
-   */
-  realtime?: boolean;
-
-  /**
-   * Serialized data of the automaton.
-   * **MUST BE PARSED JSON**
-   */
-  data?: SerializedData;
-}
+import { SerializedAutomaton } from './types/SerializedAutomaton';
+import { clamp } from './utils/clamp';
 
 /**
  * IT'S AUTOMATON!
- * It's `automaton.nogui.js` version and also base class for {@link AutomatonWithGUI}.
+ * @param data Serialized data of the automaton
  * @param options Options for this Automaton instance
  */
-export class Automaton extends EventEmitter {
+export class Automaton {
   /**
-   * **THE MIGHTY `auto()` FUNCTION!! GRAB IT**
-   * It creates a new param automatically if there are no param called `_name` (GUI mode only).
-   * Otherwise it returns current value of the param called `_name`.
-   * @param name name of the param
-   * @returns Current value of the param
+   * It returns the current value of the [[Channel]] called `name`.
+   * If the `name` is an array, it returns a set of name : channel as an object instead.
+   * You can also give a listener which will be executed when the channel changes its value (optional).
+   * @param name The name of the channel
+   * @param listener A function that will be executed when the channel changes its value
+   * @returns Current value of the channel
    */
   public auto = this.__auto.bind( this );
+
+  /**
+   * Current time of the automaton.
+   * Can be set by [[update]], be retrieved by [[get time]], be used by [[auto]]
+   */
+  protected __time: number = 0.0;
 
   /**
    * Version of the automaton.
@@ -64,38 +42,28 @@ export class Automaton extends EventEmitter {
   protected __resolution: number = 1000;
 
   /**
-   * Whether the animation will be looped or not.
+   * Curves of the automaton.
    */
-  protected __isLoop: boolean;
+  protected __curves: Curve[] = [];
 
   /**
-   * Clock of the automaton.
+   * Channels of the timeline.
    */
-  protected __clock: Clock;
+  protected __channels: { [ name: string ]: Channel } = {};
 
   /**
-   * Params of the timeline.
+   * A map of fx definitions.
    */
-  protected __params: { [ name: string ]: Param } = {};
+  protected __fxDefinitions: { [ name: string ]: FxDefinition } = {};
 
-  /**
-   * A list of fx definitions.
-   */
-  protected __fxDefs: { [ name: string ]: FxDefinition } = {};
-
-  public constructor( options: AutomatonOptions ) {
-    super();
-
-    this.__isLoop = options.loop || false;
-
-    this.__clock = (
-      options.fps ? new ClockFrame( options.fps ) :
-      options.realtime ? new ClockRealtime() :
-      new Clock()
-    );
-
-    options.data && this.load( options.data );
+  public constructor( data: SerializedAutomaton ) {
+    this.deserialize( data );
   }
+
+  /**
+   * Current time of the automaton, that is set via [[update]].
+   */
+  public get time(): number { return this.__time; }
 
   /**
    * Version of the automaton.
@@ -113,104 +81,18 @@ export class Automaton extends EventEmitter {
   public get resolution(): number { return this.__resolution; }
 
   /**
-   * Current time. Same as `automaton.__clock.time`.
-   */
-  public get time(): number { return this.__clock.time; }
-
-  /**
-   * Delta of time between now and previous update call.
-   */
-  public get deltaTime(): number { return this.__clock.deltaTime; }
-
-  /**
-   * Current progress by whole length. Might NOT be [0-1] unless {@link AutomatonOptions#loop} is true.
-   */
-  public get progress(): number { return this.__clock.time / this.__length; }
-
-  /**
-   * Whether it's playing or not.
-   */
-  public get isPlaying(): boolean { return this.__clock.isPlaying; }
-
-  /**
-   * Current frame.
-   * If the clock type is not frame mode, it will return `null` instead.
-   */
-  public get frame(): number | null {
-    const frame = ( this.__clock as any ).frame as ( number | undefined );
-    return frame || null;
-  }
-
-  /**
-   * Frame per second.
-   * If the clock type is not frame mode, it will return `null` instead.
-   */
-  public get fps(): number | null {
-    const fps = ( this.__clock as any ).fps as ( number | undefined );
-    return fps || null;
-  }
-
-  /**
-   * Boolean that represents whether the clock is based on realtime or not.
-   */
-  public get isRealtime(): boolean {
-    const isRealtime = ( this.__clock as any ).isRealtime as ( boolean | undefined );
-    return isRealtime || false;
-  }
-
-  /**
-   * Whether the animation will be looped or not.
-   */
-  public get isLoop(): boolean { return this.__isLoop; }
-
-  /**
-   * Create a new param.
-   * @param name Name of the param
-   * @param data Data for the param
-   */
-  public createParam( name: string, data: SerializedParam ): void {
-    this.__params[ name ] = new Param( this, data );
-  }
-
-  /**
    * Load serialized automaton data.
    * @param data Serialized object contains automaton data.
    */
-  public load( data: SerializedData ): void {
+  public deserialize( data: SerializedAutomaton ): void {
     this.__length = data.length;
     this.__resolution = data.resolution;
 
-    for ( const name in data.params ) {
-      this.createParam( name, data.params[ name ] );
+    this.__curves = data.curves.map( ( data ) => new Curve( this, data ) );
+
+    for ( const name in data.channels ) {
+      this.__channels[ name ] = new Channel( this, data.channels[ name ] );
     }
-  }
-
-  /**
-   * Seek the timeline.
-   * Can be performed via GUI.
-   * @param time Time
-   */
-  public seek( time: number ): void {
-    this.__clock.setTime( time );
-    this.emit( 'seek' );
-  }
-
-  /**
-   * Play the timeline.
-   * @todo SHOULD be performed via GUI.
-   */
-  public play(): void {
-    this.__clock.play();
-    this.emit( 'play' );
-  }
-
-  /**
-   * Pause the timeline.
-   * @todo SHOULD be performed via GUI.
-   */
-  public pause(): void {
-    this.__clock.pause();
-    this.emit( 'pause' );
   }
 
   /**
@@ -219,7 +101,7 @@ export class Automaton extends EventEmitter {
    * @param fxDef Fx definition object
    */
   public addFxDefinition( id: string, fxDef: FxDefinition ): void {
-    this.__fxDefs[ id ] = fxDef;
+    this.__fxDefinitions[ id ] = fxDef;
 
     this.precalcAll();
   }
@@ -230,40 +112,63 @@ export class Automaton extends EventEmitter {
    * @param id Unique id for the Fx definition
    */
   public getFxDefinition( id: string ): FxDefinition | null {
-    return this.__fxDefs[ id ] || null;
+    return this.__fxDefinitions[ id ] || null;
   }
 
   /**
-   * Precalculate all params.
+   * Get a curve.
+   * @param index An index of the curve
+   */
+  public getCurve( index: number ): Curve | null {
+    return this.__curves[ index ] || null;
+  }
+
+  /**
+   * Precalculate all curves.
    */
   public precalcAll(): void {
-    Object.values( this.__params ).forEach( ( param ) => param.precalc() );
+    Object.values( this.__curves ).forEach( ( curve ) => curve.precalc() );
+  }
+
+  /**
+   * Reset the internal states of channels.
+   * **Call this method when you seek the time.**
+   */
+  public reset(): void {
+    Object.values( this.__channels ).forEach( ( channel ) => channel.reset() );
   }
 
   /**
    * Update the entire automaton.
    * **You may want to call this in your update loop.**
-   * @param time Current time, **Required if the clock mode is manual**
+   * @param time Current time
    */
   public update( time: number ): void {
-    // update the clock
-    this.__clock.update( time );
+    const t = clamp( time, 0.0, this.__length );
 
-    // if loop is enabled, loop the time
-    if ( this.__isLoop && ( this.time < 0 || this.length < this.time ) ) {
-      this.__clock.setTime( this.time - Math.floor( this.time / this.length ) * this.length );
+    // cache the time
+    this.__time = t;
+
+    // grab the current value for each channels
+    for ( const channel of Object.values( this.__channels ) ) {
+      channel.update( this.__time );
     }
-
-    // grab current value for each param
-    Object.values( this.__params ).forEach( ( param ) => param.getValue() );
   }
 
   /**
    * Assigned to {@link Automaton#auto} on its initialize phase.
-   * @param name name of the param
-   * @returns Current value of the param
+   * @param name The name of the channel
+   * @param listener A function that will be executed when the channel changes its value
+   * @returns Current value of the channel
    */
-  protected __auto( name: string ): number {
-    return this.__params[ name ].getValue();
+  protected __auto(
+    name: string,
+    listener?: ( event: ChannelUpdateEvent ) => void
+  ): number {
+    if ( listener ) {
+      this.__channels[ name ].subscribe( listener );
+    }
+
+    return this.__channels[ name ].currentValue;
   }
 }

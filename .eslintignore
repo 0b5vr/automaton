@@ -1,2 +1,4 @@
+/*.js
 /dist/**
+/utils/**
 /node_modules/**

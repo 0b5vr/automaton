@@ -9,11 +9,12 @@
     "resolveJsonModule": true,
     "removeComments": false,
     "noUnusedLocals": true,
-    "lib": [ "dom", "es2017" ],
+    "downlevelIteration": true,
+    "lib": [ "es2017" ],
     "rootDir": "./src",
     "outDir": "./dist",
     "declaration": true,
-    "declarationDir": "./types",
+    "declarationDir": "./types"
   },
   "include": [ "src" ],
   "exclude": [ "node_modules" ]

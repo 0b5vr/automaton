@@ -37,13 +37,3 @@ export interface BezierNode {
    */
   out?: BezierControlPoint;
 }
-
-/**
- * {@link BezierNode} + `$id`
- */
-export interface BezierNodePlusID extends BezierNode {
-  /**
-   * Its unique id.
-   */
-  $id: string;
-}
