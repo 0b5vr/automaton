@@ -1,5 +1,7 @@
 # AutomatonWIthGUI
 
+[![Latest NPM release](https://img.shields.io/npm/v/@fms-cat/automaton-with-gui.svg)](https://www.npmjs.com/package/@fms-cat/automaton-with-gui) ![Inspect](https://github.com/FMS-Cat/automaton-with-gui/workflows/Inspect/badge.svg)
+
 WIP
 
 ### Q: what is this
