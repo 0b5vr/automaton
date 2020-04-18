@@ -38,11 +38,13 @@ const DopeSheetEntry = ( props: Props ): JSX.Element => {
     automaton,
     range,
     lastSelectedItem,
+    selectedCurve,
     stateItems
   } = useSelector( ( state ) => ( {
     automaton: state.automaton.instance,
     range: state.timeline.range,
     lastSelectedItem: state.timeline.lastSelectedItem,
+    selectedCurve: state.curveEditor.selectedCurve,
     stateItems: state.automaton.channels[ channelName ].items
   } ) );
   const channel = automaton?.getChannel( channelName );
@@ -137,7 +139,7 @@ const DopeSheetEntry = ( props: Props ): JSX.Element => {
 
   const createItemAndGrab = useCallback(
     ( x0: number ): void => {
-      if ( !automaton || !lastSelectedItem || !channel ) { return; }
+      if ( !automaton || !channel ) { return; }
 
       let x = x0;
 
@@ -149,15 +151,30 @@ const DopeSheetEntry = ( props: Props ): JSX.Element => {
 
       if ( !thereAreNoOtherItemsHere ) { return; }
 
-      const srcChannel = automaton.getChannel( lastSelectedItem.channel );
-      const src = srcChannel?.tryGetItem( lastSelectedItem.id );
+      let data: Required<SerializedChannelItem> & WithID | null = null;
 
-      let data: Required<SerializedChannelItem> & WithID;
-      if ( src ) {
-        data = channel.duplicateItem( t0, src );
-      } else {
+      // try last selected item
+      if ( lastSelectedItem ) {
+        const srcChannel = automaton.getChannel( lastSelectedItem.channel );
+        const src = srcChannel?.tryGetItem( lastSelectedItem.id );
+        if ( src ) {
+          data = channel.duplicateItem( t0, src );
+        }
+      }
+
+      if ( !data ) {
+        // try selected curve
+        if ( selectedCurve != null ) {
+          data = channel.createItemCurve( selectedCurve, t0 );
+        }
+      }
+
+      // fallback to constant
+      if ( !data ) {
         data = channel.createItemConstant( t0 );
       }
+
+      const confirmedData = data!; // thanks TypeScript
 
       dispatch( {
         type: 'Timeline/SelectItems',
@@ -171,19 +188,19 @@ const DopeSheetEntry = ( props: Props ): JSX.Element => {
         ( event, movementSum ) => {
           x += movementSum.x;
 
-          channel.moveItem( data.$id, x2t( x, range, rect.width ) );
+          channel.moveItem( confirmedData.$id, x2t( x, range, rect.width ) );
         },
         () => {
           const t = x2t( x, range, rect.width );
-          channel.moveItem( data.$id, t );
-          data.time = t;
+          channel.moveItem( confirmedData.$id, t );
+          confirmedData.time = t;
 
           const undo = (): void => {
-            channel.removeItem( data.$id );
+            channel.removeItem( confirmedData.$id );
           };
 
           const redo = (): void => {
-            channel.createItemFromData( data );
+            channel.createItemFromData( confirmedData );
           };
 
           dispatch( {
@@ -197,7 +214,7 @@ const DopeSheetEntry = ( props: Props ): JSX.Element => {
         }
       );
     },
-    [ automaton, lastSelectedItem, range, rect, channelName, channel ]
+    [ automaton, lastSelectedItem, selectedCurve, range, rect, channelName, channel ]
   );
 
   const handleMouseDown = useCallback(

@@ -95,13 +95,15 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
     selectedChannel,
     range,
     length,
-    lastSelectedItem
+    lastSelectedItem,
+    selectedCurve
   } = useSelector( ( state ) => ( {
     automaton: state.automaton.instance,
     selectedChannel: state.timeline.selectedChannel,
     range: state.timeline.range,
     length: state.automaton.length,
-    lastSelectedItem: state.timeline.lastSelectedItem
+    lastSelectedItem: state.timeline.lastSelectedItem,
+    selectedCurve: state.curveEditor.selectedCurve
   } ) );
   const channel = selectedChannel != null && automaton?.getChannel( selectedChannel );
 
@@ -227,7 +229,7 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
 
   const createItemAndGrab = useCallback(
     ( x0: number, y0: number ): void => {
-      if ( !automaton || !lastSelectedItem || !selectedChannel || !channel ) { return; }
+      if ( !automaton || !selectedChannel || !channel ) { return; }
 
       let x = x0;
       let y = y0;
@@ -240,16 +242,31 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
 
       if ( !thereAreNoOtherItemsHere ) { return; }
 
-      const srcChannel = automaton.getChannel( lastSelectedItem.channel );
-      const src = srcChannel?.tryGetItem( lastSelectedItem.id );
+      let data: Required<SerializedChannelItem> & WithID | null = null;
 
-      let data: Required<SerializedChannelItem> & WithID;
-      if ( src ) {
-        data = channel.duplicateItem( t0, src );
-      } else {
+      // try last selected item
+      if ( lastSelectedItem ) {
+        const srcChannel = automaton.getChannel( lastSelectedItem.channel );
+        const src = srcChannel?.tryGetItem( lastSelectedItem.id );
+        if ( src ) {
+          data = channel.duplicateItem( t0, src );
+        }
+      }
+
+      if ( !data ) {
+        // try selected curve
+        if ( selectedCurve != null ) {
+          data = channel.createItemCurve( selectedCurve, t0 );
+        }
+      }
+
+      // fallback to constant
+      if ( !data ) {
         data = channel.createItemConstant( t0 );
         channel.changeItemValue( data.$id, y2v( y, range, rect.height ) );
       }
+
+      const confirmedData = data!; // thanks TypeScript
 
       dispatch( {
         type: 'Timeline/SelectItems',
@@ -264,24 +281,24 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
           x += movementSum.x;
           y += movementSum.y;
 
-          channel.moveItem( data.$id, x2t( x, range, rect.width ) );
-          channel.changeItemValue( data.$id, y2v( y, range, rect.height ) );
+          channel.moveItem( confirmedData.$id, x2t( x, range, rect.width ) );
+          channel.changeItemValue( confirmedData.$id, y2v( y, range, rect.height ) );
         },
         () => {
           const t = x2t( x, range, rect.width );
-          channel.moveItem( data.$id, t );
-          data.time = t;
+          channel.moveItem( confirmedData.$id, t );
+          confirmedData.time = t;
 
           const v = y2v( y, range, rect.height );
-          channel.changeItemValue( data.$id, v );
-          data.value = v;
+          channel.changeItemValue( confirmedData.$id, v );
+          confirmedData.value = v;
 
           const undo = (): void => {
-            channel.removeItem( data.$id );
+            channel.removeItem( confirmedData.$id );
           };
 
           const redo = (): void => {
-            channel.createItemFromData( data );
+            channel.createItemFromData( confirmedData );
           };
 
           dispatch( {
@@ -295,7 +312,7 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
         }
       );
     },
-    [ automaton, lastSelectedItem, range, rect, selectedChannel, channel ]
+    [ automaton, lastSelectedItem, selectedCurve, range, rect, selectedChannel, channel ]
   );
 
   const startSeek = useCallback(

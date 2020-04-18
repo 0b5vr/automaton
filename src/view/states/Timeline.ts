@@ -182,6 +182,8 @@ export const reducer: Reducer<State, ContextAction> = ( state = initialState, ac
           v1: state.range.v1,
         };
       }
+    } else if ( action.type === 'CurveEditor/SelectCurve' ) { // WHOA WHOA
+      newState.lastSelectedItem = null;
     }
   } );
 };
