@@ -5,7 +5,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
-    - name: Retrieve Deps Cache
+    - name: Cache Deps
       uses: actions/cache@v1
       with:
         path: node_modules
@@ -20,7 +20,7 @@ jobs:
     needs: fetch
     steps:
     - uses: actions/checkout@v1
-    - name: Retrieve Deps Cache
+    - name: Cache Deps
       uses: actions/cache@v1
       with:
         path: node_modules
@@ -35,7 +35,7 @@ jobs:
     needs: fetch
     steps:
     - uses: actions/checkout@v1
-    - name: Retrieve Deps Cache
+    - name: Cache Deps
       uses: actions/cache@v1
       with:
         path: node_modules
@@ -50,7 +50,7 @@ jobs:
     needs: fetch
     steps:
     - uses: actions/checkout@v1
-    - name: Retrieve Deps Cache
+    - name: Cache Deps
       uses: actions/cache@v1
       with:
         path: node_modules
@@ -75,7 +75,7 @@ jobs:
     needs: fetch
     steps:
     - uses: actions/checkout@v1
-    - name: Retrieve Deps Cache
+    - name: Cache Deps
       uses: actions/cache@v1
       with:
         path: node_modules
