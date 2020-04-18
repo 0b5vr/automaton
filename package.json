@@ -1,6 +1,6 @@
 {
   "name": "@fms-cat/automaton-with-gui",
-  "version": "3.0.0",
+  "version": "3.0.0-beta1",
   "description": "Animation engine for creative coding, with GUI!",
   "main": "dist/automaton-with-gui.min.js",
   "repository": "https://github.com/FMS-Cat/automaton-with-gui",
