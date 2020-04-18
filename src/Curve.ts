@@ -74,18 +74,24 @@ export class Curve {
       Math.ceil( this.__automaton.resolution * this.__length ) + 1
     );
 
+    let nodeTail = this.__nodes[ 0 ];
+    let iTail = 0;
     for ( let iNode = 0; iNode < this.__nodes.length - 1; iNode ++ ) {
-      const node0 = this.__nodes[ iNode ];
-      const node1 = this.__nodes[ iNode + 1 ];
-      const i0 = Math.floor( node0.time * this.__automaton.resolution );
-      const i1 = Math.floor( node1.time * this.__automaton.resolution );
+      const node0 = nodeTail;
+      nodeTail = this.__nodes[ iNode + 1 ];
+      const i0 = iTail;
+      iTail = Math.floor( nodeTail.time * this.__automaton.resolution );
 
       this.__values[ i0 ] = node0.value;
-      for ( let i = i0 + 1; i <= i1; i ++ ) {
+      for ( let i = i0 + 1; i <= iTail; i ++ ) {
         const time = i / this.__automaton.resolution;
-        const value = bezierEasing( node0, node1, time );
+        const value = bezierEasing( node0, nodeTail, time );
         this.__values[ i ] = value;
       }
+    }
+
+    for ( let i = iTail + 1; i < this.__values.length; i ++ ) {
+      this.__values[ i ] = nodeTail.value;
     }
 
     for ( let iFx = 0; iFx < this.__fxs.length; iFx ++ ) {
