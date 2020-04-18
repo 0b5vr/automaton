@@ -1,6 +1,6 @@
 import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
 import React, { useCallback, useEffect, useRef } from 'react';
-import { TimeValueRange, x2t, y2v } from '../utils/TimeValueRange';
+import { TimeValueRange, v2y, x2t, y2v } from '../utils/TimeValueRange';
 import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
 import { RangeBar } from './RangeBar';
@@ -250,6 +250,7 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
         const src = srcChannel?.tryGetItem( lastSelectedItem.id );
         if ( src ) {
           data = channel.duplicateItem( t0, src );
+          y = v2y( data.value, range, rect.height );
         }
       }
 
@@ -257,6 +258,7 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
         // try selected curve
         if ( selectedCurve != null ) {
           data = channel.createItemCurve( selectedCurve, t0 );
+          channel.changeItemValue( data.$id, y2v( y, range, rect.height ) );
         }
       }
 
