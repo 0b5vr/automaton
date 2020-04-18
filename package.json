@@ -1,6 +1,6 @@
 {
   "name": "@fms-cat/automaton",
-  "version": "2.1.0",
+  "version": "3.0.0-beta1",
   "description": "Animation engine for creative coding",
   "main": "dist/automaton.min.js",
   "repository": "https://github.com/FMS-Cat/automaton",
