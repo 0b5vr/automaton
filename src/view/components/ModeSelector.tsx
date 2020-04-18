@@ -52,6 +52,11 @@ const ModeSelector = ( props: {
         type: 'Workspace/ChangeMode',
         mode: 'channel'
       } );
+
+      dispatch( {
+        type: 'Timeline/UnselectItemsOfOtherChannels',
+        mode: 'channel'
+      } );
     },
     []
   );

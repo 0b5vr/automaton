@@ -54,6 +54,8 @@ export type Action = {
   type: 'Timeline/SelectItemsSub';
   items: string[];
 } | {
+  type: 'Timeline/UnselectItemsOfOtherChannels';
+} | {
   type: 'Timeline/MoveRange';
   size: Resolution;
   dx: number;
@@ -98,6 +100,13 @@ export const reducer: Reducer<State, ContextAction> = ( state = initialState, ac
       newState.selectedItems = { ...state.selectedItems };
       action.items?.forEach( ( item ) => {
         delete newState.selectedItems[ item ];
+      } );
+    } else if ( action.type === 'Timeline/UnselectItemsOfOtherChannels' ) {
+      newState.selectedItems = {};
+      Object.entries( state.selectedItems ).forEach( ( [ id, item ] ) => {
+        if ( item.channel === state.selectedChannel ) {
+          newState.selectedItems[ id ] = item;
+        }
       } );
     } else if ( action.type === 'Timeline/MoveRange' ) {
       const { range } = state;
