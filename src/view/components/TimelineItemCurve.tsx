@@ -310,6 +310,11 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
             } ]
           } );
 
+          dispatch( {
+            type: 'Timeline/SelectChannel',
+            channel: channelName
+          } );
+
           grabBody();
         }
       }

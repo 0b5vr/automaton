@@ -293,6 +293,11 @@ const TimelineItemConstant = ( props: TimelineItemConstantProps ): JSX.Element =
             } ]
           } );
 
+          dispatch( {
+            type: 'Timeline/SelectChannel',
+            channel: channelName
+          } );
+
           grabBody();
         }
       }

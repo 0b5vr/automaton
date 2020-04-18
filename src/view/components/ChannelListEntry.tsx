@@ -73,6 +73,10 @@ const ChannelListEntry = ( props: ChannelListEntryProps ): JSX.Element => {
         type: 'Timeline/SelectChannel',
         channel: selectedChannel === name ? null : name
       } );
+
+      dispatch( {
+        type: 'Timeline/UnselectItemsOfOtherChannels'
+      } );
     },
     [ selectedChannel ]
   );

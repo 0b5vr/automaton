@@ -81,7 +81,6 @@ export const reducer: Reducer<State, ContextAction> = ( state = initialState, ac
       newState.range = initialState.range;
     } else if ( action.type === 'Timeline/SelectChannel' ) {
       newState.selectedChannel = action.channel;
-      newState.selectedItems = {};
     } else if ( action.type === 'Timeline/SelectItems' ) {
       newState.selectedItems = {};
       action.items.forEach( ( item ) => {
