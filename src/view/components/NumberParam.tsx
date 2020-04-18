@@ -1,9 +1,28 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Colors } from '../constants/Colors';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
 import styled from 'styled-components';
 import { useDispatch } from '../states/store';
 import { useDoubleClick } from '../utils/useDoubleClick';
+
+// == helpers ======================================================================================
+function calcExpDiff( dy: number, currentValue: number, minDiff: number, fine: boolean ): number {
+  let v = currentValue;
+
+  const dyAbs = Math.abs( dy );
+  const dySign = Math.sign( dy );
+  for ( let i = 0; i < dyAbs; i ++ ) {
+    const vAbs = Math.abs( v );
+    const vSign = Math.sign( v + 1E-4 * dySign );
+    const order = Math.floor(
+      Math.log10( vAbs + 1E-4 * dySign * vSign )
+    ) - 1 - ( fine ? 1 : 0 );
+    v += Math.max( minDiff, Math.pow( 10.0, order ) ) * dySign;
+  }
+
+  return v;
+}
 
 // == styles =======================================================================================
 const Input = styled.input< { isInvalid: boolean } >`
@@ -91,120 +110,101 @@ const NumberParam = ( props: NumberParamProps ): JSX.Element => {
     }
   }, [ isInput ] );
 
-  const pushHistoryAndDo = ( v: number | null, vPrev: number ): void => {
-    if ( v == null ) {
-      onChange && onChange( vPrev );
-      return;
-    }
-
-    const redo = (): void => {
-      onChange && onChange( v );
-    };
-
-    if ( historyDescription ) {
-      const undo = (): void => {
+  const pushHistoryAndDo = useCallback(
+    ( v: number | null, vPrev: number ): void => {
+      if ( v == null ) {
         onChange && onChange( vPrev );
+        return;
+      }
+
+      const redo = (): void => {
+        onChange && onChange( v );
       };
 
-      dispatch( {
-        type: 'History/Push',
-        entry: {
-          description: historyDescription,
-          redo,
-          undo
+      if ( historyDescription ) {
+        const undo = (): void => {
+          onChange && onChange( vPrev );
+        };
+
+        dispatch( {
+          type: 'History/Push',
+          entry: {
+            description: historyDescription,
+            redo,
+            undo
+          }
+        } );
+      }
+      redo();
+    },
+    [ historyDescription, onChange ]
+  );
+
+  const openInput = useCallback(
+    () => {
+      setIsInput( true );
+      setInputValue( String( value ) );
+      setInputPrevValue( value );
+      setIsInputInvalid( false );
+    },
+    [ value ]
+  );
+
+  const grabValue = useCallback(
+    () => {
+      const vPrev = value;
+      let v = vPrev;
+      let hasMoved = false;
+
+      registerMouseEvent(
+        ( event, movementSum ) => {
+          hasMoved = true;
+
+          const exp = event.shiftKey;
+          // const exp = event.ctrlKey || event.metaKey;
+          const fine = event.altKey;
+
+          if ( props.type === 'int' ) {
+            if ( exp ) {
+              v = calcExpDiff( -movementSum.y, v, 0.1, fine );
+            } else {
+              v += ( fine ? 0.1 : 1.0 ) * -movementSum.y;
+            }
+
+            onChange && onChange( Math.round( v ) );
+          } else {
+            if ( exp ) {
+              v = calcExpDiff( -movementSum.y, v, 0.001, fine );
+            } else {
+              v += ( fine ? 0.001 : 0.01 ) * -movementSum.y;
+            }
+
+            onChange && onChange( v );
+          }
+        },
+        () => {
+          if ( !hasMoved ) { return; }
+
+          pushHistoryAndDo( v, vPrev );
         }
-      } );
-    }
-    redo();
-  };
+      );
+    },
+    [ value, type, onChange ]
+  );
 
-  const handleClick = ( event: React.MouseEvent ): void => {
-    event.preventDefault();
-    event.stopPropagation();
-
-    if ( event.buttons === 1 ) {
-      if ( checkDoubleClick() ) {
-        setIsInput( true );
-        setInputValue( String( value ) );
-        setInputPrevValue( value );
-        setIsInputInvalid( false );
-      } else {
-        if ( props.type === 'int' ) {
-          const vPrev = value;
-          let v = vPrev;
-          let hasMoved = false;
-
-          registerMouseEvent(
-            ( event, movementSum ) => {
-              hasMoved = true;
-
-              const exp = event.shiftKey;
-              // const exp = event.ctrlKey || event.metaKey;
-              const fine = event.altKey;
-
-              if ( exp ) {
-                const dyAbs = Math.abs( -movementSum.y );
-                const dySign = Math.sign( -movementSum.y );
-                for ( let i = 0; i < dyAbs; i ++ ) {
-                  const vAbs = Math.abs( v );
-                  const vSign = Math.sign( v + 1E-4 * dySign );
-                  const order = Math.floor(
-                    Math.log10( vAbs + 1E-4 * dySign * vSign )
-                  ) - 1 - ( fine ? 1 : 0 );
-                  v += Math.max( 0.1, Math.pow( 10.0, order ) ) * dySign;
-                }
-              } else {
-                v += ( fine ? 0.1 : 1.0 ) * -movementSum.y;
-              }
-
-              onChange && onChange( Math.round( v ) );
-            },
-            () => {
-              if ( !hasMoved ) { return; }
-
-              pushHistoryAndDo( v, vPrev );
-            }
-          );
+  const handleClick = useCallback(
+    mouseCombo( {
+      [ MouseComboBit.LMB ]: () => {
+        if ( checkDoubleClick() ) {
+          openInput();
         } else {
-          const vPrev = value;
-          let v = vPrev;
-          let hasMoved = false;
-
-          registerMouseEvent(
-            ( event, movementSum ) => {
-              hasMoved = true;
-
-              const exp = event.shiftKey;
-              // const exp = event.ctrlKey || event.metaKey;
-              const fine = event.altKey;
-
-              if ( exp ) {
-                const dyAbs = Math.abs( -movementSum.y );
-                const dySign = Math.sign( -movementSum.y );
-                for ( let i = 0; i < dyAbs; i ++ ) {
-                  const vAbs = Math.abs( v );
-                  const vSign = Math.sign( v + 1E-4 * dySign );
-                  const order = Math.floor(
-                    Math.log10( vAbs + 1E-4 * dySign * vSign )
-                  ) - 1 - ( fine ? 1 : 0 );
-                  v += Math.max( 0.001, Math.pow( 10.0, order ) ) * dySign;
-                }
-              } else {
-                v += ( fine ? 0.001 : 0.01 ) * -movementSum.y;
-              }
-
-              onChange && onChange( v );
-            },
-            () => {
-              if ( !hasMoved ) { return; }
-
-              pushHistoryAndDo( v, vPrev );
-            }
-          );
+          grabValue();
         }
       }
-    }
-  };
+      // TODO: LMB + Shift to reset the value. probably adding `resetValue` to props
+    } ),
+    [ openInput, grabValue ]
+  );
 
   const handleChange = ( event: React.ChangeEvent<HTMLInputElement> ): void => {
     setInputValue( event.target.value );
@@ -216,29 +216,35 @@ const NumberParam = ( props: NumberParamProps ): JSX.Element => {
     }
   };
 
-  const handleKeyDown = ( event: React.KeyboardEvent<HTMLInputElement> ): void => {
-    if ( event.nativeEvent.key === 'Enter' ) {
-      event.preventDefault();
+  const handleKeyDown = useCallback(
+    ( event: React.KeyboardEvent<HTMLInputElement> ): void => {
+      if ( event.nativeEvent.key === 'Enter' ) {
+        event.preventDefault();
 
+        const v = inputToValue( inputValue, type );
+        pushHistoryAndDo( v, inputPrevValue );
+
+        setIsInput( false );
+      } else if ( event.nativeEvent.key === 'Escape' ) {
+        event.preventDefault();
+
+        onChange && onChange( inputPrevValue );
+
+        setIsInput( false );
+      }
+    },
+    [ inputValue, type, inputPrevValue, onChange ]
+  );
+
+  const handleBlur = useCallback(
+    (): void => {
       const v = inputToValue( inputValue, type );
       pushHistoryAndDo( v, inputPrevValue );
 
       setIsInput( false );
-    } else if ( event.nativeEvent.key === 'Escape' ) {
-      event.preventDefault();
-
-      onChange && onChange( inputPrevValue );
-
-      setIsInput( false );
-    }
-  };
-
-  const handleBlur = (): void => {
-    const v = inputToValue( inputValue, type );
-    pushHistoryAndDo( v, inputPrevValue );
-
-    setIsInput( false );
-  };
+    },
+    [ inputValue, type, inputPrevValue ]
+  );
 
   const displayValue = valueToInput( value, type );
 

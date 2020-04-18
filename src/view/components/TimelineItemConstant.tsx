@@ -1,3 +1,4 @@
+import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
 import React, { useCallback, useMemo } from 'react';
 import { TimeValueRange, dt2dx, dx2dt, snapTime, snapValue, t2x, v2y, x2t, y2v } from '../utils/TimeValueRange';
 import { useDispatch, useSelector } from '../states/store';
@@ -279,13 +280,8 @@ const TimelineItemConstant = ( props: TimelineItemConstantProps ): JSX.Element =
   );
 
   const handleClickBody = useCallback(
-    ( event: React.MouseEvent ): void => {
-      if ( event.buttons === 1 ) {
-        if ( event.altKey ) { return; } // to perform seek
-
-        event.preventDefault();
-        event.stopPropagation();
-
+    mouseCombo( {
+      [ MouseComboBit.LMB ]: () => {
         if ( checkDoubleClick() ) {
           removeItem();
         } else {
@@ -300,31 +296,25 @@ const TimelineItemConstant = ( props: TimelineItemConstantProps ): JSX.Element =
           grabBody();
         }
       }
-    },
+    } ),
     [ removeItem, grabBody ]
   );
 
   const handleClickLeft = useCallback(
-    ( event: React.MouseEvent ): void => {
-      if ( event.buttons === 1 ) {
-        event.preventDefault();
-        event.stopPropagation();
-
+    mouseCombo( {
+      [ MouseComboBit.LMB ]: () => {
         grabLeft();
       }
-    },
+    } ),
     [ grabLeft ]
   );
 
   const handleClickRight = useCallback(
-    ( event: React.MouseEvent ): void => {
-      if ( event.buttons === 1 ) {
-        event.preventDefault();
-        event.stopPropagation();
-
+    mouseCombo( {
+      [ MouseComboBit.LMB ]: () => {
         grabRight();
       }
-    },
+    } ),
     [ grabRight ]
   );
 

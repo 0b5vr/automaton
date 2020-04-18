@@ -1,3 +1,4 @@
+import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
@@ -89,10 +90,8 @@ const HeaderSeekbar = ( { className }: HeaderSeekbarProps ): JSX.Element => {
   } ) );
 
   const handleMouseDown = useCallback(
-    ( event: React.MouseEvent ) => {
-      event.preventDefault();
-
-      if ( event.buttons === 1 ) {
+    mouseCombo( {
+      [ MouseComboBit.LMB ]: ( event ) => {
         if ( !automaton ) { return; }
         if ( isDisabledTimeControls ) { return; }
 
@@ -114,7 +113,7 @@ const HeaderSeekbar = ( { className }: HeaderSeekbarProps ): JSX.Element => {
           }
         );
       }
-    },
+    } ),
     [ isDisabledTimeControls, automaton, isPlaying ]
   );
 

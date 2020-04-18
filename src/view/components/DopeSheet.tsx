@@ -1,3 +1,4 @@
+import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from '../states/store';
 import { DopeSheetEntry } from './DopeSheetEntry';
@@ -93,23 +94,16 @@ const DopeSheet = ( { className }: DopeSheetProps ): JSX.Element => {
   );
 
   const handleMouseDown = useCallback(
-    ( event: React.MouseEvent ): void => {
-      if ( event.buttons === 1 ) {
-        if ( event.altKey ) {
-          event.preventDefault();
-          event.stopPropagation();
-
-          startSeek( event.clientX - rect.left );
-        }
-      } else if ( event.buttons === 4 ) {
-        event.preventDefault();
-        event.stopPropagation();
-
+    mouseCombo( {
+      [ MouseComboBit.LMB + MouseComboBit.Alt ]: ( event ) => {
+        startSeek( event.clientX - rect.left );
+      },
+      [ MouseComboBit.MMB ]: () => {
         registerMouseEvent(
           ( event, movementSum ) => move( movementSum.x )
         );
       }
-    },
+    } ),
     [ move, rect, startSeek ]
   );
 

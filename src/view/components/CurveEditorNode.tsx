@@ -1,3 +1,4 @@
+import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
 import React, { useCallback } from 'react';
 import { TimeValueRange, dt2dx, dv2dy, dx2dt, dy2dv, snapTime, snapValue, t2x, v2y, x2t, y2v } from '../utils/TimeValueRange';
 import { useDispatch, useSelector } from '../states/store';
@@ -58,7 +59,7 @@ const CurveEditorNode = ( props: Props ): JSX.Element => {
   const selectedNodes = useSelector( ( state ) => state.curveEditor.selectedItems.nodes );
 
   const grabNode = useCallback(
-    ( node: BezierNode & WithID ): void => {
+    (): void => {
       if ( !curve ) { return; }
 
       const tPrev = node.time;
@@ -115,11 +116,11 @@ const CurveEditorNode = ( props: Props ): JSX.Element => {
         }
       );
     },
-    [ curve, range, size, guiSettings ]
+    [ node, curve, range, size, guiSettings ]
   );
 
   const removeNode = useCallback(
-    ( node: BezierNode & WithID ): void => {
+    (): void => {
       if ( !curve ) { return; }
 
       if ( curve.isFirstOrLastNode( node.$id ) ) { return; }
@@ -142,32 +143,29 @@ const CurveEditorNode = ( props: Props ): JSX.Element => {
       } );
       redo();
     },
-    [ curve ]
+    [ node, curve ]
   );
 
   const handleNodeClick = useCallback(
-    ( event: React.MouseEvent, node: BezierNode & WithID ): void => {
-      event.preventDefault();
-      event.stopPropagation();
-
-      if ( event.buttons === 1 ) {
+    mouseCombo( {
+      [ MouseComboBit.LMB ]: () => {
         if ( checkDoubleClick() ) {
-          removeNode( node );
+          removeNode();
         } else {
           dispatch( {
             type: 'CurveEditor/SelectItems',
             nodes: [ node.$id ]
           } );
 
-          grabNode( node );
+          grabNode();
         }
       }
-    },
+    } ),
     [ removeNode, grabNode ]
   );
 
   const grabHandle = useCallback(
-    ( node: BezierNode & WithID, dir: 'in' | 'out' ): void => {
+    ( dir: 'in' | 'out' ): void => {
       if ( !curve ) { return; }
 
       const tPrev = node[ dir ]?.time || 0.0;
@@ -246,11 +244,11 @@ const CurveEditorNode = ( props: Props ): JSX.Element => {
         }
       );
     },
-    [ curve, range, size ]
+    [ node, curve, range, size ]
   );
 
   const removeHandle = useCallback(
-    ( node: BezierNode & WithID, dir: 'in' | 'out' ): void => {
+    ( dir: 'in' | 'out' ): void => {
       if ( !curve ) { return; }
 
       const tPrev = node[ dir ]!.time;
@@ -276,26 +274,32 @@ const CurveEditorNode = ( props: Props ): JSX.Element => {
       } );
       redo();
     },
-    [ curve ]
+    [ node, curve ]
   );
 
-  const handleHandleClick = useCallback(
-    (
-      event: React.MouseEvent,
-      node: BezierNode & WithID,
-      dir: 'in' | 'out'
-    ): void => {
-      event.preventDefault();
-      event.stopPropagation();
-
-      if ( event.buttons === 1 ) {
+  const handleHandleInClick = useCallback(
+    mouseCombo( {
+      [ MouseComboBit.LMB ]: () => {
         if ( checkDoubleClick() ) {
-          removeHandle( node, dir );
+          removeHandle( 'in' );
         } else {
-          grabHandle( node, dir );
+          grabHandle( 'in' );
         }
       }
-    },
+    } ),
+    [ removeHandle, grabHandle ]
+  );
+
+  const handleHandleOutClick = useCallback(
+    mouseCombo( {
+      [ MouseComboBit.LMB ]: () => {
+        if ( checkDoubleClick() ) {
+          removeHandle( 'out' );
+        } else {
+          grabHandle( 'out' );
+        }
+      }
+    } ),
     [ removeHandle, grabHandle ]
   );
 
@@ -319,7 +323,7 @@ const CurveEditorNode = ( props: Props ): JSX.Element => {
           },${
             dv2dy( node.in.value, range, size.height )
           })` }
-          onMouseDown={ ( event ) => handleHandleClick( event, node, 'in' ) }
+          onMouseDown={ handleHandleInClick }
         />
       </> }
       { node.out && <>
@@ -334,14 +338,14 @@ const CurveEditorNode = ( props: Props ): JSX.Element => {
           },${
             dv2dy( node.out.value, range, size.height )
           })` }
-          onMouseDown={ ( event ) => handleHandleClick( event, node, 'out' ) }
+          onMouseDown={ handleHandleOutClick }
         />
       </> }
       <NodeBody
         as="circle"
         r="5"
         isSelected={ arraySetHas( selectedNodes, node.$id ) }
-        onMouseDown={ ( event: React.MouseEvent ) => handleNodeClick( event, node ) }
+        onMouseDown={ handleNodeClick }
       />
     </Root>
   );

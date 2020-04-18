@@ -1,3 +1,4 @@
+import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
 import React, { useCallback, useRef } from 'react';
 import { useDispatch, useSelector } from '../states/store';
 import { SerializedChannelItem } from '@fms-cat/automaton';
@@ -200,16 +201,11 @@ const DopeSheetEntry = ( props: Props ): JSX.Element => {
   );
 
   const handleMouseDown = useCallback(
-    ( event: React.MouseEvent ): void => {
-      if ( event.buttons === 1 ) {
-        if ( event.altKey ) { return; } // to perform seek
-
-        event.preventDefault();
-        event.stopPropagation();
-
+    mouseCombo( {
+      [ MouseComboBit.LMB ]: ( event ) => {
         createItemAndGrab( event.clientX - rect.left );
       }
-    },
+    } ),
     [ createItemAndGrab, rect ]
   );
 

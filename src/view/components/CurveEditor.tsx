@@ -1,3 +1,4 @@
+import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { TimeValueRange, x2t, y2v } from '../utils/TimeValueRange';
 import { useDispatch, useSelector } from '../states/store';
@@ -255,22 +256,21 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
   );
 
   const handleMouseDown = useCallback(
-    ( event: React.MouseEvent ): void => {
-      event.preventDefault();
-      event.stopPropagation();
-
-      if ( event.buttons === 1 ) {
-        if ( event.altKey ) {
-          startSeek( event.clientX - rect.left );
-        } else if ( checkDoubleClick() ) {
+    mouseCombo( {
+      [ MouseComboBit.LMB ]: ( event ) => {
+        if ( checkDoubleClick() ) {
           createNodeAndGrab( event.clientX - rect.left, event.clientY - rect.top );
         }
-      } else if ( event.buttons === 4 ) {
+      },
+      [ MouseComboBit.LMB + MouseComboBit.Alt ]: ( event ) => {
+        startSeek( event.clientX - rect.left );
+      },
+      [ MouseComboBit.MMB ]: () => {
         registerMouseEvent(
           ( event, movementSum ) => move( movementSum.x, movementSum.y )
         );
       }
-    },
+    } ),
     [ createNodeAndGrab, startSeek, rect, move ]
   );
 

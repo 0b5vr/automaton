@@ -1,3 +1,4 @@
+import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { TimeValueRange, x2t, y2v } from '../utils/TimeValueRange';
 import { useDispatch, useSelector } from '../states/store';
@@ -326,28 +327,22 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
   );
 
   const handleMouseDown = useCallback(
-    ( event: React.MouseEvent ): void => {
-      if ( event.buttons === 1 ) {
-        event.preventDefault();
-        event.stopPropagation();
-
-        if ( event.altKey ) {
-          startSeek( event.clientX - rect.left );
-        } else {
-          createItemAndGrab(
-            event.clientX - rect.left,
-            event.clientY - rect.top
-          );
-        }
-      } else if ( event.buttons === 4 ) {
-        event.preventDefault();
-        event.stopPropagation();
-
+    mouseCombo( {
+      [ MouseComboBit.LMB ]: ( event ) => {
+        createItemAndGrab(
+          event.clientX - rect.left,
+          event.clientY - rect.top
+        );
+      },
+      [ MouseComboBit.LMB + MouseComboBit.Alt ]: ( event ) => {
+        startSeek( event.clientX - rect.left );
+      },
+      [ MouseComboBit.MMB ]: () => {
         registerMouseEvent(
           ( event, movementSum ) => move( movementSum.x, movementSum.y )
         );
       }
-    },
+    } ),
     [ createItemAndGrab, startSeek, rect, move ]
   );
 

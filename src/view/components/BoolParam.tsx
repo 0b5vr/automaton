@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Colors } from '../constants/Colors';
 import styled from 'styled-components';
 import { useDispatch } from '../states/store';
@@ -85,55 +86,58 @@ const BoolParam = ( props: BoolParamProps ): JSX.Element => {
     }
   }, [ isInput ] );
 
-  const pushHistoryAndDo = ( v: boolean | null, vPrev: boolean ): void => {
-    if ( v == null ) {
-      onChange && onChange( vPrev );
-      return;
-    }
-
-    const redo = (): void => {
-      onChange && onChange( v );
-    };
-
-    if ( historyDescription ) {
-      const undo = (): void => {
+  const pushHistoryAndDo = useCallback(
+    ( v: boolean | null, vPrev: boolean ): void => {
+      if ( v == null ) {
         onChange && onChange( vPrev );
+        return;
+      }
+
+      const redo = (): void => {
+        onChange && onChange( v );
       };
 
-      dispatch( {
-        type: 'History/Push',
-        entry: {
-          description: historyDescription,
-          redo,
-          undo
-        }
-      } );
-    }
-    redo();
-  };
+      if ( historyDescription ) {
+        const undo = (): void => {
+          onChange && onChange( vPrev );
+        };
 
-  const handleClick = ( event: React.MouseEvent ): void => {
-    event.preventDefault();
-    event.stopPropagation();
-
-    if ( event.buttons === 1 ) {
-      if ( checkDoubleClick() ) {
-        setIsInput( true );
-        setInputValue( String( value ) );
-        setInputPrevValue( value );
-        setIsInputInvalid( false );
+        dispatch( {
+          type: 'History/Push',
+          entry: {
+            description: historyDescription,
+            redo,
+            undo
+          }
+        } );
       }
-    }
-  };
+      redo();
+    },
+    [ historyDescription, onChange ]
+  );
 
-  const handleClickBox = ( event: React.MouseEvent ): void => {
-    event.preventDefault();
-    event.stopPropagation();
+  const handleClick = useCallback(
+    mouseCombo( {
+      [ MouseComboBit.LMB ]: () => {
+        if ( checkDoubleClick() ) {
+          setIsInput( true );
+          setInputValue( String( value ) );
+          setInputPrevValue( value );
+          setIsInputInvalid( false );
+        }
+      }
+    } ),
+    [ value ]
+  );
 
-    if ( event.buttons === 1 ) {
-      pushHistoryAndDo( !value, value );
-    }
-  };
+  const handleClickBox = useCallback(
+    mouseCombo( {
+      [ MouseComboBit.LMB ]: () => {
+        pushHistoryAndDo( !value, value );
+      }
+    } ),
+    [ value, pushHistoryAndDo ]
+  );
 
   const handleChange = ( event: React.ChangeEvent<HTMLInputElement> ): void => {
     setInputValue( event.target.value );

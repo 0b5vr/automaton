@@ -1,3 +1,4 @@
+import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
 import React, { useCallback } from 'react';
 import { TimeValueRange, dt2dx, dx2dt, snapTime, t2x } from '../utils/TimeValueRange';
 import { useDispatch, useSelector } from '../states/store';
@@ -87,7 +88,7 @@ const CurveEditorFx = ( props: Props ): JSX.Element => {
   const selectedFxs = useSelector( ( state ) => state.curveEditor.selectedItems.fxs );
 
   const grabFxBody = useCallback(
-    ( fx: FxSection & WithID ): void => {
+    (): void => {
       if ( !curve ) { return; }
 
       const tPrev = fx.time;
@@ -145,11 +146,11 @@ const CurveEditorFx = ( props: Props ): JSX.Element => {
         }
       );
     },
-    [ curve, range, size, guiSettings ]
+    [ fx, curve, range, size, guiSettings ]
   );
 
   const removeFx = useCallback(
-    ( fx: FxSection & WithID ): void => {
+    (): void => {
       if ( !curve ) { return; }
 
       const redo = (): void => {
@@ -170,32 +171,29 @@ const CurveEditorFx = ( props: Props ): JSX.Element => {
       } );
       redo();
     },
-    [ curve ]
+    [ fx, curve ]
   );
 
   const handleFxBodyClick = useCallback(
-    ( event: React.MouseEvent, fx: FxSection & WithID ): void => {
-      event.preventDefault();
-      event.stopPropagation();
-
-      if ( event.buttons === 1 ) {
+    mouseCombo( {
+      [ MouseComboBit.LMB ]: () => {
         if ( checkDoubleClick() ) {
-          removeFx( fx );
+          removeFx();
         } else {
           dispatch( {
             type: 'CurveEditor/SelectItems',
             fxs: [ fx.$id ]
           } );
 
-          grabFxBody( fx );
+          grabFxBody();
         }
       }
-    },
+    } ),
     [ removeFx, grabFxBody ]
   );
 
   const grabFxSide = useCallback(
-    ( fx: FxSection & WithID, side: 'left' | 'right' ): void => {
+    ( side: 'left' | 'right' ): void => {
       if ( !curve ) { return; }
 
       const tPrev = side === 'left' ? fx.time : ( fx.time + fx.length );
@@ -254,22 +252,24 @@ const CurveEditorFx = ( props: Props ): JSX.Element => {
         }
       );
     },
-    [ curve, range, size, guiSettings ]
+    [ fx, curve, range, size, guiSettings ]
   );
 
-  const handleFxSideClick = useCallback(
-    (
-      event: React.MouseEvent,
-      fx: FxSection & WithID,
-      side: 'left' | 'right'
-    ): void => {
-      event.preventDefault();
-      event.stopPropagation();
-
-      if ( event.buttons === 1 ) {
-        grabFxSide( fx, side );
+  const handleFxLeftClick = useCallback(
+    mouseCombo( {
+      [ MouseComboBit.LMB ]: () => {
+        grabFxSide( 'left' );
       }
-    },
+    } ),
+    [ grabFxSide ]
+  );
+
+  const handleFxRightClick = useCallback(
+    mouseCombo( {
+      [ MouseComboBit.LMB ]: () => {
+        grabFxSide( 'right' );
+      }
+    } ),
     [ grabFxSide ]
   );
 
@@ -296,19 +296,19 @@ const CurveEditorFx = ( props: Props ): JSX.Element => {
           height={ FX_HEIGHT }
           isSelected={ arraySetHas( selectedFxs, fx.$id ) }
           isBypassed={ fx.bypass }
-          onMouseDown={ ( event ) => handleFxBodyClick( event, fx ) }
+          onMouseDown={ handleFxBodyClick }
         />
         <FxSide
           width="0.25rem"
           height={ FX_HEIGHT }
-          onMouseDown={ ( event ) => handleFxSideClick( event, fx, 'left' ) }
+          onMouseDown={ handleFxLeftClick }
         />
         <FxSide
           transform={ `translate(${ w }, 0)` }
           x="-0.25rem"
           width="0.25rem"
           height={ FX_HEIGHT }
-          onMouseDown={ ( event ) => handleFxSideClick( event, fx, 'right' ) }
+          onMouseDown={ handleFxRightClick }
         />
         <g
           clipPath={ `url(#fxclip${ fx.$id })` }
