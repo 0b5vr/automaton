@@ -1,8 +1,8 @@
 /* eslint-env jest */
 
-import { clamp } from '../clamp';
+import { clamp } from '../bezierEasing';
 
-describe( 'mod', () => {
+describe( 'clamp', () => {
   it( 'should do clamp( 0.5, 0.0, 1.0 ) correctly', () => {
     expect( clamp( 0.5, 0.0, 1.0 ) ).toBeCloseTo( 0.5 );
   } );

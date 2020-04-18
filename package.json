@@ -10,9 +10,7 @@
   "scripts": {
     "dev": "webpack-dev-server --hot --mode development",
     "all": "yarn lint && yarn test && yarn clean && yarn build && yarn docs",
-    "preversion": "git-branch-is master",
     "version": "yarn all",
-    "postpublish": "yarn gh-pages",
     "clean": "rimraf dist docs types",
     "build": "yarn build-dev && yarn build-prod && yarn types",
     "build-dev": "webpack --mode development",
@@ -20,8 +18,7 @@
     "types": "tsc --emitDeclarationOnly",
     "docs": "typedoc --out docs --mode file --excludeNotExported",
     "lint": "eslint \"src/**/*.ts\"",
-    "test": "jest",
-    "gh-pages": "node ./utils/gh-pages.js"
+    "test": "jest"
   },
   "files": [
     "dist",

@@ -2,7 +2,7 @@ import { Channel, ChannelUpdateEvent } from './Channel';
 import { Curve } from './Curve';
 import { FxDefinition } from './types/FxDefinition';
 import { SerializedAutomaton } from './types/SerializedAutomaton';
-import { clamp } from './utils/clamp';
+import { clamp } from './utils/bezierEasing';
 
 /**
  * IT'S AUTOMATON!
