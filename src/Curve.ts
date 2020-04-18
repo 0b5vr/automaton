@@ -70,7 +70,9 @@ export class Curve {
    * Precalculate value of samples.
    */
   public precalc(): void {
-    this.__values = new Float32Array( this.__automaton.resolution * this.__length + 1 );
+    this.__values = new Float32Array(
+      Math.ceil( this.__automaton.resolution * this.__length ) + 1
+    );
 
     for ( let iNode = 0; iNode < this.__nodes.length - 1; iNode ++ ) {
       const node0 = this.__nodes[ iNode ];
