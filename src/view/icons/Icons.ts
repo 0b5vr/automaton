@@ -9,6 +9,7 @@ export const Icons = {
   Error: require( './error.svg' ).default,
   Pause: require( './pause.svg' ).default,
   Play: require( './play.svg' ).default,
+  Plus: require( './plus.svg' ).default,
   Redo: require( './redo.svg' ).default,
   Save: require( './save.svg' ).default,
   Snap: require( './snap.svg' ).default,

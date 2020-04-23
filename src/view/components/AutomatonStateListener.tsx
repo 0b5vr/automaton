@@ -369,6 +369,13 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
         createCurve( event.index, event.curve );
       } );
 
+      const handleRemoveCurve = automaton.on( 'removeCurve', ( event ) => {
+        dispatch( {
+          type: 'Automaton/RemoveCurve',
+          curve: event.index
+        } );
+      } );
+
       const handleChangeShouldSave = automaton.on( 'changeShouldSave', ( event ) => {
         dispatch( {
           type: 'Automaton/SetShouldSave',
@@ -387,6 +394,7 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
         automaton.off( 'createChannel', handleCreateChannel );
         automaton.off( 'removeChannel', handleRemoveChannel );
         automaton.off( 'createCurve', handleCreateCurve );
+        automaton.off( 'removeCurve', handleRemoveCurve );
         automaton.off( 'changeShouldSave', handleChangeShouldSave );
       };
     },

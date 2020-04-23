@@ -95,6 +95,9 @@ export type Action = {
   length: number;
   path: string;
 } | {
+  type: 'Automaton/RemoveCurve';
+  curve: number;
+} | {
   type: 'Automaton/UpdateCurvePath';
   curve: number;
   path: string;
@@ -202,6 +205,8 @@ export const reducer: Reducer<State, Action> = ( state = initialState, action ) 
         previewTime: null,
         previewValue: null
       };
+    } else if ( action.type === 'Automaton/RemoveCurve' ) {
+      newState.curves.splice( action.curve, 1 );
     } else if ( action.type === 'Automaton/UpdateCurvePath' ) {
       newState.curves[ action.curve ].path = action.path;
     } else if ( action.type === 'Automaton/UpdateCurveStatus' ) {

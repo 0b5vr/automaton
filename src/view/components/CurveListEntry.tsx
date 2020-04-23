@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
 import { CurveStatusLevel } from '../../CurveWithGUI';
 import { Icons } from '../icons/Icons';
-import { Metrics } from '../constants/Metrics';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
@@ -30,7 +29,6 @@ const Icon = styled.img`
 
 const Root = styled.div<{ isSelected: boolean }>`
   position: relative;
-  height: ${ Metrics.curveListEntryHeight }px;
   background: ${ ( { isSelected } ) => ( isSelected ? Colors.back4 : Colors.back3 ) };
 `;
 

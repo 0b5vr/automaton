@@ -48,7 +48,6 @@ const Icon = styled.img`
 
 const Root = styled.div<{ isSelected: boolean }>`
   position: relative;
-  height: 1.25rem;
   background: ${ ( { isSelected } ) => ( isSelected ? Colors.back4 : Colors.back3 ) };
 `;
 
