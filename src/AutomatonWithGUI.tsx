@@ -414,7 +414,7 @@ export class AutomatonWithGUI extends Automaton
    * @param index Index of the curve
    */
   public removeCurve( index: number ): void {
-    delete this.__curves[ index ];
+    this.__curves.splice( index, 1 );
 
     this.__emit( 'removeCurve', { index } );
 

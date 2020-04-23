@@ -1,14 +1,38 @@
+import React, { useCallback } from 'react';
+import { useDispatch, useSelector } from '../states/store';
+
 import { Colors } from '../constants/Colors';
 import { CurveListEntry } from './CurveListEntry';
-import React from 'react';
+import { Icons } from '../icons/Icons';
+import { Metrics } from '../constants/Metrics';
 import { Scrollable } from './Scrollable';
 import styled from 'styled-components';
-import { useSelector } from '../states/store';
 
 // == styles =======================================================================================
+const NewCurveIcon = styled.img`
+  fill: ${ Colors.gray };
+  height: 16px;
+`;
+
+const NewCurveButton = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: ${ Metrics.curveListEntryHeight }px;
+  margin: 2px;
+  cursor: pointer;
+  background: ${ Colors.back3 };
+
+  &:active {
+    background: ${ Colors.back4 };
+  }
+`;
+
 const StyledCurveListEntry = styled( CurveListEntry )`
-  width: calc( 100% - 0.25rem );
-  margin: 0.125rem;
+  width: calc( 100% - 4px );
+  height: ${ Metrics.curveListEntryHeight }px;
+  margin: 2px;
   cursor: pointer;
 `;
 
@@ -22,9 +46,49 @@ export interface CurveListProps {
 }
 
 const CurveList = ( { className }: CurveListProps ): JSX.Element => {
-  const { curves } = useSelector( ( state ) => ( {
+  const dispatch = useDispatch();
+  const { automaton, curves } = useSelector( ( state ) => ( {
+    automaton: state.automaton.instance,
     curves: state.automaton.curves
   } ) );
+
+  const handleClickNewCurve = useCallback(
+    () => {
+      if ( !automaton ) { return; }
+
+      const curve = automaton.createCurve();
+      const index = automaton.getCurveIndex( curve );
+
+      const redo = (): void => {
+        const curve = automaton.createCurve();
+        const index = automaton.getCurveIndex( curve );
+
+        dispatch( {
+          type: 'CurveEditor/SelectCurve',
+          curve: index
+        } );
+      };
+
+      const undo = (): void => {
+        automaton.removeCurve( index );
+      };
+
+      dispatch( {
+        type: 'History/Push',
+        entry: {
+          description: 'Create Curve',
+          redo,
+          undo
+        }
+      } );
+
+      dispatch( {
+        type: 'CurveEditor/SelectCurve',
+        curve: index
+      } );
+    },
+    [ automaton ]
+  );
 
   return (
     <Root className={ className } barPosition='left'>
@@ -34,6 +98,12 @@ const CurveList = ( { className }: CurveListProps ): JSX.Element => {
           index={ iCurve }
         />
       ) ) }
+      <NewCurveButton
+        data-stalker="Create a new curve"
+        onClick={ handleClickNewCurve }
+      >
+        <NewCurveIcon as={ Icons.Plus } />
+      </NewCurveButton>
     </Root>
   );
 };
