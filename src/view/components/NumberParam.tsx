@@ -23,6 +23,28 @@ function calcExpDiff( dy: number, currentValue: number, minDiff: number, fine: b
   return v;
 }
 
+type ValueType = 'int' | 'float';
+
+function inputToValue( value: string, type: ValueType ): number | null {
+  if ( type === 'int' ) {
+    const result = parseInt( value );
+    if ( Number.isNaN( result ) ) { return null; }
+    return result;
+  } else {
+    const result = parseFloat( value );
+    if ( Number.isNaN( result ) ) { return null; }
+    return result;
+  }
+}
+
+function valueToInput( value: number, type: ValueType ): string {
+  if ( type === 'int' ) {
+    return Math.floor( value ).toString();
+  } else {
+    return ( value ).toFixed( 3 );
+  }
+}
+
 // == styles =======================================================================================
 const Input = styled.input< { isInvalid: boolean } >`
   display: block;
@@ -55,29 +77,6 @@ const Root = styled.div`
   text-align: center;
   background: ${ Colors.back3 };
 `;
-
-// == functions ====================================================================================
-type ValueType = 'int' | 'float';
-
-function inputToValue( value: string, type: ValueType ): number | null {
-  if ( type === 'int' ) {
-    const result = parseInt( value );
-    if ( Number.isNaN( result ) ) { return null; }
-    return result;
-  } else {
-    const result = parseFloat( value );
-    if ( Number.isNaN( result ) ) { return null; }
-    return result;
-  }
-}
-
-function valueToInput( value: number, type: ValueType ): string {
-  if ( type === 'int' ) {
-    return Math.floor( value ).toString();
-  } else {
-    return ( value ).toFixed( 3 );
-  }
-}
 
 // == element ======================================================================================
 export interface NumberParamProps {
