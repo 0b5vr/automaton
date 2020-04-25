@@ -15,11 +15,6 @@ export class Curve {
   protected __automaton: Automaton;
 
   /**
-   * The length of this curve.
-   */
-  protected __length: number = 1.0;
-
-  /**
    * An array of precalculated value.
    * Its length is same as `curve.__automaton.resolution * curve.__automaton.length + 1`.
   */
@@ -38,7 +33,9 @@ export class Curve {
   /**
    * The length of this curve.
    */
-  public get length(): number { return this.__length; }
+  public get length(): number {
+    return this.__nodes[ this.__nodes.length - 1 ].time;
+  }
 
 
   /**
@@ -65,9 +62,6 @@ export class Curve {
     } ) );
     this.__fxs = data.fxs || [];
 
-    const lastNode = this.__nodes[ this.__nodes.length - 1 ];
-    this.__length = lastNode.time;
-
     this.precalc();
   }
 
@@ -76,7 +70,7 @@ export class Curve {
    */
   public precalc(): void {
     this.__values = new Float32Array(
-      Math.ceil( this.__automaton.resolution * this.__length ) + 1
+      Math.ceil( this.__automaton.resolution * this.length ) + 1
     );
 
     let nodeTail = this.__nodes[ 0 ];
@@ -154,7 +148,7 @@ export class Curve {
       // clamp left
       return this.__values[ 0 ];
 
-    } else if ( this.__length <= time ) {
+    } else if ( this.length <= time ) {
       // clamp right
       return this.__values[ this.__values.length - 1 ];
 
