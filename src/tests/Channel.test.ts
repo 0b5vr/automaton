@@ -5,7 +5,6 @@ import { Automaton } from '../Automaton';
 import { Channel } from '../Channel';
 
 const data: SerializedAutomaton = {
-  length: 1.0,
   resolution: 100.0,
   curves: [
     { nodes: [ { time: 0.0, value: 0.0 }, { time: 0.6, value: 1.0 } ] },
