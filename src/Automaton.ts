@@ -2,7 +2,6 @@ import { Channel, ChannelUpdateEvent } from './Channel';
 import { Curve } from './Curve';
 import { FxDefinition } from './types/FxDefinition';
 import { SerializedAutomaton } from './types/SerializedAutomaton';
-import { clamp } from './utils/bezierEasing';
 
 /**
  * IT'S AUTOMATON!
@@ -30,11 +29,6 @@ export class Automaton {
    * Version of the automaton.
    */
   protected __version: string = process.env.VERSION!;
-
-  /**
-   * Length of the timeline.
-   */
-  protected __length: number = 1.0;
 
   /**
    * Resolution of the timeline.
@@ -71,11 +65,6 @@ export class Automaton {
   public get version(): string { return this.__version; }
 
   /**
-   * Total length of animation in seconds.
-   */
-  public get length(): number { return this.__length; }
-
-  /**
    * Resolution = Sampling point per second.
    */
   public get resolution(): number { return this.__resolution; }
@@ -85,7 +74,6 @@ export class Automaton {
    * @param data Serialized object contains automaton data.
    */
   public deserialize( data: SerializedAutomaton ): void {
-    this.__length = data.length;
     this.__resolution = data.resolution;
 
     this.__curves = data.curves.map( ( data ) => new Curve( this, data ) );
@@ -144,7 +132,7 @@ export class Automaton {
    * @param time Current time
    */
   public update( time: number ): void {
-    const t = clamp( time, 0.0, this.__length );
+    const t = Math.max( time, 0.0 );
 
     // cache the time
     this.__time = t;

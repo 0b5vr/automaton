@@ -15,7 +15,7 @@ const TABLE_SIZE = 21;
 
 const __cache: number[] = [];
 
-export function clamp( x: number, min: number, max: number ): number {
+function clamp( x: number, min: number, max: number ): number {
   return Math.min( Math.max( x, min ), max );
 }
 

@@ -6,11 +6,6 @@ import { SerializedCurve } from './SerializedCurve';
  */
 export interface SerializedAutomaton {
   /**
-   * Length of the timeline.
-   */
-  length: number;
-
-  /**
    * Resolution of the timeline.
    */
   resolution: number;
