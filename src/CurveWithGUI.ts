@@ -87,14 +87,14 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
    * List of bezier nodes.
    */
   public get nodes(): Array<Required<BezierNode> & WithID> {
-    return this.__nodes;
+    return jsonCopy( this.__nodes );
   }
 
   /**
    * List of fx sections.
    */
   public get fxs(): Array<FxSection & WithID> {
-    return this.__fxs;
+    return jsonCopy( this.__fxs );
   }
 
   public constructor( automaton: AutomatonWithGUI, data?: SerializedCurve ) {
@@ -221,7 +221,7 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
     if ( !node ) {
       throw new Error( `Given node index ${index} is invalid (Current count of nodes: ${this.__nodes.length})` );
     }
-    return node;
+    return jsonCopy( node );
   }
 
   /**
@@ -231,7 +231,7 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
    */
   public getNode( id: string ): Required<BezierNode> & WithID {
     const index = this.__getNodeIndexById( id );
-    return this.__nodes[ index ];
+    return jsonCopy( this.__nodes[ index ] );
   }
 
   /**
@@ -254,11 +254,11 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
 
     this.precalc();
 
-    this.__emit( 'createNode', { id, node: data } );
+    this.__emit( 'createNode', { id, node: jsonCopy( data ) } );
 
     this.__automaton.shouldSave = true;
 
-    return data;
+    return jsonCopy( data );
   }
 
   /**
@@ -273,11 +273,11 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
 
     this.precalc();
 
-    this.__emit( 'createNode', { id: node.$id, node: data } );
+    this.__emit( 'createNode', { id: node.$id, node: jsonCopy( data ) } );
 
     this.__automaton.shouldSave = true;
 
-    return data;
+    return jsonCopy( data );
   }
 
   /**
@@ -345,7 +345,7 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
 
     this.precalc();
 
-    this.__emit( 'updateNode', { id, node } );
+    this.__emit( 'updateNode', { id, node: jsonCopy( node ) } );
 
     this.__automaton.shouldSave = true;
   }
@@ -364,7 +364,7 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
 
     this.precalc();
 
-    this.__emit( 'updateNode', { id, node } );
+    this.__emit( 'updateNode', { id, node: jsonCopy( node ) } );
 
     this.__automaton.shouldSave = true;
   }
@@ -392,7 +392,7 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
 
     this.precalc();
 
-    this.__emit( 'updateNode', { id, node } );
+    this.__emit( 'updateNode', { id, node: jsonCopy( node ) } );
 
     this.__automaton.shouldSave = true;
   }
@@ -418,7 +418,7 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
 
     this.precalc();
 
-    this.__emit( 'updateNode', { id, node } );
+    this.__emit( 'updateNode', { id, node: jsonCopy( node ) } );
 
     this.__automaton.shouldSave = true;
   }
@@ -444,7 +444,7 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
 
     this.precalc();
 
-    this.__emit( 'updateNode', { id, node } );
+    this.__emit( 'updateNode', { id, node: jsonCopy( node ) } );
 
     this.__automaton.shouldSave = true;
   }
@@ -459,7 +459,7 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
     if ( !fx ) {
       throw new Error( `Given fx section index ${index} is invalid (Current count of fx sections: ${this.__fxs.length})` );
     }
-    return fx;
+    return jsonCopy( fx );
   }
 
   /**
@@ -469,7 +469,7 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
    */
   public getFx( id: string ): FxSection & WithID {
     const index = this.__getFxIndexById( id );
-    return this.__fxs[ index ];
+    return jsonCopy( this.__fxs[ index ] );
   }
 
   /**
@@ -501,11 +501,11 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
 
     this.precalc();
 
-    this.__emit( 'createFx', { id, fx: data } );
+    this.__emit( 'createFx', { id, fx: jsonCopy( data ) } );
 
     this.__automaton.shouldSave = true;
 
-    return data;
+    return jsonCopy( data );
   }
 
   /**
@@ -528,11 +528,11 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
 
     this.precalc();
 
-    this.__emit( 'createFx', { id: data.$id, fx: data } );
+    this.__emit( 'createFx', { id: data.$id, fx: jsonCopy( data ) } );
 
     this.__automaton.shouldSave = true;
 
-    return data;
+    return jsonCopy( data );
   }
 
   /**
@@ -572,7 +572,7 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
 
     this.precalc();
 
-    this.__emit( 'updateFx', { id, fx } );
+    this.__emit( 'updateFx', { id, fx: jsonCopy( fx ) } );
 
     this.__automaton.shouldSave = true;
   }
@@ -603,7 +603,7 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
 
     this.precalc();
 
-    this.__emit( 'updateFx', { id, fx } );
+    this.__emit( 'updateFx', { id, fx: jsonCopy( fx ) } );
 
     this.__automaton.shouldSave = true;
   }
@@ -625,7 +625,7 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
 
     this.precalc();
 
-    this.__emit( 'updateFx', { id, fx } );
+    this.__emit( 'updateFx', { id, fx: jsonCopy( fx ) } );
 
     this.__automaton.shouldSave = true;
   }
@@ -653,7 +653,7 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
 
     this.precalc();
 
-    this.__emit( 'updateFx', { id, fx } );
+    this.__emit( 'updateFx', { id, fx: jsonCopy( fx ) } );
 
     this.__automaton.shouldSave = true;
   }
@@ -676,7 +676,7 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
 
     this.precalc();
 
-    this.__emit( 'updateFx', { id, fx } );
+    this.__emit( 'updateFx', { id, fx: jsonCopy( fx ) } );
 
     this.__automaton.shouldSave = true;
   }
@@ -701,7 +701,7 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
 
     this.precalc();
 
-    this.__emit( 'updateFx', { id, fx } );
+    this.__emit( 'updateFx', { id, fx: jsonCopy( fx ) } );
 
     this.__automaton.shouldSave = true;
   }
@@ -729,7 +729,7 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
 
     this.precalc();
 
-    this.__emit( 'updateFx', { id, fx } );
+    this.__emit( 'updateFx', { id, fx: jsonCopy( fx ) } );
 
     this.__automaton.shouldSave = true;
   }
