@@ -28,7 +28,7 @@ const Text = styled.text`
 `;
 
 const Body = styled.rect<{ isSelected: boolean; isTrigger: boolean }>`
-  fill: ${ ( { isSelected } ) => ( isSelected ? Colors.accentdark : Colors.back1 ) };
+  fill: ${ ( { isSelected } ) => ( isSelected ? Colors.accentdark : Colors.black ) };
   opacity: 0.5;
   rx: ${ ( { isTrigger } ) => ( isTrigger ? '8px' : '4px' ) };
   ry: ${ ( { isTrigger } ) => ( isTrigger ? '8px' : '4px' ) };

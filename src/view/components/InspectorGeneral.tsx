@@ -9,7 +9,7 @@ import styled from 'styled-components';
 
 // == styles =======================================================================================
 const ConfirmButton = styled.div`
-  margin: 8px auto 0;
+  margin: 4px auto 0;
   font-size: 0.8rem;
   line-height: 1.2rem;
   width: 4rem;
