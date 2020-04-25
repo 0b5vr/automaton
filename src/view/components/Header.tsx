@@ -26,7 +26,7 @@ const ShouldSaveIndicator = ( { className }: {
 // == styles =======================================================================================
 const StyledHeaderSeekbar = styled( HeaderSeekbar )`
   width: 124px;
-  height: calc( ${ Metrics.headerHeight } - 4px );
+  height: ${ Metrics.headerHeight - 4 }px;
   margin: 2px;
 `;
 
@@ -35,8 +35,8 @@ const Section = styled.div`
 `;
 
 const Button = styled.img<{ disabled?: boolean; active?: boolean }>`
-  width: calc( ${ Metrics.headerHeight } - 4px );
-  height: calc( ${ Metrics.headerHeight } - 4px );
+  width: ${ Metrics.headerHeight - 4 }px;
+  height: ${ Metrics.headerHeight - 4 }px;
   fill: ${ ( { disabled: disabled, active: active } ) => disabled ? Colors.gray : active ? Colors.accent : Colors.fore };
   cursor: pointer;
   margin: 2px 4px;
@@ -47,8 +47,8 @@ const Button = styled.img<{ disabled?: boolean; active?: boolean }>`
 `;
 
 const PlayPause = styled.img`
-  width: calc( ${ Metrics.headerHeight } + 4px );
-  height: calc( ${ Metrics.headerHeight } );
+  width: ${ Metrics.headerHeight + 4 }px;
+  height: ${ Metrics.headerHeight }px;
   padding: 2px 4px;
   fill: ${ Colors.fore };
   cursor: pointer;
@@ -59,8 +59,8 @@ const PlayPause = styled.img`
 `;
 
 const Logo = styled.img`
-  height: calc( ${ Metrics.headerHeight } * 0.5 );
-  margin: calc( ${ Metrics.headerHeight } * 0.25 );
+  height: ${ 0.5 * Metrics.headerHeight }px;
+  margin: ${ 0.25 * Metrics.headerHeight }px;
   fill: ${ Colors.fore };
   opacity: 0.5;
   cursor: pointer;

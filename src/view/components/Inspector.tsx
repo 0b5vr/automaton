@@ -16,9 +16,9 @@ import { useSelector } from '../states/store';
 const Logo = styled.img`
   position: absolute;
   fill: ${ Colors.black };
-  left: calc( 0.15 * ${ Metrics.inspectorWidth } );
-  top: calc( 50% - 0.35 * ${ Metrics.inspectorWidth } );
-  width: calc( 0.7 * ${ Metrics.inspectorWidth } );
+  left: ${ 0.15 * Metrics.inspectorWidth }px;
+  top: calc( 50% - ${ 0.35 * Metrics.inspectorWidth }px );
+  width: calc( ${ 0.7 * Metrics.inspectorWidth }px );
   opacity: 0.2;
 `;
 

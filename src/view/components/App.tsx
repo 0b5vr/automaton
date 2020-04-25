@@ -26,31 +26,31 @@ const StyledHeader = styled( Header )`
   position: absolute;
   top: 0;
   width: 100%;
-  height: ${ Metrics.headerHeight };
+  height: ${ Metrics.headerHeight }px;
 `;
 
 const StyledModeSelector = styled( ModeSelector )`
   position: absolute;
   left: 0;
-  top: ${ Metrics.headerHeight };
+  top: ${ Metrics.headerHeight }px;
   width: ${ Metrics.modeSelectorWidth }px;
-  height: calc( 100% - ${ Metrics.headerHeight } );
+  height: calc( 100% - ${ Metrics.headerHeight }px );
 `;
 
 const StyledChannelEditor = styled( ChannelEditor )`
   position: absolute;
   left: ${ Metrics.modeSelectorWidth + Metrics.channelListWidth }px;
-  top: ${ Metrics.headerHeight };
-  width: calc( 100% - ${ Metrics.modeSelectorWidth }px - ${ Metrics.channelListWidth }px - ${ Metrics.inspectorWidth } );
-  height: calc( 100% - ${ Metrics.headerHeight } );
+  top: ${ Metrics.headerHeight }px;
+  width: calc( 100% - ${ Metrics.modeSelectorWidth + Metrics.channelListWidth + Metrics.inspectorWidth }px );
+  height: calc( 100% - ${ Metrics.headerHeight }px );
 `;
 
 const StyledChannelListAndDopeSheet = styled( ChannelListAndDopeSheet )`
   position: absolute;
   left: ${ Metrics.modeSelectorWidth }px;
-  top: ${ Metrics.headerHeight };
-  width: calc( 100% - ${ Metrics.modeSelectorWidth }px - ${ Metrics.inspectorWidth } );
-  height: calc( 100% - ${ Metrics.headerHeight } );
+  top: ${ Metrics.headerHeight }px;
+  width: calc( 100% - ${ Metrics.modeSelectorWidth + Metrics.inspectorWidth }px );
+  height: calc( 100% - ${ Metrics.headerHeight }px );
 `;
 
 const StyledCurveList = styled( CurveList )`
@@ -58,23 +58,23 @@ const StyledCurveList = styled( CurveList )`
   left: ${ Metrics.modeSelectorWidth }px;
   bottom: 0;
   width: ${ Metrics.curveListWidth }px;
-  height: calc( 100% - ${ Metrics.headerHeight } );
+  height: calc( 100% - ${ Metrics.headerHeight }px );
 `;
 
 const StyledCurveEditor = styled( CurveEditor )`
   position: absolute;
   left: ${ Metrics.modeSelectorWidth + Metrics.curveListWidth }px;
   bottom: 0;
-  width: calc( 100% - ${ Metrics.modeSelectorWidth }px - ${ Metrics.curveListWidth }px - ${ Metrics.inspectorWidth } );
-  height: calc( 100% - ${ Metrics.headerHeight } );
+  width: calc( 100% - ${ Metrics.modeSelectorWidth + Metrics.curveListWidth + Metrics.inspectorWidth }px );
+  height: calc( 100% - ${ Metrics.headerHeight }px );
 `;
 
 const StyledInspector = styled( Inspector )`
   position: absolute;
   right: 0;
   bottom: 0;
-  width: ${ Metrics.inspectorWidth };
-  height: calc( 100% - ${ Metrics.headerHeight } );
+  width: ${ Metrics.inspectorWidth }px;
+  height: calc( 100% - ${ Metrics.headerHeight }px );
 `;
 
 const StyledFxSpawner = styled( FxSpawner )`
@@ -101,7 +101,7 @@ const Root = styled.div`
   position: absolute;
   font-family: 'Roboto', sans-serif;
   font-weight: 300;
-  font-size: ${ Metrics.rootFontSize };
+  font-size: ${ Metrics.rootFontSize }px;
   background: ${ Colors.back2 };
   color: ${ Colors.fore };
   user-select: none;

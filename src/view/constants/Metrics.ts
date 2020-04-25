@@ -1,8 +1,8 @@
 export const Metrics = {
-  rootFontSize: '16px',
-  headerHeight: '2rem',
+  rootFontSize: 16,
+  headerHeight: 32,
   channelListWidth: 128,
-  inspectorWidth: '12rem',
+  inspectorWidth: 192,
   curveListWidth: 128,
   modeSelectorWidth: 36,
   curveListEntryHeight: 36,
