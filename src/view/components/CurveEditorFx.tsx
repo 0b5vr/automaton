@@ -127,6 +127,11 @@ const CurveEditorFx = ( props: Props ): JSX.Element => {
           curve.moveFx( fx.$id, time );
           curve.changeFxRow( fx.$id, row );
 
+          const {
+            time: actualTime,
+            row: actualRow
+          } = curve.getFx( fx.$id );
+
           dispatch( {
             type: 'History/Push',
             description: 'Move Fx',
@@ -135,9 +140,9 @@ const CurveEditorFx = ( props: Props ): JSX.Element => {
                 type: 'curve/forceMoveFx',
                 curve: curveIndex,
                 fx: fx.$id,
-                time,
+                time: actualTime,
                 timePrev,
-                row,
+                row: actualRow,
                 rowPrev
               }
             ],
