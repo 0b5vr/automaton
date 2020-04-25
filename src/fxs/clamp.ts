@@ -9,7 +9,7 @@ function smin( a: number, b: number, k: number ): number {
   return Math.min( a, b ) - h * h * h / ( 6.0 * k * k );
 }
 
-export default [ 'clamp', {
+export default {
   name: 'Clamp',
   description: 'Constrain the curve between two values, featuring smooth minimum.',
   params: {
@@ -25,4 +25,4 @@ export default [ 'clamp', {
     const v = -smin( -context.params.min, -context.value, context.params.smooth );
     return smin( context.params.max, v, context.params.smooth );
   }
-} as FxDefinition ];
+} as FxDefinition;

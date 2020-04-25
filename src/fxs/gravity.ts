@@ -1,6 +1,6 @@
 import { FxDefinition } from '@fms-cat/automaton';
 
-export default [ 'gravity', {
+export default {
   name: 'Gravity',
   description: 'Accelerate and bounce the curve.',
   params: {
@@ -33,4 +33,4 @@ export default [ 'gravity', {
 
     return context.state.pos;
   }
-} as FxDefinition ];
+} as FxDefinition;

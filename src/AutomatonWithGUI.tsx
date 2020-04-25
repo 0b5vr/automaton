@@ -52,6 +52,12 @@ export interface AutomatonWithGUIOptions {
    * Originally intended to be used by automaton-electron.
    */
   saveContextMenuCommands?: Array<ContextMenuCommand>;
+
+  /**
+   * Install builtin fxs automatically.
+   * You can install them manually instead by using {@link Automaton.BuiltinFxs}.
+   */
+  installBuiltinFxs?: boolean;
 }
 
 /**
@@ -59,6 +65,12 @@ export interface AutomatonWithGUIOptions {
  */
 export class AutomatonWithGUI extends Automaton
   implements Serializable<SerializedAutomatonWithGUI> {
+  /**
+   * Builtin fx definitions.
+   * You can set {@link AutomatonWithGUIOptions.installBuiltinFxs} to `true` to install them automatically instead.
+   */
+  public static readonly BuiltinFxs = fxDefinitions;
+
   /**
    * GUI settings for this automaton.
    */
@@ -201,9 +213,11 @@ export class AutomatonWithGUI extends Automaton
 
     this.__isPlaying = options.isPlaying || false;
 
-    fxDefinitions.map( ( fxDef: [ string, FxDefinition ] /* TODO */ ) => {
-      this.addFxDefinition( ...fxDef );
-    } );
+    if ( options.installBuiltinFxs ) {
+      Object.entries( fxDefinitions ).forEach( ( [ key, def ] ) => {
+        this.addFxDefinition( key, def );
+      } );
+    }
 
     this.overrideSave = options.overrideSave;
     this.saveContextMenuCommands = options.saveContextMenuCommands;

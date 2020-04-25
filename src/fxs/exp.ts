@@ -1,6 +1,6 @@
 import { FxDefinition } from '@fms-cat/automaton';
 
-export default [ 'exp', {
+export default {
   name: 'Exponential Smoothing',
   description: 'Smooth the curve. Simple but good.',
   params: {
@@ -17,4 +17,4 @@ export default [ 'exp', {
     context.state.pos = context.state.pos * k + v * ( 1.0 - k );
     return context.state.pos;
   }
-} as FxDefinition ];
+} as FxDefinition;

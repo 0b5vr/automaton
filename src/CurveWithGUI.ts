@@ -13,9 +13,9 @@ import { jsonCopy } from './utils/jsonCopy';
 /**
  * Handles of a new node will be created in this length.
  */
-export const CHANNEL_DEFAULT_HANDLE_LENGTH = 0.5;
+export const CURVE_DEFAULT_HANDLE_LENGTH = 0.5;
 
-export const CHANNEL_FX_ROW_MAX = 5;
+export const CURVE_FX_ROW_MAX = 5;
 
 /**
  * Represents "Status code" of a {@link CurveStatus}.
@@ -104,12 +104,12 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
         {
           time: 0.0,
           value: 0.0,
-          out: { time: CHANNEL_DEFAULT_HANDLE_LENGTH, value: 0.0 }
+          out: { time: CURVE_DEFAULT_HANDLE_LENGTH, value: 0.0 }
         },
         {
           time: 1.0,
           value: 0.0,
-          in: { time: -CHANNEL_DEFAULT_HANDLE_LENGTH, value: 0.0 }
+          in: { time: -CURVE_DEFAULT_HANDLE_LENGTH, value: 0.0 }
         }
       ],
       fxs: []
@@ -247,8 +247,8 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
       $id: id,
       time,
       value,
-      in: { time: -CHANNEL_DEFAULT_HANDLE_LENGTH, value: 0.0 },
-      out: { time: CHANNEL_DEFAULT_HANDLE_LENGTH, value: 0.0 }
+      in: { time: -CURVE_DEFAULT_HANDLE_LENGTH, value: 0.0 },
+      out: { time: CURVE_DEFAULT_HANDLE_LENGTH, value: 0.0 }
     };
     this.__nodes.push( data );
     this.__sortNodes();
@@ -458,7 +458,7 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
 
     const node = this.__nodes[ index ];
     node[ dir ] = {
-      time: ( ( dir === 'in' ) ? -1.0 : 1.0 ) * CHANNEL_DEFAULT_HANDLE_LENGTH,
+      time: ( ( dir === 'in' ) ? -1.0 : 1.0 ) * CURVE_DEFAULT_HANDLE_LENGTH,
       value: 0.0
     };
 
@@ -506,7 +506,7 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
     def: string
   ): ( FxSection & WithBypass & WithID ) | null {
     const row = this.__getFreeRow( time, length );
-    if ( CHANNEL_FX_ROW_MAX <= row ) {
+    if ( CURVE_FX_ROW_MAX <= row ) {
       console.error( 'Too many fx stacks at here!' );
       return null;
     }
@@ -543,7 +543,7 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
     fx: FxSection & WithBypass & WithID
   ): ( FxSection & WithBypass & WithID ) | null {
     const row = this.__getFreeRow( fx.time, fx.length, fx.row );
-    if ( CHANNEL_FX_ROW_MAX <= row ) {
+    if ( CURVE_FX_ROW_MAX <= row ) {
       console.error( 'Too many fx stacks at here!' );
       return null;
     }
@@ -611,7 +611,7 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
   public changeFxRow( id: string, row: number ): void {
     const index = this.__getFxIndexById( id );
 
-    if ( row < 0 || CHANNEL_FX_ROW_MAX <= row ) {
+    if ( row < 0 || CURVE_FX_ROW_MAX <= row ) {
       throw new Error( `Row number ${row} is invalid` );
     }
 

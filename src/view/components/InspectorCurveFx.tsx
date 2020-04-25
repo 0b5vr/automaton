@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from '../states/store';
 import { BoolParam } from './BoolParam';
-import { CHANNEL_FX_ROW_MAX } from '../../ChannelWithGUI';
+import { CURVE_FX_ROW_MAX } from '../../CurveWithGUI';
 import { InspectorHeader } from './InspectorHeader';
 import { InspectorHr } from './InspectorHr';
 import { InspectorItem } from './InspectorItem';
@@ -22,6 +22,7 @@ const InspectorCurveFx = ( props: InspectorCurveFxProps ): JSX.Element => {
   } ) );
   const curve = automaton?.getCurve( props.curve ) || null;
   const fx = curves[ props.curve ].fxs[ props.fx ];
+  const fxDefParams = automaton?.getFxDefinitionParams( fx.def );
 
   return <>
     { automaton && curve && <>
@@ -80,7 +81,7 @@ const InspectorCurveFx = ( props: InspectorCurveFxProps ): JSX.Element => {
           onChange={ ( row ) => {
             curve.changeFxRow(
               fx.$id,
-              clamp( row, 0.0, CHANNEL_FX_ROW_MAX - 1 )
+              clamp( row, 0.0, CURVE_FX_ROW_MAX - 1 )
             );
           } }
           onSettle={ ( row, rowPrev ) => {
@@ -92,7 +93,7 @@ const InspectorCurveFx = ( props: InspectorCurveFxProps ): JSX.Element => {
                   type: 'curve/changeFxRow',
                   curve: props.curve,
                   fx: fx.$id,
-                  row: clamp( row, 0, CHANNEL_FX_ROW_MAX - 1 ),
+                  row: clamp( row, 0, CURVE_FX_ROW_MAX - 1 ),
                   rowPrev
                 }
               ]
@@ -125,62 +126,61 @@ const InspectorCurveFx = ( props: InspectorCurveFxProps ): JSX.Element => {
 
       <InspectorHr />
 
-      { Object.entries( automaton.getFxDefinitionParams( fx.def )! )
-        .map( ( [ name, fxParam ] ) => (
-          <InspectorItem name={ fxParam.name || name } key={ name }>
-            <>
-              { ( fxParam.type === 'float' || fxParam.type === 'int' ) && (
-                <NumberParam
-                  type={ fxParam.type }
-                  value={ fx.params[ name ] }
-                  onChange={ ( value ) => {
-                    curve.changeFxParam( fx.$id, name, value );
-                  } }
-                  onSettle={ ( value, valuePrev ) => {
-                    dispatch( {
-                      type: 'History/Push',
-                      description: 'Change Fx Param',
-                      commands: [
-                        {
-                          type: 'curve/changeFxParam',
-                          curve: props.curve,
-                          fx: fx.$id,
-                          key: name,
-                          value,
-                          valuePrev
-                        }
-                      ]
-                    } );
-                  } }
-                />
-              ) }
-              { ( fxParam.type === 'boolean' ) && (
-                <BoolParam
-                  value={ fx.params[ name ] }
-                  onChange={ ( value ) => {
-                    curve.changeFxParam( fx.$id, name, value );
-                  } }
-                  onSettle={ ( value, valuePrev ) => {
-                    dispatch( {
-                      type: 'History/Push',
-                      description: 'Change Fx Param',
-                      commands: [
-                        {
-                          type: 'curve/changeFxParam',
-                          curve: props.curve,
-                          fx: fx.$id,
-                          key: name,
-                          value,
-                          valuePrev
-                        }
-                      ]
-                    } );
-                  } }
-                />
-              ) }
-            </>
-          </InspectorItem>
-        ) ) }
+      { fxDefParams && Object.entries( fxDefParams ).map( ( [ name, fxParam ] ) => (
+        <InspectorItem name={ fxParam.name || name } key={ name }>
+          <>
+            { ( fxParam.type === 'float' || fxParam.type === 'int' ) && (
+              <NumberParam
+                type={ fxParam.type }
+                value={ fx.params[ name ] }
+                onChange={ ( value ) => {
+                  curve.changeFxParam( fx.$id, name, value );
+                } }
+                onSettle={ ( value, valuePrev ) => {
+                  dispatch( {
+                    type: 'History/Push',
+                    description: 'Change Fx Param',
+                    commands: [
+                      {
+                        type: 'curve/changeFxParam',
+                        curve: props.curve,
+                        fx: fx.$id,
+                        key: name,
+                        value,
+                        valuePrev
+                      }
+                    ]
+                  } );
+                } }
+              />
+            ) }
+            { ( fxParam.type === 'boolean' ) && (
+              <BoolParam
+                value={ fx.params[ name ] }
+                onChange={ ( value ) => {
+                  curve.changeFxParam( fx.$id, name, value );
+                } }
+                onSettle={ ( value, valuePrev ) => {
+                  dispatch( {
+                    type: 'History/Push',
+                    description: 'Change Fx Param',
+                    commands: [
+                      {
+                        type: 'curve/changeFxParam',
+                        curve: props.curve,
+                        fx: fx.$id,
+                        key: name,
+                        value,
+                        valuePrev
+                      }
+                    ]
+                  } );
+                } }
+              />
+            ) }
+          </>
+        </InspectorItem>
+      ) ) }
     </> }
   </>;
 };

@@ -1,6 +1,6 @@
 import { FxDefinition } from '@fms-cat/automaton';
 
-export default [ 'cds', {
+export default {
   name: 'Critically Damped Spring',
   description: 'Basically the best smoothing method. Shoutouts to Keijiro Takahashi',
   params: {
@@ -30,4 +30,4 @@ export default [ 'cds', {
     context.state.pos += context.state.vel * dt;
     return context.state.pos;
   }
-} as FxDefinition ];
+} as FxDefinition;

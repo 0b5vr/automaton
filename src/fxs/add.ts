@@ -1,6 +1,6 @@
 import { FxDefinition } from '@fms-cat/automaton';
 
-export default [ 'add', {
+export default {
   name: 'Add',
   description: 'The simplest fx ever. Just add a constant value to the curve.',
   params: {
@@ -9,4 +9,4 @@ export default [ 'add', {
   func( context ) {
     return context.value + context.params.value;
   }
-} as FxDefinition ];
+} as FxDefinition;

@@ -1,6 +1,6 @@
 import { FxDefinition } from '@fms-cat/automaton';
 
-export default [ 'lofi', {
+export default {
   name: 'Lo-Fi',
   description: 'Make curve more crunchy.',
   params: {
@@ -29,4 +29,4 @@ export default [ 'lofi', {
     }
     return v;
   }
-} as FxDefinition ];
+} as FxDefinition;
