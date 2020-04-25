@@ -57,10 +57,15 @@ export class Curve {
    * @param data Data of a curve
    */
   public deserialize( data: SerializedCurve ): void {
-    this.__nodes = data.nodes;
+    this.__nodes = data.nodes.map( ( node ) => ( {
+      time: node.time ?? 0.0,
+      value: node.value ?? 0.0,
+      in: node.in ?? { time: 0.0, value: 0.0 },
+      out: node.out ?? { time: 0.0, value: 0.0 }
+    } ) );
     this.__fxs = data.fxs || [];
 
-    const lastNode = data.nodes[ data.nodes.length - 1 ];
+    const lastNode = this.__nodes[ this.__nodes.length - 1 ];
     this.__length = lastNode.time;
 
     this.precalc();
