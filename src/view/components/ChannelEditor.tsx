@@ -207,6 +207,10 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
         description: 'Add Curve',
         commands: [
           {
+            type: 'automaton/createCurve',
+            index: curveId
+          },
+          {
             type: 'channel/createItemFromData',
             channel: selectedChannel,
             data
