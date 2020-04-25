@@ -115,25 +115,21 @@ const ChannelListEntry = ( props: ChannelListEntryProps ): JSX.Element => {
 
           const data = automaton.getChannel( name )!.serialize();
 
-          const redo = (): void => {
-            automaton.removeChannel( name );
-            automaton.createChannel( newName, data );
-          };
-
-          const undo = (): void => {
-            automaton.removeChannel( newName );
-            automaton.createOrOverwriteChannel( name, data );
-          };
+          automaton.removeChannel( name );
+          automaton.createChannel( newName, data );
 
           dispatch( {
             type: 'History/Push',
-            entry: {
-              description: `Rename Channel: ${ name } -> ${ newName }`,
-              redo,
-              undo
-            }
+            description: `Rename Channel: ${ name } -> ${ newName }`,
+            commands: [
+              {
+                type: 'automaton/renameChannel',
+                name,
+                newName,
+                data
+              }
+            ]
           } );
-          redo();
         }
       } );
     },
@@ -147,23 +143,19 @@ const ChannelListEntry = ( props: ChannelListEntryProps ): JSX.Element => {
       const dupName = duplicateName( name, new Set( Object.keys( automaton.channels ) ) );
       const data = automaton.getChannel( name )!.serialize();
 
-      const undo = (): void => {
-        automaton.removeChannel( dupName );
-      };
-
-      const redo = (): void => {
-        automaton.createChannel( dupName, data );
-      };
+      automaton.createChannel( dupName, data );
 
       dispatch( {
         type: 'History/Push',
-        entry: {
-          description: `Duplicate Channel: ${ dupName }`,
-          redo,
-          undo
-        }
+        description: `Duplicate Channel: ${ dupName }`,
+        commands: [
+          {
+            type: 'automaton/createChannel',
+            channel: dupName,
+            data
+          }
+        ]
       } );
-      redo();
     },
     [ automaton, name ]
   );
@@ -174,23 +166,19 @@ const ChannelListEntry = ( props: ChannelListEntryProps ): JSX.Element => {
 
       const data = automaton.getChannel( name )!.serialize();
 
-      const undo = (): void => {
-        automaton.createChannel( name, data );
-      };
-
-      const redo = (): void => {
-        automaton.removeChannel( name );
-      };
+      automaton.removeChannel( name );
 
       dispatch( {
         type: 'History/Push',
-        entry: {
-          description: `Remove Channel: ${ name }`,
-          redo,
-          undo
-        }
+        description: `Remove Channel: ${ name }`,
+        commands: [
+          {
+            type: 'automaton/removeChannel',
+            channel: name,
+            data
+          }
+        ]
       } );
-      redo();
     },
     [ automaton, name ]
   );

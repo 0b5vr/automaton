@@ -1,11 +1,11 @@
+import { HistoryCommand } from '../history/HistoryCommand';
 import { Reducer } from 'redux';
 import { produce } from 'immer';
 
 // == state ========================================================================================
 interface HistoryEntry {
+  commands: HistoryCommand[];
   description: string;
-  redo: () => void;
-  undo: () => void;
 }
 
 export interface State {
@@ -23,7 +23,8 @@ export const initialState: Readonly<State> = {
 // == action =======================================================================================
 export type Action = {
   type: 'History/Push';
-  entry: HistoryEntry;
+  commands: HistoryCommand[];
+  description: string;
 } | {
   type: 'History/Drop';
 } | {
@@ -40,7 +41,10 @@ export const reducer: Reducer<State, Action> = ( state = initialState, action ) 
   return produce( state, ( newState: State ) => {
     if ( action.type === 'History/Push' ) {
       newState.entries.splice( state.index );
-      newState.entries.push( action.entry );
+      newState.entries.push( {
+        commands: action.commands,
+        description: action.description
+      } );
       newState.index ++;
     } else if ( action.type === 'History/Drop' ) {
       newState.entries.splice( 0 );

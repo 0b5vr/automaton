@@ -1,9 +1,9 @@
+import { useDispatch, useSelector } from '../states/store';
 import { InspectorHeader } from './InspectorHeader';
 import { InspectorHr } from './InspectorHr';
 import { InspectorItem } from './InspectorItem';
 import { NumberParam } from './NumberParam';
 import React from 'react';
-import { useSelector } from '../states/store';
 
 // == compoennt ====================================================================================
 interface Props {
@@ -12,6 +12,7 @@ interface Props {
 }
 
 const InspectorCurveNode = ( props: Props ): JSX.Element => {
+  const dispatch = useDispatch();
   const { automaton, curves } = useSelector( ( state ) => ( {
     automaton: state.automaton.instance,
     curves: state.automaton.curves
@@ -29,8 +30,22 @@ const InspectorCurveNode = ( props: Props ): JSX.Element => {
         <NumberParam
           type="float"
           value={ node.time }
-          onChange={ ( value ) => { curve.moveNodeTime( node.$id, value ); } }
-          historyDescription="Change Node Time"
+          onChange={ ( time ) => { curve.moveNodeTime( node.$id, time ); } }
+          onSettle={ ( time, timePrev ) => {
+            dispatch( {
+              type: 'History/Push',
+              description: 'Change Node Time',
+              commands: [
+                {
+                  type: 'curve/moveNodeTime',
+                  curve: props.curve,
+                  node: node.$id,
+                  time,
+                  timePrev
+                }
+              ]
+            } );
+          } }
         />
       </InspectorItem>
       <InspectorItem name="Value">
@@ -38,7 +53,21 @@ const InspectorCurveNode = ( props: Props ): JSX.Element => {
           type="float"
           value={ node.value }
           onChange={ ( value ) => { curve.moveNodeValue( node.$id, value ); } }
-          historyDescription="Change Node Value"
+          onSettle={ ( value, valuePrev ) => {
+            dispatch( {
+              type: 'History/Push',
+              description: 'Change Node Value',
+              commands: [
+                {
+                  type: 'curve/moveNodeValue',
+                  curve: props.curve,
+                  node: node.$id,
+                  value,
+                  valuePrev
+                }
+              ]
+            } );
+          } }
         />
       </InspectorItem>
 
@@ -49,7 +78,22 @@ const InspectorCurveNode = ( props: Props ): JSX.Element => {
           type="float"
           value={ node.in?.time || 0.0 }
           onChange={ ( value ) => { curve.moveHandleTime( node.$id, 'in', value ); } }
-          historyDescription="Change Node Handle Time"
+          onSettle={ ( time, timePrev ) => {
+            dispatch( {
+              type: 'History/Push',
+              description: 'Change Node Handle Time',
+              commands: [
+                {
+                  type: 'curve/moveHandleTime',
+                  curve: props.curve,
+                  node: node.$id,
+                  dir: 'in',
+                  time,
+                  timePrev
+                }
+              ]
+            } );
+          } }
         />
       </InspectorItem>
       <InspectorItem name="In Value">
@@ -57,7 +101,22 @@ const InspectorCurveNode = ( props: Props ): JSX.Element => {
           type="float"
           value={ node.in?.value || 0.0 }
           onChange={ ( value ) => { curve.moveHandleValue( node.$id, 'in', value ); } }
-          historyDescription="Change Node Handle Value"
+          onSettle={ ( value, valuePrev ) => {
+            dispatch( {
+              type: 'History/Push',
+              description: 'Change Node Handle Value',
+              commands: [
+                {
+                  type: 'curve/moveHandleValue',
+                  curve: props.curve,
+                  node: node.$id,
+                  dir: 'in',
+                  value,
+                  valuePrev
+                }
+              ]
+            } );
+          } }
         />
       </InspectorItem>
 
@@ -68,7 +127,22 @@ const InspectorCurveNode = ( props: Props ): JSX.Element => {
           type="float"
           value={ node.out?.time || 0.0 }
           onChange={ ( value ) => { curve.moveHandleTime( node.$id, 'out', value ); } }
-          historyDescription="Change Node Handle Time"
+          onSettle={ ( time, timePrev ) => {
+            dispatch( {
+              type: 'History/Push',
+              description: 'Change Node Handle Time',
+              commands: [
+                {
+                  type: 'curve/moveHandleTime',
+                  curve: props.curve,
+                  node: node.$id,
+                  dir: 'out',
+                  time,
+                  timePrev
+                }
+              ]
+            } );
+          } }
         />
       </InspectorItem>
       <InspectorItem name="Out Value">
@@ -76,7 +150,22 @@ const InspectorCurveNode = ( props: Props ): JSX.Element => {
           type="float"
           value={ node.out?.value || 0.0 }
           onChange={ ( value ) => { curve.moveHandleValue( node.$id, 'out', value ); } }
-          historyDescription="Change Node Handle Value"
+          onSettle={ ( value, valuePrev ) => {
+            dispatch( {
+              type: 'History/Push',
+              description: 'Change Node Handle Value',
+              commands: [
+                {
+                  type: 'curve/moveHandleValue',
+                  curve: props.curve,
+                  node: node.$id,
+                  dir: 'out',
+                  value,
+                  valuePrev
+                }
+              ]
+            } );
+          } }
         />
       </InspectorItem>
     </> }

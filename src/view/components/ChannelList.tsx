@@ -65,28 +65,23 @@ const ChannelList = ( { className }: ChannelListProps ): JSX.Element => {
           return true;
         },
         callback: ( name ) => {
-          const redo = (): void => {
-            automaton.createChannel( name );
+          automaton.createChannel( name );
 
-            dispatch( {
-              type: 'Timeline/SelectChannel',
-              channel: name
-            } );
-          };
-
-          const undo = (): void => {
-            automaton.removeChannel( name );
-          };
+          dispatch( {
+            type: 'Timeline/SelectChannel',
+            channel: name
+          } );
 
           dispatch( {
             type: 'History/Push',
-            entry: {
-              description: `Create Channel: ${ name }`,
-              redo,
-              undo
-            }
+            description: `Create Channel: ${ name }`,
+            commands: [
+              {
+                type: 'automaton/createChannel',
+                channel: name,
+              }
+            ]
           } );
-          redo();
         }
       } );
     },

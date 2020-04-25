@@ -2,7 +2,6 @@ import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Colors } from '../constants/Colors';
 import styled from 'styled-components';
-import { useDispatch } from '../states/store';
 import { useDoubleClick } from '../utils/useDoubleClick';
 
 // == styles =======================================================================================
@@ -62,17 +61,23 @@ export interface BoolParamProps {
   value: boolean;
 
   /**
-   * A description text that will be showed at the undo / redo button.
-   * If it is not given, **changing this value doesn't do anything to the history stack**.
+   * Will be called whenever it changes its value.
+   * See also: onSettle
    */
-  historyDescription?: string;
-  className?: string;
   onChange?: ( value: boolean ) => void;
+
+  /**
+   * Will be called when the user finished tweaking the value.
+   * onChange will also be called.
+   * See also: onChange
+   */
+  onSettle?: ( value: boolean, valuePrev: boolean ) => void;
+
+  className?: string;
 }
 
 const BoolParam = ( props: BoolParamProps ): JSX.Element => {
-  const dispatch = useDispatch();
-  const { className, value, historyDescription, onChange } = props;
+  const { className, value, onChange, onSettle } = props;
   const [ isInput, setIsInput ] = useState<boolean>( false );
   const refInput = useRef<HTMLInputElement>( null );
   const [ inputValue, setInputValue ] = useState<string>( '' );
@@ -86,34 +91,21 @@ const BoolParam = ( props: BoolParamProps ): JSX.Element => {
     }
   }, [ isInput ] );
 
-  const pushHistoryAndDo = useCallback(
-    ( v: boolean | null, vPrev: boolean ): void => {
-      if ( v == null ) {
-        onChange && onChange( vPrev );
+  const trySettle = useCallback(
+    ( value: boolean | null, valuePrev: boolean ): void => {
+      if ( value == null ) {
+        onChange && onChange( valuePrev );
         return;
       }
 
-      const redo = (): void => {
-        onChange && onChange( v );
-      };
-
-      if ( historyDescription ) {
-        const undo = (): void => {
-          onChange && onChange( vPrev );
-        };
-
-        dispatch( {
-          type: 'History/Push',
-          entry: {
-            description: historyDescription,
-            redo,
-            undo
-          }
-        } );
+      if ( value === valuePrev ) {
+        return;
       }
-      redo();
+
+      onChange && onChange( value );
+      onSettle && onSettle( value, valuePrev );
     },
-    [ historyDescription, onChange ]
+    [ onChange, onSettle ]
   );
 
   const handleClick = useCallback(
@@ -133,13 +125,13 @@ const BoolParam = ( props: BoolParamProps ): JSX.Element => {
   const handleClickBox = useCallback(
     mouseCombo( {
       [ MouseComboBit.LMB ]: () => {
-        pushHistoryAndDo( !value, value );
+        trySettle( !value, value );
       }
     } ),
-    [ value, pushHistoryAndDo ]
+    [ value, trySettle ]
   );
 
-  const handleChange = ( event: React.ChangeEvent<HTMLInputElement> ): void => {
+  const handleChange = ( event: React.ChangeEvent<HTMLInputElement> ): void => { // TODO: useCallback
     setInputValue( event.target.value );
 
     const v = inputToValue( event.target.value );
@@ -149,12 +141,12 @@ const BoolParam = ( props: BoolParamProps ): JSX.Element => {
     }
   };
 
-  const handleKeyDown = ( event: React.KeyboardEvent<HTMLInputElement> ): void => {
+  const handleKeyDown = ( event: React.KeyboardEvent<HTMLInputElement> ): void => { // TODO: useCallback
     if ( event.nativeEvent.key === 'Enter' ) {
       event.preventDefault();
 
       const v = inputToValue( inputValue );
-      pushHistoryAndDo( v, inputPrevValue );
+      trySettle( v, inputPrevValue );
 
       setIsInput( false );
     } else if ( event.nativeEvent.key === 'Escape' ) {
@@ -166,9 +158,9 @@ const BoolParam = ( props: BoolParamProps ): JSX.Element => {
     }
   };
 
-  const handleBlur = (): void => {
+  const handleBlur = (): void => { // TODO: useCallback
     const v = inputToValue( inputValue );
-    pushHistoryAndDo( v, inputPrevValue );
+    trySettle( v, inputPrevValue );
 
     setIsInput( false );
   };

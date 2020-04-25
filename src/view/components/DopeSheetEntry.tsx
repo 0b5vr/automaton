@@ -73,21 +73,16 @@ const DopeSheetEntry = ( props: Props ): JSX.Element => {
         } ]
       } );
 
-      const undo = (): void => {
-        channel.removeItem( data.$id );
-      };
-
-      const redo = (): void => {
-        channel.createItemFromData( data );
-      };
-
       dispatch( {
         type: 'History/Push',
-        entry: {
-          description: 'Add Constant',
-          redo,
-          undo
-        }
+        description: 'Add Constant',
+        commands: [
+          {
+            type: 'channel/createItemFromData',
+            channel: channelName,
+            data
+          }
+        ],
       } );
     },
     [ range, rect, channelName, channel ]
@@ -117,21 +112,20 @@ const DopeSheetEntry = ( props: Props ): JSX.Element => {
         } ]
       } );
 
-      const undo = (): void => {
-        channel.removeItem( data.$id );
-      };
-
-      const redo = (): void => {
-        channel.createItemFromData( data );
-      };
-
       dispatch( {
         type: 'History/Push',
-        entry: {
-          description: 'Add Curve',
-          redo,
-          undo
-        }
+        description: 'Add New Curve',
+        commands: [
+          {
+            type: 'automaton/createCurve',
+            index: curveId
+          },
+          {
+            type: 'channel/createItemFromData',
+            channel: channelName,
+            data: data
+          }
+        ],
       } );
     },
     [ automaton, range, rect, channelName, channel ]
@@ -195,21 +189,18 @@ const DopeSheetEntry = ( props: Props ): JSX.Element => {
           channel.moveItem( confirmedData.$id, t );
           confirmedData.time = t;
 
-          const undo = (): void => {
-            channel.removeItem( confirmedData.$id );
-          };
-
-          const redo = (): void => {
-            channel.createItemFromData( confirmedData );
-          };
+          channel.createItemFromData( confirmedData );
 
           dispatch( {
             type: 'History/Push',
-            entry: {
-              description: 'Add Constant',
-              redo,
-              undo
-            }
+            description: confirmedData.curve != null ? 'Add Curve' : 'Add Constant',
+            commands: [
+              {
+                type: 'channel/createItemFromData',
+                channel: channelName,
+                data: confirmedData
+              }
+            ],
           } );
         }
       );

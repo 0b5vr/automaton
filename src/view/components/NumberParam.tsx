@@ -3,7 +3,6 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Colors } from '../constants/Colors';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
 import styled from 'styled-components';
-import { useDispatch } from '../states/store';
 import { useDoubleClick } from '../utils/useDoubleClick';
 
 // == helpers ======================================================================================
@@ -86,17 +85,23 @@ export interface NumberParamProps {
   value: number;
 
   /**
-   * A description text that will be showed at the undo / redo button.
-   * If it is not given, **changing this value doesn't do anything to the history stack**.
+   * Will be called whenever it changes its value.
+   * See also: onSettle
    */
-  historyDescription?: string;
-  className?: string;
   onChange?: ( value: number ) => void;
+
+  /**
+   * Will be called when the user finished tweaking the value.
+   * onChange will also be called.
+   * See also: onChange
+   */
+  onSettle?: ( value: number, valuePrev: number ) => void;
+
+  className?: string;
 }
 
 const NumberParam = ( props: NumberParamProps ): JSX.Element => {
-  const dispatch = useDispatch();
-  const { className, type, value, historyDescription, onChange } = props;
+  const { className, type, value, onChange, onSettle } = props;
   const [ isInput, setIsInput ] = useState<boolean>( false );
   const refInput = useRef<HTMLInputElement>( null );
   const [ inputValue, setInputValue ] = useState<string>( '' );
@@ -110,34 +115,21 @@ const NumberParam = ( props: NumberParamProps ): JSX.Element => {
     }
   }, [ isInput ] );
 
-  const pushHistoryAndDo = useCallback(
-    ( v: number | null, vPrev: number ): void => {
-      if ( v == null ) {
-        onChange && onChange( vPrev );
+  const trySettle = useCallback(
+    ( value: number | null, valuePrev: number ): void => {
+      if ( value == null ) {
+        onChange && onChange( valuePrev );
         return;
       }
 
-      const redo = (): void => {
-        onChange && onChange( v );
-      };
-
-      if ( historyDescription ) {
-        const undo = (): void => {
-          onChange && onChange( vPrev );
-        };
-
-        dispatch( {
-          type: 'History/Push',
-          entry: {
-            description: historyDescription,
-            redo,
-            undo
-          }
-        } );
+      if ( value === valuePrev ) {
+        return;
       }
-      redo();
+
+      onChange && onChange( value );
+      onSettle && onSettle( value, valuePrev );
     },
-    [ historyDescription, onChange ]
+    [ onChange, onSettle ]
   );
 
   const openInput = useCallback(
@@ -185,11 +177,11 @@ const NumberParam = ( props: NumberParamProps ): JSX.Element => {
         () => {
           if ( !hasMoved ) { return; }
 
-          pushHistoryAndDo( v, vPrev );
+          trySettle( v, vPrev );
         }
       );
     },
-    [ value, type, onChange ]
+    [ value, type, onChange, trySettle ]
   );
 
   const handleClick = useCallback(
@@ -206,7 +198,7 @@ const NumberParam = ( props: NumberParamProps ): JSX.Element => {
     [ openInput, grabValue ]
   );
 
-  const handleChange = ( event: React.ChangeEvent<HTMLInputElement> ): void => {
+  const handleChange = ( event: React.ChangeEvent<HTMLInputElement> ): void => { // TODO: useCallback
     setInputValue( event.target.value );
 
     const v = inputToValue( event.target.value, type );
@@ -222,7 +214,7 @@ const NumberParam = ( props: NumberParamProps ): JSX.Element => {
         event.preventDefault();
 
         const v = inputToValue( inputValue, type );
-        pushHistoryAndDo( v, inputPrevValue );
+        trySettle( v, inputPrevValue );
 
         setIsInput( false );
       } else if ( event.nativeEvent.key === 'Escape' ) {
@@ -233,17 +225,17 @@ const NumberParam = ( props: NumberParamProps ): JSX.Element => {
         setIsInput( false );
       }
     },
-    [ inputValue, type, inputPrevValue, onChange ]
+    [ inputValue, type, inputPrevValue, onChange, trySettle ]
   );
 
   const handleBlur = useCallback(
     (): void => {
       const v = inputToValue( inputValue, type );
-      pushHistoryAndDo( v, inputPrevValue );
+      trySettle( v, inputPrevValue );
 
       setIsInput( false );
     },
-    [ inputValue, type, inputPrevValue ]
+    [ inputValue, type, inputPrevValue, trySettle ]
   );
 
   const displayValue = valueToInput( value, type );
