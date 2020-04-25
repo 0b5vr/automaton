@@ -189,8 +189,6 @@ const DopeSheetEntry = ( props: Props ): JSX.Element => {
           channel.moveItem( confirmedData.$id, t );
           confirmedData.time = t;
 
-          channel.createItemFromData( confirmedData );
-
           dispatch( {
             type: 'History/Push',
             description: confirmedData.curve != null ? 'Add Curve' : 'Add Constant',
