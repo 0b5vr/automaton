@@ -6,6 +6,7 @@ import { InspectorHr } from './InspectorHr';
 import { InspectorItem } from './InspectorItem';
 import { NumberParam } from './NumberParam';
 import React from 'react';
+import { clamp } from '../utils/clamp';
 
 // == component ====================================================================================
 export interface InspectorCurveFxProps {
@@ -76,10 +77,10 @@ const InspectorCurveFx = ( props: InspectorCurveFxProps ): JSX.Element => {
         <NumberParam
           type="int"
           value={ fx.row }
-          onChange={ ( value ) => {
+          onChange={ ( row ) => {
             curve.changeFxRow(
               fx.$id,
-              Math.min( Math.max( value, 0.0 ), CHANNEL_FX_ROW_MAX - 1 )
+              clamp( row, 0.0, CHANNEL_FX_ROW_MAX - 1 )
             );
           } }
           onSettle={ ( row, rowPrev ) => {
@@ -91,7 +92,7 @@ const InspectorCurveFx = ( props: InspectorCurveFxProps ): JSX.Element => {
                   type: 'curve/changeFxRow',
                   curve: props.curve,
                   fx: fx.$id,
-                  row,
+                  row: clamp( row, 0, CHANNEL_FX_ROW_MAX - 1 ),
                   rowPrev
                 }
               ]
