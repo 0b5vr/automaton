@@ -6,7 +6,7 @@ import { InspectorHr } from './InspectorHr';
 import { InspectorItem } from './InspectorItem';
 import { NumberParam } from './NumberParam';
 import React from 'react';
-import { clamp } from '../utils/clamp';
+import { clamp } from '../../utils/clamp';
 
 // == component ====================================================================================
 export interface InspectorCurveFxProps {
