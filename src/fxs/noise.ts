@@ -8,7 +8,7 @@ function smoothstep( a: number, b: number, k: number ): number {
   return a + ( b - a ) * smooth;
 }
 
-export default [ 'noise', {
+export default {
   name: 'Fractal Noise',
   description: 'wiggle()',
   params: {
@@ -47,4 +47,4 @@ export default [ 'noise', {
     }
     return v;
   }
-} as FxDefinition ];
+} as FxDefinition;

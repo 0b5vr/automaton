@@ -31,10 +31,12 @@ interface Props {
   size: Resolution;
 }
 
-const CurveEditorFxBg = ( props: Props ): JSX.Element => {
+const CurveEditorFxBg = ( props: Props ): JSX.Element | null => {
   const { fx, range, size } = props;
 
   const x = t2x( fx.time, range, size.width );
+
+  if ( fx.bypass ) { return null; }
 
   return (
     <Root key={ fx.$id }

@@ -1,6 +1,6 @@
 import { FxDefinition } from '@fms-cat/automaton';
 
-export default [ 'pow', {
+export default {
   name: 'Power',
   description: 'You got boost power!',
   params: {
@@ -16,4 +16,4 @@ export default [ 'pow', {
       context.params.pow
     ) * sign + context.params.bias;
   }
-} as FxDefinition ];
+} as FxDefinition;

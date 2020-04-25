@@ -2,7 +2,7 @@ import { FxDefinition } from '@fms-cat/automaton';
 
 const TAU = Math.PI * 2.0;
 
-export default [ 'sine', {
+export default {
   name: 'Sinewave',
   description: 'Overlay a sinewave to the curve.',
   params: {
@@ -15,4 +15,4 @@ export default [ 'sine', {
     const p = context.progress * context.params.freq + context.params.phase;
     return v + context.params.amp * Math.sin( p * TAU );
   }
-} as FxDefinition ];
+} as FxDefinition;

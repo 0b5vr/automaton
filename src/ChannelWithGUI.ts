@@ -9,13 +9,6 @@ import { clamp } from './utils/clamp';
 import { genID } from './utils/genID';
 
 /**
- * Handles of a new node will be created in this length.
- */
-export const CHANNEL_DEFAULT_HANDLE_LENGTH = 0.5;
-
-export const CHANNEL_FX_ROW_MAX = 5;
-
-/**
  * Represents "Status code" of a {@link ChannelStatus}.
  */
 export enum ChannelStatusCode {

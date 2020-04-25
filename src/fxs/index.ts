@@ -1,11 +1,21 @@
-export default [
-  require( './add' ).default,
-  require( './cds' ).default,
-  require( './clamp' ).default,
-  require( './exp' ).default,
-  require( './gravity' ).default,
-  require( './lofi' ).default,
-  require( './noise' ).default,
-  require( './pow' ).default,
-  require( './sine' ).default
-];
+import add from './add';
+import cds from './cds';
+import clamp from './clamp';
+import exp from './exp';
+import gravity from './gravity';
+import lofi from './lofi';
+import noise from './noise';
+import pow from './pow';
+import sine from './sine';
+
+export default {
+  add,
+  cds,
+  clamp,
+  exp,
+  gravity,
+  lofi,
+  noise,
+  pow,
+  sine
+};

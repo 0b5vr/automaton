@@ -2,7 +2,7 @@ import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
 import React, { useCallback } from 'react';
 import { TimeValueRange, dt2dx, dx2dt, snapTime, t2x } from '../utils/TimeValueRange';
 import { useDispatch, useSelector } from '../states/store';
-import { CHANNEL_FX_ROW_MAX } from '../../ChannelWithGUI';
+import { CURVE_FX_ROW_MAX } from '../../CurveWithGUI';
 import { Colors } from '../constants/Colors';
 import { FxSection } from '@fms-cat/automaton';
 import { Resolution } from '../utils/Resolution';
@@ -18,18 +18,22 @@ import { useDoubleClick } from '../utils/useDoubleClick';
 export const FX_HEIGHT = 16.0;
 
 // == styles =======================================================================================
-const FxBody = styled.rect<{ isSelected: boolean; isBypassed: boolean | undefined }>`
-  fill: ${ ( { isSelected, isBypassed } ) => (
+const FxBody = styled.rect<{ isSelected: boolean; isBypassed: boolean | undefined; isMissing: boolean | undefined }>`
+  fill: ${ ( { isSelected, isBypassed, isMissing } ) => (
     isSelected
-      ? isBypassed
-        ? Colors.gray
-        : Colors.fx
+      ? isMissing
+        ? Colors.error
+        : isBypassed
+          ? Colors.gray
+          : Colors.fx
       : Colors.back1
   ) };
-  stroke: ${ ( { isBypassed } ) => (
-    isBypassed
-      ? Colors.gray
-      : Colors.fx
+  stroke: ${ ( { isBypassed, isMissing } ) => (
+    isMissing
+      ? Colors.error
+      : isBypassed
+        ? Colors.gray
+        : Colors.fx
   ) };
   stroke-width: 0.125rem;
   cursor: pointer;
@@ -48,13 +52,15 @@ const FxSide = styled.rect`
   ry: 0.25rem;
 `;
 
-const FxText = styled.text<{ isSelected: boolean; isBypassed: boolean | undefined }>`
-  fill: ${ ( { isSelected, isBypassed } ) => (
+const FxText = styled.text<{ isSelected: boolean; isBypassed: boolean | undefined; isMissing: boolean | undefined }>`
+  fill: ${ ( { isSelected, isBypassed, isMissing } ) => (
     isSelected ?
       Colors.back1
-      : isBypassed
-        ? Colors.gray
-        : Colors.fx
+      : isMissing
+        ? Colors.error
+        : isBypassed
+          ? Colors.gray
+          : Colors.fx
   ) };
   font-size: 0.7rem;
 `;
@@ -87,6 +93,7 @@ const CurveEditorFx = ( props: Props ): JSX.Element => {
   const checkDoubleClick = useDoubleClick();
   const curve = automaton?.getCurve( curveIndex ) || null;
   const selectedFxs = useSelector( ( state ) => state.curveEditor.selectedItems.fxs );
+  const definition = fxDefinitions[ fx.def ];
 
   const grabFxBody = useCallback(
     (): void => {
@@ -113,7 +120,7 @@ const CurveEditorFx = ( props: Props ): JSX.Element => {
           time = holdTime ? timePrev : ( timePrev + dx2dt( dx, range, size.width ) );
           row = holdRow
             ? rowPrev
-            : clamp( rowPrev + Math.round( dy / FX_HEIGHT ), 0, CHANNEL_FX_ROW_MAX - 1 );
+            : clamp( rowPrev + Math.round( dy / FX_HEIGHT ), 0, CURVE_FX_ROW_MAX - 1 );
 
           if ( !ignoreSnap ) {
             if ( !holdTime ) { time = snapTime( time, range, size.width, guiSettings ); }
@@ -305,6 +312,7 @@ const CurveEditorFx = ( props: Props ): JSX.Element => {
           height={ FX_HEIGHT }
           isSelected={ arraySetHas( selectedFxs, fx.$id ) }
           isBypassed={ fx.bypass }
+          isMissing={ definition == null }
           onMouseDown={ handleFxBodyClick }
         />
         <FxSide
@@ -330,8 +338,9 @@ const CurveEditorFx = ( props: Props ): JSX.Element => {
               y="0.75rem"
               isSelected={ arraySetHas( selectedFxs, fx.$id ) }
               isBypassed={ fx.bypass }
+              isMissing={ definition == null }
             >
-              { fxDefinitions[ fx.def ].name }
+              { definition ? definition.name : `${ fx.def } (Missing)` }
             </FxText>
           </g>
         </g>
