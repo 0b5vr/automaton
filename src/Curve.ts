@@ -60,7 +60,18 @@ export class Curve {
       in: node.in ?? { time: 0.0, value: 0.0 },
       out: node.out ?? { time: 0.0, value: 0.0 }
     } ) );
-    this.__fxs = data.fxs || [];
+
+    this.__fxs = [];
+    data.fxs?.forEach( ( fx ) => {
+      if ( fx.bypass ) { return; }
+      this.__fxs.push( {
+        time: fx.time ?? 0.0,
+        length: fx.length ?? 0.0,
+        row: fx.row ?? 0,
+        def: fx.def,
+        params: fx.params
+      } );
+    } );
 
     this.precalc();
   }
@@ -95,7 +106,6 @@ export class Curve {
 
     for ( let iFx = 0; iFx < this.__fxs.length; iFx ++ ) {
       const fx = this.__fxs[ iFx ];
-      if ( fx.bypass ) { continue; }
       const fxDef = this.__automaton.getFxDefinition( fx.def );
       if ( !fxDef ) { continue; }
 
