@@ -160,6 +160,10 @@ export const reducer: Reducer<State, ContextAction> = ( state = initialState, ac
       if ( length < newState.range.t1 ) {
         newState.range.t1 = length;
       }
+    } else if ( action.type === 'Automaton/RemoveChannel' ) {
+      if ( state.selectedChannel === action.channel ) {
+        newState.selectedChannel = null;
+      }
     } else if ( action.type === 'Automaton/RemoveChannelItem' ) {
       newState.selectedItems = { ...state.selectedItems };
       delete newState.selectedItems[ action.id ];

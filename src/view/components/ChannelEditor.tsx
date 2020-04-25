@@ -163,21 +163,16 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
         } ]
       } );
 
-      const undo = (): void => {
-        channel.removeItem( data.$id );
-      };
-
-      const redo = (): void => {
-        channel.createItemFromData( data );
-      };
-
       dispatch( {
         type: 'History/Push',
-        entry: {
-          description: 'Add Constant',
-          redo,
-          undo
-        }
+        description: 'Add Constant',
+        commands: [
+          {
+            type: 'channel/createItemFromData',
+            channel: selectedChannel,
+            data
+          }
+        ],
       } );
     },
     [ range, rect, selectedChannel, channel ]
@@ -207,21 +202,20 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
         } ]
       } );
 
-      const undo = (): void => {
-        channel.removeItem( data.$id );
-      };
-
-      const redo = (): void => {
-        channel.createItemFromData( data );
-      };
-
       dispatch( {
         type: 'History/Push',
-        entry: {
-          description: 'Add Curve',
-          redo,
-          undo
-        }
+        description: 'Add Curve',
+        commands: [
+          {
+            type: 'automaton/createCurve',
+            index: curveId
+          },
+          {
+            type: 'channel/createItemFromData',
+            channel: selectedChannel,
+            data
+          }
+        ],
       } );
     },
     [ automaton, range, rect, selectedChannel, channel ]
@@ -295,21 +289,16 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
           channel.changeItemValue( confirmedData.$id, v );
           confirmedData.value = v;
 
-          const undo = (): void => {
-            channel.removeItem( confirmedData.$id );
-          };
-
-          const redo = (): void => {
-            channel.createItemFromData( confirmedData );
-          };
-
           dispatch( {
             type: 'History/Push',
-            entry: {
-              description: 'Add Constant',
-              redo,
-              undo
-            }
+            description: 'Add Constant',
+            commands: [
+              {
+                type: 'channel/createItemFromData',
+                channel: selectedChannel,
+                data: confirmedData
+              }
+            ],
           } );
         }
       );

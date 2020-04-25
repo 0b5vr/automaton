@@ -1,3 +1,4 @@
+import { useDispatch, useSelector } from '../states/store';
 import { ChannelWithGUI } from '../../ChannelWithGUI';
 import { InspectorHeader } from './InspectorHeader';
 import { InspectorHr } from './InspectorHr';
@@ -7,7 +8,6 @@ import React from 'react';
 import { SerializedChannelItem } from '@fms-cat/automaton';
 import { WithID } from '../../types/WithID';
 import styled from 'styled-components';
-import { useSelector } from '../states/store';
 
 // == microcomponents ==============================================================================
 interface Props {
@@ -15,12 +15,15 @@ interface Props {
 
 const InspectorChannelItemCurveParams = ( props: {
   channel: ChannelWithGUI;
+  channelName: string;
   stateItem: Required<SerializedChannelItem> & WithID;
   itemId: string;
 } ): JSX.Element => {
+  const dispatch = useDispatch();
+
   if ( props.stateItem.curve == null ) { return <></>; }
 
-  const { channel, itemId } = props;
+  const { channel, channelName, itemId } = props;
   const stateItem = props.stateItem;
 
   return <>
@@ -33,7 +36,23 @@ const InspectorChannelItemCurveParams = ( props: {
         onChange={ ( value ) => {
           channel.changeCurveSpeedAndOffset( itemId, value, stateItem.offset );
         } }
-        historyDescription="Change Curve Speed"
+        onSettle={ ( speed, speedPrev ) => {
+          dispatch( {
+            type: 'History/Push',
+            description: 'Change Item Speed',
+            commands: [
+              {
+                type: 'channel/changeCurveSpeedAndOffset',
+                channel: channelName,
+                item: itemId,
+                speed,
+                speedPrev,
+                offset: stateItem.offset,
+                offsetPrev: stateItem.offset
+              }
+            ]
+          } );
+        } }
       />
     </InspectorItem>
 
@@ -44,7 +63,23 @@ const InspectorChannelItemCurveParams = ( props: {
         onChange={ ( value ) => {
           channel.changeCurveSpeedAndOffset( itemId, stateItem.speed, value );
         } }
-        historyDescription="Change Curve Offset"
+        onSettle={ ( offset, offsetPrev ) => {
+          dispatch( {
+            type: 'History/Push',
+            description: 'Change Item Offset',
+            commands: [
+              {
+                type: 'channel/changeCurveSpeedAndOffset',
+                channel: channelName,
+                item: itemId,
+                speed: stateItem.speed,
+                speedPrev: stateItem.speed,
+                offset,
+                offsetPrev
+              }
+            ]
+          } );
+        } }
       />
     </InspectorItem>
 
@@ -55,38 +90,25 @@ const InspectorChannelItemCurveParams = ( props: {
         onChange={ ( value ) => {
           channel.changeCurveAmp( itemId, value );
         } }
-        historyDescription="Change Curve Amp"
-      />
-    </InspectorItem>
-  </>;
-};
-
-const InspectorChannelItemConstantParams = ( props: {
-  channel: ChannelWithGUI;
-  stateItem: Required<SerializedChannelItem> & WithID;
-  itemId: string;
-} ): JSX.Element => {
-  if ( props.stateItem.curve != null ) { return <></>; }
-
-  const { channel, itemId } = props;
-  const stateItem = props.stateItem;
-
-  return <>
-    <InspectorHr />
-
-    <InspectorItem name="Value">
-      <NumberParam
-        type="float"
-        value={ stateItem.value }
-        onChange={ ( value ) => {
-          channel.changeItemValue( itemId, value );
+        onSettle={ ( amp, ampPrev ) => {
+          dispatch( {
+            type: 'History/Push',
+            description: 'Change Item Amp',
+            commands: [
+              {
+                type: 'channel/changeCurveAmp',
+                channel: channelName,
+                item: itemId,
+                amp,
+                ampPrev
+              }
+            ]
+          } );
         } }
-        historyDescription="Change Constant Value"
       />
     </InspectorItem>
   </>;
 };
-
 
 // == styles =======================================================================================
 const Root = styled.div`
@@ -105,6 +127,7 @@ const InspectorChannelItem = ( props: Props ): JSX.Element => {
   const { className } = props;
   const itemId = props.item.id;
   const channelName = props.item.channel;
+  const dispatch = useDispatch();
   const { automaton, stateItem } = useSelector( ( state ) => ( {
     automaton: state.automaton.instance,
     stateItem: state.automaton.channels[ channelName ].items[ itemId ]
@@ -123,7 +146,21 @@ const InspectorChannelItem = ( props: Props ): JSX.Element => {
             type="float"
             value={ stateItem.time }
             onChange={ ( value ) => { channel.moveItem( itemId, value ); } }
-            historyDescription="Change Item Time"
+            onSettle={ ( time, timePrev ) => {
+              dispatch( {
+                type: 'History/Push',
+                description: 'Change Item Time',
+                commands: [
+                  {
+                    type: 'channel/moveItem',
+                    channel: channelName,
+                    item: itemId,
+                    time,
+                    timePrev
+                  }
+                ]
+              } );
+            } }
           />
         </InspectorItem>
 
@@ -132,7 +169,21 @@ const InspectorChannelItem = ( props: Props ): JSX.Element => {
             type="float"
             value={ stateItem.length }
             onChange={ ( value ) => { channel.resizeItem( itemId, value ); } }
-            historyDescription="Change Item Length"
+            onSettle={ ( length, lengthPrev ) => {
+              dispatch( {
+                type: 'History/Push',
+                description: 'Change Item Length',
+                commands: [
+                  {
+                    type: 'channel/resizeItem',
+                    channel: channelName,
+                    item: itemId,
+                    length,
+                    lengthPrev
+                  }
+                ]
+              } );
+            } }
           />
         </InspectorItem>
 
@@ -143,17 +194,27 @@ const InspectorChannelItem = ( props: Props ): JSX.Element => {
             onChange={ ( value ) => {
               channel.changeItemValue( itemId, value );
             } }
-            historyDescription="Change Constant Value"
+            onSettle={ ( value, valuePrev ) => {
+              dispatch( {
+                type: 'History/Push',
+                description: 'Change Constant Value',
+                commands: [
+                  {
+                    type: 'channel/changeItemValue',
+                    channel: channelName,
+                    item: itemId,
+                    value,
+                    valuePrev
+                  }
+                ]
+              } );
+            } }
           />
         </InspectorItem>
 
         <InspectorChannelItemCurveParams
           channel={ channel }
-          stateItem={ stateItem }
-          itemId={ itemId }
-        />
-        <InspectorChannelItemConstantParams
-          channel={ channel }
+          channelName={ channelName }
           stateItem={ stateItem }
           itemId={ itemId }
         />

@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
+import { performRedo, performUndo } from '../history/HistoryCommand';
 import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
 import { HeaderSeekbar } from './HeaderSeekbar';
@@ -123,8 +124,10 @@ const Header = ( { className }: HeaderProps ): JSX.Element => {
 
   const handleUndo = useCallback(
     (): void => {
+      if ( !automaton ) { return; }
+
       if ( historyIndex !== 0 ) {
-        historyEntries[ historyIndex - 1 ].undo();
+        performUndo( automaton, historyEntries[ historyIndex - 1 ].commands );
         dispatch( { type: 'History/Undo' } );
       } else {
         if ( cantUndoThis === 9 ) {
@@ -141,13 +144,15 @@ const Header = ( { className }: HeaderProps ): JSX.Element => {
         }
       }
     },
-    [ historyIndex, historyEntries, cantUndoThis ]
+    [ automaton, historyIndex, historyEntries, cantUndoThis ]
   );
 
   const handleRedo = useCallback(
     (): void => {
+      if ( !automaton ) { return; }
+
       if ( historyIndex !== historyEntries.length ) {
-        historyEntries[ historyIndex ].redo();
+        performRedo( automaton, historyEntries[ historyIndex ].commands );
         dispatch( { type: 'History/Redo' } );
       }
       dispatch( {
@@ -155,7 +160,7 @@ const Header = ( { className }: HeaderProps ): JSX.Element => {
         cantUndoThis: 0
       } );
     },
-    [ historyIndex, historyEntries ]
+    [ automaton, historyIndex, historyEntries ]
   );
 
   const handleSave = useCallback(

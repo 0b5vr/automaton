@@ -25,7 +25,6 @@ const InspectorSnapping = (): JSX.Element => {
           onChange={ ( value ) => {
             automaton.setGUISettings( 'snapTimeActive', value );
           } }
-          historyDescription="Change Node Time"
         />
       </InspectorItem>
       <InspectorItem name="Time Interval">
@@ -35,7 +34,6 @@ const InspectorSnapping = (): JSX.Element => {
           onChange={ ( value ) => {
             automaton.setGUISettings( 'snapTimeInterval', Math.max( 0.0, value ) );
           } }
-          historyDescription="Change Node Time"
         />
       </InspectorItem>
 
@@ -47,7 +45,6 @@ const InspectorSnapping = (): JSX.Element => {
           onChange={ ( value ) => {
             automaton.setGUISettings( 'snapValueActive', value );
           } }
-          historyDescription="Change Node Value"
         />
       </InspectorItem>
       <InspectorItem name="Value Interval">
@@ -57,7 +54,6 @@ const InspectorSnapping = (): JSX.Element => {
           onChange={ ( value ) => {
             automaton.setGUISettings( 'snapValueInterval', Math.max( 0.0, value ) );
           } }
-          historyDescription="Change Node Value"
         />
       </InspectorItem>
     </> }

@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { performRedo, performUndo } from '../history/HistoryCommand';
 import { useDispatch, useSelector } from '../states/store';
 import { GUIRemocon } from '../../GUIRemocon';
 import styled from 'styled-components';
@@ -13,7 +14,8 @@ const GUIRemoconListener = ( { guiRemocon }: {
   guiRemocon: GUIRemocon;
 } ): JSX.Element => {
   const dispatch = useDispatch();
-  const { historyIndex, historyEntries, cantUndoThis } = useSelector( ( state ) => ( {
+  const { automaton, historyIndex, historyEntries, cantUndoThis } = useSelector( ( state ) => ( {
+    automaton: state.automaton.instance,
     historyIndex: state.history.index,
     historyEntries: state.history.entries,
     cantUndoThis: state.history.cantUndoThis
@@ -21,9 +23,11 @@ const GUIRemoconListener = ( { guiRemocon }: {
 
   useEffect(
     () => {
+      if ( !automaton ) { return; }
+
       const handleUndo = guiRemocon.on( 'undo', () => {
         if ( historyIndex !== 0 ) {
-          historyEntries[ historyIndex - 1 ].undo();
+          performUndo( automaton, historyEntries[ historyIndex - 1 ].commands );
           dispatch( { type: 'History/Undo' } );
         } else {
           if ( cantUndoThis === 9 ) {
@@ -43,14 +47,16 @@ const GUIRemoconListener = ( { guiRemocon }: {
 
       return () => guiRemocon.off( 'undo', handleUndo );
     },
-    [ guiRemocon, historyIndex, historyEntries, cantUndoThis ]
+    [ automaton, guiRemocon, historyIndex, historyEntries, cantUndoThis ]
   );
 
   useEffect(
     () => {
+      if ( !automaton ) { return; }
+
       const handle = guiRemocon.on( 'redo', () => {
         if ( historyIndex !== historyEntries.length ) {
-          historyEntries[ historyIndex ].redo();
+          performRedo( automaton, historyEntries[ historyIndex ].commands );
           dispatch( { type: 'History/Redo' } );
         }
         dispatch( {
@@ -61,7 +67,7 @@ const GUIRemoconListener = ( { guiRemocon }: {
 
       return () => guiRemocon.off( 'redo', handle );
     },
-    [ guiRemocon, historyIndex, historyEntries ]
+    [ automaton, guiRemocon, historyIndex, historyEntries ]
   );
 
   useEffect(

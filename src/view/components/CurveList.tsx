@@ -59,32 +59,20 @@ const CurveList = ( { className }: CurveListProps ): JSX.Element => {
       const curve = automaton.createCurve();
       const index = automaton.getCurveIndex( curve );
 
-      const redo = (): void => {
-        const curve = automaton.createCurve();
-        const index = automaton.getCurveIndex( curve );
-
-        dispatch( {
-          type: 'CurveEditor/SelectCurve',
-          curve: index
-        } );
-      };
-
-      const undo = (): void => {
-        automaton.removeCurve( index );
-      };
-
-      dispatch( {
-        type: 'History/Push',
-        entry: {
-          description: 'Create Curve',
-          redo,
-          undo
-        }
-      } );
-
       dispatch( {
         type: 'CurveEditor/SelectCurve',
         curve: index
+      } );
+
+      dispatch( {
+        type: 'History/Push',
+        description: 'Create Curve',
+        commands: [
+          {
+            type: 'automaton/createCurve',
+            index
+          }
+        ],
       } );
     },
     [ automaton ]

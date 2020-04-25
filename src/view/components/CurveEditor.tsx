@@ -196,6 +196,8 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
           curve.moveNodeValue( data.$id, y2v( y, range, rect.height ) );
         },
         () => {
+          if ( selectedCurve == null ) { return; }
+
           const t = x2t( x, range, rect.width );
           const v = y2v( y, range, rect.height );
           curve.moveNodeTime( data.$id, t );
@@ -204,21 +206,16 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
           data.time = t;
           data.value = v;
 
-          const undo = (): void => {
-            curve.removeNode( data.$id );
-          };
-
-          const redo = (): void => {
-            curve.createNodeFromData( data );
-          };
-
           dispatch( {
             type: 'History/Push',
-            entry: {
-              description: 'Add Node',
-              redo,
-              undo
-            }
+            description: 'Add Node',
+            commands: [
+              {
+                type: 'curve/createNodeFromData',
+                curve: selectedCurve,
+                data
+              }
+            ]
           } );
         }
       );
@@ -270,7 +267,7 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
 
   const createNode = useCallback(
     ( x: number, y: number ) => {
-      if ( !curve ) { return; }
+      if ( !curve || selectedCurve == null ) { return; }
 
       const t = x2t( x, range, rect.width );
       const v = y2v( y, range, rect.height );
@@ -280,29 +277,24 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
         nodes: [ data.$id ]
       } );
 
-      const undo = (): void => {
-        curve.removeNode( data.$id );
-      };
-
-      const redo = (): void => {
-        curve.createNodeFromData( data );
-      };
-
       dispatch( {
         type: 'History/Push',
-        entry: {
-          description: 'Add Node',
-          redo,
-          undo
-        }
+        description: 'Add Node',
+        commands: [
+          {
+            type: 'curve/createNodeFromData',
+            curve: selectedCurve,
+            data
+          }
+        ]
       } );
     },
-    [ range, rect, curve ]
+    [ range, rect, curve, selectedCurve ]
   );
 
   const createFx = useCallback(
     ( x: number ) => {
-      if ( !curve ) { return; }
+      if ( !curve || selectedCurve == null ) { return; }
 
       dispatch( {
         type: 'FxSpawner/Open',
@@ -315,27 +307,22 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
               fxs: [ data.$id ]
             } );
 
-            const undo = (): void => {
-              curve.removeFx( data.$id );
-            };
-
-            const redo = (): void => {
-              curve.createFxFromData( data );
-            };
-
             dispatch( {
               type: 'History/Push',
-              entry: {
-                description: 'Add Fx',
-                redo,
-                undo
-              }
+              description: 'Add Fx',
+              commands: [
+                {
+                  type: 'curve/createFxFromData',
+                  curve: selectedCurve,
+                  data
+                }
+              ]
             } );
           }
         }
       } );
     },
-    [ range, rect, curve ]
+    [ range, rect, curve, selectedCurve ]
   );
 
   const handleContextMenu = useCallback(

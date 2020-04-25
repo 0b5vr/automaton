@@ -36,7 +36,7 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
   const dispatch = useDispatch();
   const automaton = props.automaton;
 
-  function createChannel( name: string, channel: ChannelWithGUI ): void {
+  function initChannelState( name: string, channel: ChannelWithGUI ): void {
     dispatch( {
       type: 'Automaton/CreateChannel',
       channel: name
@@ -106,7 +106,7 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
     } );
   }
 
-  function createCurve( index: number, curve: CurveWithGUI ): void {
+  function initCurveState( index: number, curve: CurveWithGUI ): void {
     dispatch( {
       type: 'Automaton/CreateCurve',
       curve: index,
@@ -274,11 +274,11 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
     } );
 
     Object.values( automaton.curves ).forEach( ( curve, iCurve ) => {
-      createCurve( iCurve, curve );
+      initCurveState( iCurve, curve );
     } );
 
     Object.entries( automaton.channels ).forEach( ( [ name, channel ] ) => {
-      createChannel( name, channel );
+      initChannelState( name, channel );
     } );
 
     dispatch( {
@@ -355,7 +355,7 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
       } );
 
       const handleCreateChannel = automaton.on( 'createChannel', ( event ) => {
-        createChannel( event.name, event.channel );
+        initChannelState( event.name, event.channel );
       } );
 
       const handleRemoveChannel = automaton.on( 'removeChannel', ( event ) => {
@@ -366,7 +366,7 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
       } );
 
       const handleCreateCurve = automaton.on( 'createCurve', ( event ) => {
-        createCurve( event.index, event.curve );
+        initCurveState( event.index, event.curve );
       } );
 
       const handleRemoveCurve = automaton.on( 'removeCurve', ( event ) => {

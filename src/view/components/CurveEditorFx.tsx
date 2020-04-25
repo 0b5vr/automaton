@@ -91,12 +91,12 @@ const CurveEditorFx = ( props: Props ): JSX.Element => {
     (): void => {
       if ( !curve ) { return; }
 
-      const tPrev = fx.time;
-      const rPrev = fx.row;
+      const timePrev = fx.time;
+      const rowPrev = fx.row;
       let dx = 0.0;
       let dy = 0.0;
-      let t = tPrev;
-      let r = rPrev;
+      let time = timePrev;
+      let row = rowPrev;
       let hasMoved = false;
 
       registerMouseEvent(
@@ -109,40 +109,44 @@ const CurveEditorFx = ( props: Props ): JSX.Element => {
           const holdRow = event.shiftKey;
           const ignoreSnap = event.altKey;
 
-          t = holdTime ? tPrev : ( tPrev + dx2dt( dx, range, size.width ) );
-          r = holdRow
-            ? rPrev
-            : clamp( rPrev + Math.round( dy / FX_HEIGHT ), 0, CHANNEL_FX_ROW_MAX - 1 );
+          time = holdTime ? timePrev : ( timePrev + dx2dt( dx, range, size.width ) );
+          row = holdRow
+            ? rowPrev
+            : clamp( rowPrev + Math.round( dy / FX_HEIGHT ), 0, CHANNEL_FX_ROW_MAX - 1 );
 
           if ( !ignoreSnap ) {
-            if ( !holdTime ) { t = snapTime( t, range, size.width, guiSettings ); }
+            if ( !holdTime ) { time = snapTime( time, range, size.width, guiSettings ); }
           }
 
-          curve.moveFx( fx.$id, t );
-          curve.changeFxRow( fx.$id, r );
+          curve.moveFx( fx.$id, time );
+          curve.changeFxRow( fx.$id, row );
         },
         () => {
           if ( !hasMoved ) { return; }
 
-          const redo = (): void => {
-            curve.moveFx( fx.$id, t );
-            curve.changeFxRow( fx.$id, r );
-          };
+          curve.moveFx( fx.$id, time );
+          curve.changeFxRow( fx.$id, row );
 
-          const undo = (): void => {
-            curve.moveFx( fx.$id, tPrev );
-            curve.changeFxRow( fx.$id, rPrev );
-          };
+          const {
+            time: actualTime,
+            row: actualRow
+          } = curve.getFx( fx.$id );
 
           dispatch( {
             type: 'History/Push',
-            entry: {
-              description: 'Move Fx',
-              redo,
-              undo
-            }
+            description: 'Move Fx',
+            commands: [
+              {
+                type: 'curve/forceMoveFx',
+                curve: curveIndex,
+                fx: fx.$id,
+                time: actualTime,
+                timePrev,
+                row: actualRow,
+                rowPrev
+              }
+            ],
           } );
-          redo();
         }
       );
     },
@@ -153,23 +157,19 @@ const CurveEditorFx = ( props: Props ): JSX.Element => {
     (): void => {
       if ( !curve ) { return; }
 
-      const redo = (): void => {
-        curve.removeFx( fx.$id );
-      };
-
-      const undo = (): void => {
-        curve.createFxFromData( fx );
-      };
+      curve.removeFx( fx.$id );
 
       dispatch( {
         type: 'History/Push',
-        entry: {
-          description: 'Remove Node',
-          redo,
-          undo
-        }
+        description: 'Remove Fx',
+        commands: [
+          {
+            type: 'curve/removeFx',
+            curve: curveIndex,
+            data: fx
+          }
+        ],
       } );
-      redo();
     },
     [ fx, curve ]
   );
@@ -196,10 +196,10 @@ const CurveEditorFx = ( props: Props ): JSX.Element => {
     ( side: 'left' | 'right' ): void => {
       if ( !curve ) { return; }
 
-      const tPrev = side === 'left' ? fx.time : ( fx.time + fx.length );
+      const timePrev = side === 'left' ? fx.time : ( fx.time + fx.length );
       const otherEnd = side === 'left' ? ( fx.time + fx.length ) : fx.time;
       let dx = 0.0;
-      let t = tPrev;
+      let time = timePrev;
       let hasMoved = false;
 
       registerMouseEvent(
@@ -209,46 +209,54 @@ const CurveEditorFx = ( props: Props ): JSX.Element => {
 
           const ignoreSnap = event.altKey;
 
-          t = tPrev + dx2dt( dx, range, size.width );
+          time = timePrev + dx2dt( dx, range, size.width );
 
           if ( !ignoreSnap ) {
-            t = snapTime( t, range, size.width, guiSettings );
+            time = snapTime( time, range, size.width, guiSettings );
           }
 
           if ( side === 'left' ) {
-            curve.resizeFxByLeft( fx.$id, otherEnd - t );
+            curve.resizeFxByLeft( fx.$id, otherEnd - time );
           } else {
-            curve.resizeFx( fx.$id, t - otherEnd );
+            curve.resizeFx( fx.$id, time - otherEnd );
           }
         },
         () => {
           if ( !hasMoved ) { return; }
 
-          const redo = (): void => {
-            if ( side === 'left' ) {
-              curve.resizeFxByLeft( fx.$id, otherEnd - t );
-            } else {
-              curve.resizeFx( fx.$id, t - otherEnd );
-            }
-          };
+          if ( side === 'left' ) {
+            curve.resizeFxByLeft( fx.$id, otherEnd - time );
 
-          const undo = (): void => {
-            if ( side === 'left' ) {
-              curve.resizeFxByLeft( fx.$id, otherEnd - tPrev );
-            } else {
-              curve.resizeFx( fx.$id, tPrev - otherEnd );
-            }
-          };
-
-          dispatch( {
-            type: 'History/Push',
-            entry: {
+            dispatch( {
+              type: 'History/Push',
               description: 'Resize Fx',
-              redo,
-              undo
-            }
-          } );
-          redo();
+              commands: [
+                {
+                  type: 'curve/resizeFxByLeft',
+                  curve: curveIndex,
+                  fx: fx.$id,
+                  length: otherEnd - time,
+                  lengthPrev: otherEnd - timePrev
+                }
+              ],
+            } );
+          } else {
+            curve.resizeFx( fx.$id, time - otherEnd );
+
+            dispatch( {
+              type: 'History/Push',
+              description: 'Resize Fx',
+              commands: [
+                {
+                  type: 'curve/resizeFx',
+                  curve: curveIndex,
+                  fx: fx.$id,
+                  length: time - otherEnd,
+                  lengthPrev: timePrev - otherEnd
+                }
+              ],
+            } );
+          }
         }
       );
     },

@@ -38,7 +38,7 @@ const Root = styled.g`
 // == element ======================================================================================
 interface Props {
   curve: number;
-  node: BezierNode & WithID;
+  node: Required<BezierNode> & WithID;
   range: TimeValueRange;
   size: Resolution;
 }
@@ -62,12 +62,12 @@ const CurveEditorNode = ( props: Props ): JSX.Element => {
     (): void => {
       if ( !curve ) { return; }
 
-      const tPrev = node.time;
-      const vPrev = node.value;
-      let x = t2x( tPrev, range, size.width );
-      let y = v2y( vPrev, range, size.height );
-      let t = tPrev;
-      let v = vPrev;
+      const timePrev = node.time;
+      const valuePrev = node.value;
+      let x = t2x( timePrev, range, size.width );
+      let y = v2y( valuePrev, range, size.height );
+      let time = timePrev;
+      let value = valuePrev;
       let hasMoved = false;
 
       registerMouseEvent(
@@ -80,43 +80,47 @@ const CurveEditorNode = ( props: Props ): JSX.Element => {
           const holdValue = event.shiftKey;
           const ignoreSnap = event.altKey;
 
-          t = holdTime ? tPrev : x2t( x, range, size.width );
-          v = holdValue ? vPrev : y2v( y, range, size.height );
+          time = holdTime ? timePrev : x2t( x, range, size.width );
+          value = holdValue ? valuePrev : y2v( y, range, size.height );
 
           if ( !ignoreSnap ) {
-            if ( !holdTime ) { t = snapTime( t, range, size.width, guiSettings ); }
-            if ( !holdValue ) { v = snapValue( v, range, size.height, guiSettings ); }
+            if ( !holdTime ) { time = snapTime( time, range, size.width, guiSettings ); }
+            if ( !holdValue ) { value = snapValue( value, range, size.height, guiSettings ); }
           }
 
-          curve.moveNodeTime( node.$id, t );
-          curve.moveNodeValue( node.$id, v );
+          curve.moveNodeTime( node.$id, time );
+          curve.moveNodeValue( node.$id, value );
         },
         () => {
           if ( !hasMoved ) { return; }
 
-          const undo = (): void => {
-            curve.moveNodeTime( node.$id, tPrev );
-            curve.moveNodeValue( node.$id, vPrev );
-          };
-
-          const redo = (): void => {
-            curve.moveNodeTime( node.$id, t );
-            curve.moveNodeValue( node.$id, v );
-          };
+          curve.moveNodeTime( node.$id, time );
+          curve.moveNodeValue( node.$id, value );
 
           dispatch( {
             type: 'History/Push',
-            entry: {
-              description: 'Move Node',
-              redo,
-              undo
-            }
+            description: 'Move Node',
+            commands: [
+              {
+                type: 'curve/moveNodeTime',
+                curve: curveIndex,
+                node: node.$id,
+                time,
+                timePrev
+              },
+              {
+                type: 'curve/moveNodeValue',
+                curve: curveIndex,
+                node: node.$id,
+                value,
+                valuePrev
+              }
+            ]
           } );
-          redo();
         }
       );
     },
-    [ node, curve, range, size, guiSettings ]
+    [ node, curve, curveIndex, range, size, guiSettings ]
   );
 
   const removeNode = useCallback(
@@ -125,25 +129,21 @@ const CurveEditorNode = ( props: Props ): JSX.Element => {
 
       if ( curve.isFirstNode( node.$id ) ) { return; }
 
-      const undo = (): void => {
-        curve.createNodeFromData( node );
-      };
-
-      const redo = (): void => {
-        curve.removeNode( node.$id );
-      };
+      curve.removeNode( node.$id );
 
       dispatch( {
         type: 'History/Push',
-        entry: {
-          description: 'Remove Node',
-          redo,
-          undo
-        }
+        description: 'Remove Node',
+        commands: [
+          {
+            type: 'curve/removeNode',
+            curve: curveIndex,
+            data: node
+          }
+        ],
       } );
-      redo();
     },
-    [ node, curve ]
+    [ node, curve, curveIndex ]
   );
 
   const handleNodeClick = useCallback(
@@ -168,22 +168,22 @@ const CurveEditorNode = ( props: Props ): JSX.Element => {
     ( dir: 'in' | 'out' ): void => {
       if ( !curve ) { return; }
 
-      const tPrev = node[ dir ]?.time || 0.0;
-      const vPrev = node[ dir ]?.value || 0.0;
+      const timePrev = node[ dir ]?.time || 0.0;
+      const valuePrev = node[ dir ]?.value || 0.0;
       const dirOpposite = dir === 'in' ? 'out' : 'in';
-      const tOppositePrev = node[ dirOpposite ]?.time || 0.0;
-      const vOppositePrev = node[ dirOpposite ]?.value || 0.0;
-      const xPrev = dt2dx( tPrev, range, size.width );
-      const yPrev = dv2dy( vPrev, range, size.height );
+      const timeOppositePrev = node[ dirOpposite ]?.time || 0.0;
+      const valueOppositePrev = node[ dirOpposite ]?.value || 0.0;
+      const xPrev = dt2dx( timePrev, range, size.width );
+      const yPrev = dv2dy( valuePrev, range, size.height );
       const lPrev = Math.sqrt( xPrev * xPrev + yPrev * yPrev );
       const nxPrev = xPrev / lPrev;
       const nyPrev = yPrev / lPrev;
       let x = xPrev;
       let y = yPrev;
-      let t = tPrev;
-      let v = vPrev;
-      let tOpposite = tOppositePrev;
-      let vOpposite = vOppositePrev;
+      let time = timePrev;
+      let value = valuePrev;
+      let timeOpposite = timeOppositePrev;
+      let valueOpposite = valueOppositePrev;
       let hasMoved = false;
 
       registerMouseEvent(
@@ -204,77 +204,103 @@ const CurveEditorNode = ( props: Props ): JSX.Element => {
             yDash = dot * nyPrev;
           }
 
-          t = dx2dt( xDash, range, size.width );
-          v = dy2dv( yDash, range, size.height );
+          time = dx2dt( xDash, range, size.width );
+          value = dy2dv( yDash, range, size.height );
 
-          tOpposite = moveBoth ? -t : tOppositePrev;
-          vOpposite = moveBoth ? -v : vOppositePrev;
+          timeOpposite = moveBoth ? -time : timeOppositePrev;
+          valueOpposite = moveBoth ? -value : valueOppositePrev;
 
-          curve.moveHandleTime( node.$id, dir, t );
-          curve.moveHandleValue( node.$id, dir, v );
-          curve.moveHandleTime( node.$id, dirOpposite, tOpposite );
-          curve.moveHandleValue( node.$id, dirOpposite, vOpposite );
+          curve.moveHandleTime( node.$id, dir, time );
+          curve.moveHandleValue( node.$id, dir, value );
+          curve.moveHandleTime( node.$id, dirOpposite, timeOpposite );
+          curve.moveHandleValue( node.$id, dirOpposite, valueOpposite );
         },
         () => {
           if ( !hasMoved ) { return; }
 
-          const undo = (): void => {
-            curve.moveHandleTime( node.$id, dir, tPrev );
-            curve.moveHandleValue( node.$id, dir, vPrev );
-            curve.moveHandleTime( node.$id, dirOpposite, tOppositePrev );
-            curve.moveHandleValue( node.$id, dirOpposite, vOppositePrev );
-          };
-
-          const redo = (): void => {
-            curve.moveHandleTime( node.$id, dir, t );
-            curve.moveHandleValue( node.$id, dir, v );
-            curve.moveHandleTime( node.$id, dirOpposite, tOpposite );
-            curve.moveHandleValue( node.$id, dirOpposite, vOpposite );
-          };
+          curve.moveHandleTime( node.$id, dir, time );
+          curve.moveHandleValue( node.$id, dir, value );
+          curve.moveHandleTime( node.$id, dirOpposite, timeOpposite );
+          curve.moveHandleValue( node.$id, dirOpposite, valueOpposite );
 
           dispatch( {
             type: 'History/Push',
-            entry: {
-              description: 'Move Handle',
-              redo,
-              undo
-            }
+            description: 'Move Handle',
+            commands: [
+              {
+                type: 'curve/moveHandleTime',
+                curve: curveIndex,
+                node: node.$id,
+                dir,
+                time,
+                timePrev
+              },
+              {
+                type: 'curve/moveHandleTime',
+                curve: curveIndex,
+                node: node.$id,
+                dir: dirOpposite,
+                time: timeOpposite,
+                timePrev: timeOppositePrev
+              },
+              {
+                type: 'curve/moveHandleValue',
+                curve: curveIndex,
+                node: node.$id,
+                dir,
+                value,
+                valuePrev
+              },
+              {
+                type: 'curve/moveHandleValue',
+                curve: curveIndex,
+                node: node.$id,
+                dir: dirOpposite,
+                value: valueOpposite,
+                valuePrev: valueOppositePrev
+              }
+            ],
           } );
-          redo();
         }
       );
     },
-    [ node, curve, range, size ]
+    [ node, curve, curveIndex, range, size ]
   );
 
   const removeHandle = useCallback(
     ( dir: 'in' | 'out' ): void => {
       if ( !curve ) { return; }
 
-      const tPrev = node[ dir ]!.time;
-      const vPrev = node[ dir ]!.value;
+      const timePrev = node[ dir ]!.time;
+      const valuePrev = node[ dir ]!.value;
 
-      const undo = (): void => {
-        curve.moveHandleTime( node.$id, dir, tPrev );
-        curve.moveHandleValue( node.$id, dir, vPrev );
-      };
-
-      const redo = (): void => {
-        curve.moveHandleTime( node.$id, dir, 0.0 );
-        curve.moveHandleValue( node.$id, dir, 0.0 );
-      };
+      curve.moveHandleTime( node.$id, dir, 0.0 );
+      curve.moveHandleValue( node.$id, dir, 0.0 );
 
       dispatch( {
         type: 'History/Push',
-        entry: {
-          description: 'Remove Handle',
-          redo,
-          undo
-        }
+        description: 'Remove Handle',
+        commands: [
+          {
+            type: 'curve/moveHandleTime',
+            curve: curveIndex,
+            node: node.$id,
+            dir,
+            time: 0.0,
+            timePrev
+          },
+          {
+            type: 'curve/moveHandleValue',
+            curve: curveIndex,
+            node: node.$id,
+            dir,
+            value: 0.0,
+            valuePrev
+          }
+        ],
       } );
-      redo();
     },
-    [ node, curve ]
+    [ node, curve, curveIndex ]
   );
 
   const handleHandleInClick = useCallback(

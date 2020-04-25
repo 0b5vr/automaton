@@ -70,7 +70,7 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
   /**
    * List of bezier nodes.
    */
-  protected __nodes!: Array<BezierNode & WithID>;
+  protected __nodes!: Array<Required<BezierNode> & WithID>;
 
   /**
    * List of fx sections.
@@ -86,15 +86,15 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
   /**
    * List of bezier nodes.
    */
-  public get nodes(): Array<BezierNode & WithID> {
-    return this.__nodes;
+  public get nodes(): Array<Required<BezierNode> & WithID> {
+    return jsonCopy( this.__nodes );
   }
 
   /**
    * List of fx sections.
    */
   public get fxs(): Array<FxSection & WithID> {
-    return this.__fxs;
+    return jsonCopy( this.__fxs );
   }
 
   public constructor( automaton: AutomatonWithGUI, data?: SerializedCurve ) {
@@ -141,7 +141,12 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
   public deserialize( data: SerializedCurve ): void {
     super.deserialize( jsonCopy( data ) );
 
-    this.__nodes.forEach( ( node ) => node.$id = genID() );
+    this.__nodes.forEach( ( node ) => {
+      node.in = node.in || { time: 0.0, value: 0.0 };
+      node.out = node.out || { time: 0.0, value: 0.0 };
+      node.$id = genID();
+    } );
+
     this.__fxs.forEach( ( fx ) => fx.$id = genID() );
   }
 
@@ -211,12 +216,12 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
    * @param index Index of the node
    * @returns Data of the node
    */
-  public getNodeByIndex( index: number ): BezierNode & WithID {
+  public getNodeByIndex( index: number ): Required<BezierNode> & WithID {
     const node = this.__nodes[ index ];
     if ( !node ) {
       throw new Error( `Given node index ${index} is invalid (Current count of nodes: ${this.__nodes.length})` );
     }
-    return node;
+    return jsonCopy( node );
   }
 
   /**
@@ -224,9 +229,9 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
    * @param id Id of the node you want to dump
    * @returns Data of the node
    */
-  public getNode( id: string ): BezierNode & WithID {
+  public getNode( id: string ): Required<BezierNode> & WithID {
     const index = this.__getNodeIndexById( id );
-    return this.__nodes[ index ];
+    return jsonCopy( this.__nodes[ index ] );
   }
 
   /**
@@ -235,7 +240,7 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
    * @param value Value of new node
    * @returns Data of the node
    */
-  public createNode( time: number, value: number ): BezierNode & WithID {
+  public createNode( time: number, value: number ): Required<BezierNode> & WithID {
     const id = genID();
     const data = {
       $id: id,
@@ -249,11 +254,11 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
 
     this.precalc();
 
-    this.__emit( 'createNode', { id, node: data } );
+    this.__emit( 'createNode', { id, node: jsonCopy( data ) } );
 
     this.__automaton.shouldSave = true;
 
-    return data;
+    return jsonCopy( data );
   }
 
   /**
@@ -261,18 +266,18 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
    * @param node Dumped bezier node object
    * @returns Data of the node
    */
-  public createNodeFromData( node: BezierNode & WithID ): BezierNode & WithID {
+  public createNodeFromData( node: Required<BezierNode> & WithID ): Required<BezierNode> & WithID {
     const data = jsonCopy( node );
     this.__nodes.push( data );
     this.__sortNodes();
 
     this.precalc();
 
-    this.__emit( 'createNode', { id: node.$id, node: data } );
+    this.__emit( 'createNode', { id: node.$id, node: jsonCopy( data ) } );
 
     this.__automaton.shouldSave = true;
 
-    return data;
+    return jsonCopy( data );
   }
 
   /**
@@ -340,7 +345,7 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
 
     this.precalc();
 
-    this.__emit( 'updateNode', { id, node } );
+    this.__emit( 'updateNode', { id, node: jsonCopy( node ) } );
 
     this.__automaton.shouldSave = true;
   }
@@ -359,7 +364,7 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
 
     this.precalc();
 
-    this.__emit( 'updateNode', { id, node } );
+    this.__emit( 'updateNode', { id, node: jsonCopy( node ) } );
 
     this.__automaton.shouldSave = true;
   }
@@ -383,19 +388,11 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
     const newTime = ( dir === 'in' ) ? Math.min( 0.0, time ) : Math.max( 0.0, time );
 
     const handle = node[ dir ];
-    if ( handle ) {
-      if ( newTime === 0.0 && handle.value === 0.0 ) {
-        delete node[ dir ];
-      } else {
-        handle.time = newTime;
-      }
-    } else if ( newTime !== 0.0 ) {
-      node[ dir ] = { time: newTime, value: 0.0 };
-    }
+    handle.time = newTime;
 
     this.precalc();
 
-    this.__emit( 'updateNode', { id, node } );
+    this.__emit( 'updateNode', { id, node: jsonCopy( node ) } );
 
     this.__automaton.shouldSave = true;
   }
@@ -417,19 +414,11 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
     const node = this.__nodes[ index ];
 
     const handle = node[ dir ];
-    if ( handle ) {
-      if ( value === 0.0 && handle.time === 0.0 ) {
-        delete node[ dir ];
-      } else {
-        handle.value = value;
-      }
-    } else if ( value !== 0.0 ) {
-      node[ dir ] = { time: 0.0, value };
-    }
+    handle.value = value;
 
     this.precalc();
 
-    this.__emit( 'updateNode', { id, node } );
+    this.__emit( 'updateNode', { id, node: jsonCopy( node ) } );
 
     this.__automaton.shouldSave = true;
   }
@@ -455,7 +444,7 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
 
     this.precalc();
 
-    this.__emit( 'updateNode', { id, node } );
+    this.__emit( 'updateNode', { id, node: jsonCopy( node ) } );
 
     this.__automaton.shouldSave = true;
   }
@@ -470,7 +459,7 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
     if ( !fx ) {
       throw new Error( `Given fx section index ${index} is invalid (Current count of fx sections: ${this.__fxs.length})` );
     }
-    return fx;
+    return jsonCopy( fx );
   }
 
   /**
@@ -480,7 +469,7 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
    */
   public getFx( id: string ): FxSection & WithID {
     const index = this.__getFxIndexById( id );
-    return this.__fxs[ index ];
+    return jsonCopy( this.__fxs[ index ] );
   }
 
   /**
@@ -512,11 +501,11 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
 
     this.precalc();
 
-    this.__emit( 'createFx', { id, fx: data } );
+    this.__emit( 'createFx', { id, fx: jsonCopy( data ) } );
 
     this.__automaton.shouldSave = true;
 
-    return data;
+    return jsonCopy( data );
   }
 
   /**
@@ -539,11 +528,11 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
 
     this.precalc();
 
-    this.__emit( 'createFx', { id: data.$id, fx: data } );
+    this.__emit( 'createFx', { id: data.$id, fx: jsonCopy( data ) } );
 
     this.__automaton.shouldSave = true;
 
-    return data;
+    return jsonCopy( data );
   }
 
   /**
@@ -583,7 +572,7 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
 
     this.precalc();
 
-    this.__emit( 'updateFx', { id, fx } );
+    this.__emit( 'updateFx', { id, fx: jsonCopy( fx ) } );
 
     this.__automaton.shouldSave = true;
   }
@@ -614,7 +603,7 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
 
     this.precalc();
 
-    this.__emit( 'updateFx', { id, fx } );
+    this.__emit( 'updateFx', { id, fx: jsonCopy( fx ) } );
 
     this.__automaton.shouldSave = true;
   }
@@ -636,7 +625,7 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
 
     this.precalc();
 
-    this.__emit( 'updateFx', { id, fx } );
+    this.__emit( 'updateFx', { id, fx: jsonCopy( fx ) } );
 
     this.__automaton.shouldSave = true;
   }
@@ -664,7 +653,7 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
 
     this.precalc();
 
-    this.__emit( 'updateFx', { id, fx } );
+    this.__emit( 'updateFx', { id, fx: jsonCopy( fx ) } );
 
     this.__automaton.shouldSave = true;
   }
@@ -687,7 +676,7 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
 
     this.precalc();
 
-    this.__emit( 'updateFx', { id, fx } );
+    this.__emit( 'updateFx', { id, fx: jsonCopy( fx ) } );
 
     this.__automaton.shouldSave = true;
   }
@@ -712,7 +701,7 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
 
     this.precalc();
 
-    this.__emit( 'updateFx', { id, fx } );
+    this.__emit( 'updateFx', { id, fx: jsonCopy( fx ) } );
 
     this.__automaton.shouldSave = true;
   }
@@ -740,7 +729,7 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
 
     this.precalc();
 
-    this.__emit( 'updateFx', { id, fx } );
+    this.__emit( 'updateFx', { id, fx: jsonCopy( fx ) } );
 
     this.__automaton.shouldSave = true;
   }
@@ -750,7 +739,19 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
    * @returns Serialized nodes
    */
   private __serializeNodes(): BezierNode[] {
-    return this.__nodes.map( ( node ) => removeID( jsonCopy( node ) ) );
+    return this.__nodes.map( ( node ) => {
+      const data: BezierNode = {
+        time: node.time,
+        value: node.value
+      };
+      if ( node.in.time !== 0.0 && node.in.value !== 0.0 ) {
+        data.in = node.in;
+      }
+      if ( node.out.time !== 0.0 && node.out.value !== 0.0 ) {
+        data.out = node.out;
+      }
+      return data;
+    } );
   }
 
   /**
@@ -851,8 +852,8 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
 }
 
 export interface CurveWithGUIEvents {
-  createNode: { id: string; node: BezierNode & WithID };
-  updateNode: { id: string; node: BezierNode & WithID };
+  createNode: { id: string; node: Required<BezierNode> & WithID };
+  updateNode: { id: string; node: Required<BezierNode> & WithID };
   removeNode: { id: string };
   createFx: { id: string; fx: FxSection & WithID };
   updateFx: { id: string; fx: FxSection & WithID };

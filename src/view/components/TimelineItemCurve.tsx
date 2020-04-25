@@ -112,12 +112,12 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
     (): void => {
       if ( !channel ) { return; }
 
-      const tPrev = item.time;
-      const vPrev = item.value;
-      let x = t2x( tPrev, range, size.width );
-      let y = v2y( vPrev, range, size.height );
-      let t = tPrev;
-      let v = vPrev;
+      const timePrev = item.time;
+      const valuePrev = item.value;
+      let x = t2x( timePrev, range, size.width );
+      let y = v2y( valuePrev, range, size.height );
+      let time = timePrev;
+      let value = valuePrev;
       let hasMoved = false;
 
       registerMouseEvent(
@@ -130,39 +130,43 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
           const holdValue = dopeSheetMode || event.shiftKey;
           const ignoreSnap = event.altKey;
 
-          t = holdTime ? tPrev : x2t( x, range, size.width );
-          v = holdValue ? vPrev : y2v( y, range, size.height );
+          time = holdTime ? timePrev : x2t( x, range, size.width );
+          value = holdValue ? valuePrev : y2v( y, range, size.height );
 
           if ( !ignoreSnap ) {
-            if ( !holdTime ) { t = snapTime( t, range, size.width, guiSettings ); }
-            if ( !holdValue ) { v = snapValue( v, range, size.height, guiSettings ); }
+            if ( !holdTime ) { time = snapTime( time, range, size.width, guiSettings ); }
+            if ( !holdValue ) { value = snapValue( value, range, size.height, guiSettings ); }
           }
 
-          channel.moveItem( item.$id, t );
-          channel.changeItemValue( item.$id, v );
+          channel.moveItem( item.$id, time );
+          channel.changeItemValue( item.$id, value );
         },
         () => {
           if ( !hasMoved ) { return; }
 
-          const undo = (): void => {
-            channel.moveItem( item.$id, tPrev );
-            channel.changeItemValue( item.$id, vPrev );
-          };
-
-          const redo = (): void => {
-            channel.moveItem( item.$id, t );
-            channel.changeItemValue( item.$id, v );
-          };
+          channel.moveItem( item.$id, time );
+          channel.changeItemValue( item.$id, value );
 
           dispatch( {
             type: 'History/Push',
-            entry: {
-              description: 'Move Curve',
-              redo,
-              undo
-            }
+            description: 'Move Curve',
+            commands: [
+              {
+                type: 'channel/moveItem',
+                channel: props.channel,
+                item: item.$id,
+                time,
+                timePrev
+              },
+              {
+                type: 'channel/changeItemValue',
+                channel: props.channel,
+                item: item.$id,
+                value,
+                valuePrev
+              }
+            ],
           } );
-          redo();
         }
       );
     },
@@ -173,10 +177,10 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
     (): void => {
       if ( !channel ) { return; }
 
-      const tPrev = item.time;
-      const tEnd = item.time + item.length;
+      const timePrev = item.time;
+      const timeEnd = item.time + item.length;
       let dx = 0.0;
-      let t = tPrev;
+      let time = timePrev;
       let hasMoved = false;
 
       registerMouseEvent(
@@ -186,34 +190,32 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
 
           const ignoreSnap = event.altKey;
 
-          t = tPrev + dx2dt( dx, range, size.width );
+          time = timePrev + dx2dt( dx, range, size.width );
 
           if ( !ignoreSnap ) {
-            t = snapTime( t, range, size.width, guiSettings );
+            time = snapTime( time, range, size.width, guiSettings );
           }
 
-          channel.resizeItemByLeft( item.$id, tEnd - t );
+          channel.resizeItemByLeft( item.$id, timeEnd - time );
         },
         () => {
           if ( !hasMoved ) { return; }
 
-          const redo = (): void => {
-            channel.resizeItemByLeft( item.$id, tEnd - t );
-          };
-
-          const undo = (): void => {
-            channel.resizeItemByLeft( item.$id, tEnd - tPrev );
-          };
+          channel.resizeItemByLeft( item.$id, timeEnd - time );
 
           dispatch( {
             type: 'History/Push',
-            entry: {
-              description: 'Resize Curve',
-              redo,
-              undo
-            }
+            description: 'Resize Curve',
+            commands: [
+              {
+                type: 'channel/resizeItemByLeft',
+                channel: props.channel,
+                item: item.$id,
+                length: timeEnd - time,
+                lengthPrev: timeEnd - timePrev
+              }
+            ],
           } );
-          redo();
         }
       );
     },
@@ -224,10 +226,10 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
     (): void => {
       if ( !channel ) { return; }
 
-      const tPrev = item.time + item.length;
-      const tBegin = item.time;
+      const timePrev = item.time + item.length;
+      const timeBegin = item.time;
       let dx = 0.0;
-      let t = tPrev;
+      let time = timePrev;
       let hasMoved = false;
 
       registerMouseEvent(
@@ -237,34 +239,32 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
 
           const ignoreSnap = event.altKey;
 
-          t = tPrev + dx2dt( dx, range, size.width );
+          time = timePrev + dx2dt( dx, range, size.width );
 
           if ( !ignoreSnap ) {
-            t = snapTime( t, range, size.width, guiSettings );
+            time = snapTime( time, range, size.width, guiSettings );
           }
 
-          channel.resizeItem( item.$id, t - tBegin );
+          channel.resizeItem( item.$id, time - timeBegin );
         },
         () => {
           if ( !hasMoved ) { return; }
 
-          const redo = (): void => {
-            channel.resizeItem( item.$id, t - tBegin );
-          };
-
-          const undo = (): void => {
-            channel.resizeItem( item.$id, tPrev - tBegin );
-          };
+          channel.resizeItem( item.$id, time - timeBegin );
 
           dispatch( {
             type: 'History/Push',
-            entry: {
-              description: 'Resize Curve',
-              redo,
-              undo
-            }
+            description: 'Resize Curve',
+            commands: [
+              {
+                type: 'channel/resizeItem',
+                channel: props.channel,
+                item: item.$id,
+                length: time - timeBegin,
+                lengthPrev: timePrev - timeBegin
+              }
+            ],
           } );
-          redo();
         }
       );
     },
@@ -275,23 +275,19 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
     (): void => {
       if ( !channel ) { return; }
 
-      const undo = (): void => {
-        channel.createItemFromData( item );
-      };
-
-      const redo = (): void => {
-        channel.removeItem( item.$id );
-      };
+      channel.removeItem( item.$id );
 
       dispatch( {
         type: 'History/Push',
-        entry: {
-          description: 'Remove Curve',
-          redo,
-          undo
-        }
+        description: 'Remove Curve',
+        commands: [
+          {
+            type: 'channel/removeItem',
+            channel: props.channel,
+            data: item
+          }
+        ],
       } );
-      redo();
     },
     [ item, channel ]
   );
