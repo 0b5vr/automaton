@@ -98,7 +98,7 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
 
   const curveX = useMemo(
     () => dt2dx( -item.offset / item.speed, range, size.width ),
-    [ item.offset, item.speed, curveLength, range, size ]
+    [ item.offset, item.speed, range, size ]
   );
   const curveWidth = useMemo(
     () => dt2dx( curveLength / item.speed, range, size.width ),

@@ -27,9 +27,8 @@ export function v2Compat( data: V2SerializedData ): SerializedAutomatonWithGUI {
     channels[ name ] = channel;
   } );
 
-  const newData = {
+  const newData: SerializedAutomatonWithGUI = {
     version: data.v,
-    length: data.length,
     resolution: data.resolution,
     curves,
     channels,

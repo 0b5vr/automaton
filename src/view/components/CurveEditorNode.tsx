@@ -38,7 +38,7 @@ const Root = styled.g`
 // == element ======================================================================================
 interface Props {
   curve: number;
-  node: Required<BezierNode> & WithID;
+  node: BezierNode & WithID;
   range: TimeValueRange;
   size: Resolution;
 }

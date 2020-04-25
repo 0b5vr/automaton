@@ -2,6 +2,7 @@ import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
+import { clamp } from '../../utils/clamp';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
 import styled from 'styled-components';
 
@@ -20,7 +21,7 @@ const BarFG = ( { className }: { className?: string } ): JSX.Element => {
     time: state.automaton.time,
     length: state.automaton.length
   } ) );
-  const progress = time / length;
+  const progress = clamp( time / length, 0.0, 1.0 );
 
   return (
     <div

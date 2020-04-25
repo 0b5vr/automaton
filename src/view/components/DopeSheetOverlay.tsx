@@ -58,9 +58,9 @@ const DopeSheetOverlay = ( props: DopeSheetOverlayProps ): JSX.Element => {
   const { className } = props;
   const refBody = useRef<HTMLDivElement>( null );
   const rect = useRect( refBody );
-  const { range, length } = useSelector( ( state ) => ( {
+  const { range, automatonLength } = useSelector( ( state ) => ( {
     range: state.timeline.range,
-    length: state.automaton.length
+    automatonLength: state.automaton.length
   } ) );
 
   return (
@@ -76,7 +76,7 @@ const DopeSheetOverlay = ( props: DopeSheetOverlayProps ): JSX.Element => {
       <StyledRangeBar
         range={ range }
         width={ rect.width }
-        length={ length }
+        length={ automatonLength }
       />
     </Root>
   );

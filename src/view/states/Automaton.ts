@@ -4,6 +4,7 @@ import { AutomatonWithGUI } from '../../AutomatonWithGUI';
 import { ChannelStatus } from '../../ChannelWithGUI';
 import { CurveStatus } from '../../CurveWithGUI';
 import { Reducer } from 'redux';
+import { WithBypass } from '../../types/WithBypass';
 import { WithID } from '../../types/WithID';
 import { arraySetDelete } from '../utils/arraySet';
 import { jsonCopy } from '../../utils/jsonCopy';
@@ -17,6 +18,7 @@ export interface State {
   channels: {
     [ name: string ]: {
       value: number;
+      length: number;
       status: ChannelStatus | null;
       items: { [ id: string ]: Required<SerializedChannelItem> & WithID };
     };
@@ -25,8 +27,8 @@ export interface State {
     status: CurveStatus | null;
     length: number;
     path: string;
-    nodes: { [ id: string ]: Required<BezierNode> & WithID };
-    fxs: { [ id: string ]: FxSection & WithID };
+    nodes: { [ id: string ]: BezierNode & WithID };
+    fxs: { [ id: string ]: FxSection & WithBypass & WithID };
   }>;
   curvesPreview: Array<{
     previewTime: number | null;
@@ -77,6 +79,10 @@ export type Action = {
   channel: string;
   value: number;
 } | {
+  type: 'Automaton/UpdateChannelLength';
+  channel: string;
+  length: number;
+} | {
   type: 'Automaton/UpdateChannelStatus';
   channel: string;
   status: ChannelStatus | null;
@@ -102,6 +108,10 @@ export type Action = {
   curve: number;
   path: string;
 } | {
+  type: 'Automaton/UpdateCurveLength';
+  curve: number;
+  length: number;
+} | {
   type: 'Automaton/UpdateCurveStatus';
   curve: number;
   status: CurveStatus | null;
@@ -114,7 +124,7 @@ export type Action = {
   type: 'Automaton/UpdateCurveNode';
   curve: number;
   id: string;
-  node: Required<BezierNode> & WithID;
+  node: BezierNode & WithID;
 } | {
   type: 'Automaton/RemoveCurveNode';
   curve: number;
@@ -123,13 +133,13 @@ export type Action = {
   type: 'Automaton/UpdateCurveFx';
   curve: number;
   id: string;
-  fx: FxSection & WithID;
+  fx: FxSection & WithBypass & WithID;
 } | {
   type: 'Automaton/RemoveCurveFx';
   curve: number;
   id: string;
 } | {
-  type: 'Automaton/ChangeCurveLength';
+  type: 'Automaton/UpdateCurveLength';
   curve: number;
   length: number;
 } | {
@@ -139,8 +149,10 @@ export type Action = {
   type: 'Automaton/UpdateTime';
   time: number;
 } | {
-  type: 'Automaton/UpdateLength';
+  type: 'Automaton/ChangeLength';
   length: number;
+} | {
+  type: 'Automaton/ChangeResolution';
   resolution: number;
 } | {
   type: 'Automaton/UpdateIsDisabledTimeControls';
@@ -179,6 +191,7 @@ export const reducer: Reducer<State, Action> = ( state = initialState, action ) 
 
       newState.channels[ action.channel ] = {
         value: 0.0,
+        length: 1.0,
         status: null,
         items: {}
       };
@@ -187,6 +200,8 @@ export const reducer: Reducer<State, Action> = ( state = initialState, action ) 
       delete newState.channels[ action.channel ];
     } else if ( action.type === 'Automaton/UpdateChannelValue' ) {
       newState.channels[ action.channel ].value = action.value;
+    } else if ( action.type === 'Automaton/UpdateChannelLength' ) {
+      newState.channels[ action.channel ].length = action.length;
     } else if ( action.type === 'Automaton/UpdateChannelStatus' ) {
       newState.channels[ action.channel ].status = action.status;
     } else if ( action.type === 'Automaton/UpdateChannelItem' ) {
@@ -209,6 +224,8 @@ export const reducer: Reducer<State, Action> = ( state = initialState, action ) 
       newState.curves.splice( action.curve, 1 );
     } else if ( action.type === 'Automaton/UpdateCurvePath' ) {
       newState.curves[ action.curve ].path = action.path;
+    } else if ( action.type === 'Automaton/UpdateCurveLength' ) {
+      newState.curves[ action.curve ].length = action.length;
     } else if ( action.type === 'Automaton/UpdateCurveStatus' ) {
       newState.curves[ action.curve ].status = action.status;
     } else if ( action.type === 'Automaton/UpdateCurvePreviewValue' ) {
@@ -222,14 +239,13 @@ export const reducer: Reducer<State, Action> = ( state = initialState, action ) 
       newState.curves[ action.curve ].fxs[ action.id ] = jsonCopy( action.fx );
     } else if ( action.type === 'Automaton/RemoveCurveFx' ) {
       delete newState.curves[ action.curve ].fxs[ action.id ];
-    } else if ( action.type === 'Automaton/ChangeCurveLength' ) {
-      newState.curves[ action.curve ].length = action.length;
     } else if ( action.type === 'Automaton/UpdateIsPlaying' ) {
       newState.isPlaying = action.isPlaying;
     } else if ( action.type === 'Automaton/UpdateTime' ) {
       newState.time = action.time;
-    } else if ( action.type === 'Automaton/UpdateLength' ) {
+    } else if ( action.type === 'Automaton/ChangeLength' ) {
       newState.length = action.length;
+    } else if ( action.type === 'Automaton/ChangeResolution' ) {
       newState.resolution = action.resolution;
     } else if ( action.type === 'Automaton/UpdateIsDisabledTimeControls' ) {
       newState.isDisabledTimeControls = action.isDisabledTimeControls;

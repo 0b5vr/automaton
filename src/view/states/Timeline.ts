@@ -60,7 +60,7 @@ export type Action = {
   size: Resolution;
   dx: number;
   dy: number;
-  tmax: number;
+  tmax?: number;
 } | {
   type: 'Timeline/ZoomRange';
   size: Resolution;
@@ -68,7 +68,7 @@ export type Action = {
   cy: number;
   dx: number;
   dy: number;
-  tmax: number;
+  tmax?: number;
 };
 
 // == reducer ======================================================================================
@@ -110,7 +110,7 @@ export const reducer: Reducer<State, ContextAction> = ( state = initialState, ac
     } else if ( action.type === 'Timeline/MoveRange' ) {
       const { range } = state;
       const { size } = action;
-      const length = action.tmax;
+      const length = action.tmax ?? Infinity;
 
       let dt = -dx2dt( action.dx, range, size.width );
       dt = Math.min( Math.max( dt, -range.t0 ), length - range.t1 );
@@ -126,7 +126,7 @@ export const reducer: Reducer<State, ContextAction> = ( state = initialState, ac
     } else if ( action.type === 'Timeline/ZoomRange' ) {
       const { range } = state;
       const { size } = action;
-      const length = action.tmax;
+      const length = action.tmax ?? Infinity;
 
       const ct = x2t( action.cx, range, size.width );
       const cv = y2v( action.cy, range, size.height );
@@ -167,25 +167,6 @@ export const reducer: Reducer<State, ContextAction> = ( state = initialState, ac
     } else if ( action.type === 'Automaton/RemoveChannelItem' ) {
       newState.selectedItems = { ...state.selectedItems };
       delete newState.selectedItems[ action.id ];
-    } else if ( action.type === 'Automaton/UpdateLength' ) { // WHOA, REALLY
-      if ( action.length < state.range.t0 ) {
-        // if t0 is larger than the new length, reset the range
-        newState.range = {
-          t0: 0.0,
-          t1: action.length,
-          v0: state.range.v0,
-          v1: state.range.v1,
-        };
-
-      } else if ( action.length < state.range.t1 ) {
-        // if t1 is larger than the new length, clamp the t1 to the new length
-        newState.range = {
-          t0: state.range.t0,
-          t1: action.length,
-          v0: state.range.v0,
-          v1: state.range.v1,
-        };
-      }
     } else if ( action.type === 'CurveEditor/SelectCurve' ) { // WHOA WHOA
       newState.lastSelectedItem = null;
     }

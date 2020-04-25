@@ -6,6 +6,7 @@ import { CHANNEL_FX_ROW_MAX } from '../../ChannelWithGUI';
 import { Colors } from '../constants/Colors';
 import { FxSection } from '@fms-cat/automaton';
 import { Resolution } from '../utils/Resolution';
+import { WithBypass } from '../../types/WithBypass';
 import { WithID } from '../../types/WithID';
 import { arraySetHas } from '../utils/arraySet';
 import { clamp } from '../../utils/clamp';
@@ -65,7 +66,7 @@ const Root = styled.g`
 // == element ======================================================================================
 interface Props {
   curve: number;
-  fx: FxSection & WithID;
+  fx: FxSection & WithBypass & WithID;
   range: TimeValueRange;
   size: Resolution;
 }
