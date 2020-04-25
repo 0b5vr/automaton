@@ -15,11 +15,6 @@ export class Curve {
   protected __automaton: Automaton;
 
   /**
-   * The length of this curve.
-   */
-  protected __length: number = 1.0;
-
-  /**
    * An array of precalculated value.
    * Its length is same as `curve.__automaton.resolution * curve.__automaton.length + 1`.
   */
@@ -38,7 +33,9 @@ export class Curve {
   /**
    * The length of this curve.
    */
-  public get length(): number { return this.__length; }
+  public get length(): number {
+    return this.__nodes[ this.__nodes.length - 1 ].time;
+  }
 
 
   /**
@@ -57,11 +54,24 @@ export class Curve {
    * @param data Data of a curve
    */
   public deserialize( data: SerializedCurve ): void {
-    this.__nodes = data.nodes;
-    this.__fxs = data.fxs || [];
+    this.__nodes = data.nodes.map( ( node ) => ( {
+      time: node.time ?? 0.0,
+      value: node.value ?? 0.0,
+      in: node.in ?? { time: 0.0, value: 0.0 },
+      out: node.out ?? { time: 0.0, value: 0.0 }
+    } ) );
 
-    const lastNode = data.nodes[ data.nodes.length - 1 ];
-    this.__length = lastNode.time;
+    this.__fxs = [];
+    data.fxs?.forEach( ( fx ) => {
+      if ( fx.bypass ) { return; }
+      this.__fxs.push( {
+        time: fx.time ?? 0.0,
+        length: fx.length ?? 0.0,
+        row: fx.row ?? 0,
+        def: fx.def,
+        params: fx.params
+      } );
+    } );
 
     this.precalc();
   }
@@ -71,7 +81,7 @@ export class Curve {
    */
   public precalc(): void {
     this.__values = new Float32Array(
-      Math.ceil( this.__automaton.resolution * this.__length ) + 1
+      Math.ceil( this.__automaton.resolution * this.length ) + 1
     );
 
     let nodeTail = this.__nodes[ 0 ];
@@ -96,7 +106,6 @@ export class Curve {
 
     for ( let iFx = 0; iFx < this.__fxs.length; iFx ++ ) {
       const fx = this.__fxs[ iFx ];
-      if ( fx.bypass ) { continue; }
       const fxDef = this.__automaton.getFxDefinition( fx.def );
       if ( !fxDef ) { continue; }
 
@@ -149,7 +158,7 @@ export class Curve {
       // clamp left
       return this.__values[ 0 ];
 
-    } else if ( this.__length <= time ) {
+    } else if ( this.length <= time ) {
       // clamp right
       return this.__values[ this.__values.length - 1 ];
 

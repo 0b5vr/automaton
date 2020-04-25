@@ -18,12 +18,6 @@ export interface FxSection {
   row: number;
 
   /**
-   * Whether the section would be bypassed or not.
-   * `true` or `undefined`. It's weird haha
-   */
-  bypass?: true;
-
-  /**
    * Fx definition name of the section.
    */
   def: string;
@@ -35,12 +29,40 @@ export interface FxSection {
 }
 
 /**
- * {@link FxSection} + `$id`
+ * Serialized variant of {@link FxSection}.
+ * Some values are optional.
  */
-export interface FxSectionPlusID extends FxSection {
+export interface SerializedFxSection {
   /**
-   * Its unique id.
+   * Beginning time of the section.
+   * `0.0` by default.
    */
-  $id: string;
-}
+  time?: number;
 
+  /**
+   * Time length of the section.
+   * `0.0` by default.
+   */
+  length?: number;
+
+  /**
+   * Row of the section.
+   * `0` by default.
+   */
+  row?: number;
+
+  /**
+   * Whether the section would be bypassed or not.
+   */
+  bypass?: boolean;
+
+  /**
+   * Fx definition name of the section.
+   */
+  def: string;
+
+  /**
+   * Params of the section.
+   */
+  params: any;
+}
