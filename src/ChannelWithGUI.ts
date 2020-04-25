@@ -5,6 +5,7 @@ import { EventEmittable } from './mixins/EventEmittable';
 import { Serializable } from './types/Serializable';
 import { WithID } from './types/WithID';
 import { applyMixins } from './utils/applyMixins';
+import { clamp } from './utils/clamp';
 import { genID } from './utils/genID';
 
 /**
@@ -91,6 +92,14 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
     }
 
     return this.__statusList[ 0 ];
+  }
+
+  /**
+   * Its length i.e. the end of the last item.
+   */
+  public get length(): number {
+    if ( this.__items.length === 0 ) { return 0.0; }
+    return this.__items[ this.__items.length - 1 ].end;
   }
 
   public constructor( automaton: AutomatonWithGUI, data?: SerializedChannel ) {
@@ -233,6 +242,15 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
   }
 
   /**
+   * Check whether the item is the last item or not.
+   * @param id Id of the item you want to check
+   */
+  public isLastItem( id: string ): boolean {
+    const index = this.__getItemIndexById( id );
+    return index === this.__items.length - 1;
+  }
+
+  /**
    * Duplicate an item.
    * @param time The timepoint you want to add
    * @param item The item you want to duplicate
@@ -251,14 +269,16 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
 
     // shorten the item when the next item is too close
     const itemIndex = this.__items.findIndex( ( item ) => item.$id === id );
-    const nextTime = itemIndex === ( this.__items.length - 1 )
-      ? this.__automaton.length
-      : this.__items[ itemIndex + 1 ].time;
-    if ( nextTime < newItem.end ) {
-      newItem.length = nextTime - newItem.time;
-    }
+    const next = this.__items[ itemIndex + 1 ];
+    const right = next ? next.time : Infinity;
+    newItem.length = Math.min( newItem.length, right - newItem.time );
 
     this.__emit( 'createItem', { id, item: newItem.serializeGUI() } );
+
+    // if the item is the last item, change its length
+    if ( this.isLastItem( id ) ) {
+      this.__emit( 'changeLength', { length: this.length } );
+    }
 
     this.__automaton.shouldSave = true;
 
@@ -278,6 +298,11 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
     this.__sortItems();
 
     this.__emit( 'createItem', { id, item: item.serializeGUI() } );
+
+    // if the item is the last item, change its length
+    if ( this.isLastItem( id ) ) {
+      this.__emit( 'changeLength', { length: this.length } );
+    }
 
     this.__automaton.shouldSave = true;
 
@@ -299,14 +324,16 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
 
     // shorten the item when the next item is too close
     const itemIndex = this.__items.findIndex( ( item ) => item.$id === id );
-    const nextTime = itemIndex === ( this.__items.length - 1 )
-      ? this.__automaton.length
-      : this.__items[ itemIndex + 1 ].time;
-    if ( nextTime < item.end ) {
-      item.length = nextTime - item.time;
-    }
+    const next = this.__items[ itemIndex + 1 ];
+    const right = next ? next.time : Infinity;
+    item.length = Math.min( item.length, right - item.time );
 
     this.__emit( 'createItem', { id, item: item.serializeGUI() } );
+
+    // if the item is the last item, change its length
+    if ( this.isLastItem( id ) ) {
+      this.__emit( 'changeLength', { length: this.length } );
+    }
 
     this.__automaton.shouldSave = true;
 
@@ -328,6 +355,11 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
 
     this.__emit( 'createItem', { id: item.$id, item: item.serializeGUI() } );
 
+    // if the item is the last item, change its length
+    if ( this.isLastItem( item.$id ) ) {
+      this.__emit( 'changeLength', { length: this.length } );
+    }
+
     this.__automaton.shouldSave = true;
 
     return item.serializeGUI();
@@ -340,9 +372,15 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
   public removeItem( id: string ): void {
     const index = this.__getItemIndexById( id );
 
+    const isLastItem = this.isLastItem( id );
     this.__items.splice( index, 1 );
 
     this.__emit( 'removeItem', { id } );
+
+    // if we delete the last node, change the length
+    if ( isLastItem ) {
+      this.__emit( 'changeLength', { length: this.length } );
+    }
 
     this.__automaton.shouldSave = true;
   }
@@ -358,15 +396,19 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
     const item = this.__items[ index ];
 
     const prev = this.__items[ index - 1 ];
-    const next = this.__items[ index + 1 ];
-
     const left = prev ? ( prev.time + prev.length ) : 0.0;
-    const right = next ? next.time : this.__automaton.length;
-    item.time = Math.min( Math.max( time, left ), right - item.length );
+    const next = this.__items[ index + 1 ];
+    const right = next ? next.time : Infinity;
+    item.time = clamp( time, left, right );
 
     this.__sortItems();
 
     this.__emit( 'updateItem', { id, item: item.serializeGUI() } );
+
+    // if the item is the last item, change its length
+    if ( this.isLastItem( item.$id ) ) {
+      this.__emit( 'changeLength', { length: this.length } );
+    }
 
     this.__automaton.shouldSave = true;
   }
@@ -388,6 +430,11 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
 
     this.__emit( 'updateItem', { id, item: item.serializeGUI() } );
 
+    // if the item is the last item, change its length
+    if ( this.isLastItem( item.$id ) ) {
+      this.__emit( 'changeLength', { length: this.length } );
+    }
+
     this.__automaton.shouldSave = true;
   }
 
@@ -402,14 +449,15 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
     const item = this.__items[ index ];
 
     const next = this.__items[ index + 1 ];
-
-    const right = next ? next.time : this.__automaton.length;
-
-    const lengthMax = right - item.time;
-
-    item.length = Math.min( Math.max( length, 0.0 ), lengthMax );
+    const right = next ? next.time : Infinity;
+    item.length = clamp( length, 0.0, right - item.time );
 
     this.__emit( 'updateItem', { id, item: item.serializeGUI() } );
+
+    // if the item is the last item, change its length
+    if ( this.isLastItem( item.$id ) ) {
+      this.__emit( 'changeLength', { length: this.length } );
+    }
 
     this.__automaton.shouldSave = true;
   }
@@ -494,31 +542,6 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
   }
 
   /**
-   * Call when you need to change the length of the automaton.
-   * Should not be called by anywhere except {@link AutomatonWithGUI#setLength}.
-   */
-  public changeLength(): void {
-    // iterating items from the tail
-    for ( let i = this.__items.length - 1; 0 <= i; i -- ) {
-      const item = this.__items[ i ];
-
-      if ( this.__automaton.length < item.time ) {
-        // if the beginning time of the fx is larger than the new length, remove it
-        this.__items.splice( i, 1 );
-        this.__emit( 'removeItem', { id: item.$id } );
-
-      } else if ( this.__automaton.length < ( item.time + item.length ) ) {
-        // if the ending time of the fx is larger than the new length, shorten it
-        item.length = this.__automaton.length - item.time;
-        this.__emit( 'updateItem', { id: item.$id, item: item.serializeGUI() } );
-
-      }
-    }
-
-    this.__automaton.shouldSave = true;
-  }
-
-  /**
    * Serialize its items.
    * @returns Serialized items
    */
@@ -590,6 +613,7 @@ export interface ChannelWithGUIEvents {
   changeValue: void;
   reset: void;
   updateStatus: void;
+  changeLength: { length: number };
 }
 
 export interface ChannelWithGUI extends EventEmittable<ChannelWithGUIEvents> {}

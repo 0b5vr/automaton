@@ -94,14 +94,14 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
     automaton,
     selectedChannel,
     range,
-    length,
+    automatonLength,
     lastSelectedItem,
     selectedCurve
   } = useSelector( ( state ) => ( {
     automaton: state.automaton.instance,
     selectedChannel: state.timeline.selectedChannel,
     range: state.timeline.range,
-    length: state.automaton.length,
+    automatonLength: state.automaton.length,
     lastSelectedItem: state.timeline.lastSelectedItem,
     selectedCurve: state.curveEditor.selectedCurve
   } ) );
@@ -117,10 +117,9 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
         size: rect,
         dx,
         dy,
-        tmax: length // 🔥
       } );
     },
-    [ rect, length ]
+    [ rect ]
   );
 
   const zoom = useCallback(
@@ -132,10 +131,9 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
         cy,
         dx,
         dy,
-        tmax: length // 🔥
       } );
     },
-    [ rect, length ]
+    [ rect ]
   );
 
   const createConstant = useCallback(
@@ -439,7 +437,7 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
       <StyledRangeBar
         range={ range }
         width={ rect.width }
-        length={ length }
+        length={ automatonLength }
       />
     </Root>
   );

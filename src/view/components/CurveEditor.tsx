@@ -136,8 +136,8 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
     range: state.curveEditor.range,
     automaton: state.automaton.instance
   } ) );
-  const { length } = useSelector( ( state ) => ( {
-    length: selectedCurve != null ? state.automaton.curves[ selectedCurve ].length : null
+  const { curveLength } = useSelector( ( state ) => ( {
+    curveLength: selectedCurve != null ? state.automaton.curves[ selectedCurve ].length : null
   } ) );
 
   const curve = selectedCurve != null && automaton?.getCurve( selectedCurve ) || null;
@@ -154,7 +154,7 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
         dy
       } );
     },
-    [ rect, length ]
+    [ rect, curveLength ]
   );
 
   const zoom = useCallback(
@@ -168,7 +168,7 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
         dy
       } );
     },
-    [ rect, length ]
+    [ rect, curveLength ]
   );
 
   const createNodeAndGrab = useCallback(
@@ -416,11 +416,11 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
           </> }
         </SVGRoot>
       </Body>
-      { length != null && (
+      { curveLength != null && (
         <StyledRangeBar
           range={ range }
           width={ rect.width }
-          length={ length }
+          length={ curveLength }
         />
       ) }
     </Root>

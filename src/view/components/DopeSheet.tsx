@@ -29,12 +29,10 @@ const DopeSheet = ( { className }: DopeSheetProps ): JSX.Element => {
     automaton,
     channelNames,
     range,
-    length
   } = useSelector( ( state ) => ( {
     automaton: state.automaton.instance,
     channelNames: state.automaton.channelNames,
     range: state.timeline.range,
-    length: state.automaton.length
   } ) );
 
   const sortedChannelNames = useMemo(
@@ -49,10 +47,9 @@ const DopeSheet = ( { className }: DopeSheetProps ): JSX.Element => {
         size: rect,
         dx,
         dy: 0.0,
-        tmax: length // 🔥
       } );
     },
-    [ rect, length ]
+    [ rect ]
   );
 
   const zoom = useCallback(
@@ -64,10 +61,9 @@ const DopeSheet = ( { className }: DopeSheetProps ): JSX.Element => {
         cy: 0.0,
         dx,
         dy: 0.0,
-        tmax: length // 🔥
       } );
     },
-    [ rect, length ]
+    [ rect ]
   );
 
   const startSeek = useCallback(

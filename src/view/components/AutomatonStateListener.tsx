@@ -63,6 +63,12 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
       } );
     } );
 
+    dispatch( {
+      type: 'Automaton/UpdateChannelLength',
+      channel: name,
+      length: channel.length
+    } );
+
     channel.on( 'changeValue', () => {
       dispatch( {
         type: 'Automaton/UpdateChannelValue',
@@ -102,6 +108,14 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
         type: 'Automaton/RemoveChannelItem',
         channel: name,
         id
+      } );
+    } );
+
+    channel.on( 'changeLength', ( { length } ) => {
+      dispatch( {
+        type: 'Automaton/UpdateChannelLength',
+        channel: name,
+        length,
       } );
     } );
   }
@@ -217,9 +231,9 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
 
     curve.on( 'changeLength', ( { length } ) => {
       dispatch( {
-        type: 'Automaton/ChangeCurveLength',
+        type: 'Automaton/UpdateCurveLength',
         curve: index,
-        length
+        length,
       } );
     } );
   }
@@ -255,8 +269,12 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
     } );
 
     dispatch( {
-      type: 'Automaton/UpdateLength',
-      length: automaton.length,
+      type: 'Automaton/ChangeLength',
+      length: automaton.length
+    } );
+
+    dispatch( {
+      type: 'Automaton/ChangeResolution',
       resolution: automaton.resolution
     } );
 
@@ -317,10 +335,16 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
         } );
       } );
 
-      const handleChangeLength = automaton.on( 'changeLength', ( { length, resolution } ) => {
+      const handleChangeLength = automaton.on( 'changeLength', ( { length } ) => {
         dispatch( {
-          type: 'Automaton/UpdateLength',
-          length,
+          type: 'Automaton/ChangeLength',
+          length
+        } );
+      } );
+
+      const handleChangeResolution = automaton.on( 'changeResolution', ( { resolution } ) => {
+        dispatch( {
+          type: 'Automaton/ChangeResolution',
           resolution
         } );
       } );
@@ -387,6 +411,7 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
         automaton.off( 'load', handleLoad );
         automaton.off( 'update', handleUpdate );
         automaton.off( 'changeLength', handleChangeLength );
+        automaton.off( 'changeResolution', handleChangeResolution );
         automaton.off( 'play', handlePlay );
         automaton.off( 'pause', handlePause );
         automaton.off( 'addFxDefinition', handleAddFxDefinition );

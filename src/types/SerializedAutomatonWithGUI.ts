@@ -19,7 +19,6 @@ export interface SerializedAutomatonWithGUI extends SerializedAutomaton {
 
 export const defaultDataWithGUI: Readonly<SerializedAutomatonWithGUI> = {
   version: process.env.VERSION!,
-  length: 1.0,
   resolution: 100,
   curves: [],
   channels: {},

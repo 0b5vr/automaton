@@ -32,7 +32,7 @@
     "@babel/core": "^7.9.0",
     "@babel/preset-env": "^7.9.0",
     "@babel/preset-react": "^7.9.4",
-    "@fms-cat/automaton": "^3.0.0-beta1",
+    "@fms-cat/automaton": "3.0.0-beta2",
     "@types/node": "^13.11.0",
     "@types/react": "^16.9.32",
     "@types/react-dom": "^16.9.6",

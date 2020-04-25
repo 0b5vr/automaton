@@ -121,10 +121,27 @@ export class AutomatonWithGUI extends Automaton
   private __guiRemocon?: GUIRemocon;
 
   /**
+   * A cache of previous {@link length}.
+   * You should not touch this from any place but {@link tryUpdateLength}.
+   */
+  private __lengthPrev = 1.0;
+
+  /**
    * It's currently playing or not.
    */
   public get isPlaying(): boolean {
     return this.__isPlaying;
+  }
+
+  /**
+   * Length of the automaton i.e. the length of longest channel.
+   */
+  public get length(): number {
+    let result = 0.0;
+    Object.values( this.__channels ).forEach( ( channel ) => {
+      result = Math.max( result, channel.length );
+    } );
+    return result;
   }
 
   /**
@@ -291,34 +308,27 @@ export class AutomatonWithGUI extends Automaton
   }
 
   /**
-   * Set the new length and resolution for this automaton instance.
-   * **Some nodes / fxs might be automatically removed / changed.**
+   * Change its resolution.
    * Can be performed via GUI.
-   * @param length New length for the automaton
+   * @param resolution New resolution for the automaton
    */
-  public setLength( length: number, resolution: number ): void {
-    // if the length is invalid then throw error
-    if ( isNaN( length ) ) {
-      throw new Error( 'Automaton.setLength: length is invalid' );
-    }
-
+  public setResolution( resolution: number ): void {
     // if the resolution is invalid then throw error
-    if ( isNaN( length ) ) {
-      throw new Error( 'Automaton.setLength: length is invalid' );
+    if ( isNaN( resolution ) || resolution < 1 ) {
+      throw new Error( 'Automaton.setResolution: resolution is invalid' );
     }
 
     // if both length and resolution are not changed then do fast-return
-    if ( length === this.length && resolution === this.resolution ) { return; }
+    if ( resolution === this.resolution ) { return; }
 
-    // set the length / resolution
-    this.__length = length;
+    // set the resolution
     this.__resolution = resolution;
 
-    // changeLength is a good method
-    Object.values( this.__channels ).forEach( ( channel ) => channel.changeLength() );
+    // update every curves
+    this.precalcAll();
 
     // emit an event
-    this.__emit( 'changeLength', { length, resolution } );
+    this.__emit( 'changeResolution', { resolution } );
 
     // mark as should save
     this.shouldSave = true;
@@ -343,6 +353,10 @@ export class AutomatonWithGUI extends Automaton
       channel.markAsUsed();
     }
 
+    channel.on( 'changeLength', () => {
+      this.__tryUpdateLength();
+    } );
+
     this.__emit( 'createChannel', { name, channel: channel } );
 
     this.shouldSave = true;
@@ -364,6 +378,10 @@ export class AutomatonWithGUI extends Automaton
 
     const channel = new ChannelWithGUI( this, data );
     this.__channels[ name ] = channel;
+
+    channel.on( 'changeLength', () => {
+      this.__tryUpdateLength();
+    } );
 
     this.__emit( 'createChannel', { name, channel: channel } );
 
@@ -505,7 +523,6 @@ export class AutomatonWithGUI extends Automaton
   public deserialize( data?: any ): void {
     const convertedData = compat( data );
 
-    this.__length = convertedData.length;
     this.__resolution = convertedData.resolution;
 
     this.__curves = convertedData.curves.map(
@@ -513,7 +530,12 @@ export class AutomatonWithGUI extends Automaton
     );
 
     for ( const name in convertedData.channels ) {
-      this.__channels[ name ] = new ChannelWithGUI( this, convertedData.channels[ name ] );
+      const channel = new ChannelWithGUI( this, convertedData.channels[ name ] );
+      this.__channels[ name ] = channel;
+
+      channel.on( 'changeLength', () => {
+        this.__tryUpdateLength();
+      } );
     }
 
     this.guiSettings = convertedData.guiSettings;
@@ -530,7 +552,6 @@ export class AutomatonWithGUI extends Automaton
   public serialize(): SerializedAutomatonWithGUI {
     return {
       version: this.version,
-      length: this.length,
       resolution: this.resolution,
       curves: this.__serializeCurves(),
       channels: this.__serializeChannelList(),
@@ -615,6 +636,14 @@ export class AutomatonWithGUI extends Automaton
     return data;
   }
 
+  private __tryUpdateLength(): void {
+    const length = this.length;
+    if ( length !== this.__lengthPrev ) {
+      this.__emit( 'changeLength', { length } );
+      this.__lengthPrev = length;
+    }
+  }
+
   /**
    * Assigned to `Automaton.auto` at constructor.
    * @param name The name of the channel
@@ -649,7 +678,8 @@ export interface AutomatonWithGUIEvents {
   createCurve: { index: number; curve: CurveWithGUI };
   removeCurve: { index: number };
   addFxDefinition: { name: string; fxDefinition: FxDefinition };
-  changeLength: { length: number; resolution: number };
+  changeLength: { length: number };
+  changeResolution: { resolution: number };
   updateGUISettings: { settings: GUISettings };
   changeShouldSave: { shouldSave: boolean };
 }

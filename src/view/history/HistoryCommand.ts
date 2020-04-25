@@ -1,5 +1,6 @@
 import { BezierNode, FxSection, SerializedChannel, SerializedChannelItem, SerializedCurve } from '@fms-cat/automaton';
 import { AutomatonWithGUI } from '../../AutomatonWithGUI';
+import { WithBypass } from '../../types/WithBypass';
 import { WithID } from '../../types/WithID';
 
 // == commands =====================================================================================
@@ -69,11 +70,11 @@ export type HistoryCommand = {
 } | {
   type: 'curve/createNodeFromData';
   curve: number;
-  data: Required<BezierNode> & WithID;
+  data: BezierNode & WithID;
 } | {
   type: 'curve/removeNode';
   curve: number;
-  data: Required<BezierNode> & WithID;
+  data: BezierNode & WithID;
 } | {
   type: 'curve/moveNodeTime';
   curve: number;
@@ -103,11 +104,11 @@ export type HistoryCommand = {
 } | {
   type: 'curve/createFxFromData';
   curve: number;
-  data: FxSection & WithID;
+  data: FxSection & WithBypass & WithID;
 } | {
   type: 'curve/removeFx';
   curve: number;
-  data: FxSection & WithID;
+  data: FxSection & WithBypass & WithID;
 } | {
   type: 'curve/moveFx';
   curve: number;

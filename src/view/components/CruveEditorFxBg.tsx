@@ -3,6 +3,7 @@ import { Colors } from '../constants/Colors';
 import { FxSection } from '@fms-cat/automaton';
 import React from 'react';
 import { Resolution } from '../utils/Resolution';
+import { WithBypass } from '../../types/WithBypass';
 import { WithID } from '../../types/WithID';
 import styled from 'styled-components';
 
@@ -25,7 +26,7 @@ const Root = styled.g`
 // == element ======================================================================================
 interface Props {
   curve: number;
-  fx: FxSection & WithID;
+  fx: FxSection & WithBypass & WithID;
   range: TimeValueRange;
   size: Resolution;
 }

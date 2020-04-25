@@ -147,35 +147,34 @@ var automaton = new AutomatonWithGUI(
 var auto = automaton.auto; // mighty auto function!
 
 // == define clock =================================================================================
-var resumeDate = Date.now();
-var pauseTime = 0.0;
+var prevDate = Date.now();
+var time = 0.0;
 var isPaused = false;
 
 function updateClock() {
-  var time = isPaused
-    ? pauseTime
-    : ( 0.001 * ( Date.now() - resumeDate ) + pauseTime );
+  var now = Date.now();
+  if ( !isPaused ) {
+    var delta = now - prevDate;
+    time += delta * 0.001;
+  }
+  prevDate = now;
 
   if ( automaton.length <= time ) {
     automaton.reset(); // we should call this when we seek the time
     time = time % automaton.length;
   }
-
-  return time;
 }
 
 automaton.on( 'play', () => {
   isPaused = false;
-  resumeDate = Date.now();
 } );
 
 automaton.on( 'pause', () => {
   isPaused = true;
-  pauseTime = 0.001 * ( Date.now() - resumeDate ) + pauseTime;
 } );
 
-automaton.on( 'seek', ( { time } ) => {
-  pauseTime = time;
+automaton.on( 'seek', ( event ) => {
+  time = event.time;
   automaton.reset(); // we should call this when we seek the time
 } );
 
@@ -184,7 +183,7 @@ function update() {
   if ( isHalted ) { return; }
 
   // update it
-  var time = updateClock();
+  updateClock();
   automaton.update( time );
 
   ctx.fillStyle = "#fff";
