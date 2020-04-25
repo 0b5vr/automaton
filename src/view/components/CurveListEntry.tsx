@@ -30,6 +30,7 @@ const Icon = styled.img`
 const Root = styled.div<{ isSelected: boolean }>`
   position: relative;
   background: ${ ( { isSelected } ) => ( isSelected ? Colors.back4 : Colors.back3 ) };
+  box-shadow: ${ ( { isSelected } ) => ( isSelected ? `0 0 0 1px ${ Colors.accent }` : 'none' ) };
 `;
 
 // == element ======================================================================================
