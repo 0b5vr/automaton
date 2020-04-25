@@ -233,7 +233,7 @@ const TimelineItemConstant = ( props: TimelineItemConstantProps ): JSX.Element =
         () => {
           if ( !hasMoved ) { return; }
 
-          channel.resizeItem( item.$id, timePrev - timeBegin );
+          channel.resizeItem( item.$id, time - timeBegin );
 
           dispatch( {
             type: 'History/Push',
