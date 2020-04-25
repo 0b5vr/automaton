@@ -739,12 +739,19 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
    * @returns Serialized nodes
    */
   private __serializeNodes(): BezierNode[] {
-    return this.__nodes.map( ( node ) => ( {
-      time: node.time,
-      value: node.value,
-      in: node.in.time !== 0.0 && node.in.value !== 0.0 ? node.in : undefined,
-      out: node.out.time !== 0.0 && node.out.value !== 0.0 ? node.out : undefined
-    } ) );
+    return this.__nodes.map( ( node ) => {
+      const data: BezierNode = {
+        time: node.time,
+        value: node.value
+      };
+      if ( node.in.time !== 0.0 && node.in.value !== 0.0 ) {
+        data.in = node.in;
+      }
+      if ( node.out.time !== 0.0 && node.out.value !== 0.0 ) {
+        data.out = node.out;
+      }
+      return data;
+    } );
   }
 
   /**
