@@ -25,7 +25,7 @@ export interface State {
     status: CurveStatus | null;
     length: number;
     path: string;
-    nodes: { [ id: string ]: BezierNode & WithID };
+    nodes: { [ id: string ]: Required<BezierNode> & WithID };
     fxs: { [ id: string ]: FxSection & WithID };
   }>;
   curvesPreview: Array<{
@@ -114,7 +114,7 @@ export type Action = {
   type: 'Automaton/UpdateCurveNode';
   curve: number;
   id: string;
-  node: BezierNode & WithID;
+  node: Required<BezierNode> & WithID;
 } | {
   type: 'Automaton/RemoveCurveNode';
   curve: number;

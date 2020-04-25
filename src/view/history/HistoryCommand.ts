@@ -69,11 +69,11 @@ export type HistoryCommand = {
 } | {
   type: 'curve/createNodeFromData';
   curve: number;
-  data: BezierNode & WithID;
+  data: Required<BezierNode> & WithID;
 } | {
   type: 'curve/removeNode';
   curve: number;
-  data: BezierNode & WithID;
+  data: Required<BezierNode> & WithID;
 } | {
   type: 'curve/moveNodeTime';
   curve: number;

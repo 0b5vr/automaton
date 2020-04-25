@@ -38,7 +38,7 @@ const Root = styled.g`
 // == element ======================================================================================
 interface Props {
   curve: number;
-  node: BezierNode & WithID;
+  node: Required<BezierNode> & WithID;
   range: TimeValueRange;
   size: Resolution;
 }
@@ -248,7 +248,7 @@ const CurveEditorNode = ( props: Props ): JSX.Element => {
                 curve: curveIndex,
                 node: node.$id,
                 dir,
-                value: 0.0,
+                value,
                 valuePrev
               },
               {

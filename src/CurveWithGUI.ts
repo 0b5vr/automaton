@@ -70,7 +70,7 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
   /**
    * List of bezier nodes.
    */
-  protected __nodes!: Array<BezierNode & WithID>;
+  protected __nodes!: Array<Required<BezierNode> & WithID>;
 
   /**
    * List of fx sections.
@@ -86,7 +86,7 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
   /**
    * List of bezier nodes.
    */
-  public get nodes(): Array<BezierNode & WithID> {
+  public get nodes(): Array<Required<BezierNode> & WithID> {
     return this.__nodes;
   }
 
@@ -141,7 +141,12 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
   public deserialize( data: SerializedCurve ): void {
     super.deserialize( jsonCopy( data ) );
 
-    this.__nodes.forEach( ( node ) => node.$id = genID() );
+    this.__nodes.forEach( ( node ) => {
+      node.in = node.in || { time: 0.0, value: 0.0 };
+      node.out = node.out || { time: 0.0, value: 0.0 };
+      node.$id = genID();
+    } );
+
     this.__fxs.forEach( ( fx ) => fx.$id = genID() );
   }
 
@@ -211,7 +216,7 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
    * @param index Index of the node
    * @returns Data of the node
    */
-  public getNodeByIndex( index: number ): BezierNode & WithID {
+  public getNodeByIndex( index: number ): Required<BezierNode> & WithID {
     const node = this.__nodes[ index ];
     if ( !node ) {
       throw new Error( `Given node index ${index} is invalid (Current count of nodes: ${this.__nodes.length})` );
@@ -224,7 +229,7 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
    * @param id Id of the node you want to dump
    * @returns Data of the node
    */
-  public getNode( id: string ): BezierNode & WithID {
+  public getNode( id: string ): Required<BezierNode> & WithID {
     const index = this.__getNodeIndexById( id );
     return this.__nodes[ index ];
   }
@@ -235,7 +240,7 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
    * @param value Value of new node
    * @returns Data of the node
    */
-  public createNode( time: number, value: number ): BezierNode & WithID {
+  public createNode( time: number, value: number ): Required<BezierNode> & WithID {
     const id = genID();
     const data = {
       $id: id,
@@ -261,7 +266,7 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
    * @param node Dumped bezier node object
    * @returns Data of the node
    */
-  public createNodeFromData( node: BezierNode & WithID ): BezierNode & WithID {
+  public createNodeFromData( node: Required<BezierNode> & WithID ): Required<BezierNode> & WithID {
     const data = jsonCopy( node );
     this.__nodes.push( data );
     this.__sortNodes();
@@ -383,15 +388,7 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
     const newTime = ( dir === 'in' ) ? Math.min( 0.0, time ) : Math.max( 0.0, time );
 
     const handle = node[ dir ];
-    if ( handle ) {
-      if ( newTime === 0.0 && handle.value === 0.0 ) {
-        delete node[ dir ];
-      } else {
-        handle.time = newTime;
-      }
-    } else if ( newTime !== 0.0 ) {
-      node[ dir ] = { time: newTime, value: 0.0 };
-    }
+    handle.time = newTime;
 
     this.precalc();
 
@@ -417,15 +414,7 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
     const node = this.__nodes[ index ];
 
     const handle = node[ dir ];
-    if ( handle ) {
-      if ( value === 0.0 && handle.time === 0.0 ) {
-        delete node[ dir ];
-      } else {
-        handle.value = value;
-      }
-    } else if ( value !== 0.0 ) {
-      node[ dir ] = { time: 0.0, value };
-    }
+    handle.value = value;
 
     this.precalc();
 
@@ -750,7 +739,12 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
    * @returns Serialized nodes
    */
   private __serializeNodes(): BezierNode[] {
-    return this.__nodes.map( ( node ) => removeID( jsonCopy( node ) ) );
+    return this.__nodes.map( ( node ) => ( {
+      time: node.time,
+      value: node.value,
+      in: node.in.time !== 0.0 && node.in.value !== 0.0 ? node.in : undefined,
+      out: node.out.time !== 0.0 && node.out.value !== 0.0 ? node.out : undefined
+    } ) );
   }
 
   /**
@@ -851,8 +845,8 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
 }
 
 export interface CurveWithGUIEvents {
-  createNode: { id: string; node: BezierNode & WithID };
-  updateNode: { id: string; node: BezierNode & WithID };
+  createNode: { id: string; node: Required<BezierNode> & WithID };
+  updateNode: { id: string; node: Required<BezierNode> & WithID };
   removeNode: { id: string };
   createFx: { id: string; fx: FxSection & WithID };
   updateFx: { id: string; fx: FxSection & WithID };
