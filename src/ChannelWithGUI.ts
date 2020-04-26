@@ -251,6 +251,7 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
       const right = next.time;
       if ( EPSILON < ( right - left ) ) {
         time = left;
+        break;
       }
     }
 
