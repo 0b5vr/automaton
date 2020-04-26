@@ -1,4 +1,5 @@
 import { BezierNode, Curve, FxSection, SerializedBezierNode, SerializedCurve, SerializedFxSection } from '@fms-cat/automaton';
+import { StatusLevel, WithStatus } from './types/Status';
 import { AutomatonWithGUI } from './AutomatonWithGUI';
 import { EventEmittable } from './mixins/EventEmittable';
 import { Serializable } from './types/Serializable';
@@ -18,41 +19,11 @@ export const CURVE_DEFAULT_HANDLE_LENGTH = 0.5;
 export const CURVE_FX_ROW_MAX = 5;
 
 /**
- * Represents "Status code" of a {@link CurveStatus}.
+ * Represents "Status code" of a status of the {@link Curve}.
  */
 export enum CurveStatusCode {
   NOT_USED,
   NAN_DETECTED,
-}
-
-/**
- * Represents fatality of a {@link CurveStatus}.
- */
-export enum CurveStatusLevel {
-  INFO,
-  WARNING,
-  ERROR,
-}
-
-/**
- * Interface represents a status of a {@link CurveWithGUI}.
- * Status: info / warning / error...
- */
-export interface CurveStatus {
-  /**
-   * Status code of the status.
-   */
-  code: CurveStatusCode;
-
-  /**
-   * Fatality of the status.
-   */
-  level: CurveStatusLevel;
-
-  /**
-   * Message of the status.
-   */
-  message?: string;
 }
 
 /**
@@ -77,12 +48,6 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
    * List of fx sections.
    */
   protected __fxs!: Array<FxSection & WithBypass & WithID>;
-
-  /**
-   * List of status (warning / error).
-   * The array is empty = you're cool
-   */
-  private __statusList: CurveStatus[];
 
   /**
    * List of bezier nodes.
@@ -115,24 +80,13 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
       fxs: []
     } );
 
-    this.__statusList = [
-      {
+    this.__watchStatus( () => {
+      this.__setStatus( {
         code: CurveStatusCode.NOT_USED,
-        level: CurveStatusLevel.WARNING,
+        level: StatusLevel.WARNING,
         message: 'This curve has not been used yet'
-      }
-    ];
-  }
-
-  /**
-   * Its current status (warning / error).
-   */
-  public get status(): CurveStatus | null {
-    if ( this.__statusList.length === 0 ) {
-      return null;
-    }
-
-    return this.__statusList[ 0 ];
+      } );
+    } );
   }
 
   /**
@@ -164,10 +118,17 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
         hasNaN = true;
       }
     } );
-    this.__setStatus( hasNaN, {
-      code: CurveStatusCode.NAN_DETECTED,
-      level: CurveStatusLevel.ERROR,
-      message: 'This curve has NaN value'
+
+    this.__watchStatus( () => {
+      if ( hasNaN ) {
+        this.__setStatus( {
+          code: CurveStatusCode.NAN_DETECTED,
+          level: StatusLevel.ERROR,
+          message: 'This curve has NaN value'
+        } );
+      } else {
+        this.__deleteStatus( CurveStatusCode.NAN_DETECTED );
+      }
     } );
 
     this.__emit( 'precalc' );
@@ -187,9 +148,8 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
    * Mark this curve as used.
    */
   public markAsUsed(): void {
-    this.__setStatus( false, {
-      code: CurveStatusCode.NOT_USED,
-      level: CurveStatusLevel.WARNING
+    this.__watchStatus( () => {
+      this.__deleteStatus( CurveStatusCode.NOT_USED );
     } );
   }
 
@@ -809,29 +769,15 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
   }
 
   /**
-   * Set a status.
-   * @param bool Boolean whether the status is currently active or not
-   * @param status The status
+   * Watch for status changes.
+   * Execute given procedure immediately.
+   * If the procedure changes its status, emit an event.
+   * @param procedure A procedure that might change its status
    */
-  private __setStatus( bool: boolean, status: CurveStatus ): void {
-    if ( !this.__statusList ) { // Channel.constructor -> ... -> ChannelWithGUI.precalc -> ChannelWithGUI.__setStatus
-      return;
-    }
-
+  private __watchStatus( procedure: () => void ): void {
     const prevStatus = this.status;
 
-    // search for old entry, then delete it
-    for ( let i = 0; i < this.__statusList.length; i ++ ) {
-      if ( this.__statusList[ i ].code === status.code ) {
-        this.__statusList.splice( i, 1 );
-        break;
-      }
-    }
-
-    if ( bool ) {
-      this.__statusList.push( status );
-      this.__statusList.sort( ( a, b ) => b.level - a.level );
-    }
+    procedure();
 
     if ( prevStatus !== this.status ) {
       this.__emit( 'updateStatus' );
@@ -911,4 +857,5 @@ export interface CurveWithGUIEvents {
 }
 
 export interface CurveWithGUI extends EventEmittable<CurveWithGUIEvents> {}
-applyMixins( CurveWithGUI, [ EventEmittable ] );
+export interface CurveWithGUI extends WithStatus<CurveStatusCode> {}
+applyMixins( CurveWithGUI, [ EventEmittable, WithStatus ] );

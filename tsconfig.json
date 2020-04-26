@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "types": [ "react", "node" ],
+    "types": [ "react", "node", "jest" ],
     "target": "es5",
     "module": "commonjs",
     "strict": true,

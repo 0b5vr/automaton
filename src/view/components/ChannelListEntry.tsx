@@ -1,8 +1,7 @@
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from '../states/store';
-import { ChannelStatusLevel } from '../../ChannelWithGUI';
 import { Colors } from '../constants/Colors';
-import { Icons } from '../icons/Icons';
+import { StatusIcon } from './StatusIcon';
 import { duplicateName } from '../utils/duplicateName';
 import styled from 'styled-components';
 
@@ -25,7 +24,7 @@ const Name = styled.div`
   position: absolute;
   left: 0.2rem;
   top: 0;
-  width: calc( 100 - 2rem );
+  width: calc( 100% - 2rem );
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -37,13 +36,6 @@ const StyledValue = styled( Value )`
   bottom: 0.1rem;
   font-size: 0.6rem;
   opacity: 0.7;
-`;
-
-const Icon = styled.img`
-  position: absolute;
-  right: 0.2rem;
-  bottom: 0.1rem;
-  height: calc( 100% - 0.2rem );
 `;
 
 const Root = styled.div<{ isSelected: boolean }>`
@@ -232,16 +224,9 @@ const ChannelListEntry = ( props: ChannelListEntryProps ): JSX.Element => {
     >
       <Name>{ name }</Name>
       {
-        status === null
-          ? <StyledValue name={ name } />
-          : <Icon
-            as={
-              status.level === ChannelStatusLevel.ERROR
-                ? Icons.Error
-                : Icons.Warning
-            }
-            data-stalker={ status.message }
-          />
+        status != null
+          ? <StatusIcon status={ status } />
+          : <StyledValue name={ name } />
       }
     </Root>
   );

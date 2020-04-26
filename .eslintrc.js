@@ -1,7 +1,10 @@
 module.exports = {
     "root": true,
 
-    "plugins": [ "@typescript-eslint" ],
+    "plugins": [
+        "@typescript-eslint",
+        "jest"
+    ],
 
     "env": {
         "es6": true,

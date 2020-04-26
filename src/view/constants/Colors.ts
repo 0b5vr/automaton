@@ -20,5 +20,6 @@ export const Colors = {
   fx: '#0fd895',
   error: '#ff0066',
   errorBright: '#ec5fa3',
-  warning: '#ff9922',
+  warning: '#fc9821',
+  info: '#53c5ff'
 };

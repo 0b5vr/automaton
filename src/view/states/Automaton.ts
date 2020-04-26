@@ -1,9 +1,10 @@
 import { BezierNode, FxDefinition, FxSection, SerializedChannelItem } from '@fms-cat/automaton';
 import { GUISettings, defaultGUISettings } from '../../types/GUISettings';
 import { AutomatonWithGUI } from '../../AutomatonWithGUI';
-import { ChannelStatus } from '../../ChannelWithGUI';
-import { CurveStatus } from '../../CurveWithGUI';
+import { ChannelStatusCode } from '../../ChannelWithGUI';
+import { CurveStatusCode } from '../../CurveWithGUI';
 import { Reducer } from 'redux';
+import { Status } from '../../types/Status';
 import { WithBypass } from '../../types/WithBypass';
 import { WithID } from '../../types/WithID';
 import { arraySetDelete } from '../utils/arraySet';
@@ -19,12 +20,12 @@ export interface State {
     [ name: string ]: {
       value: number;
       length: number;
-      status: ChannelStatus | null;
+      status: Status<ChannelStatusCode> | null;
       items: { [ id: string ]: Required<SerializedChannelItem> & WithID };
     };
   };
   curves: Array<{
-    status: CurveStatus | null;
+    status: Status<CurveStatusCode> | null;
     length: number;
     path: string;
     nodes: { [ id: string ]: BezierNode & WithID };
@@ -85,7 +86,7 @@ export type Action = {
 } | {
   type: 'Automaton/UpdateChannelStatus';
   channel: string;
-  status: ChannelStatus | null;
+  status: Status<ChannelStatusCode> | null;
 } | {
   type: 'Automaton/UpdateChannelItem';
   channel: string;
@@ -114,7 +115,7 @@ export type Action = {
 } | {
   type: 'Automaton/UpdateCurveStatus';
   curve: number;
-  status: CurveStatus | null;
+  status: Status<CurveStatusCode> | null;
 } | {
   type: 'Automaton/UpdateCurvePreviewValue';
   curve: number;
