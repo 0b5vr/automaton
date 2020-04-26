@@ -25,7 +25,7 @@ const Name = styled.div`
   position: absolute;
   left: 0.2rem;
   top: 0;
-  width: calc( 100 - 2rem );
+  width: calc( 100% - 2rem );
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
