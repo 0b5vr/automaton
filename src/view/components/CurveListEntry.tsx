@@ -1,8 +1,7 @@
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
-import { Icons } from '../icons/Icons';
-import { StatusLevel } from '../../types/Status';
+import { StatusIcon } from './StatusIcon';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
@@ -18,13 +17,6 @@ const GraphLine = styled.polyline`
   stroke-width: 0.125rem;
   stroke-linecap: round;
   stroke-linejoin: round;
-`;
-
-const Icon = styled.img`
-  position: absolute;
-  right: 0.2rem;
-  bottom: 0.1rem;
-  height: calc( 100% - 0.2rem );
 `;
 
 const Root = styled.div<{ isSelected: boolean }>`
@@ -88,18 +80,7 @@ const CurveListEntry = ( props: CurveListEntryProps ): JSX.Element => {
           vectorEffect="non-scaling-stroke"
         />
       </SvgRoot>
-      {
-        status === null
-          ? undefined
-          : <Icon
-            as={
-              status.level === StatusLevel.ERROR
-                ? Icons.Error
-                : Icons.Warning
-            }
-            data-stalker={ status.message }
-          />
-      }
+      <StatusIcon status={ status } />
     </Root>
   );
 };

@@ -7,6 +7,7 @@ export const Icons = {
   Curve: require( './curve.svg' ).default,
   DopeSheet: require( './dope-sheet.svg' ).default,
   Error: require( './error.svg' ).default,
+  Info: require( './info.svg' ).default,
   Pause: require( './pause.svg' ).default,
   Play: require( './play.svg' ).default,
   Plus: require( './plus.svg' ).default,
