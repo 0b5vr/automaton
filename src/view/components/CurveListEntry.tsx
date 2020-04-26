@@ -1,8 +1,8 @@
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
-import { CurveStatusLevel } from '../../CurveWithGUI';
 import { Icons } from '../icons/Icons';
+import { StatusLevel } from '../../types/Status';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
@@ -93,7 +93,7 @@ const CurveListEntry = ( props: CurveListEntryProps ): JSX.Element => {
           ? undefined
           : <Icon
             as={
-              status.level === CurveStatusLevel.ERROR
+              status.level === StatusLevel.ERROR
                 ? Icons.Error
                 : Icons.Warning
             }

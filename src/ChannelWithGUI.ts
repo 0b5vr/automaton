@@ -1,4 +1,5 @@
 import { Channel, SerializedChannel, SerializedChannelItem } from '@fms-cat/automaton';
+import { StatusLevel, WithStatus } from './types/Status';
 import { AutomatonWithGUI } from './AutomatonWithGUI';
 import { ChannelItemWithGUI } from './ChannelItemWithGUI';
 import { EventEmittable } from './mixins/EventEmittable';
@@ -9,40 +10,10 @@ import { clamp } from './utils/clamp';
 import { genID } from './utils/genID';
 
 /**
- * Represents "Status code" of a {@link ChannelStatus}.
+ * Represents "Status code" of a status of the {@link Channel}.
  */
 export enum ChannelStatusCode {
   NOT_USED,
-}
-
-/**
- * Represents fatality of a {@link ChannelStatus}.
- */
-export enum ChannelStatusLevel {
-  INFO,
-  WARNING,
-  ERROR,
-}
-
-/**
- * Interface represents a status of a {@link ChannelWithGUI}.
- * Status: info / warning / error...
- */
-export interface ChannelStatus {
-  /**
-   * Status code of the status.
-   */
-  code: ChannelStatusCode;
-
-  /**
-   * Fatality of the status.
-   */
-  level: ChannelStatusLevel;
-
-  /**
-   * Message of the status.
-   */
-  message?: string;
 }
 
 /**
@@ -64,27 +35,10 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
   protected __items!: Array<ChannelItemWithGUI>;
 
   /**
-   * List of status (warning / error).
-   * The array is empty = you're cool
-   */
-  private __statusList: ChannelStatus[];
-
-  /**
    * List of fx sections.
    */
   public get items(): Array<ChannelItemWithGUI> {
     return this.__items;
-  }
-
-  /**
-   * Its current status (warning / error).
-   */
-  public get status(): ChannelStatus | null {
-    if ( this.__statusList.length === 0 ) {
-      return null;
-    }
-
-    return this.__statusList[ 0 ];
   }
 
   /**
@@ -98,13 +52,13 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
   public constructor( automaton: AutomatonWithGUI, data?: SerializedChannel ) {
     super( automaton, data || { items: [] } );
 
-    this.__statusList = [
-      {
+    this.__watchStatus( () => {
+      this.__setStatus( {
         code: ChannelStatusCode.NOT_USED,
-        level: ChannelStatusLevel.WARNING,
+        level: StatusLevel.WARNING,
         message: 'This channel has not been used yet'
-      }
-    ];
+      } );
+    } );
   }
 
   /**
@@ -176,9 +130,8 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
    * Mark this channel as used.
    */
   public markAsUsed(): void {
-    this.__setStatus( false, {
-      code: ChannelStatusCode.NOT_USED,
-      level: ChannelStatusLevel.WARNING
+    this.__watchStatus( () => {
+      this.__deleteStatus( ChannelStatusCode.NOT_USED );
     } );
   }
 
@@ -543,29 +496,15 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
   }
 
   /**
-   * Set a status.
-   * @param bool Boolean whether the status is currently active or not
-   * @param status The status
+   * Watch for status changes.
+   * Execute given procedure immediately.
+   * If the procedure changes its status, emit an event.
+   * @param procedure A procedure that might change its status
    */
-  private __setStatus( bool: boolean, status: ChannelStatus ): void {
-    if ( !this.__statusList ) { // Channel.constructor -> ... -> ChannelWithGUI.precalc -> ChannelWithGUI.__setStatus
-      return;
-    }
-
+  private __watchStatus( procedure: () => void ): void {
     const prevStatus = this.status;
 
-    // search for old entry, then delete it
-    for ( let i = 0; i < this.__statusList.length; i ++ ) {
-      if ( this.__statusList[ i ].code === status.code ) {
-        this.__statusList.splice( i, 1 );
-        break;
-      }
-    }
-
-    if ( bool ) {
-      this.__statusList.push( status );
-      this.__statusList.sort( ( a, b ) => b.level - a.level );
-    }
+    procedure();
 
     if ( prevStatus !== this.status ) {
       this.__emit( 'updateStatus' );
@@ -610,4 +549,5 @@ export interface ChannelWithGUIEvents {
 }
 
 export interface ChannelWithGUI extends EventEmittable<ChannelWithGUIEvents> {}
-applyMixins( ChannelWithGUI, [ EventEmittable ] );
+export interface ChannelWithGUI extends WithStatus<ChannelStatusCode> {}
+applyMixins( ChannelWithGUI, [ EventEmittable, WithStatus ] );

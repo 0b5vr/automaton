@@ -1,8 +1,8 @@
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from '../states/store';
-import { ChannelStatusLevel } from '../../ChannelWithGUI';
 import { Colors } from '../constants/Colors';
 import { Icons } from '../icons/Icons';
+import { StatusLevel } from '../../types/Status';
 import { duplicateName } from '../utils/duplicateName';
 import styled from 'styled-components';
 
@@ -236,7 +236,7 @@ const ChannelListEntry = ( props: ChannelListEntryProps ): JSX.Element => {
           ? <StyledValue name={ name } />
           : <Icon
             as={
-              status.level === ChannelStatusLevel.ERROR
+              status.level === StatusLevel.ERROR
                 ? Icons.Error
                 : Icons.Warning
             }
