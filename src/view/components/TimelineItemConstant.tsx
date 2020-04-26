@@ -296,9 +296,38 @@ const TimelineItemConstant = ( props: TimelineItemConstantProps ): JSX.Element =
 
           grabBody();
         }
+      },
+      [ MouseComboBit.LMB + MouseComboBit.Shift ]: () => {
+        if ( !channel ) { return; }
+        const newItem = channel.repeatItem( item.$id );
+
+        dispatch( {
+          type: 'Timeline/SelectItems',
+          items: [ {
+            id: newItem.$id,
+            channel: channelName
+          } ]
+        } );
+
+        dispatch( {
+          type: 'Timeline/SelectChannel',
+          channel: channelName
+        } );
+
+        dispatch( {
+          type: 'History/Push',
+          description: 'Repeat Item',
+          commands: [
+            {
+              type: 'channel/createItemFromData',
+              channel: channelName,
+              data: newItem
+            }
+          ]
+        } );
       }
     } ),
-    [ removeItem, grabBody ]
+    [ removeItem, grabBody, channel, channelName ]
   );
 
   const handleClickLeft = useCallback(

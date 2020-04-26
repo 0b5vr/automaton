@@ -9,6 +9,8 @@ import { applyMixins } from './utils/applyMixins';
 import { clamp } from './utils/clamp';
 import { genID } from './utils/genID';
 
+const EPSILON = 1E-4;
+
 /**
  * Represents "Status code" of a status of the {@link Channel}.
  */
@@ -200,7 +202,7 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
    * Duplicate an item.
    * @param time The timepoint you want to add
    * @param item The item you want to duplicate
-   * @returns Data of the item
+   * @returns Data of created item
    */
   public duplicateItem(
     time: number,
@@ -229,6 +231,30 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
     this.__automaton.shouldSave = true;
 
     return newItem.serializeGUI();
+  }
+
+  /**
+   * "Repeat" (duplicate) the given item.
+   * @param id The item you want to repeat
+   * @returns Data of created item
+   */
+  public repeatItem( id: string ): Required<SerializedChannelItem> & WithID {
+    const index = this.__getItemIndexById( id );
+    const item = this.__items[ index ];
+
+    // pick the next vacancy
+    let time = this.__items[ this.__items.length - 1 ].end;
+    for ( let i = index; i < this.__items.length - 1; i ++ ) {
+      const current = this.__items[ i ];
+      const left = current.end;
+      const next = this.__items[ i + 1 ];
+      const right = next.time;
+      if ( EPSILON < ( right - left ) ) {
+        time = left;
+      }
+    }
+
+    return this.duplicateItem( time, item.serialize() );
   }
 
   /**
