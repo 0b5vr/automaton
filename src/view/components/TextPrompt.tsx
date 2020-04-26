@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import { ToastyKind, showToasty } from '../states/Toasty';
 import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
 import styled from 'styled-components';
@@ -80,7 +81,7 @@ const TextPrompt = ( { className }: {
   );
 
   const isInputValid = useMemo(
-    () => !checkValid || checkValid( text ),
+    () => !checkValid || checkValid( text ) === null,
     [ text, checkValid ]
   );
 
@@ -97,7 +98,14 @@ const TextPrompt = ( { className }: {
   const handleKeyDown = useCallback(
     ( event: React.KeyboardEvent<HTMLInputElement> ) => {
       if ( event.nativeEvent.key === 'Enter' ) {
-        if ( !checkValid || checkValid( text ) ) {
+        const error = checkValid && checkValid( text );
+        if ( error != null ) {
+          showToasty( {
+            dispatch,
+            kind: ToastyKind.Error,
+            message: error
+          } );
+        } else {
           callback!( text );
         }
         dispatch( { type: 'TextPrompt/Close' } );
