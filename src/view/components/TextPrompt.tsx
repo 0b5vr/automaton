@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
-import { ToastyKind, showToasty } from '../states/Toasty';
 import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
+import { showToasty } from '../states/Toasty';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
@@ -102,7 +102,7 @@ const TextPrompt = ( { className }: {
         if ( error != null ) {
           showToasty( {
             dispatch,
-            kind: ToastyKind.Error,
+            kind: 'error',
             message: error
           } );
         } else {

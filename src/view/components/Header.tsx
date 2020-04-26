@@ -1,11 +1,11 @@
 import React, { useCallback, useMemo } from 'react';
-import { ToastyKind, showToasty } from '../states/Toasty';
 import { performRedo, performUndo } from '../history/HistoryCommand';
 import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
 import { HeaderSeekbar } from './HeaderSeekbar';
 import { Icons } from '../icons/Icons';
 import { Metrics } from '../constants/Metrics';
+import { showToasty } from '../states/Toasty';
 import styled from 'styled-components';
 import { writeClipboard } from '../utils/clipboard';
 
@@ -178,7 +178,7 @@ const Header = ( { className }: HeaderProps ): JSX.Element => {
 
         showToasty( {
           dispatch,
-          kind: ToastyKind.Info,
+          kind: 'info',
           message: 'Copied to clipboard!',
           timeout: 2.0
         } );

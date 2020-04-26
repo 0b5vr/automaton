@@ -5,18 +5,11 @@ import { genID } from '../../utils/genID';
 import { objectMapHas } from '../utils/objectMap';
 import { produce } from 'immer';
 
-// == types ========================================================================================
-export enum ToastyKind {
-  Error,
-  Warning,
-  Info
-}
-
 // == state ========================================================================================
 export interface State {
   entries: {
     [ id: string ]: {
-      kind: ToastyKind;
+      kind: 'error' | 'warning' | 'info';
       message: string;
       closing: boolean;
     } & WithID;
@@ -31,7 +24,7 @@ export const initialState: Readonly<State> = {
 export type Action = {
   type: 'Toasty/Push';
   id: string;
-  kind: ToastyKind;
+  kind: 'error' | 'warning' | 'info';
   message: string;
 } | {
   type: 'Toasty/Closing';
@@ -87,7 +80,7 @@ export function closeToasty( { id, dispatch }: {
 }
 
 export function showToasty( { kind, message, dispatch, timeout }: {
-  kind: ToastyKind;
+  kind: 'error' | 'warning' | 'info';
   message: string;
   dispatch: Dispatch<ContextAction>;
   timeout?: number;

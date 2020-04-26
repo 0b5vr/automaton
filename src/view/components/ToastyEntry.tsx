@@ -1,8 +1,8 @@
 import React, { useCallback } from 'react';
-import { ToastyKind, closeToasty } from '../states/Toasty';
 import styled, { css, keyframes } from 'styled-components';
 import { Colors } from '../constants/Colors';
 import { Icons } from '../icons/Icons';
+import { closeToasty } from '../states/Toasty';
 import { useDispatch } from '../states/store';
 
 // == styles =======================================================================================
@@ -36,7 +36,10 @@ const closingKeyframes = keyframes`
   }
 `;
 
-const Root = styled.div<{ kind: ToastyKind; closing: boolean }>`
+const Root = styled.div<{
+  kind: 'error' | 'warning' | 'info';
+  closing: boolean;
+}>`
   position: relative;
   display: flex;
   right: 0;
@@ -47,9 +50,9 @@ const Root = styled.div<{ kind: ToastyKind; closing: boolean }>`
   font-size: 12px;
   background: ${ Colors.back2 };
   box-shadow: ${ ( { kind } ) => (
-    kind === ToastyKind.Error ? `0 0 0 1px ${ Colors.error }` :
-    kind === ToastyKind.Warning ? `0 0 0 1px ${ Colors.warning }` :
-    kind === ToastyKind.Info ? `0 0 0 1px ${ Colors.info }` :
+    kind === 'error' ? `0 0 0 1px ${ Colors.error }` :
+    kind === 'warning' ? `0 0 0 1px ${ Colors.warning }` :
+    kind === 'info' ? `0 0 0 1px ${ Colors.info }` :
     'none'
   ) };
   filter: drop-shadow( 0 0 2px ${ Colors.black } );
@@ -70,16 +73,16 @@ const Root = styled.div<{ kind: ToastyKind; closing: boolean }>`
 // == component ====================================================================================
 const ToastyEntry = ( { id, kind, message, closing }: {
   id: string;
-  kind: ToastyKind;
+  kind: 'error' | 'warning' | 'info';
   message: string;
   closing: boolean;
 } ): JSX.Element | null => {
   const dispatch = useDispatch();
 
   const icon = (
-    kind === ToastyKind.Error ? Icons.Error :
-    kind === ToastyKind.Warning ? Icons.Warning :
-    kind === ToastyKind.Info ? Icons.Info :
+    kind === 'error' ? Icons.Error :
+    kind === 'warning' ? Icons.Warning :
+    kind === 'info' ? Icons.Info :
     null
   );
 

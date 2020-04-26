@@ -1,7 +1,6 @@
 import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { TimeValueRange, x2t, y2v } from '../utils/TimeValueRange';
-import { ToastyKind, showToasty } from '../states/Toasty';
 import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
 import { CurveEditorFx } from './CurveEditorFx';
@@ -13,6 +12,7 @@ import { Resolution } from '../utils/Resolution';
 import { TimeValueGrid } from './TimeValueGrid';
 import { TimeValueLines } from './TimeValueLines';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
+import { showToasty } from '../states/Toasty';
 import styled from 'styled-components';
 import { useDoubleClick } from '../utils/useDoubleClick';
 import { useRect } from '../utils/useRect';
@@ -271,7 +271,7 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
       if ( !curve || selectedCurve == null ) {
         showToasty( {
           dispatch,
-          kind: ToastyKind.Error,
+          kind: 'error',
           message: 'Add Node: No curve is selected! Select a curve before creating a node.'
         } );
         return;
@@ -305,7 +305,7 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
       if ( !curve || selectedCurve == null ) {
         showToasty( {
           dispatch,
-          kind: ToastyKind.Error,
+          kind: 'error',
           message: 'Add Fx: No curve is selected! Select a curve before creating a node.'
         } );
         return;

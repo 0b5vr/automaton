@@ -1,7 +1,6 @@
 import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { TimeValueRange, v2y, x2t, y2v } from '../utils/TimeValueRange';
-import { ToastyKind, showToasty } from '../states/Toasty';
 import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
 import { RangeBar } from './RangeBar';
@@ -13,6 +12,7 @@ import { TimelineItem } from './TimelineItem';
 import { WithID } from '../../types/WithID';
 import { hasOverwrap } from '../../utils/hasOverwrap';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
+import { showToasty } from '../states/Toasty';
 import styled from 'styled-components';
 import { useRect } from '../utils/useRect';
 
@@ -142,7 +142,7 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
       if ( !selectedChannel || !channel ) {
         showToasty( {
           dispatch,
-          kind: ToastyKind.Error,
+          kind: 'error',
           message: 'Create Constant: No channel is selected! Select a channel before creating an item.'
         } );
         return;
@@ -190,7 +190,7 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
       if ( !selectedChannel || !channel ) {
         showToasty( {
           dispatch,
-          kind: ToastyKind.Error,
+          kind: 'error',
           message: 'Create New Curve: No channel is selected! Select a channel before creating an item.'
         } );
         return;
