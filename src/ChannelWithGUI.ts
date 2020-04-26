@@ -371,7 +371,7 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
     const left = prev ? ( prev.time + prev.length ) : 0.0;
     const next = this.__items[ index + 1 ];
     const right = next ? next.time : Infinity;
-    item.time = clamp( time, left, right );
+    item.time = clamp( time, left, right - item.length );
 
     this.__sortItems();
 
