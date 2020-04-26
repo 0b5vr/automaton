@@ -19,6 +19,7 @@ import { Provider } from 'react-redux';
 import React from 'react';
 import { Stalker } from './Stalker';
 import { TextPrompt } from './TextPrompt';
+import { Toasty } from './Toasty';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
@@ -147,6 +148,7 @@ const Fuck = ( { className, automaton, guiRemocon }: AppProps ): JSX.Element => 
       { isContextMenuVisible && <ContextMenu /> }
       { isTextPromptVisible && <TextPrompt /> }
 
+      <Toasty />
       <Stalker />
     </Root>
   );

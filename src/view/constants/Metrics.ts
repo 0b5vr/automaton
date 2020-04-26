@@ -6,4 +6,5 @@ export const Metrics = {
   curveListWidth: 128,
   modeSelectorWidth: 36,
   curveListEntryHeight: 36,
+  toastyWidth: 320
 };
