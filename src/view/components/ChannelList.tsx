@@ -60,9 +60,9 @@ const ChannelList = ( { className }: ChannelListProps ): JSX.Element => {
         position: { x: event.clientX, y: event.clientY },
         placeholder: 'Name for the new channel',
         checkValid: ( name ) => {
-          if ( name === '' ) { return false; }
-          if ( automaton.getChannel( name ) != null ) { return false; }
-          return true;
+          if ( name === '' ) { return 'Create Channel: Name cannot be empty.'; }
+          if ( automaton.getChannel( name ) != null ) { return 'Create Channel: A channel for the given name already exists.'; }
+          return null;
         },
         callback: ( name ) => {
           automaton.createChannel( name );

@@ -1,4 +1,5 @@
 import { Automaton, ChannelUpdateEvent, FxDefinition, FxParam, SerializedChannel, SerializedCurve } from '@fms-cat/automaton';
+import { GUIRemocon, ToastyParams } from './GUIRemocon';
 import { GUISettings, defaultGUISettings } from './types/GUISettings';
 import { SerializedAutomatonWithGUI, defaultDataWithGUI } from './types/SerializedAutomatonWithGUI';
 import { App } from './view/components/App';
@@ -6,7 +7,6 @@ import { ChannelWithGUI } from './ChannelWithGUI';
 import { ContextMenuCommand } from './view/states/ContextMenu';
 import { CurveWithGUI } from './CurveWithGUI';
 import { EventEmittable } from './mixins/EventEmittable';
-import { GUIRemocon } from './GUIRemocon';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Serializable } from './types/Serializable';
@@ -590,6 +590,7 @@ export class AutomatonWithGUI extends Automaton
 
   /**
    * Undo a step.
+   * Intended to be used by automaton-electron.
    * You cannot call this function when you are not using GUI.
    */
   public undo(): void {
@@ -602,6 +603,7 @@ export class AutomatonWithGUI extends Automaton
 
   /**
    * Redo a step.
+   * Intended to be used by automaton-electron.
    * You cannot call this function when you are not using GUI.
    */
   public redo(): void {
@@ -614,6 +616,7 @@ export class AutomatonWithGUI extends Automaton
 
   /**
    * Open an about screen.
+   * Intended to be used by automaton-electron.
    * You cannot call this function when you are not using GUI.
    */
   public openAbout(): void {
@@ -622,6 +625,19 @@ export class AutomatonWithGUI extends Automaton
     }
 
     this.__guiRemocon.openAbout();
+  }
+
+  /**
+   * Open a toasty notification.
+   * Intended to be used by automaton-electron.
+   * You cannot call this function when you are not using GUI.
+   */
+  public toasty( params: ToastyParams ): void {
+    if ( !this.__guiRemocon ) {
+      throw new Error( 'Automaton: You cannot call `toasty` when you are not using GUI!' );
+    }
+
+    this.__guiRemocon.toasty( params );
   }
 
   /**

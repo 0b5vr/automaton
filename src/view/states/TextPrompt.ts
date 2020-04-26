@@ -7,7 +7,7 @@ export interface State {
   position: { x: number; y: number };
   text: string;
   placeholder: string;
-  checkValid?: ( ( text: string ) => boolean ) | null;
+  checkValid?: ( ( text: string ) => string | null ) | null;
   callback?: ( ( text: string ) => void ) | null;
 }
 
@@ -24,7 +24,7 @@ export type Action = {
   position: { x: number; y: number };
   defaultText?: string;
   placeholder?: string;
-  checkValid?: ( ( text: string ) => boolean );
+  checkValid?: ( ( text: string ) => string | null );
   callback: ( ( text: string ) => void );
 } | {
   type: 'TextPrompt/SetText';

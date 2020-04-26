@@ -12,6 +12,7 @@ import { TimelineItem } from './TimelineItem';
 import { WithID } from '../../types/WithID';
 import { hasOverwrap } from '../../utils/hasOverwrap';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
+import { showToasty } from '../states/Toasty';
 import styled from 'styled-components';
 import { useRect } from '../utils/useRect';
 
@@ -138,7 +139,14 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
 
   const createConstant = useCallback(
     ( x: number, y: number ): void => {
-      if ( !selectedChannel || !channel ) { return; }
+      if ( !selectedChannel || !channel ) {
+        showToasty( {
+          dispatch,
+          kind: 'error',
+          message: 'Create Constant: No channel is selected! Select a channel before creating an item.'
+        } );
+        return;
+      }
 
       const t = x2t( x, range, rect.width );
       const v = y2v( y, range, rect.height );
@@ -178,7 +186,15 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
 
   const createNewCurve = useCallback(
     ( x: number ): void => {
-      if ( !automaton || !selectedChannel || !channel ) { return; }
+      if ( !automaton ) { return; }
+      if ( !selectedChannel || !channel ) {
+        showToasty( {
+          dispatch,
+          kind: 'error',
+          message: 'Create New Curve: No channel is selected! Select a channel before creating an item.'
+        } );
+        return;
+      }
 
       const t = x2t( x, range, rect.width );
 

@@ -1,10 +1,11 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { performRedo, performUndo } from '../history/HistoryCommand';
 import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
 import { HeaderSeekbar } from './HeaderSeekbar';
 import { Icons } from '../icons/Icons';
 import { Metrics } from '../constants/Metrics';
+import { showToasty } from '../states/Toasty';
 import styled from 'styled-components';
 import { writeClipboard } from '../utils/clipboard';
 
@@ -95,7 +96,6 @@ export interface HeaderProps {
 
 const Header = ( { className }: HeaderProps ): JSX.Element => {
   const dispatch = useDispatch();
-  const [ isSavedRecently, setIsSavedRecently ] = useState( false );
   const {
     automaton,
     isDisabledTimeControls,
@@ -176,10 +176,12 @@ const Header = ( { className }: HeaderProps ): JSX.Element => {
 
         automaton.shouldSave = false;
 
-        setIsSavedRecently( true );
-        setTimeout( () => {
-          setIsSavedRecently( false );
-        }, 3000 );
+        showToasty( {
+          dispatch,
+          kind: 'info',
+          message: 'Copied to clipboard!',
+          timeout: 2.0
+        } );
       }
     },
     [ automaton ]
@@ -278,7 +280,7 @@ const Header = ( { className }: HeaderProps ): JSX.Element => {
         <Button as={ Icons.Save }
           onClick={ handleSave }
           onContextMenu={ handleSaveContextMenu }
-          data-stalker={ isSavedRecently ? 'Copied to clipboard!' : 'Save' }
+          data-stalker={ 'Save' }
         />
       </Section>
     </Root>

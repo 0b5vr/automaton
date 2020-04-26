@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { performRedo, performUndo } from '../history/HistoryCommand';
 import { useDispatch, useSelector } from '../states/store';
 import { GUIRemocon } from '../../GUIRemocon';
+import { showToasty } from '../states/Toasty';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
@@ -79,6 +80,20 @@ const GUIRemoconListener = ( { guiRemocon }: {
       } );
 
       return () => guiRemocon.off( 'openAbout', handle );
+    },
+    [ guiRemocon ]
+  );
+
+  useEffect(
+    () => {
+      const handle = guiRemocon.on( 'toasty', ( params ) => {
+        showToasty( {
+          dispatch,
+          ...params
+        } );
+      } );
+
+      return () => guiRemocon.off( 'toasty', handle );
     },
     [ guiRemocon ]
   );

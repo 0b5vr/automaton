@@ -98,10 +98,10 @@ const ChannelListEntry = ( props: ChannelListEntryProps ): JSX.Element => {
         defaultText: name,
         placeholder: 'New name for the channel',
         checkValid: ( newName ) => {
-          if ( newName === '' ) { return false; }
-          if ( newName === name ) { return true; }
-          if ( automaton.getChannel( newName ) != null ) { return false; }
-          return true;
+          if ( newName === '' ) { return 'Rename Channel: Name cannot be empty.'; }
+          if ( newName === name ) { return null; }
+          if ( automaton.getChannel( newName ) != null ) { return 'Rename Channel: A channel for the given name already exists.'; }
+          return null;
         },
         callback: ( newName ) => {
           if ( newName === name ) { return; }

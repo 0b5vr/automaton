@@ -8,6 +8,7 @@ import * as History from './History';
 import * as Settings from './Settings';
 import * as TextPrompt from './TextPrompt';
 import * as Timeline from './Timeline';
+import * as Toasty from './Toasty';
 import * as Workspace from './Workspace';
 import { Dispatch, combineReducers, createStore } from 'redux';
 import { shallowEqual, useDispatch as useReduxDispatch, useSelector as useReduxSelector } from 'react-redux';
@@ -24,6 +25,7 @@ export interface State {
   settings: Settings.State;
   textPrompt: TextPrompt.State;
   timeline: Timeline.State;
+  toasty: Toasty.State;
   workspace: Workspace.State;
 }
 
@@ -39,6 +41,7 @@ export type Action = (
   Settings.Action |
   TextPrompt.Action |
   Timeline.Action |
+  Toasty.Action |
   Workspace.Action
 );
 
@@ -54,6 +57,7 @@ const reducer = combineReducers<State>( {
   settings: Settings.reducer,
   textPrompt: TextPrompt.reducer,
   timeline: Timeline.reducer,
+  toasty: Toasty.reducer,
   workspace: Workspace.reducer
 } );
 

@@ -12,6 +12,7 @@ import { Resolution } from '../utils/Resolution';
 import { TimeValueGrid } from './TimeValueGrid';
 import { TimeValueLines } from './TimeValueLines';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
+import { showToasty } from '../states/Toasty';
 import styled from 'styled-components';
 import { useDoubleClick } from '../utils/useDoubleClick';
 import { useRect } from '../utils/useRect';
@@ -267,7 +268,14 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
 
   const createNode = useCallback(
     ( x: number, y: number ) => {
-      if ( !curve || selectedCurve == null ) { return; }
+      if ( !curve || selectedCurve == null ) {
+        showToasty( {
+          dispatch,
+          kind: 'error',
+          message: 'Add Node: No curve is selected! Select a curve before creating a node.'
+        } );
+        return;
+      }
 
       const t = x2t( x, range, rect.width );
       const v = y2v( y, range, rect.height );
@@ -294,7 +302,14 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
 
   const createFx = useCallback(
     ( x: number ) => {
-      if ( !curve || selectedCurve == null ) { return; }
+      if ( !curve || selectedCurve == null ) {
+        showToasty( {
+          dispatch,
+          kind: 'error',
+          message: 'Add Fx: No curve is selected! Select a curve before creating a node.'
+        } );
+        return;
+      }
 
       dispatch( {
         type: 'FxSpawner/Open',
