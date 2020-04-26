@@ -155,7 +155,14 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
         !hasOverwrap( item.time, item.length, t, 0.0 )
       ) );
 
-      if ( !thereAreNoOtherItemsHere ) { return; }
+      if ( !thereAreNoOtherItemsHere ) {
+        showToasty( {
+          dispatch,
+          kind: 'error',
+          message: 'Create Constant: You cannot overwrap two items.'
+        } );
+        return;
+      }
 
       const data = channel.createItemConstant( t );
       channel.changeItemValue( data.$id, v );
@@ -202,7 +209,14 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
         !hasOverwrap( item.time, item.length, t, 0.0 )
       ) );
 
-      if ( !thereAreNoOtherItemsHere ) { return; }
+      if ( !thereAreNoOtherItemsHere ) {
+        showToasty( {
+          dispatch,
+          kind: 'error',
+          message: 'Create New Curve: You cannot overwrap two items.'
+        } );
+        return;
+      }
 
       const curve = automaton.createCurve();
       const curveId = automaton.getCurveIndex( curve );
