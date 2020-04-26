@@ -6,6 +6,7 @@ import { TimelineItem } from './TimelineItem';
 import { WithID } from '../../types/WithID';
 import { hasOverwrap } from '../../utils/hasOverwrap';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
+import { showToasty } from '../states/Toasty';
 import styled from 'styled-components';
 import { useRect } from '../utils/useRect';
 import { x2t } from '../utils/TimeValueRange';
@@ -61,7 +62,14 @@ const DopeSheetEntry = ( props: Props ): JSX.Element => {
         !hasOverwrap( item.time, item.length, t, 0.0 )
       ) );
 
-      if ( !thereAreNoOtherItemsHere ) { return; }
+      if ( !thereAreNoOtherItemsHere ) {
+        showToasty( {
+          dispatch,
+          kind: 'error',
+          message: 'Create Constant: You cannot overwrap two items.'
+        } );
+        return;
+      }
 
       const data = channel.createItemConstant( t );
 
@@ -98,7 +106,14 @@ const DopeSheetEntry = ( props: Props ): JSX.Element => {
         !hasOverwrap( item.time, item.length, t, 0.0 )
       ) );
 
-      if ( !thereAreNoOtherItemsHere ) { return; }
+      if ( !thereAreNoOtherItemsHere ) {
+        showToasty( {
+          dispatch,
+          kind: 'error',
+          message: 'Create New Curve: You cannot overwrap two items.'
+        } );
+        return;
+      }
 
       const curve = automaton.createCurve();
       const curveId = automaton.getCurveIndex( curve );
