@@ -1,6 +1,6 @@
 import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
 import React, { useCallback, useMemo } from 'react';
-import { TimeValueRange, dt2dx, dx2dt, snapTime, snapValue, t2x, v2y, x2t, y2v } from '../utils/TimeValueRange';
+import { TimeValueRange, dt2dx, dx2dt, dy2dv, snapTime, snapValue, t2x, v2y, x2t, y2v } from '../utils/TimeValueRange';
 import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
 import { Resolution } from '../utils/Resolution';
@@ -25,6 +25,12 @@ const CurvePath = styled.polyline`
 const Side = styled.rect`
   opacity: 0.0;
   cursor: ew-resize;
+  pointer-events: auto;
+`;
+
+const VerticalSide = styled.rect`
+  opacity: 0.0;
+  cursor: ns-resize;
   pointer-events: auto;
 `;
 
@@ -164,6 +170,112 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
                 item: item.$id,
                 value,
                 valuePrev
+              }
+            ],
+          } );
+        }
+      );
+    },
+    [ channel, item, range, size, guiSettings ]
+  );
+
+  const grabTop = useCallback(
+    (): void => {
+      if ( !channel ) { return; }
+
+      const ampPrev = item.amp;
+      let dy = 0.0;
+      let amp = ampPrev;
+      let hasMoved = false;
+
+      registerMouseEvent(
+        ( event, movementSum ) => {
+          hasMoved = true;
+          dy += movementSum.y;
+
+          const ignoreSnap = event.altKey;
+
+          amp = ampPrev + dy2dv( dy, range, size.height );
+
+          if ( !ignoreSnap ) {
+            amp = snapValue( amp, range, size.height, guiSettings );
+          }
+
+          channel.changeCurveAmp( item.$id, amp );
+        },
+        () => {
+          if ( !hasMoved ) { return; }
+
+          channel.changeCurveAmp( item.$id, amp );
+
+          dispatch( {
+            type: 'History/Push',
+            description: 'Change Curve Amp',
+            commands: [
+              {
+                type: 'channel/changeCurveAmp',
+                channel: props.channel,
+                item: item.$id,
+                amp,
+                ampPrev
+              }
+            ],
+          } );
+        }
+      );
+    },
+    [ channel, item, range, size, guiSettings ]
+  );
+
+  const grabBottom = useCallback(
+    (): void => {
+      if ( !channel ) { return; }
+
+      const valuePrev = item.value;
+      const ceil = valuePrev + item.amp;
+      let dy = 0.0;
+      let value = valuePrev;
+      let hasMoved = false;
+
+      registerMouseEvent(
+        ( event, movementSum ) => {
+          hasMoved = true;
+          dy += movementSum.y;
+
+          const ignoreSnap = event.altKey;
+
+          value = valuePrev + dy2dv( dy, range, size.height );
+
+          if ( !ignoreSnap ) {
+            value = snapValue( value, range, size.height, guiSettings );
+          }
+
+          channel.changeItemValue( item.$id, value );
+          channel.changeCurveAmp( item.$id, ceil - value );
+        },
+        () => {
+          if ( !hasMoved ) { return; }
+
+          channel.changeItemValue( item.$id, value );
+          channel.changeCurveAmp( item.$id, ceil - value );
+
+          dispatch( {
+            type: 'History/Push',
+            description: 'Change Curve Amp',
+            commands: [
+              {
+                type: 'channel/changeItemValue',
+                channel: props.channel,
+                item: item.$id,
+                value,
+                valuePrev
+              },
+              {
+                type: 'channel/changeCurveAmp',
+                channel: props.channel,
+                item: item.$id,
+                amp: ceil - value,
+                ampPrev: ceil - valuePrev
               }
             ],
           } );
@@ -365,6 +477,24 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
     [ grabRight ]
   );
 
+  const handleClickTop = useCallback(
+    mouseCombo( {
+      [ MouseComboBit.LMB ]: () => {
+        isFlipped ? grabBottom() : grabTop();
+      }
+    } ),
+    [ grabTop, grabBottom ]
+  );
+
+  const handleClickBottom = useCallback(
+    mouseCombo( {
+      [ MouseComboBit.LMB ]: () => {
+        isFlipped ? grabTop() : grabBottom();
+      }
+    } ),
+    [ grabTop, grabBottom ]
+  );
+
   const editCurve = useCallback(
     (): void => {
       dispatch( {
@@ -448,6 +578,24 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
         width={ w }
         height={ h }
       />
+      { !dopeSheetMode && <>
+        <VerticalSide
+          style={ {
+            transform: 'translate( 0, -1px )'
+          } }
+          width={ w }
+          height="4"
+          onMouseDown={ handleClickTop }
+        />
+        <VerticalSide
+          style={ {
+            transform: `translate( 0, ${ h - 3 }px )`
+          } }
+          width={ w }
+          height="4"
+          onMouseDown={ handleClickBottom }
+        />
+      </> }
       <Side
         style={ {
           transform: 'translate( -1px, 0 )'
