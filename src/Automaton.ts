@@ -84,12 +84,13 @@ export class Automaton {
   }
 
   /**
-   * Add a fx definition.
-   * @param id Unique id for the Fx definition
-   * @param fxDef Fx definition object
+   * Add fx definitions.
+   * @param fxDefinitions A map of id - fx definition
    */
-  public addFxDefinition( id: string, fxDef: FxDefinition ): void {
-    this.__fxDefinitions[ id ] = fxDef;
+  public addFxDefinitions( fxDefinitions: { [ id: string ]: FxDefinition } ): void {
+    Object.entries( fxDefinitions ).forEach( ( [ id, fxDef ] ) => {
+      this.__fxDefinitions[ id ] = fxDef;
+    } );
 
     this.precalcAll();
   }
