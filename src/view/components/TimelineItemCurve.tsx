@@ -183,9 +183,9 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
     (): void => {
       if ( !channel ) { return; }
 
-      const ampPrev = item.amp;
+      const valuePrev = item.value + item.amp;
       let dy = 0.0;
-      let amp = ampPrev;
+      let value = valuePrev;
       let hasMoved = false;
 
       registerMouseEvent(
@@ -195,18 +195,18 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
 
           const ignoreSnap = event.altKey;
 
-          amp = ampPrev + dy2dv( dy, range, size.height );
+          value = valuePrev + dy2dv( dy, range, size.height );
 
           if ( !ignoreSnap ) {
-            amp = snapValue( amp, range, size.height, guiSettings );
+            value = snapValue( value, range, size.height, guiSettings );
           }
 
-          channel.changeCurveAmp( item.$id, amp );
+          channel.changeCurveAmp( item.$id, value - item.value );
         },
         () => {
           if ( !hasMoved ) { return; }
 
-          channel.changeCurveAmp( item.$id, amp );
+          channel.changeCurveAmp( item.$id, value - item.value );
 
           dispatch( {
             type: 'History/Push',
@@ -216,8 +216,8 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
                 type: 'channel/changeCurveAmp',
                 channel: props.channel,
                 item: item.$id,
-                amp,
-                ampPrev
+                amp: value - item.value,
+                ampPrev: valuePrev - item.value
               }
             ],
           } );
