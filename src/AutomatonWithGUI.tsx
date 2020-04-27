@@ -214,9 +214,7 @@ export class AutomatonWithGUI extends Automaton
     this.__isPlaying = options.isPlaying || false;
 
     if ( options.installBuiltinFxs ) {
-      Object.entries( fxDefinitions ).forEach( ( [ key, def ] ) => {
-        this.addFxDefinition( key, def );
-      } );
+      this.addFxDefinitions( fxDefinitions );
     }
 
     this.overrideSave = options.overrideSave;
@@ -276,14 +274,13 @@ export class AutomatonWithGUI extends Automaton
   }
 
   /**
-   * Add a fx definition.
-   * @param id Unique id for the Fx definition
-   * @param fxDef Fx definition object
+   * Add fx definitions.
+   * @param fxDefinitions A map of id - fx definition
    */
-  public addFxDefinition( id: string, fxDef: FxDefinition ): void {
-    super.addFxDefinition( id, fxDef );
+  public addFxDefinitions( fxDefinitions: { [ id: string ]: FxDefinition } ): void {
+    super.addFxDefinitions( fxDefinitions );
 
-    this.__emit( 'addFxDefinition', { name: id, fxDefinition: fxDef } );
+    this.__emit( 'addFxDefinitions', { fxDefinitions } );
   }
 
   /**
@@ -707,7 +704,7 @@ export interface AutomatonWithGUIEvents {
   removeChannel: { name: string };
   createCurve: { index: number; curve: CurveWithGUI };
   removeCurve: { index: number };
-  addFxDefinition: { name: string; fxDefinition: FxDefinition };
+  addFxDefinitions: { fxDefinitions: { [ id: string ]: FxDefinition } };
   changeLength: { length: number };
   changeResolution: { resolution: number };
   updateGUISettings: { settings: GUISettings };
