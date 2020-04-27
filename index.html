@@ -111,7 +111,7 @@ And you <code>doubleclick</code> the node, the node will be removed.
 You also can put cutting-edge <b>Fx</b>s on this timeline.
 <code>Right-click</code> on the timeline will show you a context menu, then <code>click</code>ing <code>Add Fx</code> will show you a list of Fx definition.
 Fxs deforms your animation curve into various form. Try various!
-Or do you still want to do something wacky? Call <code>automaton.addFxDefinition()</code> to define your own Fx definition!
+Or do you still want to do something wacky? Call <code>automaton.addFxDefinitions()</code> to define your own Fx definitions!
 
 You can scroll around the timeline using mouse <code>wheel</code>.
 <code>Shift-Scroll</code> lets the timeline horizontal zoom.
@@ -205,20 +205,22 @@ function update() {
 update();
 
 // == automaton the hard way: an example of a user-defined fx ======================================
-automaton.addFxDefinition( 'sawtooth', {
-  name: 'Sawtooth', // display name
-  description: 'Example of user-defined fx definition', // description of the fx definition
-  params: { // params. can be float, int or boolean
-    freq: { name: 'Frequency', type: 'float', default: 10.0, min: 0.0, max: 100.0 },
-    amp: { name: 'Amp', type: 'float', default: 0.1 }
-  },
-  func( context ) { // define your procedure here
-    if ( context.init ) {
-      context.state.saw = 0.0;
+automaton.addFxDefinitions( {
+  sawtooth: {
+    name: 'Sawtooth', // display name
+    description: 'Example of user-defined fx definition', // description of the fx definition
+    params: { // params. can be float, int or boolean
+      freq: { name: 'Frequency', type: 'float', default: 10.0, min: 0.0, max: 100.0 },
+      amp: { name: 'Amp', type: 'float', default: 0.1 }
+    },
+    func( context ) { // define your procedure here
+      if ( context.init ) {
+        context.state.saw = 0.0;
+      }
+      context.state.saw += context.params.freq * context.deltaTime;
+      context.state.saw = context.state.saw % 1.0;
+      return context.value + context.params.amp * context.state.saw;
     }
-    context.state.saw += context.params.freq * context.deltaTime;
-    context.state.saw = context.state.saw % 1.0;
-    return context.value + context.params.amp * context.state.saw;
   }
 } );
 

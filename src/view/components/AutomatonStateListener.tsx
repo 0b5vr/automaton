@@ -363,11 +363,13 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
         } );
       } );
 
-      const handleAddFxDefinition = automaton.on( 'addFxDefinition', ( { name, fxDefinition } ) => {
-        dispatch( {
-          type: 'Automaton/AddFxDefinition',
-          name,
-          fxDefinition
+      const handleAddFxDefinitions = automaton.on( 'addFxDefinitions', ( { fxDefinitions } ) => {
+        Object.entries( fxDefinitions ).forEach( ( [ name, fxDefinition ] ) => {
+          dispatch( {
+            type: 'Automaton/AddFxDefinition',
+            name,
+            fxDefinition
+          } );
         } );
       } );
 
@@ -414,7 +416,7 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
         automaton.off( 'changeResolution', handleChangeResolution );
         automaton.off( 'play', handlePlay );
         automaton.off( 'pause', handlePause );
-        automaton.off( 'addFxDefinition', handleAddFxDefinition );
+        automaton.off( 'addFxDefinitions', handleAddFxDefinitions );
         automaton.off( 'updateGUISettings', handleUpdateGUISettings );
         automaton.off( 'createChannel', handleCreateChannel );
         automaton.off( 'removeChannel', handleRemoveChannel );
