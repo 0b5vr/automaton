@@ -109,16 +109,18 @@ export class Curve {
       const fxDef = this.__automaton.getFxDefinition( fx.def );
       if ( !fxDef ) { continue; }
 
+      const availableEnd = Math.min( this.length, fx.time + fx.length );
       const i0 = Math.ceil( this.__automaton.resolution * fx.time );
-      const i1 = Math.floor( this.__automaton.resolution * ( fx.time + fx.length ) );
+      const i1 = Math.floor( this.__automaton.resolution * availableEnd );
+      if ( i1 <= i0 ) { continue; }
 
       const tempValues = new Float32Array( i1 - i0 );
       const tempLength = tempValues.length;
 
       const context: FxContext = {
         index: i0,
-        i0: i0,
-        i1: i1,
+        i0,
+        i1,
         time: fx.time,
         t0: fx.time,
         t1: fx.time + fx.length,
