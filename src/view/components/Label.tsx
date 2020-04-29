@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { TimeValueRange, t2x } from '../utils/TimeValueRange';
 import { Colors } from '../constants/Colors';
 import { Resolution } from '../utils/Resolution';
@@ -29,13 +29,15 @@ const Label = ( { name, time, range, size }: {
   range: TimeValueRange;
   size: Resolution;
 } ): JSX.Element => {
+  const [ width, setWidth ] = useState( 0.0 );
   const x = t2x( time, range, size.width );
   const refText = useRef<SVGTextElement>( null );
-  const width = useMemo(
+  useEffect(
     () => {
       const text = refText.current;
-      if ( !text ) { return 0.0; }
-      return text.getBBox().width;
+      if ( text ) {
+        setWidth( text.getBBox().width );
+      }
     },
     [ refText.current ]
   );
