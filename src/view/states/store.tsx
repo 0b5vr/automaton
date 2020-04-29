@@ -10,7 +10,7 @@ import * as TextPrompt from './TextPrompt';
 import * as Timeline from './Timeline';
 import * as Toasty from './Toasty';
 import * as Workspace from './Workspace';
-import { Dispatch, combineReducers, createStore } from 'redux';
+import { Dispatch, Store, combineReducers, createStore as createReduxStore } from 'redux';
 import { shallowEqual, useDispatch as useReduxDispatch, useSelector as useReduxSelector } from 'react-redux';
 
 // == state ========================================================================================
@@ -63,10 +63,12 @@ const reducer = combineReducers<State>( {
 
 // == store ========================================================================================
 const devtools = ( window as any ).__REDUX_DEVTOOLS_EXTENSION__;
-export const store = createStore(
-  reducer,
-  devtools && devtools()
-);
+export function createStore(): Store<State, Action> {
+  return createReduxStore(
+    reducer,
+    devtools && devtools()
+  );
+}
 
 // == utils ========================================================================================
 export function useSelector<T>( selector: ( state: State ) => T ): T {

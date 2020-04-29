@@ -1,4 +1,4 @@
-import { store, useSelector } from '../states/store';
+import { Action, State, useSelector } from '../states/store';
 import { About } from './About';
 import { AutomatonStateListener } from './AutomatonStateListener';
 import { AutomatonWithGUI } from '../../AutomatonWithGUI';
@@ -18,6 +18,7 @@ import { ModeSelector } from './ModeSelector';
 import { Provider } from 'react-redux';
 import React from 'react';
 import { Stalker } from './Stalker';
+import { Store } from 'redux';
 import { TextPrompt } from './TextPrompt';
 import { Toasty } from './Toasty';
 import styled from 'styled-components';
@@ -111,6 +112,7 @@ const Root = styled.div`
 // == element ======================================================================================
 interface AppProps {
   className?: string;
+  store: Store<State, Action>;
   automaton: AutomatonWithGUI;
   guiRemocon: GUIRemocon;
 }
@@ -155,7 +157,7 @@ const Fuck = ( { className, automaton, guiRemocon }: AppProps ): JSX.Element => 
 };
 
 const App = ( props: AppProps ): JSX.Element => <>
-  <Provider store={ store }>
+  <Provider store={ props.store }>
     <Fuck { ...props } />
   </Provider>
 </>;

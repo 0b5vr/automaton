@@ -12,6 +12,7 @@ import ReactDOM from 'react-dom';
 import { Serializable } from './types/Serializable';
 import { applyMixins } from './utils/applyMixins';
 import { compat } from './compat/compat';
+import { createStore } from './view/states/store';
 import fxDefinitions from './fxs';
 import { jsonCopy } from './utils/jsonCopy';
 import produce from 'immer';
@@ -682,8 +683,11 @@ export class AutomatonWithGUI extends Automaton
    * @param target DOM element where you want to attach the Automaton GUI
    */
   private __prepareGUI( target: HTMLElement ): void {
+    const store = createStore();
+
     ReactDOM.render(
       <App
+        store={ store }
         automaton={ this }
         guiRemocon={ this.__guiRemocon! }
       />,
