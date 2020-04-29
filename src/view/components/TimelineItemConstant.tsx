@@ -72,7 +72,7 @@ const TimelineItemConstant = ( props: TimelineItemConstantProps ): JSX.Element =
     guiSettings
   } = useSelector( ( state ) => ( {
     automaton: state.automaton.instance,
-    selectedItems: state.timeline.selectedItems,
+    selectedItems: state.timeline.selected.items,
     guiSettings: state.automaton.guiSettings
   } ) );
 

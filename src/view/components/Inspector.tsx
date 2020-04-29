@@ -5,6 +5,7 @@ import { InspectorChannelItem } from './InspectorChannelItem';
 import { InspectorCurveFx } from './InspectorCurveFx';
 import { InspectorCurveNode } from './InspectorCurveNode';
 import { InspectorGeneral } from './InspectorGeneral';
+import { InspectorLabel } from './InspectorLabel';
 import { InspectorSnapping } from './InspectorSnapping';
 import { Metrics } from '../constants/Metrics';
 import React from 'react';
@@ -45,13 +46,15 @@ const Inspector = ( { className }: {
     stateSelectedNodes,
     stateSelectedFxs,
     stateSelectedTimelineItems,
+    stateSelectedTimelineLabels,
     settingsMode,
     mode
   } = useSelector( ( state ) => ( {
     selectedCurve: state.curveEditor.selectedCurve,
     stateSelectedNodes: state.curveEditor.selectedItems.nodes,
     stateSelectedFxs: state.curveEditor.selectedItems.fxs,
-    stateSelectedTimelineItems: state.timeline.selectedItems,
+    stateSelectedTimelineItems: state.timeline.selected.items,
+    stateSelectedTimelineLabels: state.timeline.selected.labels,
     settingsMode: state.settings.mode,
     mode: state.workspace.mode
   } ) );
@@ -79,6 +82,10 @@ const Inspector = ( { className }: {
     if ( objectMapSize( stateSelectedTimelineItems ) === 1 ) {
       content = <InspectorChannelItem
         item={ objectMapValues( stateSelectedTimelineItems )[ 0 ] }
+      />;
+    } else if ( stateSelectedTimelineLabels.length === 1 ) {
+      content = <InspectorLabel
+        name={ stateSelectedTimelineLabels[ 0 ] }
       />;
     }
   }

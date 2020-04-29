@@ -81,7 +81,7 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
     guiSettings
   } = useSelector( ( state ) => ( {
     automaton: state.automaton.instance,
-    selectedItems: state.timeline.selectedItems,
+    selectedItems: state.timeline.selected.items,
     path: state.automaton.curves[ item.curve! ].path,
     curveLength: state.automaton.curves[ item.curve! ].length,
     guiSettings: state.automaton.guiSettings

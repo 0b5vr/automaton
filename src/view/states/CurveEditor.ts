@@ -4,6 +4,7 @@ import { Action as ContextAction } from './store';
 import { Reducer } from 'redux';
 import { Resolution } from '../utils/Resolution';
 import { produce } from 'immer';
+import { jsonCopy } from '../../utils/jsonCopy';
 
 // == state ========================================================================================
 export interface State {
@@ -67,9 +68,7 @@ export type Action = {
 export const reducer: Reducer<State, ContextAction> = ( state = initialState, action ) => {
   return produce( state, ( newState: State ) => {
     if ( action.type === 'CurveEditor/Reset' ) {
-      newState.selectedCurve = initialState.selectedCurve;
-      newState.selectedItems = initialState.selectedItems;
-      newState.range = initialState.range;
+      newState = jsonCopy( initialState );
     } else if ( action.type === 'CurveEditor/SelectCurve' ) {
       newState.selectedCurve = action.curve;
       newState.selectedItems.nodes = [];

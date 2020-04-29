@@ -269,6 +269,11 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
           automaton.setLabel( name, time );
 
           dispatch( {
+            type: 'Timeline/SelectLabels',
+            labels: [ name ]
+          } );
+
+          dispatch( {
             type: 'History/Push',
             description: 'Set Label',
             commands: [

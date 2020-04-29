@@ -1,22 +1,23 @@
 import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { TimeValueRange, dx2dt, snapTime, t2x } from '../utils/TimeValueRange';
 import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
 import { Resolution } from '../utils/Resolution';
+import { arraySetHas } from '../utils/arraySet';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
 import styled from 'styled-components';
 import { useDoubleClick } from '../utils/useDoubleClick';
 
 // == styles =======================================================================================
-const Rect = styled.rect`
-  fill: ${ Colors.foresub };
+const Rect = styled.rect< { selected: boolean } >`
+  fill: ${ ( { selected } ) => selected ? Colors.accent : Colors.foresub };
   pointer-events: auto;
   cursor: pointer;
 `;
 
-const Line = styled.line`
-  stroke: ${ Colors.foresub };
+const Line = styled.line< { selected: boolean } >`
+  stroke: ${ ( { selected } ) => selected ? Colors.accent : Colors.foresub };
   stroke-width: 1px;
   pointer-events: none;
 `;
@@ -37,15 +38,18 @@ const Label = ( { name, time, range, size }: {
   const dispatch = useDispatch();
   const {
     automaton,
-    guiSettings
+    guiSettings,
+    selectedLabels
   } = useSelector( ( state ) => ( {
     automaton: state.automaton.instance,
-    guiSettings: state.automaton.guiSettings
+    guiSettings: state.automaton.guiSettings,
+    selectedLabels: state.timeline.selected.labels
   } ) );
   const checkDoubleClick = useDoubleClick();
   const [ width, setWidth ] = useState( 0.0 );
   const x = t2x( time, range, size.width );
   const refText = useRef<SVGTextElement>( null );
+
   useEffect(
     () => {
       const text = refText.current;
@@ -56,9 +60,19 @@ const Label = ( { name, time, range, size }: {
     [ refText.current ]
   );
 
+  const isSelected = useMemo(
+    (): boolean => arraySetHas( selectedLabels, name ),
+    [ selectedLabels ]
+  );
+
   const grabLabel = useCallback(
     (): void => {
       if ( !automaton ) { return; }
+
+      dispatch( {
+        type: 'Timeline/SelectLabels',
+        labels: [ name ]
+      } );
 
       const timePrev = time;
       let newTime = time;
@@ -213,9 +227,21 @@ const Label = ( { name, time, range, size }: {
       onMouseDown={ handleMouseDown }
       onContextMenu={ handleContextMenu }
     >
-      <Line y2={ -size.height } />
-      <Rect width={ width + 4 } height="12" y="-12" />
-      <Text ref={ refText } x="2" y="-2">{ name }</Text>
+      <Line
+        y2={ -size.height }
+        selected={ ( isSelected ? 1 : 0 ) as any as boolean } // fuck
+      />
+      <Rect
+        width={ width + 4 }
+        height="12"
+        y="-12"
+        selected={ ( isSelected ? 1 : 0 ) as any as boolean } // fuck
+      />
+      <Text
+        ref={ refText }
+        x="2"
+        y="-2"
+      >{ name }</Text>
     </g>
   </>;
 };
