@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useRef } from 'react';
 import { TimeValueRange, v2y, x2t, y2v } from '../utils/TimeValueRange';
 import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
+import { Labels } from './Labels';
 import { RangeBar } from './RangeBar';
 import { Resolution } from '../utils/Resolution';
 import { SerializedChannelItem } from '@fms-cat/automaton';
@@ -457,6 +458,10 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
               size={ rect }
             />
           </> }
+          <Labels
+            range={ range }
+            size={ rect }
+          />
           <Lines
             channel={ selectedChannel }
             range={ range }
