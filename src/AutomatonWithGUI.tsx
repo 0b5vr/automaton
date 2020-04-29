@@ -547,9 +547,11 @@ export class AutomatonWithGUI extends Automaton
    * @param time Timepoint of the label
    */
   public setLabel( name: string, time: number ): void {
-    this.__label[ name ] = time;
+    const actualTime = Math.max( 0.0, time );
 
-    this.__emit( 'setLabel', { name, time } );
+    this.__label[ name ] = actualTime;
+
+    this.__emit( 'setLabel', { name, time: actualTime } );
   }
 
   /**
