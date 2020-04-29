@@ -443,7 +443,7 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
         ]
       } );
     },
-    [ rect, createConstant, createNewCurve ]
+    [ rect, createConstant, createNewCurve, createLabel ]
   );
 
   const handleWheel = useCallback(

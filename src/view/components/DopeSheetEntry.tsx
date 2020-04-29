@@ -295,7 +295,7 @@ const DopeSheetEntry = ( props: Props ): JSX.Element => {
         ]
       } );
     },
-    [ rect, createConstant, createNewCurve ]
+    [ rect, createConstant, createNewCurve, createLabel ]
   );
 
   return (
