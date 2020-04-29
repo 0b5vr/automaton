@@ -732,10 +732,10 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
       if ( node.value !== 0.0 ) {
         data.value = node.value;
       }
-      if ( node.in.time !== 0.0 && node.in.value !== 0.0 ) {
+      if ( node.in.time !== 0.0 || node.in.value !== 0.0 ) {
         data.in = node.in;
       }
-      if ( node.out.time !== 0.0 && node.out.value !== 0.0 ) {
+      if ( node.out.time !== 0.0 || node.out.value !== 0.0 ) {
         data.out = node.out;
       }
       return data;
