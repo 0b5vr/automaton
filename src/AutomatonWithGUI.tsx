@@ -584,6 +584,8 @@ export class AutomatonWithGUI extends Automaton
       } );
     }
 
+    this.__label = convertedData.labels;
+
     this.guiSettings = convertedData.guiSettings;
 
     this.__emit( 'load' );
@@ -601,6 +603,7 @@ export class AutomatonWithGUI extends Automaton
       resolution: this.resolution,
       curves: this.__serializeCurves(),
       channels: this.__serializeChannelList(),
+      labels: this.__label,
       guiSettings: this.guiSettings,
     };
   }

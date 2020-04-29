@@ -12,6 +12,11 @@ export interface SerializedAutomatonWithGUI extends SerializedAutomaton {
   version: string;
 
   /**
+   * Labels of the automaton.
+   */
+  labels: { [ name: string ]: number };
+
+  /**
    * Field that contains [[GUISettings]].
    */
   guiSettings: GUISettings;
@@ -22,5 +27,6 @@ export const defaultDataWithGUI: Readonly<SerializedAutomatonWithGUI> = {
   resolution: 100,
   curves: [],
   channels: {},
+  labels: {},
   guiSettings: defaultGUISettings
 };
