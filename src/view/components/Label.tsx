@@ -9,6 +9,7 @@ import styled from 'styled-components';
 const Rect = styled.rect`
   fill: ${ Colors.foresub };
   pointer-events: auto;
+  cursor: pointer;
 `;
 
 const Line = styled.line`
@@ -20,7 +21,7 @@ const Line = styled.line`
 const Text = styled.text`
   fill: ${ Colors.back1 };
   font-size: 10px;
-  pointer-events: auto;
+  pointer-events: none;
 `;
 
 // == component ====================================================================================
