@@ -1,9 +1,12 @@
+import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { TimeValueRange, t2x } from '../utils/TimeValueRange';
+import { TimeValueRange, dx2dt, snapTime, t2x } from '../utils/TimeValueRange';
 import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
 import { Resolution } from '../utils/Resolution';
+import { registerMouseEvent } from '../utils/registerMouseEvent';
 import styled from 'styled-components';
+import { useDoubleClick } from '../utils/useDoubleClick';
 
 // == styles =======================================================================================
 const Rect = styled.rect`
@@ -34,9 +37,12 @@ const Label = ( { name, time, range, size }: {
   const dispatch = useDispatch();
   const {
     automaton,
+    guiSettings
   } = useSelector( ( state ) => ( {
     automaton: state.automaton.instance,
+    guiSettings: state.automaton.guiSettings
   } ) );
+  const checkDoubleClick = useDoubleClick();
   const [ width, setWidth ] = useState( 0.0 );
   const x = t2x( time, range, size.width );
   const refText = useRef<SVGTextElement>( null );
@@ -48,6 +54,52 @@ const Label = ( { name, time, range, size }: {
       }
     },
     [ refText.current ]
+  );
+
+  const grabLabel = useCallback(
+    (): void => {
+      if ( !automaton ) { return; }
+
+      const timePrev = time;
+      let newTime = time;
+      let x = 0.0;
+      let hasMoved = false;
+
+      registerMouseEvent(
+        ( event, movementSum ) => {
+          hasMoved = true;
+          x += movementSum.x;
+
+          const ignoreSnap = event.altKey;
+          newTime = timePrev + dx2dt( x, range, size.width );
+
+          if ( !ignoreSnap ) {
+            newTime = snapTime( newTime, range, size.width, guiSettings );
+          }
+
+          automaton.setLabel( name, newTime );
+        },
+        () => {
+          if ( !hasMoved ) { return; }
+
+          automaton.setLabel( name, newTime );
+
+          dispatch( {
+            type: 'History/Push',
+            description: 'Move Label',
+            commands: [
+              {
+                type: 'automaton/moveLabel',
+                name,
+                time: newTime,
+                timePrev
+              }
+            ]
+          } );
+        }
+      );
+    },
+    [ automaton, time, name, range, size, guiSettings ]
   );
 
   const renameLabel = useCallback(
@@ -90,7 +142,7 @@ const Label = ( { name, time, range, size }: {
       } );
 
     },
-    [ automaton, time, range ]
+    [ automaton, time ]
   );
 
   const deleteLabel = useCallback(
@@ -111,7 +163,20 @@ const Label = ( { name, time, range, size }: {
         ],
       } );
     },
-    [ automaton, time, range ]
+    [ automaton, time ]
+  );
+
+  const handleMouseDown = useCallback(
+    mouseCombo( {
+      [ MouseComboBit.LMB ]: () => {
+        if ( checkDoubleClick() ) {
+          deleteLabel();
+        } else {
+          grabLabel();
+        }
+      }
+    } ),
+    [ grabLabel ]
   );
 
   const handleContextMenu = useCallback(
@@ -145,6 +210,7 @@ const Label = ( { name, time, range, size }: {
   return <>
     <g
       transform={ `translate(${ x },${ size.height })` }
+      onMouseDown={ handleMouseDown }
       onContextMenu={ handleContextMenu }
     >
       <Line y2={ -size.height } />
