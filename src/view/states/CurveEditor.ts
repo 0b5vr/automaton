@@ -3,8 +3,8 @@ import { arraySetDiff, arraySetUnion } from '../utils/arraySet';
 import { Action as ContextAction } from './store';
 import { Reducer } from 'redux';
 import { Resolution } from '../utils/Resolution';
-import { produce } from 'immer';
 import { jsonCopy } from '../../utils/jsonCopy';
+import { produce } from 'immer';
 
 // == state ========================================================================================
 export interface State {
