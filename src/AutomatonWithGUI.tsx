@@ -91,6 +91,11 @@ export class AutomatonWithGUI extends Automaton
   public saveContextMenuCommands?: Array<ContextMenuCommand>;
 
   /**
+   * Labels.
+   */
+  protected __label: { [ name: string ]: number };
+
+  /**
    * Version of the automaton.
    */
   protected __version: string = process.env.VERSION!;
@@ -178,6 +183,13 @@ export class AutomatonWithGUI extends Automaton
   }
 
   /**
+   * A map of labels.
+   */
+  public get labels(): { [ name: string ]: number } {
+    return this.__label;
+  }
+
+  /**
    * Whether it disables any time controls or not.
    * Can be specified via {@link AutomatonWithGUIOptions}.
    */
@@ -212,6 +224,8 @@ export class AutomatonWithGUI extends Automaton
     super( data );
 
     this.__isPlaying = options.isPlaying || false;
+
+    this.__label = {};
 
     if ( options.installBuiltinFxs ) {
       this.addFxDefinitions( fxDefinitions );
@@ -528,6 +542,29 @@ export class AutomatonWithGUI extends Automaton
   }
 
   /**
+   * Set a label.
+   * @param name Name of the label
+   * @param time Timepoint of the label
+   */
+  public setLabel( name: string, time: number ): void {
+    const actualTime = Math.max( 0.0, time );
+
+    this.__label[ name ] = actualTime;
+
+    this.__emit( 'setLabel', { name, time: actualTime } );
+  }
+
+  /**
+   * Remove a label.
+   * @param name Name of the label
+   */
+  public deleteLabel( name: string ): void {
+    delete this.__label[ name ];
+
+    this.__emit( 'deleteLabel', { name } );
+  }
+
+  /**
    * Load automaton state data.
    * @param data Object contains automaton data.
    */
@@ -549,6 +586,8 @@ export class AutomatonWithGUI extends Automaton
       } );
     }
 
+    this.__label = convertedData.labels;
+
     this.guiSettings = convertedData.guiSettings;
 
     this.__emit( 'load' );
@@ -566,6 +605,7 @@ export class AutomatonWithGUI extends Automaton
       resolution: this.resolution,
       curves: this.__serializeCurves(),
       channels: this.__serializeChannelList(),
+      labels: this.__label,
       guiSettings: this.guiSettings,
     };
   }
@@ -705,6 +745,8 @@ export interface AutomatonWithGUIEvents {
   createCurve: { index: number; curve: CurveWithGUI };
   removeCurve: { index: number };
   addFxDefinitions: { fxDefinitions: { [ id: string ]: FxDefinition } };
+  setLabel: { name: string; time: number };
+  deleteLabel: { name: string };
   changeLength: { length: number };
   changeResolution: { resolution: number };
   updateGUISettings: { settings: GUISettings };

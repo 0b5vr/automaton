@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import { Labels } from './Labels';
 import { RangeBar } from './RangeBar';
 import { Resolution } from '../utils/Resolution';
 import { TimeValueLines } from './TimeValueLines';
@@ -67,6 +68,10 @@ const DopeSheetOverlay = ( props: DopeSheetOverlayProps ): JSX.Element => {
     <Root className={ className }>
       <Body ref={ refBody }>
         <SVGRoot>
+          <Labels
+            range={ range }
+            size={ rect }
+          />
           <Line
             range={ range }
             size={ rect }

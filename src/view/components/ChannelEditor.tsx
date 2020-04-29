@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useRef } from 'react';
 import { TimeValueRange, v2y, x2t, y2v } from '../utils/TimeValueRange';
 import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
+import { Labels } from './Labels';
 import { RangeBar } from './RangeBar';
 import { Resolution } from '../utils/Resolution';
 import { SerializedChannelItem } from '@fms-cat/automaton';
@@ -148,8 +149,8 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
         return;
       }
 
-      const t = x2t( x, range, rect.width );
-      const v = y2v( y, range, rect.height );
+      const t = x2t( x - rect.left, range, rect.width );
+      const v = y2v( y - rect.top, range, rect.height );
 
       const thereAreNoOtherItemsHere = channel.items.every( ( item ) => (
         !hasOverwrap( item.time, item.length, t, 0.0 )
@@ -203,7 +204,7 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
         return;
       }
 
-      const t = x2t( x, range, rect.width );
+      const t = x2t( x - rect.left, range, rect.width );
 
       const thereAreNoOtherItemsHere = channel.items.every( ( item ) => (
         !hasOverwrap( item.time, item.length, t, 0.0 )
@@ -247,6 +248,46 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
       } );
     },
     [ automaton, range, rect, selectedChannel, channel ]
+  );
+
+  const createLabel = useCallback(
+    ( x: number, y: number ): void => {
+      if ( !automaton ) { return; }
+
+      const time = x2t( x - rect.left, range, rect.width );
+
+      dispatch( {
+        type: 'TextPrompt/Open',
+        position: { x, y },
+        placeholder: 'A name for the new label',
+        checkValid: ( name: string ) => {
+          if ( name === '' ) { return 'Create Label: Name cannot be empty.'; }
+          if ( automaton.labels[ name ] != null ) { return 'Create Label: A label for the given name already exists.'; }
+          return null;
+        },
+        callback: ( name ) => {
+          automaton.setLabel( name, time );
+
+          dispatch( {
+            type: 'Timeline/SelectLabels',
+            labels: [ name ]
+          } );
+
+          dispatch( {
+            type: 'History/Push',
+            description: 'Set Label',
+            commands: [
+              {
+                type: 'automaton/createLabel',
+                name,
+                time
+              }
+            ],
+          } );
+        }
+      } );
+    },
+    [ automaton, range, rect ]
   );
 
   const createItemAndGrab = useCallback(
@@ -382,12 +423,12 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
       event.preventDefault();
       event.stopPropagation();
 
-      const x = event.clientX - rect.left;
-      const y = event.clientY - rect.top;
+      const x = event.clientX;
+      const y = event.clientY;
 
       dispatch( {
         type: 'ContextMenu/Open',
-        position: { x: event.clientX, y: event.clientY },
+        position: { x, y },
         commands: [
           {
             name: 'Create Constant',
@@ -398,11 +439,16 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
             name: 'Create New Curve',
             description: 'Create a new curve and an item.',
             callback: () => createNewCurve( x )
+          },
+          {
+            name: 'Create Label',
+            description: 'Create a label.',
+            callback: () => createLabel( x, y )
           }
         ]
       } );
     },
-    [ rect, createConstant, createNewCurve ]
+    [ createConstant, createNewCurve, createLabel ]
   );
 
   const handleWheel = useCallback(
@@ -457,6 +503,10 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
               size={ rect }
             />
           </> }
+          <Labels
+            range={ range }
+            size={ rect }
+          />
           <Lines
             channel={ selectedChannel }
             range={ range }

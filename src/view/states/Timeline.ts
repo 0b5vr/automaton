@@ -1,16 +1,21 @@
 import { TimeValueRange, dx2dt, dy2dv, x2t, y2v } from '../utils/TimeValueRange';
+import { arraySetDelete, arraySetDiff, arraySetUnion } from '../utils/arraySet';
 import { Action as ContextAction } from './store';
 import { Reducer } from 'redux';
 import { Resolution } from '../utils/Resolution';
+import { jsonCopy } from '../../utils/jsonCopy';
 import { produce } from 'immer';
 
 // == state ========================================================================================
 export interface State {
   selectedChannel: string | null;
-  selectedItems: {
-    [ id: string ]: {
-      id: string;
-      channel: string;
+  selected: {
+    labels: string[];
+    items: {
+      [ id: string ]: {
+        id: string;
+        channel: string;
+      };
     };
   };
   lastSelectedItem: {
@@ -22,7 +27,10 @@ export interface State {
 
 export const initialState: State = {
   selectedChannel: null,
-  selectedItems: {},
+  selected: {
+    labels: [],
+    items: {}
+  },
   lastSelectedItem: null,
   range: {
     t0: 0.0,
@@ -54,6 +62,15 @@ export type Action = {
   type: 'Timeline/SelectItemsSub';
   items: string[];
 } | {
+  type: 'Timeline/SelectLabels';
+  labels: string[];
+} | {
+  type: 'Timeline/SelectLabelsAdd';
+  labels: string[];
+} | {
+  type: 'Timeline/SelectLabelsSub';
+  labels: string[];
+} | {
   type: 'Timeline/UnselectItemsOfOtherChannels';
 } | {
   type: 'Timeline/MoveRange';
@@ -75,38 +92,43 @@ export type Action = {
 export const reducer: Reducer<State, ContextAction> = ( state = initialState, action ) => {
   return produce( state, ( newState: State ) => {
     if ( action.type === 'Timeline/Reset' ) {
-      newState.selectedChannel = initialState.selectedChannel;
-      newState.selectedItems = initialState.selectedItems;
-      newState.lastSelectedItem = initialState.lastSelectedItem;
-      newState.range = initialState.range;
+      newState = jsonCopy( initialState );
     } else if ( action.type === 'Timeline/SelectChannel' ) {
       newState.selectedChannel = action.channel;
     } else if ( action.type === 'Timeline/SelectItems' ) {
-      newState.selectedItems = {};
+      newState.selected = jsonCopy( initialState.selected );
+
       action.items.forEach( ( item ) => {
-        newState.selectedItems[ item.id ] = item;
+        newState.selected.items[ item.id ] = item;
       } );
 
       if ( action.items.length === 1 ) {
         newState.lastSelectedItem = action.items[ 0 ];
       }
     } else if ( action.type === 'Timeline/SelectItemsAdd' ) {
-      newState.selectedItems = { ...state.selectedItems };
       action.items.forEach( ( item ) => {
-        newState.selectedItems[ item.id ] = item;
+        newState.selected.items[ item.id ] = item;
       } );
     } else if ( action.type === 'Timeline/SelectItemsSub' ) {
-      newState.selectedItems = { ...state.selectedItems };
-      action.items?.forEach( ( item ) => {
-        delete newState.selectedItems[ item ];
+      action.items.forEach( ( item ) => {
+        delete newState.selected.items[ item ];
       } );
     } else if ( action.type === 'Timeline/UnselectItemsOfOtherChannels' ) {
-      newState.selectedItems = {};
-      Object.entries( state.selectedItems ).forEach( ( [ id, item ] ) => {
+      newState.selected.items = jsonCopy( initialState.selected.items );
+
+      Object.entries( state.selected.items ).forEach( ( [ id, item ] ) => {
         if ( item.channel === state.selectedChannel ) {
-          newState.selectedItems[ id ] = item;
+          newState.selected.items[ id ] = item;
         }
       } );
+    } else if ( action.type === 'Timeline/SelectLabels' ) {
+      newState.selected = jsonCopy( initialState.selected );
+
+      newState.selected.labels = action.labels;
+    } else if ( action.type === 'Timeline/SelectLabelsAdd' ) {
+      newState.selected.labels = arraySetUnion( state.selected.labels, action.labels );
+    } else if ( action.type === 'Timeline/SelectLabelsSub' ) {
+      newState.selected.labels = arraySetDiff( state.selected.labels, action.labels );
     } else if ( action.type === 'Timeline/MoveRange' ) {
       const { range } = state;
       const { size } = action;
@@ -165,8 +187,9 @@ export const reducer: Reducer<State, ContextAction> = ( state = initialState, ac
         newState.selectedChannel = null;
       }
     } else if ( action.type === 'Automaton/RemoveChannelItem' ) {
-      newState.selectedItems = { ...state.selectedItems };
-      delete newState.selectedItems[ action.id ];
+      delete newState.selected.items[ action.id ];
+    } else if ( action.type === 'Automaton/DeleteLabel' ) {
+      arraySetDelete( newState.selected.labels, action.name );
     } else if ( action.type === 'CurveEditor/SelectCurve' ) { // WHOA WHOA
       newState.lastSelectedItem = null;
     }

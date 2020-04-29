@@ -35,6 +35,7 @@ export interface State {
     previewTime: number | null;
     previewValue: number | null;
   }>;
+  labels: { [ name: string ]: number };
   isPlaying: boolean;
   time: number;
   length: number;
@@ -49,6 +50,7 @@ export const initialState: Readonly<State> = {
   channels: {},
   curves: [],
   curvesPreview: [],
+  labels: {},
   fxDefinitions: {},
   isPlaying: false,
   time: 0.0,
@@ -143,6 +145,13 @@ export type Action = {
   type: 'Automaton/UpdateCurveLength';
   curve: number;
   length: number;
+} | {
+  type: 'Automaton/SetLabel';
+  name: string;
+  time: number;
+} | {
+  type: 'Automaton/DeleteLabel';
+  name: string;
 } | {
   type: 'Automaton/UpdateIsPlaying';
   isPlaying: boolean;
@@ -240,6 +249,10 @@ export const reducer: Reducer<State, Action> = ( state = initialState, action ) 
       newState.curves[ action.curve ].fxs[ action.id ] = jsonCopy( action.fx );
     } else if ( action.type === 'Automaton/RemoveCurveFx' ) {
       delete newState.curves[ action.curve ].fxs[ action.id ];
+    } else if ( action.type === 'Automaton/SetLabel' ) {
+      newState.labels[ action.name ] = action.time;
+    } else if ( action.type === 'Automaton/DeleteLabel' ) {
+      delete newState.labels[ action.name ];
     } else if ( action.type === 'Automaton/UpdateIsPlaying' ) {
       newState.isPlaying = action.isPlaying;
     } else if ( action.type === 'Automaton/UpdateTime' ) {

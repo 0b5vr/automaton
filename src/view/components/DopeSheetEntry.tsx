@@ -56,7 +56,7 @@ const DopeSheetEntry = ( props: Props ): JSX.Element => {
     ( x: number ): void => {
       if ( !channel ) { return; }
 
-      const t = x2t( x, range, rect.width );
+      const t = x2t( x - rect.left, range, rect.width );
 
       const thereAreNoOtherItemsHere = channel.items.every( ( item ) => (
         !hasOverwrap( item.time, item.length, t, 0.0 )
@@ -100,7 +100,7 @@ const DopeSheetEntry = ( props: Props ): JSX.Element => {
     ( x: number ): void => {
       if ( !automaton || !channel ) { return; }
 
-      const t = x2t( x, range, rect.width );
+      const t = x2t( x - rect.left, range, rect.width );
 
       const thereAreNoOtherItemsHere = channel.items.every( ( item ) => (
         !hasOverwrap( item.time, item.length, t, 0.0 )
@@ -144,6 +144,41 @@ const DopeSheetEntry = ( props: Props ): JSX.Element => {
       } );
     },
     [ automaton, range, rect, channelName, channel ]
+  );
+
+  const createLabel = useCallback(
+    ( x: number, y: number ): void => {
+      if ( !automaton ) { return; }
+
+      const time = x2t( x - rect.left, range, rect.width );
+
+      dispatch( {
+        type: 'TextPrompt/Open',
+        position: { x, y },
+        placeholder: 'A name for the new label',
+        checkValid: ( name: string ) => {
+          if ( name === '' ) { return 'Create Label: Name cannot be empty.'; }
+          if ( automaton.labels[ name ] != null ) { return 'Create Label: A label for the given name already exists.'; }
+          return null;
+        },
+        callback: ( name ) => {
+          automaton.setLabel( name, time );
+
+          dispatch( {
+            type: 'History/Push',
+            description: 'Set Label',
+            commands: [
+              {
+                type: 'automaton/createLabel',
+                name,
+                time
+              }
+            ],
+          } );
+        }
+      } );
+    },
+    [ automaton, range, rect ]
   );
 
   const createItemAndGrab = useCallback(
@@ -235,11 +270,12 @@ const DopeSheetEntry = ( props: Props ): JSX.Element => {
       event.preventDefault();
       event.stopPropagation();
 
-      const x = event.clientX - rect.left;
+      const x = event.clientX;
+      const y = event.clientY;
 
       dispatch( {
         type: 'ContextMenu/Open',
-        position: { x: event.clientX, y: event.clientY },
+        position: { x, y },
         commands: [
           {
             name: 'Create Constant',
@@ -250,11 +286,16 @@ const DopeSheetEntry = ( props: Props ): JSX.Element => {
             name: 'Create New Curve',
             description: 'Create a new curve and an item.',
             callback: () => createNewCurve( x )
+          },
+          {
+            name: 'Create Label',
+            description: 'Create a label.',
+            callback: () => createLabel( x, y )
           }
         ]
       } );
     },
-    [ rect, createConstant, createNewCurve ]
+    [ createConstant, createNewCurve, createLabel ]
   );
 
   return (
