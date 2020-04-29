@@ -91,6 +91,11 @@ export class AutomatonWithGUI extends Automaton
   public saveContextMenuCommands?: Array<ContextMenuCommand>;
 
   /**
+   * Labels.
+   */
+  protected __label: { [ name: string ]: number };
+
+  /**
    * Version of the automaton.
    */
   protected __version: string = process.env.VERSION!;
@@ -212,6 +217,8 @@ export class AutomatonWithGUI extends Automaton
     super( data );
 
     this.__isPlaying = options.isPlaying || false;
+
+    this.__label = {};
 
     if ( options.installBuiltinFxs ) {
       this.addFxDefinitions( fxDefinitions );
@@ -528,6 +535,27 @@ export class AutomatonWithGUI extends Automaton
   }
 
   /**
+   * Set a label.
+   * @param name Name of the label
+   * @param time Timepoint of the label
+   */
+  public setLabel( name: string, time: number ): void {
+    this.__label[ name ] = time;
+
+    this.__emit( 'setLabel', { name, time } );
+  }
+
+  /**
+   * Remove a label.
+   * @param name Name of the label
+   */
+  public deleteLabel( name: string ): void {
+    delete this.__label[ name ];
+
+    this.__emit( 'deleteLabel', { name } );
+  }
+
+  /**
    * Load automaton state data.
    * @param data Object contains automaton data.
    */
@@ -705,6 +733,8 @@ export interface AutomatonWithGUIEvents {
   createCurve: { index: number; curve: CurveWithGUI };
   removeCurve: { index: number };
   addFxDefinitions: { fxDefinitions: { [ id: string ]: FxDefinition } };
+  setLabel: { name: string; time: number };
+  deleteLabel: { name: string };
   changeLength: { length: number };
   changeResolution: { resolution: number };
   updateGUISettings: { settings: GUISettings };
