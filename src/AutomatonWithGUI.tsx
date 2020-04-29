@@ -183,6 +183,13 @@ export class AutomatonWithGUI extends Automaton
   }
 
   /**
+   * A map of labels.
+   */
+  public get labels(): { [ name: string ]: number } {
+    return this.__label;
+  }
+
+  /**
    * Whether it disables any time controls or not.
    * Can be specified via {@link AutomatonWithGUIOptions}.
    */
