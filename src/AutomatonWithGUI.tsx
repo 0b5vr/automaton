@@ -94,7 +94,7 @@ export class AutomatonWithGUI extends Automaton
   /**
    * Labels.
    */
-  protected __label: { [ name: string ]: number };
+  protected __labels: { [ name: string ]: number };
 
   /**
    * Version of the automaton.
@@ -187,7 +187,7 @@ export class AutomatonWithGUI extends Automaton
    * A map of labels.
    */
   public get labels(): { [ name: string ]: number } {
-    return this.__label;
+    return this.__labels;
   }
 
   /**
@@ -226,7 +226,7 @@ export class AutomatonWithGUI extends Automaton
 
     this.__isPlaying = options.isPlaying || false;
 
-    this.__label = {};
+    this.__labels = {};
 
     if ( options.installBuiltinFxs ) {
       this.addFxDefinitions( fxDefinitions );
@@ -550,7 +550,7 @@ export class AutomatonWithGUI extends Automaton
   public setLabel( name: string, time: number ): void {
     const actualTime = Math.max( 0.0, time );
 
-    this.__label[ name ] = actualTime;
+    this.__labels[ name ] = actualTime;
 
     this.__emit( 'setLabel', { name, time: actualTime } );
   }
@@ -560,7 +560,7 @@ export class AutomatonWithGUI extends Automaton
    * @param name Name of the label
    */
   public deleteLabel( name: string ): void {
-    delete this.__label[ name ];
+    delete this.__labels[ name ];
 
     this.__emit( 'deleteLabel', { name } );
   }
@@ -587,7 +587,7 @@ export class AutomatonWithGUI extends Automaton
       } );
     }
 
-    this.__label = convertedData.labels;
+    this.__labels = convertedData.labels;
 
     this.guiSettings = convertedData.guiSettings;
 
@@ -606,7 +606,7 @@ export class AutomatonWithGUI extends Automaton
       resolution: this.resolution,
       curves: this.__serializeCurves(),
       channels: this.__serializeChannelList(),
-      labels: this.__label,
+      labels: this.__labels,
       guiSettings: this.guiSettings,
     };
   }
