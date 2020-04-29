@@ -32,6 +32,7 @@ export function v2Compat( data: V2SerializedData ): SerializedAutomatonWithGUI {
     resolution: data.resolution,
     curves,
     channels,
+    labels: {},
     guiSettings: {
       snapTimeActive: data.guiSettings?.snapActive || false,
       snapTimeInterval: data.guiSettings?.snapTime || 0.1,
