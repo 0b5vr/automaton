@@ -299,6 +299,14 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
       initChannelState( name, channel );
     } );
 
+    Object.entries( automaton.labels ).forEach( ( [ name, time ] ) => {
+      dispatch( {
+        type: 'Automaton/SetLabel',
+        name,
+        time
+      } );
+    } );
+
     dispatch( {
       type: 'Automaton/UpdateIsDisabledTimeControls',
       isDisabledTimeControls: automaton.isDisabledTimeControls
@@ -409,6 +417,21 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
         } );
       } );
 
+      const handleSetLabel = automaton.on( 'setLabel', ( { name, time } ) => {
+        dispatch( {
+          type: 'Automaton/SetLabel',
+          name,
+          time
+        } );
+      } );
+
+      const handleDeleteLabel = automaton.on( 'deleteLabel', ( { name } ) => {
+        dispatch( {
+          type: 'Automaton/DeleteLabel',
+          name
+        } );
+      } );
+
       return () => {
         automaton.off( 'load', handleLoad );
         automaton.off( 'update', handleUpdate );
@@ -422,6 +445,8 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
         automaton.off( 'removeChannel', handleRemoveChannel );
         automaton.off( 'createCurve', handleCreateCurve );
         automaton.off( 'removeCurve', handleRemoveCurve );
+        automaton.off( 'setLabel', handleSetLabel );
+        automaton.off( 'deleteLabel', handleDeleteLabel );
         automaton.off( 'changeShouldSave', handleChangeShouldSave );
       };
     },
