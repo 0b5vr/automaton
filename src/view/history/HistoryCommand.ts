@@ -22,6 +22,19 @@ export type HistoryCommand = {
   data?: SerializedCurve;
   index: number;
 } | {
+  type: 'automaton/createLabel';
+  name: string;
+  time: number;
+} | {
+  type: 'automaton/moveLabel';
+  name: string;
+  time: number;
+  timePrev: number;
+} | {
+  type: 'automaton/deleteLabel';
+  name: string;
+  timePrev: number;
+} | {
   type: 'channel/createItemFromData';
   channel: string;
   data: Required<SerializedChannelItem> & WithID;
@@ -185,6 +198,21 @@ export function parseHistoryCommand( command: HistoryCommand ): {
     return {
       undo: ( automaton ) => automaton.removeCurve( command.index ),
       redo: ( automaton ) => automaton.createCurve( command.data ),
+    };
+  } else if ( command.type === 'automaton/createLabel' ) {
+    return {
+      undo: ( automaton ) => automaton.deleteLabel( command.name ),
+      redo: ( automaton ) => automaton.setLabel( command.name, command.time )
+    };
+  } else if ( command.type === 'automaton/moveLabel' ) {
+    return {
+      undo: ( automaton ) => automaton.setLabel( command.name, command.timePrev ),
+      redo: ( automaton ) => automaton.setLabel( command.name, command.time )
+    };
+  } else if ( command.type === 'automaton/deleteLabel' ) {
+    return {
+      undo: ( automaton ) => automaton.setLabel( command.name, command.timePrev ),
+      redo: ( automaton ) => automaton.deleteLabel( command.name )
     };
   } else if ( command.type === 'channel/createItemFromData' ) {
     return {
