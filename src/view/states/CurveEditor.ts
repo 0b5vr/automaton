@@ -9,7 +9,7 @@ import { produce } from 'immer';
 // == state ========================================================================================
 export interface State {
   selectedCurve: number | null;
-  selectedItems: {
+  selected: {
     nodes: string[];
     fxs: string[];
   };
@@ -18,7 +18,7 @@ export interface State {
 
 export const initialState: State = {
   selectedCurve: null,
-  selectedItems: {
+  selected: {
     nodes: [],
     fxs: []
   },
@@ -71,26 +71,26 @@ export const reducer: Reducer<State, ContextAction> = ( state = initialState, ac
       newState = jsonCopy( initialState );
     } else if ( action.type === 'CurveEditor/SelectCurve' ) {
       newState.selectedCurve = action.curve;
-      newState.selectedItems.nodes = [];
-      newState.selectedItems.fxs = [];
+      newState.selected.nodes = [];
+      newState.selected.fxs = [];
     } else if ( action.type === 'CurveEditor/SelectItems' ) {
-      newState.selectedItems.nodes = action.nodes || [];
-      newState.selectedItems.fxs = action.fxs || [];
+      newState.selected.nodes = action.nodes || [];
+      newState.selected.fxs = action.fxs || [];
     } else if ( action.type === 'CurveEditor/SelectItemsAdd' ) {
       if ( action.nodes ) {
-        newState.selectedItems.nodes = arraySetUnion( state.selectedItems.nodes, action.nodes );
+        newState.selected.nodes = arraySetUnion( state.selected.nodes, action.nodes );
       }
 
       if ( action.fxs ) {
-        newState.selectedItems.fxs = arraySetUnion( state.selectedItems.fxs, action.fxs );
+        newState.selected.fxs = arraySetUnion( state.selected.fxs, action.fxs );
       }
     } else if ( action.type === 'CurveEditor/SelectItemsSub' ) {
       if ( action.nodes ) {
-        newState.selectedItems.nodes = arraySetDiff( state.selectedItems.nodes, action.nodes );
+        newState.selected.nodes = arraySetDiff( state.selected.nodes, action.nodes );
       }
 
       if ( action.fxs ) {
-        newState.selectedItems.fxs = arraySetDiff( state.selectedItems.fxs, action.fxs );
+        newState.selected.fxs = arraySetDiff( state.selected.fxs, action.fxs );
       }
     } else if ( action.type === 'CurveEditor/MoveRange' ) {
       const { range } = state;
@@ -150,9 +150,9 @@ export const reducer: Reducer<State, ContextAction> = ( state = initialState, ac
         newState.selectedCurve = null;
       }
     } else if ( action.type === 'Automaton/RemoveCurveNode' ) {
-      newState.selectedItems.nodes = arraySetDiff( newState.selectedItems.nodes, [ action.id ] );
+      newState.selected.nodes = arraySetDiff( newState.selected.nodes, [ action.id ] );
     } else if ( action.type === 'Automaton/RemoveCurveFx' ) {
-      newState.selectedItems.fxs = arraySetDiff( newState.selectedItems.fxs, [ action.id ] );
+      newState.selected.fxs = arraySetDiff( newState.selected.fxs, [ action.id ] );
     }
   } );
 };

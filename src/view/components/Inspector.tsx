@@ -51,8 +51,8 @@ const Inspector = ( { className }: {
     mode
   } = useSelector( ( state ) => ( {
     selectedCurve: state.curveEditor.selectedCurve,
-    stateSelectedNodes: state.curveEditor.selectedItems.nodes,
-    stateSelectedFxs: state.curveEditor.selectedItems.fxs,
+    stateSelectedNodes: state.curveEditor.selected.nodes,
+    stateSelectedFxs: state.curveEditor.selected.fxs,
     stateSelectedTimelineItems: state.timeline.selected.items,
     stateSelectedTimelineLabels: state.timeline.selected.labels,
     settingsMode: state.settings.mode,

@@ -56,7 +56,7 @@ const CurveEditorNode = ( props: Props ): JSX.Element => {
   const dispatch = useDispatch();
   const checkDoubleClick = useDoubleClick();
   const curve = automaton?.getCurve( curveIndex ) || null;
-  const selectedNodes = useSelector( ( state ) => state.curveEditor.selectedItems.nodes );
+  const selectedNodes = useSelector( ( state ) => state.curveEditor.selected.nodes );
 
   const grabNode = useCallback(
     (): void => {
