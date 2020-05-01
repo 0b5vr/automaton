@@ -131,7 +131,7 @@ export class AutomatonWithGUI extends Automaton
   /**
    * GUI settings for this automaton.
    */
-  private __guiSettings: GUISettings = jsonCopy( defaultGUISettings );
+  private __guiSettings!: GUISettings;
 
   /**
    * This enables the Automaton instance to be able to communicate with GUI.
@@ -596,7 +596,7 @@ export class AutomatonWithGUI extends Automaton
 
     this.__labels = convertedData.labels;
 
-    this.__guiSettings = convertedData.guiSettings;
+    this.__guiSettings = convertedData.guiSettings ?? jsonCopy( defaultGUISettings );
 
     this.__emit( 'load' );
 
