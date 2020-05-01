@@ -214,6 +214,13 @@ export class AutomatonWithGUI extends Automaton
   }
 
   /**
+   * GUI settings for this automaton.
+   */
+  public get guiSettings(): GUISettings {
+    return jsonCopy( this.__guiSettings );
+  }
+
+  /**
    * Create a new Automaton instance.
    * @param data Serialized data of the automaton
    * @param options Options for this Automaton instance
