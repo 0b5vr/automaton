@@ -37,7 +37,9 @@ export function v2Compat( data: V2SerializedData ): SerializedAutomatonWithGUI {
       snapTimeActive: data.guiSettings?.snapActive || false,
       snapTimeInterval: data.guiSettings?.snapTime || 0.1,
       snapValueActive: data.guiSettings?.snapActive || false,
-      snapValueInterval: data.guiSettings?.snapValue || 0.1
+      snapValueInterval: data.guiSettings?.snapValue || 0.1,
+      snapBeatActive: false,
+      snapBeatBPM: 140.0
     }
   };
 
