@@ -73,11 +73,6 @@ export class AutomatonWithGUI extends Automaton
   public static readonly BuiltinFxs = fxDefinitions;
 
   /**
-   * GUI settings for this automaton.
-   */
-  public guiSettings: GUISettings = jsonCopy( defaultGUISettings );
-
-  /**
    * Overrided save procedure.
    * Originally intended to be used by automaton-electron.
    * Can also be specified via {@link AutomatonWithGUIOptions}.
@@ -132,6 +127,11 @@ export class AutomatonWithGUI extends Automaton
    * Whether it has any changes that is not saved yet or not.
    */
   private __shouldSave = false;
+
+  /**
+   * GUI settings for this automaton.
+   */
+  private __guiSettings!: GUISettings;
 
   /**
    * This enables the Automaton instance to be able to communicate with GUI.
@@ -211,6 +211,13 @@ export class AutomatonWithGUI extends Automaton
   public set shouldSave( shouldSave: boolean ) {
     this.__shouldSave = shouldSave;
     this.__emit( 'changeShouldSave', { shouldSave } );
+  }
+
+  /**
+   * GUI settings for this automaton.
+   */
+  public get guiSettings(): GUISettings {
+    return jsonCopy( this.__guiSettings );
   }
 
   /**
@@ -589,7 +596,7 @@ export class AutomatonWithGUI extends Automaton
 
     this.__labels = convertedData.labels;
 
-    this.guiSettings = convertedData.guiSettings;
+    this.__guiSettings = convertedData.guiSettings ?? jsonCopy( defaultGUISettings );
 
     this.__emit( 'load' );
 
@@ -607,7 +614,7 @@ export class AutomatonWithGUI extends Automaton
       curves: this.__serializeCurves(),
       channels: this.__serializeChannelList(),
       labels: this.__labels,
-      guiSettings: this.guiSettings,
+      guiSettings: this.__guiSettings,
     };
   }
 
@@ -617,11 +624,11 @@ export class AutomatonWithGUI extends Automaton
    * @param value The parameter value you want to set
    */
   public setGUISettings<T extends keyof GUISettings>( key: T, value: GUISettings[ T ] ): void {
-    this.guiSettings = produce( this.guiSettings, ( newState ) => { // 🔥 Why????
+    this.__guiSettings = produce( this.__guiSettings, ( newState ) => { // 🔥 Why????
       newState[ key ] = value;
     } );
 
-    this.__emit( 'updateGUISettings', { settings: this.guiSettings } );
+    this.__emit( 'updateGUISettings', { settings: this.__guiSettings } );
 
     this.shouldSave = true;
   }

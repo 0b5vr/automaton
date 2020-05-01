@@ -46,29 +46,46 @@ export function dv2dy( v: number, range: ValueRange, height: number ): number {
 }
 
 export function snapTime(
-  t: number,
+  time: number,
   range: TimeRange,
   width: number,
   settings: GUISettings
 ): number {
-  if ( !settings?.snapTimeActive ) { return t; }
+  let t = time;
 
-  const interval = settings.snapTimeInterval;
-  const threshold = dx2dt( 5.0, range, width );
-  const nearest = Math.round( t / interval ) * interval;
-  return Math.abs( t - nearest ) < threshold ? nearest : t;
+  if ( settings?.snapTimeActive ) {
+    const interval = settings.snapTimeInterval;
+    const threshold = dx2dt( 5.0, range, width );
+    const nearest = Math.round( t / interval ) * interval;
+    t = Math.abs( t - nearest ) < threshold ? nearest : t;
+  }
+
+  if ( settings?.snapBeatActive ) {
+    let interval = 60.0 / settings.snapBeatBPM;
+    const order = Math.floor( Math.log( ( range.t1 - range.t0 ) / interval ) / Math.log( 4.0 ) );
+    interval *= Math.pow( 4.0, order - 1.0 );
+    const threshold = dx2dt( 5.0, range, width );
+    const nearest = Math.round( t / interval ) * interval;
+    t = Math.abs( t - nearest ) < threshold ? nearest : t;
+  }
+
+  return t;
 }
 
 export function snapValue(
-  v: number,
+  value: number,
   range: ValueRange,
   height: number,
   settings: GUISettings | null
 ): number {
-  if ( !settings?.snapValueActive ) { return v; }
+  let v = value;
 
-  const interval = settings.snapValueInterval;
-  const threshold = dy2dv( -5.0, range, height );
-  const nearest = Math.round( v / interval ) * interval;
-  return Math.abs( v - nearest ) < threshold ? nearest : v;
+  if ( settings?.snapValueActive ) {
+    const interval = settings.snapValueInterval;
+    const threshold = dy2dv( -5.0, range, height );
+    const nearest = Math.round( v / interval ) * interval;
+    v = Math.abs( v - nearest ) < threshold ? nearest : v;
+  }
+
+  return v;
 }

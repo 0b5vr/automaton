@@ -56,6 +56,26 @@ const InspectorSnapping = (): JSX.Element => {
           } }
         />
       </InspectorItem>
+
+      <InspectorHr />
+
+      <InspectorItem name="Beat">
+        <BoolParam
+          value={ guiSettings.snapBeatActive }
+          onChange={ ( value ) => {
+            automaton.setGUISettings( 'snapBeatActive', value );
+          } }
+        />
+      </InspectorItem>
+      <InspectorItem name="BPM">
+        <NumberParam
+          type="float"
+          value={ guiSettings.snapBeatBPM }
+          onChange={ ( value ) => {
+            automaton.setGUISettings( 'snapBeatBPM', Math.max( 0.0, value ) );
+          } }
+        />
+      </InspectorItem>
     </> }
   </>;
 };
