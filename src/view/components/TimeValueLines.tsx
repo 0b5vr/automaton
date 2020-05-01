@@ -3,6 +3,17 @@ import { Colors } from '../constants/Colors';
 import React from 'react';
 import { Resolution } from '../utils/Resolution';
 import styled from 'styled-components';
+import { useSelector } from '../states/store';
+
+// == microcomponents ==============================================================================
+const Beat = ( { time }: { time: number } ): JSX.Element | null => {
+  const { snapBeatActive, snapBeatBPM } = useSelector( ( state ) => ( {
+    snapBeatActive: state.automaton.guiSettings.snapBeatActive,
+    snapBeatBPM: state.automaton.guiSettings.snapBeatBPM,
+  } ) );
+
+  return snapBeatActive ? <>{ ( time * snapBeatBPM / 60.0 ).toFixed( 3 ) }</> : null;
+};
 
 // == styles =======================================================================================
 const Line = styled.line`
@@ -26,6 +37,7 @@ const Circle = styled.circle`
 export interface TimeValueLinesProps {
   time?: number;
   value?: number;
+  showBeat?: boolean;
   range: TimeValueRange;
   size: Resolution;
 }
@@ -42,6 +54,7 @@ const TimeValueLines = ( props: TimeValueLinesProps ): JSX.Element => {
         <g transform={ `translate(${ x },${ size.height })` }>
           <Line y2={ -size.height } />
           <Text x="2" y="-2">{ time.toFixed( 3 ) }</Text>
+          <Text x="2" y="-12"><Beat time={ time } /></Text>
         </g>
       ) }
 
