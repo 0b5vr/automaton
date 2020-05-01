@@ -18,7 +18,7 @@ const NewCurveButton = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100%;
+  width: calc( 100% - 4px );
   height: ${ Metrics.curveListEntryHeight }px;
   margin: 2px;
   cursor: pointer;
