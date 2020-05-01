@@ -92,7 +92,7 @@ const CurveEditorFx = ( props: Props ): JSX.Element => {
   const dispatch = useDispatch();
   const checkDoubleClick = useDoubleClick();
   const curve = automaton?.getCurve( curveIndex ) || null;
-  const selectedFxs = useSelector( ( state ) => state.curveEditor.selectedItems.fxs );
+  const selectedFxs = useSelector( ( state ) => state.curveEditor.selected.fxs );
   const definition = fxDefinitions[ fx.def ];
 
   const grabFxBody = useCallback(
