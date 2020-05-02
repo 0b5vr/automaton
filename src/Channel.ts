@@ -121,17 +121,18 @@ export class Channel {
 
     for ( let i = this.__head; i < this.__items.length; i ++ ) {
       const item = this.__items[ i ];
-      let itemTime = time - item.time;
+      const { time: begin, end, length } = item;
+      let elapsed = time - begin;
 
-      if ( itemTime < 0.0 ) {
+      if ( elapsed < 0.0 ) {
         break;
       } else {
         let progress: number;
         let init: true | undefined;
         let uninit: true | undefined;
 
-        if ( item.length <= itemTime ) {
-          itemTime = item.length;
+        if ( length <= elapsed ) {
+          elapsed = length;
           progress = 1.0;
           uninit = true;
 
@@ -139,23 +140,23 @@ export class Channel {
             this.__head ++;
           }
         } else {
-          progress = item.length !== 0.0
-            ? itemTime / item.length
+          progress = length !== 0.0
+            ? elapsed / length
             : 1.0;
         }
 
-        if ( prevTime < item.time ) {
+        if ( prevTime < begin ) {
           init = true;
         }
 
-        value = item.getValue( itemTime );
+        value = item.getValue( elapsed );
 
         this.__listeners.forEach( ( listener ) => listener( {
           time,
-          elapsed: itemTime,
-          begin: item.time,
-          end: item.end,
-          length: item.length,
+          elapsed,
+          begin,
+          end,
+          length,
           value,
           progress,
           init,
