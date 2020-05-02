@@ -1,4 +1,4 @@
-import { SerializedChannelItem } from './SerializedChannelItem';
+import type { SerializedChannelItem } from './SerializedChannelItem';
 
 /**
  * Interface of a serialized channel.

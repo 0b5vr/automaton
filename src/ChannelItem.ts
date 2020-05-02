@@ -1,5 +1,5 @@
 import { Automaton, Curve } from '.';
-import { SerializedChannelItem } from './types/SerializedChannelItem';
+import type { SerializedChannelItem } from './types/SerializedChannelItem';
 
 /**
  * Represents an item of a [[Channel]].

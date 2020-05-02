@@ -1,8 +1,8 @@
 import { Automaton } from './Automaton';
-import { BezierNode } from './types/BezierNode';
-import { FxContext } from './types/FxDefinition';
-import { FxSection } from './types/FxSection';
-import { SerializedCurve } from './types/SerializedCurve';
+import type { BezierNode } from './types/BezierNode';
+import type { FxContext } from './types/FxDefinition';
+import type { FxSection } from './types/FxSection';
+import type { SerializedCurve } from './types/SerializedCurve';
 import { bezierEasing } from './utils/bezierEasing';
 
 /**

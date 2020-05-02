@@ -1,8 +1,8 @@
 /* eslint-env jest */
 
 import { Automaton } from '../Automaton';
-import { ChannelUpdateEvent } from '../Channel';
-import { SerializedAutomaton } from '../types';
+import type { ChannelUpdateEvent } from '../types/ChannelUpdateEvent';
+import type { SerializedAutomaton } from '../types/SerializedAutomaton';
 
 const data: SerializedAutomaton = {
   resolution: 100.0,
