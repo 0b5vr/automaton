@@ -98,7 +98,6 @@ const Header = ( { className }: HeaderProps ): JSX.Element => {
   const dispatch = useDispatch();
   const {
     automaton,
-    isDisabledTimeControls,
     isPlaying,
     settingsMode,
     historyIndex,
@@ -106,7 +105,6 @@ const Header = ( { className }: HeaderProps ): JSX.Element => {
     cantUndoThis
   } = useSelector( ( state ) => ( {
     automaton: state.automaton.instance,
-    isDisabledTimeControls: state.automaton.isDisabledTimeControls,
     isPlaying: state.automaton.isPlaying,
     settingsMode: state.settings.mode,
     historyIndex: state.history.index,
@@ -226,13 +224,11 @@ const Header = ( { className }: HeaderProps ): JSX.Element => {
   return (
     <Root className={ className }>
       <Section>
-        { !isDisabledTimeControls && (
-          <PlayPause
-            as={ isPlaying ? Icons.Pause : Icons.Play }
-            onClick={ handlePlay }
-            data-stalker="Play / Pause"
-          />
-        ) }
+        <PlayPause
+          as={ isPlaying ? Icons.Pause : Icons.Play }
+          onClick={ handlePlay }
+          data-stalker="Play / Pause"
+        />
         <StyledHeaderSeekbar />
       </Section>
       <Section>

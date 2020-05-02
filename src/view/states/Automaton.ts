@@ -40,7 +40,6 @@ export interface State {
   time: number;
   length: number;
   resolution: number;
-  isDisabledTimeControls: boolean;
   shouldSave: boolean;
   guiSettings: GUISettings;
 }
@@ -56,7 +55,6 @@ export const initialState: Readonly<State> = {
   time: 0.0,
   length: 1.0,
   resolution: 10.0,
-  isDisabledTimeControls: true,
   shouldSave: false,
   guiSettings: jsonCopy( defaultGUISettings )
 };
@@ -165,9 +163,6 @@ export type Action = {
   type: 'Automaton/ChangeResolution';
   resolution: number;
 } | {
-  type: 'Automaton/UpdateIsDisabledTimeControls';
-  isDisabledTimeControls: boolean;
-} | {
   type: 'Automaton/SetShouldSave';
   shouldSave: boolean;
 } | {
@@ -179,18 +174,7 @@ export type Action = {
 export const reducer: Reducer<State, Action> = ( state = initialState, action ) => {
   return produce( state, ( newState: State ) => {
     if ( action.type === 'Automaton/Purge' ) {
-      newState.channelNames = initialState.channelNames;
-      newState.channels = initialState.channels;
-      newState.curves = initialState.curves;
-      newState.curvesPreview = initialState.curvesPreview;
-      newState.fxDefinitions = initialState.fxDefinitions;
-      newState.isPlaying = initialState.isPlaying;
-      newState.time = initialState.time;
-      newState.length = initialState.length;
-      newState.resolution = initialState.resolution;
-      newState.isDisabledTimeControls = initialState.isDisabledTimeControls;
-      newState.shouldSave = initialState.shouldSave;
-      newState.guiSettings = initialState.guiSettings;
+      newState = jsonCopy( initialState );
     } else if ( action.type === 'Automaton/SetInstance' ) {
       newState.instance = action.automaton;
     } else if ( action.type === 'Automaton/AddFxDefinition' ) {
@@ -261,8 +245,6 @@ export const reducer: Reducer<State, Action> = ( state = initialState, action ) 
       newState.length = action.length;
     } else if ( action.type === 'Automaton/ChangeResolution' ) {
       newState.resolution = action.resolution;
-    } else if ( action.type === 'Automaton/UpdateIsDisabledTimeControls' ) {
-      newState.isDisabledTimeControls = action.isDisabledTimeControls;
     } else if ( action.type === 'Automaton/SetShouldSave' ) {
       newState.shouldSave = action.shouldSave;
     } else if ( action.type === 'Automaton/UpdateGUISettings' ) {

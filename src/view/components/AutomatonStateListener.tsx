@@ -308,11 +308,6 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
     } );
 
     dispatch( {
-      type: 'Automaton/UpdateIsDisabledTimeControls',
-      isDisabledTimeControls: automaton.isDisabledTimeControls
-    } );
-
-    dispatch( {
       type: 'Automaton/SetShouldSave',
       shouldSave: automaton.shouldSave
     } );

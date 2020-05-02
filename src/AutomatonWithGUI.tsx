@@ -32,11 +32,6 @@ export interface AutomatonWithGUIOptions {
   isPlaying?: boolean;
 
   /**
-   * Hide play button / disable seeking interactions.
-   */
-  disableTimeControls?: boolean;
-
-  /**
    * Disable warnings for not used channels.
    * Intended to be used by automaton-electron.
    */
@@ -112,12 +107,6 @@ export class AutomatonWithGUI extends Automaton
   protected __isPlaying: boolean;
 
   /**
-   * Whether it disables any time controls interfaces or not.
-   * Can be specified via {@link AutomatonWithGUIOptions}.
-   */
-  private __isDisabledTimeControls: boolean = false;
-
-  /**
    * Whether it disables not used warning for channels or not.
    * Can be specified via {@link AutomatonWithGUIOptions}.
    */
@@ -191,14 +180,6 @@ export class AutomatonWithGUI extends Automaton
   }
 
   /**
-   * Whether it disables any time controls or not.
-   * Can be specified via {@link AutomatonWithGUIOptions}.
-   */
-  public get isDisabledTimeControls(): boolean {
-    return this.__isDisabledTimeControls;
-  }
-
-  /**
    * Whether it has any changes that is not saved yet or not.
    */
   public get shouldSave(): boolean {
@@ -241,7 +222,6 @@ export class AutomatonWithGUI extends Automaton
 
     this.overrideSave = options.overrideSave;
     this.saveContextMenuCommands = options.saveContextMenuCommands;
-    this.__isDisabledTimeControls = options.disableTimeControls || false;
     this.__isDisabledChannelNotUsedWarning = options.disableChannelNotUsedWarning || false;
 
     // if `options.disableChannelNotUsedWarning` is true, mark every channels as used

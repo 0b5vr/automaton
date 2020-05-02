@@ -61,10 +61,10 @@ const StyledBarFG = styled( BarFG )<{ isSeeking: boolean; isHovering: boolean }>
   pointer-events: none;
 `;
 
-const Root = styled.div<{ isDisabledTimeControls: boolean }>`
+const Root = styled.div`
   text-align: right;
   position: relative;
-  cursor: ${ ( { isDisabledTimeControls } ) => isDisabledTimeControls ? 'auto' : 'pointer' };
+  cursor: pointer;
 `;
 
 // == component ====================================================================================
@@ -76,14 +76,12 @@ const HeaderSeekbar = ( { className }: HeaderSeekbarProps ): JSX.Element => {
   const dispatch = useDispatch();
   const {
     automaton,
-    isDisabledTimeControls,
     length,
     isPlaying,
     isSeeking,
     isSeekbarHovered
   } = useSelector( ( state ) => ( {
     automaton: state.automaton.instance,
-    isDisabledTimeControls: state.automaton.isDisabledTimeControls,
     length: state.automaton.length,
     isPlaying: state.automaton.isPlaying,
     isSeeking: state.header.isSeeking,
@@ -94,7 +92,6 @@ const HeaderSeekbar = ( { className }: HeaderSeekbarProps ): JSX.Element => {
     mouseCombo( {
       [ MouseComboBit.LMB ]: ( event ) => {
         if ( !automaton ) { return; }
-        if ( isDisabledTimeControls ) { return; }
 
         const width = ( event.target as HTMLDivElement ).clientWidth;
         const x = event.clientX - event.nativeEvent.offsetX;
@@ -115,29 +112,26 @@ const HeaderSeekbar = ( { className }: HeaderSeekbarProps ): JSX.Element => {
         );
       }
     } ),
-    [ isDisabledTimeControls, automaton, isPlaying ]
+    [ automaton, isPlaying ]
   );
 
   const handleMouseEnter = useCallback(
     () => {
-      if ( isDisabledTimeControls ) { return; }
       dispatch( { type: 'Header/SeekbarEnter' } );
     },
-    [ isDisabledTimeControls ]
+    []
   );
 
   const handleMouseLeave = useCallback(
     () => {
-      if ( isDisabledTimeControls ) { return; }
       dispatch( { type: 'Header/SeekbarLeave' } );
     },
-    [ isDisabledTimeControls ]
+    []
   );
 
   return (
     <Root
       className={ className }
-      isDisabledTimeControls={ isDisabledTimeControls }
       onMouseDown={ handleMouseDown }
       onMouseEnter={ handleMouseEnter }
       onMouseLeave={ handleMouseLeave }
