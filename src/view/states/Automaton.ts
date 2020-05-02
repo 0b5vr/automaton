@@ -40,7 +40,6 @@ export interface State {
   time: number;
   length: number;
   resolution: number;
-  enableTimeControls: boolean;
   shouldSave: boolean;
   guiSettings: GUISettings;
 }
@@ -56,7 +55,6 @@ export const initialState: Readonly<State> = {
   time: 0.0,
   length: 1.0,
   resolution: 10.0,
-  enableTimeControls: true,
   shouldSave: false,
   guiSettings: jsonCopy( defaultGUISettings )
 };
@@ -165,9 +163,6 @@ export type Action = {
   type: 'Automaton/ChangeResolution';
   resolution: number;
 } | {
-  type: 'Automaton/ChangeEnableTimeControls';
-  enableTimeControls: boolean;
-} | {
   type: 'Automaton/SetShouldSave';
   shouldSave: boolean;
 } | {
@@ -250,8 +245,6 @@ export const reducer: Reducer<State, Action> = ( state = initialState, action ) 
       newState.length = action.length;
     } else if ( action.type === 'Automaton/ChangeResolution' ) {
       newState.resolution = action.resolution;
-    } else if ( action.type === 'Automaton/ChangeEnableTimeControls' ) {
-      newState.enableTimeControls = action.enableTimeControls;
     } else if ( action.type === 'Automaton/SetShouldSave' ) {
       newState.shouldSave = action.shouldSave;
     } else if ( action.type === 'Automaton/UpdateGUISettings' ) {

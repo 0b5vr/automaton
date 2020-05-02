@@ -61,10 +61,10 @@ const StyledBarFG = styled( BarFG )<{ isSeeking: boolean; isHovering: boolean }>
   pointer-events: none;
 `;
 
-const Root = styled.div<{ enableTimeControls: boolean }>`
+const Root = styled.div`
   text-align: right;
   position: relative;
-  cursor: ${ ( { enableTimeControls } ) => enableTimeControls ? 'pointer' : 'auto' };
+  cursor: pointer;
 `;
 
 // == component ====================================================================================
@@ -76,14 +76,12 @@ const HeaderSeekbar = ( { className }: HeaderSeekbarProps ): JSX.Element => {
   const dispatch = useDispatch();
   const {
     automaton,
-    enableTimeControls,
     length,
     isPlaying,
     isSeeking,
     isSeekbarHovered
   } = useSelector( ( state ) => ( {
     automaton: state.automaton.instance,
-    enableTimeControls: state.automaton.enableTimeControls,
     length: state.automaton.length,
     isPlaying: state.automaton.isPlaying,
     isSeeking: state.header.isSeeking,
@@ -94,7 +92,6 @@ const HeaderSeekbar = ( { className }: HeaderSeekbarProps ): JSX.Element => {
     mouseCombo( {
       [ MouseComboBit.LMB ]: ( event ) => {
         if ( !automaton ) { return; }
-        if ( !enableTimeControls ) { return; }
 
         const width = ( event.target as HTMLDivElement ).clientWidth;
         const x = event.clientX - event.nativeEvent.offsetX;
@@ -115,29 +112,26 @@ const HeaderSeekbar = ( { className }: HeaderSeekbarProps ): JSX.Element => {
         );
       }
     } ),
-    [ enableTimeControls, automaton, isPlaying ]
+    [ automaton, isPlaying ]
   );
 
   const handleMouseEnter = useCallback(
     () => {
-      if ( !enableTimeControls ) { return; }
       dispatch( { type: 'Header/SeekbarEnter' } );
     },
-    [ enableTimeControls ]
+    []
   );
 
   const handleMouseLeave = useCallback(
     () => {
-      if ( !enableTimeControls ) { return; }
       dispatch( { type: 'Header/SeekbarLeave' } );
     },
-    [ enableTimeControls ]
+    []
   );
 
   return (
     <Root
       className={ className }
-      enableTimeControls={ enableTimeControls }
       onMouseDown={ handleMouseDown }
       onMouseEnter={ handleMouseEnter }
       onMouseLeave={ handleMouseLeave }

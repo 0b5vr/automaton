@@ -32,11 +32,6 @@ export interface AutomatonWithGUIOptions {
   isPlaying?: boolean;
 
   /**
-   * Show play-pause button / enable seeking interactions.
-   */
-  enableTimeControls?: boolean;
-
-  /**
    * Disable warnings for not used channels.
    * Intended to be used by automaton-electron.
    */
@@ -112,12 +107,6 @@ export class AutomatonWithGUI extends Automaton
   protected __isPlaying: boolean;
 
   /**
-   * Whether it enables time controls (play-pause button / seek interactions) or not.
-   * Can be specified via {@link AutomatonWithGUIOptions}.
-   */
-  private __enableTimeControls: boolean = false;
-
-  /**
    * Whether it disables not used warning for channels or not.
    * Can be specified via {@link AutomatonWithGUIOptions}.
    */
@@ -191,19 +180,6 @@ export class AutomatonWithGUI extends Automaton
   }
 
   /**
-   * Whether it enables time controls (play-pause button / seek interactions) or not.
-   * Can be specified via {@link AutomatonWithGUIOptions}.
-   */
-  public get enableTimeControls(): boolean {
-    return this.__enableTimeControls;
-  }
-
-  public set enableTimeControls( value: boolean ) {
-    this.__enableTimeControls = value;
-    this.__emit( 'changeEnableTimeControls', { enableTimeControls: value } );
-  }
-
-  /**
    * Whether it has any changes that is not saved yet or not.
    */
   public get shouldSave(): boolean {
@@ -246,7 +222,6 @@ export class AutomatonWithGUI extends Automaton
 
     this.overrideSave = options.overrideSave;
     this.saveContextMenuCommands = options.saveContextMenuCommands;
-    this.__enableTimeControls = options.enableTimeControls || false;
     this.__isDisabledChannelNotUsedWarning = options.disableChannelNotUsedWarning || false;
 
     // if `options.disableChannelNotUsedWarning` is true, mark every channels as used
@@ -767,7 +742,6 @@ export interface AutomatonWithGUIEvents {
   changeResolution: { resolution: number };
   updateGUISettings: { settings: GUISettings };
   changeShouldSave: { shouldSave: boolean };
-  changeEnableTimeControls: { enableTimeControls: boolean };
 }
 
 export interface AutomatonWithGUI extends EventEmittable<AutomatonWithGUIEvents> {}

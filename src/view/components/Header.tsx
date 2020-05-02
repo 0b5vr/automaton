@@ -47,15 +47,15 @@ const Button = styled.img<{ disabled?: boolean; active?: boolean }>`
   }
 `;
 
-const PlayPause = styled.img<{ disabled?: boolean }>`
+const PlayPause = styled.img`
   width: ${ Metrics.headerHeight + 4 }px;
   height: ${ Metrics.headerHeight }px;
   padding: 2px 4px;
-  fill: ${ ( { disabled } ) => disabled ? Colors.gray : Colors.fore };
+  fill: ${ Colors.fore };
   cursor: pointer;
 
   &:hover {
-    fill: ${ ( { disabled } ) => disabled ? Colors.gray : Colors.foredark };
+    fill: ${ Colors.foredark };
   }
 `;
 
@@ -98,7 +98,6 @@ const Header = ( { className }: HeaderProps ): JSX.Element => {
   const dispatch = useDispatch();
   const {
     automaton,
-    enableTimeControls,
     isPlaying,
     settingsMode,
     historyIndex,
@@ -106,7 +105,6 @@ const Header = ( { className }: HeaderProps ): JSX.Element => {
     cantUndoThis
   } = useSelector( ( state ) => ( {
     automaton: state.automaton.instance,
-    enableTimeControls: state.automaton.enableTimeControls,
     isPlaying: state.automaton.isPlaying,
     settingsMode: state.settings.mode,
     historyIndex: state.history.index,
@@ -117,7 +115,6 @@ const Header = ( { className }: HeaderProps ): JSX.Element => {
   const handlePlay = useCallback(
     (): void => {
       if ( !automaton ) { return; }
-      if ( !automaton.enableTimeControls ) { return; }
       automaton.togglePlay();
     },
     [ automaton ]
@@ -230,8 +227,7 @@ const Header = ( { className }: HeaderProps ): JSX.Element => {
         <PlayPause
           as={ isPlaying ? Icons.Pause : Icons.Play }
           onClick={ handlePlay }
-          disabled={ !enableTimeControls }
-          data-stalker={ enableTimeControls ? 'Play / Pause' : 'Time controls are disabled' }
+          data-stalker="Play / Pause"
         />
         <StyledHeaderSeekbar />
       </Section>
