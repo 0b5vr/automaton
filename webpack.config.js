@@ -27,6 +27,7 @@ Repository: ${ packageJson.repository }`
     output: {
       path: path.join( __dirname, 'dist' ),
       filename: DEV ? 'automaton-with-gui.js' : 'automaton-with-gui.min.js',
+      library: 'AUTOMATON_WITH_GUI',
       libraryTarget: 'umd',
       globalObject: 'this',
     },
