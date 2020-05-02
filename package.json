@@ -1,13 +1,17 @@
 {
   "name": "@fms-cat/automaton",
-  "version": "3.0.0-beta3",
+  "version": "3.0.0-beta4",
   "description": "Animation engine for creative coding",
   "main": "dist/automaton.min.js",
   "repository": "https://github.com/FMS-Cat/automaton",
   "author": "FMS-Cat",
   "types": "types/index.d.ts",
   "typesVersions": {
-    "<3.8": { "*": [ "ts3.4/*" ] }
+    "<3.8": {
+      "*": [
+        "ts3.4/*"
+      ]
+    }
   },
   "license": "MIT",
   "scripts": {
