@@ -1132,10 +1132,10 @@
   resolved "https://registry.yarnpkg.com/@emotion/unitless/-/unitless-0.7.5.tgz#77211291c1900a700b8a78cfafda3160d76949ed"
   integrity sha512-OWORNpfjMsSSUBVrRBVGECkhWcULOAJz9ZW8uK9qgxD+87M7jHRcvh/A96XXNhXTLmKcoYSQtBEX7lHMO7YRwg==
 
-"@fms-cat/automaton@3.0.0-beta4":
-  version "3.0.0-beta4"
-  resolved "https://registry.yarnpkg.com/@fms-cat/automaton/-/automaton-3.0.0-beta4.tgz#75d33d1acc51e4f9d80ac6e1586c3326aef26d7b"
-  integrity sha512-fH7FQtmAR2jpswT4ldbwdLN65mdIQ3eHrccsIJ41w2f09wc4F7CA11Selv4mAXxPb5T8c5zRuj2IrCBp+/IumQ==
+"@fms-cat/automaton@3.0.0-beta4.bruh":
+  version "3.0.0-beta4.bruh"
+  resolved "https://registry.yarnpkg.com/@fms-cat/automaton/-/automaton-3.0.0-beta4.bruh.tgz#3367af5a472df445f9b7af418ee12655eb89a7ff"
+  integrity sha512-FPc051tMDxvxuOtxXmINhtf7phgv8wvybi7vKPdqVGLL00QNko5Vt7bUWTuFAPvCGmJUAYy0uiwvaYoIn1MfuA==
 
 "@istanbuljs/load-nyc-config@^1.0.0":
   version "1.0.0"
