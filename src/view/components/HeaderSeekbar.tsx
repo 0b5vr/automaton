@@ -61,10 +61,10 @@ const StyledBarFG = styled( BarFG )<{ isSeeking: boolean; isHovering: boolean }>
   pointer-events: none;
 `;
 
-const Root = styled.div<{ isDisabledTimeControls: boolean }>`
+const Root = styled.div<{ enableTimeControls: boolean }>`
   text-align: right;
   position: relative;
-  cursor: ${ ( { isDisabledTimeControls } ) => isDisabledTimeControls ? 'auto' : 'pointer' };
+  cursor: ${ ( { enableTimeControls } ) => enableTimeControls ? 'pointer' : 'auto' };
 `;
 
 // == component ====================================================================================
@@ -76,14 +76,14 @@ const HeaderSeekbar = ( { className }: HeaderSeekbarProps ): JSX.Element => {
   const dispatch = useDispatch();
   const {
     automaton,
-    isDisabledTimeControls,
+    enableTimeControls,
     length,
     isPlaying,
     isSeeking,
     isSeekbarHovered
   } = useSelector( ( state ) => ( {
     automaton: state.automaton.instance,
-    isDisabledTimeControls: state.automaton.isDisabledTimeControls,
+    enableTimeControls: state.automaton.enableTimeControls,
     length: state.automaton.length,
     isPlaying: state.automaton.isPlaying,
     isSeeking: state.header.isSeeking,
@@ -94,7 +94,7 @@ const HeaderSeekbar = ( { className }: HeaderSeekbarProps ): JSX.Element => {
     mouseCombo( {
       [ MouseComboBit.LMB ]: ( event ) => {
         if ( !automaton ) { return; }
-        if ( isDisabledTimeControls ) { return; }
+        if ( !enableTimeControls ) { return; }
 
         const width = ( event.target as HTMLDivElement ).clientWidth;
         const x = event.clientX - event.nativeEvent.offsetX;
@@ -115,29 +115,29 @@ const HeaderSeekbar = ( { className }: HeaderSeekbarProps ): JSX.Element => {
         );
       }
     } ),
-    [ isDisabledTimeControls, automaton, isPlaying ]
+    [ enableTimeControls, automaton, isPlaying ]
   );
 
   const handleMouseEnter = useCallback(
     () => {
-      if ( isDisabledTimeControls ) { return; }
+      if ( !enableTimeControls ) { return; }
       dispatch( { type: 'Header/SeekbarEnter' } );
     },
-    [ isDisabledTimeControls ]
+    [ enableTimeControls ]
   );
 
   const handleMouseLeave = useCallback(
     () => {
-      if ( isDisabledTimeControls ) { return; }
+      if ( !enableTimeControls ) { return; }
       dispatch( { type: 'Header/SeekbarLeave' } );
     },
-    [ isDisabledTimeControls ]
+    [ enableTimeControls ]
   );
 
   return (
     <Root
       className={ className }
-      isDisabledTimeControls={ isDisabledTimeControls }
+      enableTimeControls={ enableTimeControls }
       onMouseDown={ handleMouseDown }
       onMouseEnter={ handleMouseEnter }
       onMouseLeave={ handleMouseLeave }

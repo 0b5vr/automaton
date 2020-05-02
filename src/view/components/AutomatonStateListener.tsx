@@ -308,8 +308,8 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
     } );
 
     dispatch( {
-      type: 'Automaton/UpdateIsDisabledTimeControls',
-      isDisabledTimeControls: automaton.isDisabledTimeControls
+      type: 'Automaton/ChangeEnableTimeControls',
+      enableTimeControls: automaton.enableTimeControls
     } );
 
     dispatch( {
@@ -432,6 +432,16 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
         } );
       } );
 
+      const handleChangeEnableTimeControls = automaton.on(
+        'changeEnableTimeControls',
+        ( { enableTimeControls } ) => {
+          dispatch( {
+            type: 'Automaton/ChangeEnableTimeControls',
+            enableTimeControls: enableTimeControls
+          } );
+        }
+      );
+
       return () => {
         automaton.off( 'load', handleLoad );
         automaton.off( 'update', handleUpdate );
@@ -448,6 +458,7 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
         automaton.off( 'setLabel', handleSetLabel );
         automaton.off( 'deleteLabel', handleDeleteLabel );
         automaton.off( 'changeShouldSave', handleChangeShouldSave );
+        automaton.off( 'changeEnableTimeControls', handleChangeEnableTimeControls );
       };
     },
     [ automaton ]

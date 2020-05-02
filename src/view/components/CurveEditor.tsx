@@ -224,29 +224,6 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
     [ range, rect, curve ]
   );
 
-  const startSeek = useCallback(
-    ( x: number ): void => {
-      if ( !automaton ) { return; }
-      if ( automaton.isDisabledTimeControls ) { return; }
-
-      const isPlaying = automaton.isPlaying;
-
-      automaton.pause();
-      automaton.seek( x2t( x, range, rect.width ) );
-
-      registerMouseEvent(
-        ( event ) => {
-          automaton.seek( x2t( event.clientX - rect.left, range, rect.width ) );
-        },
-        ( event ) => {
-          automaton.seek( x2t( event.clientX - rect.left, range, rect.width ) );
-          if ( isPlaying ) { automaton.play(); }
-        }
-      );
-    },
-    [ automaton, range, rect ]
-  );
-
   const handleMouseDown = useCallback(
     mouseCombo( {
       [ MouseComboBit.LMB ]: ( event ) => {
@@ -254,16 +231,13 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
           createNodeAndGrab( event.clientX - rect.left, event.clientY - rect.top );
         }
       },
-      [ MouseComboBit.LMB + MouseComboBit.Alt ]: ( event ) => {
-        startSeek( event.clientX - rect.left );
-      },
       [ MouseComboBit.MMB ]: () => {
         registerMouseEvent(
           ( event, movementSum ) => move( movementSum.x, movementSum.y )
         );
       }
     } ),
-    [ createNodeAndGrab, startSeek, rect, move ]
+    [ createNodeAndGrab, rect, move ]
   );
 
   const createNode = useCallback(

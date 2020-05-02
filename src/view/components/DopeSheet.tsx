@@ -69,7 +69,7 @@ const DopeSheet = ( { className }: DopeSheetProps ): JSX.Element => {
   const startSeek = useCallback(
     ( x: number ): void => {
       if ( !automaton ) { return; }
-      if ( automaton.isDisabledTimeControls ) { return; }
+      if ( !automaton.enableTimeControls ) { return; }
 
       const isPlaying = automaton.isPlaying;
 
