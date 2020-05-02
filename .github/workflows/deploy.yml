@@ -76,9 +76,6 @@ jobs:
       with:
         name: docs
         path: pages/docs
-    - name: Copy index.html
-      shell: bash
-      run: cp index.html pages/index.html
     - name: Deploy gh-pages
       uses: peaceiris/actions-gh-pages@v2
       env:
