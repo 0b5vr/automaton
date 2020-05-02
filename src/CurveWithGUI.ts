@@ -746,7 +746,9 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
    * Serialize its fxs.
    * @returns Serialized fxs
    */
-  private __serializeFxs(): SerializedFxSection[] {
+  private __serializeFxs(): SerializedFxSection[] | undefined {
+    if ( this.__fxs.length === 0 ) { return undefined; }
+
     return this.__fxs.map( ( fx ) => {
       const data: SerializedFxSection = {
         def: fx.def,
