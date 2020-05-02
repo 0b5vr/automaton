@@ -1,5 +1,5 @@
-import { SerializedChannel } from './SerializedChannel';
-import { SerializedCurve } from './SerializedCurve';
+import type { SerializedChannel } from './SerializedChannel';
+import type { SerializedCurve } from './SerializedCurve';
 
 /**
  * Interface of serialized automaton data.

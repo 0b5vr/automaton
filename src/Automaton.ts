@@ -1,7 +1,8 @@
-import { Channel, ChannelUpdateEvent } from './Channel';
+import { Channel } from './Channel';
+import type { ChannelUpdateEvent } from './types/ChannelUpdateEvent';
 import { Curve } from './Curve';
-import { FxDefinition } from './types/FxDefinition';
-import { SerializedAutomaton } from './types/SerializedAutomaton';
+import type { FxDefinition } from './types/FxDefinition';
+import type { SerializedAutomaton } from './types/SerializedAutomaton';
 
 /**
  * IT'S AUTOMATON!

@@ -1,8 +1,9 @@
 /* eslint-env jest */
 
-import { SerializedAutomaton, SerializedChannel } from '../types';
 import { Automaton } from '../Automaton';
 import { Channel } from '../Channel';
+import type { SerializedAutomaton } from '../types/SerializedAutomaton';
+import type { SerializedChannel } from '../types/SerializedChannel';
 
 const data: SerializedAutomaton = {
   resolution: 100.0,

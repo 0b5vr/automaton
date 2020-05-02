@@ -1,4 +1,4 @@
-import { BezierNode } from '../types/BezierNode';
+import type { BezierNode } from '../types/BezierNode';
 
 interface CubicBezierControlPoints {
   p0: number;
