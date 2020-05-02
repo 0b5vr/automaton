@@ -1,4 +1,5 @@
 export type { BezierControlPoint, BezierNode, SerializedBezierNode } from './types/BezierNode';
+export type { ChannelUpdateEvent } from './types/ChannelUpdateEvent';
 export type { FxContext, FxDefinition, FxParam } from './types/FxDefinition';
 export type { FxSection, SerializedFxSection } from './types/FxSection';
 export type { SerializedAutomaton } from './types/SerializedAutomaton';
