@@ -27,6 +27,7 @@ Repository: ${ packageJson.repository }`
     output: {
       path: path.join( __dirname, 'dist' ),
       filename: DEV ? 'automaton.js' : 'automaton.min.js',
+      library: 'AUTOMATON',
       libraryTarget: 'umd',
       globalObject: 'this',
     },
