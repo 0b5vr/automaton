@@ -3,9 +3,29 @@
  */
 export interface ChannelUpdateEvent {
   /**
-   * Current time in the current item.
+   * Current time.
    */
   time: number;
+
+  /**
+   * Current elapsed time since the item started.
+   */
+  elapsed: number;
+
+  /**
+   * Beginning time of the current item.
+   */
+  begin: number;
+
+  /**
+   * Ending time of the current item.
+   */
+  end: number;
+
+  /**
+   * Length of the current item.
+   */
+  length: number;
 
   /**
    * Current value of the channel.

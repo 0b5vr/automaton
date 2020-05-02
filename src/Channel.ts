@@ -151,7 +151,11 @@ export class Channel {
         value = item.getValue( itemTime );
 
         this.__listeners.forEach( ( listener ) => listener( {
-          time: itemTime,
+          time,
+          elapsed: itemTime,
+          begin: item.time,
+          end: item.end,
+          length: item.length,
           value,
           progress,
           init,
