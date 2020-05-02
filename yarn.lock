@@ -3235,6 +3235,14 @@ domutils@^1.7.0:
     dom-serializer "0"
     domelementtype "1"
 
+downlevel-dts@^0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/downlevel-dts/-/downlevel-dts-0.4.0.tgz#43f9f649c8b137373d76b4ee396d5a0227c10ddb"
+  integrity sha512-nh5vM3n2pRhPwZqh0iWo5gpItPAYEGEWw9yd0YpI+lO60B7A3A6iJlxDbt7kKVNbqBXKsptL+jwE/Yg5Go66WQ==
+  dependencies:
+    shelljs "^0.8.3"
+    typescript "^3.8.0-dev.20200111"
+
 duplexify@^3.4.2, duplexify@^3.6.0:
   version "3.7.1"
   resolved "https://registry.yarnpkg.com/duplexify/-/duplexify-3.7.1.tgz#2a4df5317f6ccfd91f86d6fd25d8d8a103b88309"
@@ -8477,7 +8485,7 @@ typedoc@^0.17.4:
     shelljs "^0.8.3"
     typedoc-default-themes "^0.10.0"
 
-typescript@^3.8.3:
+typescript@^3.8.0-dev.20200111, typescript@^3.8.3:
   version "3.8.3"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.8.3.tgz#409eb8544ea0335711205869ec458ab109ee1061"
   integrity sha512-MYlEfn5VrLNsgudQTVJeNaQFUAI7DkhnOjdpAp4T+ku1TfQClewlbSuTVHiA+8skNBgaf02TL/kLOvig4y3G8w==

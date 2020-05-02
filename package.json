@@ -6,6 +6,13 @@
   "repository": "https://github.com/FMS-Cat/automaton-with-gui",
   "author": "FMS-Cat",
   "types": "types/index.d.ts",
+  "typesVersions": {
+    "<3.8": {
+      "*": [
+        "ts3.4/*"
+      ]
+    }
+  },
   "license": "MIT",
   "private": false,
   "scripts": {
@@ -16,7 +23,7 @@
     "build": "yarn build-dev && yarn build-prod && yarn types",
     "build-dev": "webpack --mode development",
     "build-prod": "webpack --mode production",
-    "types": "tsc --emitDeclarationOnly",
+    "types": "tsc --emitDeclarationOnly && downlevel-dts . ts3.4",
     "docs": "typedoc --out docs --mode file --excludeNotExported",
     "lint": "eslint \"src/**/*.{ts,tsx}\"",
     "test": "jest"
@@ -43,6 +50,7 @@
     "@typescript-eslint/parser": "^2.26.0",
     "babel-loader": "^8.1.0",
     "cross-env": "^7.0.2",
+    "downlevel-dts": "^0.4.0",
     "eslint": "^6.8.0",
     "eslint-plugin-jest": "^23.8.2",
     "eslint-plugin-react": "^7.19.0",
