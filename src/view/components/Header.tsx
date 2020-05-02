@@ -47,15 +47,15 @@ const Button = styled.img<{ disabled?: boolean; active?: boolean }>`
   }
 `;
 
-const PlayPause = styled.img`
+const PlayPause = styled.img<{ disabled?: boolean }>`
   width: ${ Metrics.headerHeight + 4 }px;
   height: ${ Metrics.headerHeight }px;
   padding: 2px 4px;
-  fill: ${ Colors.fore };
+  fill: ${ ( { disabled } ) => disabled ? Colors.gray : Colors.fore };
   cursor: pointer;
 
   &:hover {
-    fill: ${ Colors.foredark };
+    fill: ${ ( { disabled } ) => disabled ? Colors.gray : Colors.foredark };
   }
 `;
 
@@ -117,6 +117,7 @@ const Header = ( { className }: HeaderProps ): JSX.Element => {
   const handlePlay = useCallback(
     (): void => {
       if ( !automaton ) { return; }
+      if ( !automaton.enableTimeControls ) { return; }
       automaton.togglePlay();
     },
     [ automaton ]
@@ -226,13 +227,12 @@ const Header = ( { className }: HeaderProps ): JSX.Element => {
   return (
     <Root className={ className }>
       <Section>
-        { enableTimeControls && (
-          <PlayPause
-            as={ isPlaying ? Icons.Pause : Icons.Play }
-            onClick={ handlePlay }
-            data-stalker="Play / Pause"
-          />
-        ) }
+        <PlayPause
+          as={ isPlaying ? Icons.Pause : Icons.Play }
+          onClick={ handlePlay }
+          disabled={ !enableTimeControls }
+          data-stalker={ enableTimeControls ? 'Play / Pause' : 'Time controls are disabled' }
+        />
         <StyledHeaderSeekbar />
       </Section>
       <Section>
