@@ -120,7 +120,8 @@ function transRect( fn ) {
   const bounce = auto( 'rect/bounce' );
 
   // FUN PART: achieve a deltaTime using `getValue`!
-  const deltaY = ( y - automaton.getChannel( 'rect/y' ).getValue( time - 0.001 ) ) / 0.001;
+  const prevY = automaton.getChannel( 'rect/y' ).getValue( time - 0.001 ); // grab a value by the little bit previous timepoint
+  const deltaY = ( y - prevY ) / 0.001;
   rectPrevY = y;
 
   context.save();
