@@ -7,6 +7,7 @@ import { ChannelWithGUI } from './ChannelWithGUI';
 import { ContextMenuCommand } from './view/states/ContextMenu';
 import { CurveWithGUI } from './CurveWithGUI';
 import { EventEmittable } from './mixins/EventEmittable';
+import { MinimizeOptions } from './types/MinimizeOptions';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Serializable } from './types/Serializable';
@@ -72,8 +73,11 @@ export class AutomatonWithGUI extends Automaton
    * Minimize serialized data for prod use.
    * @param data The original data
    */
-  public static minimizeData( data: SerializedAutomatonWithGUI ): SerializedAutomaton {
-    return minimizeData( data );
+  public static minimizeData(
+    data: SerializedAutomatonWithGUI,
+    options: MinimizeOptions
+  ): SerializedAutomaton {
+    return minimizeData( data, options );
   }
 
   /**

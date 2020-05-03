@@ -23,12 +23,18 @@ export interface InspectorItemProps {
   className?: string;
   children?: ReactNode;
   name?: string;
+  description?: string;
 }
 
-const InspectorItem = ( { className, children, name }: InspectorItemProps ): JSX.Element => (
+const InspectorItem = ( {
+  className,
+  children,
+  name,
+  description
+}: InspectorItemProps ): JSX.Element => (
   <Root
     className={ className }
-    data-stalker={ name }
+    data-stalker={ description ?? name }
   >
     <Label>{ name }</Label>
     { children }

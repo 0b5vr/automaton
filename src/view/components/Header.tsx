@@ -224,8 +224,13 @@ const Header = ( { className }: HeaderProps ): JSX.Element => {
               name: 'Minimal Export',
               description: 'Same as Save, but way more minimized data.',
               callback: () => {
-                const data = AutomatonWithGUI.minimizeData( automaton.serialize() );
-                save( JSON.stringify( data ) );
+                const data = automaton.serialize();
+                const options = {
+                  precisionTime: automaton.guiSettings.minimizedPrecisionTime,
+                  precisionValue: automaton.guiSettings.minimizedPrecisionValue
+                };
+                const minimized = AutomatonWithGUI.minimizeData( data, options );
+                save( JSON.stringify( minimized ) );
               }
             }
           ]
