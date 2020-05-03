@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { performRedo, performUndo } from '../history/HistoryCommand';
 import { useDispatch, useSelector } from '../states/store';
+import { AutomatonWithGUI } from '../../AutomatonWithGUI';
 import { Colors } from '../constants/Colors';
 import { HeaderSeekbar } from './HeaderSeekbar';
 import { Icons } from '../icons/Icons';
@@ -112,6 +113,24 @@ const Header = ( { className }: HeaderProps ): JSX.Element => {
     cantUndoThis: state.history.cantUndoThis
   } ) );
 
+  const save = useCallback(
+    ( data: string ): void => {
+      if ( !automaton ) { return; }
+
+      writeClipboard( data );
+
+      automaton.shouldSave = false;
+
+      showToasty( {
+        dispatch,
+        kind: 'info',
+        message: 'Copied to clipboard!',
+        timeout: 2.0
+      } );
+    },
+    [ automaton ]
+  );
+
   const handlePlay = useCallback(
     (): void => {
       if ( !automaton ) { return; }
@@ -169,34 +188,47 @@ const Header = ( { className }: HeaderProps ): JSX.Element => {
         automaton.overrideSave();
       } else {
         const data = automaton.serialize();
-
-        writeClipboard( JSON.stringify( data ) );
-
-        automaton.shouldSave = false;
-
-        showToasty( {
-          dispatch,
-          kind: 'info',
-          message: 'Copied to clipboard!',
-          timeout: 2.0
-        } );
+        save( JSON.stringify( data ) );
       }
     },
-    [ automaton ]
+    [ automaton, save ]
   );
 
   const handleSaveContextMenu = useCallback(
     ( event: MouseEvent ) => {
       if ( !automaton ) { return; }
 
-      if ( automaton.saveContextMenuCommands ) {
-        event.preventDefault();
-        event.stopPropagation();
+      event.preventDefault();
+      event.stopPropagation();
 
+      if ( automaton.saveContextMenuCommands ) {
         dispatch( {
           type: 'ContextMenu/Open',
           position: { x: event.clientX, y: event.clientY },
           commands: automaton.saveContextMenuCommands
+        } );
+      } else {
+        dispatch( {
+          type: 'ContextMenu/Open',
+          position: { x: event.clientX, y: event.clientY },
+          commands: [
+            {
+              name: 'Save',
+              description: 'Copy its serialized data to clipboard.',
+              callback: () => {
+                const data = automaton.serialize();
+                save( JSON.stringify( data ) );
+              }
+            },
+            {
+              name: 'Minimal Export',
+              description: 'Same as Save, but way more minimized data.',
+              callback: () => {
+                const data = AutomatonWithGUI.minimizeData( automaton.serialize() );
+                save( JSON.stringify( data ) );
+              }
+            }
+          ]
         } );
       }
     },

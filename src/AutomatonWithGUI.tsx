@@ -1,4 +1,4 @@
-import { Automaton, ChannelUpdateEvent, FxDefinition, FxParam, SerializedChannel, SerializedCurve } from '@fms-cat/automaton';
+import { Automaton, ChannelUpdateEvent, FxDefinition, FxParam, SerializedAutomaton, SerializedChannel, SerializedCurve } from '@fms-cat/automaton';
 import { GUIRemocon, ToastyParams } from './GUIRemocon';
 import { GUISettings, defaultGUISettings } from './types/GUISettings';
 import { SerializedAutomatonWithGUI, defaultDataWithGUI } from './types/SerializedAutomatonWithGUI';
@@ -15,6 +15,7 @@ import { compat } from './compat/compat';
 import { createStore } from './view/states/store';
 import fxDefinitions from './fxs';
 import { jsonCopy } from './utils/jsonCopy';
+import { minimizeData } from './minimizeData';
 import produce from 'immer';
 
 /**
@@ -66,6 +67,14 @@ export class AutomatonWithGUI extends Automaton
    * You can set {@link AutomatonWithGUIOptions.installBuiltinFxs} to `true` to install them automatically instead.
    */
   public static readonly BuiltinFxs = fxDefinitions;
+
+  /**
+   * Minimize serialized data for prod use.
+   * @param data The original data
+   */
+  public static minimizeData( data: SerializedAutomatonWithGUI ): SerializedAutomaton {
+    return minimizeData( data );
+  }
 
   /**
    * Overrided save procedure.
