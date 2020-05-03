@@ -11,6 +11,7 @@ export const Icons = {
   Pause: require( './pause.svg' ).default,
   Play: require( './play.svg' ).default,
   Plus: require( './plus.svg' ).default,
+  Power: require( './power.svg' ).default,
   Redo: require( './redo.svg' ).default,
   Save: require( './save.svg' ).default,
   Snap: require( './snap.svg' ).default,

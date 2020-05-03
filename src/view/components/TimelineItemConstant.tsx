@@ -3,6 +3,7 @@ import React, { useCallback, useMemo } from 'react';
 import { TimeValueRange, dt2dx, dx2dt, snapTime, snapValue, t2x, v2y, x2t, y2v } from '../utils/TimeValueRange';
 import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
+import { Icons } from '../icons/Icons';
 import { Resolution } from '../utils/Resolution';
 import { SerializedChannelItem } from '@fms-cat/automaton';
 import { WithID } from '../../types/WithID';
@@ -15,6 +16,11 @@ import { useID } from '../utils/useID';
 const HEIGHT = 12;
 
 // == styles =======================================================================================
+const ResetIcon = styled( Icons.Power )`
+  position: absolute;
+  fill: ${ Colors.foresub };
+`;
+
 const Side = styled.rect`
   opacity: 0.0;
   cursor: ew-resize;
@@ -429,6 +435,18 @@ const TimelineItemConstant = ( props: TimelineItemConstantProps ): JSX.Element =
         height={ HEIGHT }
         onMouseDown={ handleClickRight }
       />
+      { item.reset &&
+        <g
+          style={ {
+            transform: `translate( ${ w + 5 }px, ${ 0.5 * HEIGHT - 5 }px )`
+          } }
+        >
+          <ResetIcon
+            width="10"
+            height="10"
+          />
+        </g>
+      }
     </Root>
   );
 };
