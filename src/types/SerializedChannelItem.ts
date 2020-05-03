@@ -15,6 +15,12 @@ export interface SerializedChannelItem {
   value?: number;
 
   /**
+   * Whether reset channels value to zero at the end of this item or not.
+   * `false` by default.
+   */
+  reset?: boolean;
+
+  /**
    * If it is not defined, interpret the item represents a constant item.
    */
   curve?: number | null;
