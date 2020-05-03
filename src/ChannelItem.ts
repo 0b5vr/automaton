@@ -26,6 +26,11 @@ export class ChannelItem {
   public value!: number;
 
   /**
+   * Whether reset channels value to zero at the end of this item or not.
+   */
+  public reset?: boolean;
+
+  /**
    * This will only make sense when {@link curve} is specified.
    * The time offset of the item.
    */
@@ -67,6 +72,10 @@ export class ChannelItem {
   }
 
   public getValue( time: number ): number {
+    if ( this.reset && this.length <= time ) {
+      return 0.0;
+    }
+
     if ( this.curve ) {
       const t = this.offset! + time * this.speed!;
       return this.value + this.amp * this.curve.getValue( t );
@@ -86,6 +95,7 @@ export class ChannelItem {
     this.offset = data.offset ?? 0.0;
     this.speed = data.speed ?? 1.0;
     this.amp = data.amp ?? 1.0;
+    this.reset = data.reset;
     if ( data.curve != null ) {
       this.curve = this.__automaton.getCurve( data.curve )!;
       this.length = data.length ?? this.curve.length ?? 0.0;
