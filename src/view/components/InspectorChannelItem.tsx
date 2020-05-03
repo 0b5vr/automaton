@@ -222,7 +222,7 @@ const InspectorChannelItem = ( props: Props ): JSX.Element => {
             onSettle={ ( reset, resetPrev ) => {
               dispatch( {
                 type: 'History/Push',
-                description: 'Change Constant Value',
+                description: 'Change Item Reset',
                 commands: [
                   {
                     type: 'channel/changeItemReset',
