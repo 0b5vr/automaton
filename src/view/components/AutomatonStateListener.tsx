@@ -160,12 +160,12 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
       } );
     } );
 
-    curve.on( 'previewValue', ( { time, value } ) => {
+    curve.on( 'previewTime', ( { time } ) => {
       dispatch( {
-        type: 'Automaton/UpdateCurvePreviewValue',
+        type: 'Automaton/UpdateCurvePreviewTimeValue',
         curve: index,
         time,
-        value
+        value: curve.getValue( time )
       } );
     } );
 

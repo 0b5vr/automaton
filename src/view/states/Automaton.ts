@@ -117,7 +117,7 @@ export type Action = {
   curve: number;
   status: Status<CurveStatusCode> | null;
 } | {
-  type: 'Automaton/UpdateCurvePreviewValue';
+  type: 'Automaton/UpdateCurvePreviewTimeValue';
   curve: number;
   time: number;
   value: number;
@@ -222,7 +222,7 @@ export const reducer: Reducer<State, Action> = ( state = initialState, action ) 
       newState.curves[ action.curve ].length = action.length;
     } else if ( action.type === 'Automaton/UpdateCurveStatus' ) {
       newState.curves[ action.curve ].status = action.status;
-    } else if ( action.type === 'Automaton/UpdateCurvePreviewValue' ) {
+    } else if ( action.type === 'Automaton/UpdateCurvePreviewTimeValue' ) {
       newState.curvesPreview[ action.curve ].previewTime = action.time;
       newState.curvesPreview[ action.curve ].previewValue = action.value;
     } else if ( action.type === 'Automaton/UpdateCurveNode' ) {

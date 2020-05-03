@@ -18,7 +18,7 @@ export class ChannelItemWithGUI extends ChannelItem {
   public getValue( time: number, isFromGUI?: boolean ): number {
     const value = super.getValue( time );
     if ( this.curve && !isFromGUI ) {
-      this.curve.setPreviewTimeValue( time, value );
+      this.curve.setPreviewTime( time );
       this.curve.markAsUsed();
     }
     return value;
