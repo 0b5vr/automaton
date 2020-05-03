@@ -28,11 +28,12 @@
     "test": "jest"
   },
   "files": [
-    "dist",
-    "types",
-    "LICENSE",
-    "package.json",
-    "README.md"
+    "/dist/",
+    "/ts*/",
+    "/types/",
+    "/LICENSE",
+    "/package.json",
+    "/README.md"
   ],
   "devDependencies": {
     "@types/jest": "^25.1.4",
