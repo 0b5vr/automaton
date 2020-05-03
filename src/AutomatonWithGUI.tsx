@@ -136,9 +136,14 @@ export class AutomatonWithGUI extends Automaton
   private __guiSettings!: GUISettings;
 
   /**
+   * Mounted point of its GUI.
+   */
+  private __parentNode?: HTMLElement;
+
+  /**
    * This enables the Automaton instance to be able to communicate with GUI.
    */
-  private __guiRemocon?: GUIRemocon;
+  private __guiRemocon?: GUIRemocon | null;
 
   /**
    * A cache of previous {@link length}.
@@ -245,8 +250,7 @@ export class AutomatonWithGUI extends Automaton
     }
 
     if ( options.gui ) {
-      this.__guiRemocon = new GUIRemocon();
-      this.__prepareGUI( options.gui );
+      this.mountGUI( options.gui );
     }
 
     window.addEventListener( 'beforeunload', ( event ) => {
@@ -627,6 +631,42 @@ export class AutomatonWithGUI extends Automaton
   }
 
   /**
+   * Mount a GUI to specified DOM.
+   */
+  public mountGUI( target: HTMLElement ): void {
+    if ( this.__parentNode ) {
+      throw Error( 'Automaton.mountGUI: GUI is already mounted!' );
+    }
+
+    this.__guiRemocon = new GUIRemocon();
+
+    const store = createStore();
+
+    ReactDOM.render(
+      <App
+        store={ store }
+        automaton={ this }
+        guiRemocon={ this.__guiRemocon! }
+      />,
+      target
+    );
+
+    this.__parentNode = target;
+  }
+
+  /**
+   * Unmount a GUI.
+   */
+  public unmountGUI(): void {
+    if ( !this.__parentNode ) {
+      throw Error( 'Automaton.unmountGUI: GUI is not mounted!' );
+    }
+
+    ReactDOM.unmountComponentAtNode( this.__parentNode );
+    this.__guiRemocon = null;
+  }
+
+  /**
    * Undo a step.
    * Intended to be used by automaton-electron.
    * You cannot call this function when you are not using GUI.
@@ -676,23 +716,6 @@ export class AutomatonWithGUI extends Automaton
     }
 
     this.__guiRemocon.toasty( params );
-  }
-
-  /**
-   * Prepare GUI.
-   * @param target DOM element where you want to attach the Automaton GUI
-   */
-  private __prepareGUI( target: HTMLElement ): void {
-    const store = createStore();
-
-    ReactDOM.render(
-      <App
-        store={ store }
-        automaton={ this }
-        guiRemocon={ this.__guiRemocon! }
-      />,
-      target
-    );
   }
 
   private __serializeCurves(): SerializedCurve[] {
