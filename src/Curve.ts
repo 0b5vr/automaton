@@ -114,8 +114,8 @@ export class Curve {
       const i1 = Math.floor( this.__automaton.resolution * availableEnd );
       if ( i1 <= i0 ) { continue; }
 
-      const tempValues = new Float32Array( i1 - i0 + 1 );
-      const tempLength = tempValues.length;
+      const tempLength = i1 - i0 + 1;
+      const tempValues = new Float32Array( tempLength );
 
       const context: FxContext = {
         index: i0,
