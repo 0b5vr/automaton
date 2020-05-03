@@ -108,14 +108,13 @@ function drawRing( channel, color ) {
   context.restore();
 }
 
-let rectPrevY = 0.0;
 function transRect( fn ) {
   const x = auto( 'rect/x' );
   const y = auto( 'rect/y' );
   const rotate = TAU * auto( 'rect/rotate' );
   const bounce = auto( 'rect/bounce' );
 
-  const deltaY = ( y - rectPrevY ) / deltaTime;
+  const deltaY = ( y - automaton.getChannel( 'rect/y' ).getValue( time - 0.001 ) ) / 0.001;
   rectPrevY = y;
 
   context.save();
