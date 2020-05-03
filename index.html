@@ -43,11 +43,11 @@ body {
 
 <body>
   <div id="container">
-    <div id="divAutomatonContainer">
-    </div>
-
     <div id="divCanvasContainer">
       <canvas id="canvas"></canvas>
+    </div>
+
+    <div id="divAutomatonContainer">
     </div>
 
     <div id="editor">// loading...</div>
@@ -81,8 +81,8 @@ function run() {
 };
 
 function update() {
-  playground.update && playground.update();
   requestAnimationFrame( update );
+  playground.update && playground.update();
 }
 update();
 
@@ -96,8 +96,18 @@ editor.commands.addCommand( {
 async function fetchAndRun( name ) {
   const code = await ( await fetch( `/playground-examples/${ name }.js` ) ).text();
   editor.setValue( code, -1 );
+  editor.session.getUndoManager().markClean();
   run();
 }
 
 fetchAndRun( 'demo' );
+
+// prevent terrible consequence
+window.addEventListener( 'beforeunload', ( event ) => {
+  if ( !editor.session.getUndoManager().isClean() ) {
+    const confirmationMessage = 'You will lose all of your changes on the editor!';
+    event.returnValue = confirmationMessage;
+    return confirmationMessage;
+  }
+} );
 </script>
