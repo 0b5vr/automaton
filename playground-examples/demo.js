@@ -252,3 +252,8 @@ playground.update = () => {
     drawDots();
   } );
 };
+
+// == unload procedure =============================================================================
+playground.unload = () => {
+  automaton.unmountGUI();
+};
