@@ -34,6 +34,7 @@ export class ChannelItemWithGUI extends ChannelItem {
     if ( this.time !== 0.0 ) { data.time = this.time; }
     if ( this.length !== 0.0 ) { data.length = this.length; }
     if ( this.value !== 0.0 ) { data.value = this.value; }
+    if ( this.reset ) { data.reset = true; }
     if ( this.curve ) {
       data.curve = this.__automaton.getCurveIndex( this.curve );
       if ( this.offset !== 0.0 ) { data.offset = this.offset; }
@@ -54,6 +55,7 @@ export class ChannelItemWithGUI extends ChannelItem {
       time: this.time,
       length: this.length,
       value: this.value,
+      reset: this.reset ?? false,
       offset: this.offset,
       speed: this.speed,
       amp: this.amp,

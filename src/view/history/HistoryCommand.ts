@@ -55,6 +55,12 @@ export type HistoryCommand = {
   value: number;
   valuePrev: number;
 } | {
+  type: 'channel/changeItemReset';
+  channel: string;
+  item: string;
+  reset: boolean;
+  resetPrev: boolean;
+} | {
   type: 'channel/resizeItem';
   channel: string;
   item: string;
@@ -241,6 +247,13 @@ export function parseHistoryCommand( command: HistoryCommand ): {
         .changeItemValue( command.item, command.valuePrev ),
       redo: ( automaton ) => automaton.getChannel( command.channel )!
         .changeItemValue( command.item, command.value )
+    };
+  } else if ( command.type === 'channel/changeItemReset' ) {
+    return {
+      undo: ( automaton ) => automaton.getChannel( command.channel )!
+        .changeItemReset( command.item, command.resetPrev ),
+      redo: ( automaton ) => automaton.getChannel( command.channel )!
+        .changeItemReset( command.item, command.reset )
     };
   } else if ( command.type === 'channel/resizeItem' ) {
     return {

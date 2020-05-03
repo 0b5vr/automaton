@@ -469,7 +469,7 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
   }
 
   /**
-   * Change the value of a constant item.
+   * Change the value of an item.
    * @param id Id of the item you want to change
    * @param value Your desired value
    */
@@ -479,6 +479,23 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
     const item = this.__items[ index ];
 
     item.value = value;
+
+    this.__emit( 'updateItem', { id, item: item.serializeGUI() } );
+
+    this.__automaton.shouldSave = true;
+  }
+
+  /**
+   * Change the reset of an item.
+   * @param id Id of the item you want to change
+   * @param reset Reset
+   */
+  public changeItemReset( id: string, reset: boolean ): void {
+    const index = this.__getItemIndexById( id );
+
+    const item = this.__items[ index ];
+
+    item.reset = reset;
 
     this.__emit( 'updateItem', { id, item: item.serializeGUI() } );
 

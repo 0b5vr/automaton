@@ -18,6 +18,7 @@ function minimizeChannelItem(
   const time = precOrUndefined( data.time, options.precisionTime );
   const length = precOrUndefined( data.length, options.precisionTime );
   const value = precOrUndefined( data.value, options.precisionValue );
+  const reset = data.reset ? true : undefined;
   const curve = data.curve;
   const speed = precOrUndefined( data.speed, options.precisionTime );
   const offset = precOrUndefined( data.offset, options.precisionTime );
@@ -27,6 +28,7 @@ function minimizeChannelItem(
     time,
     length,
     value,
+    reset,
     curve,
     speed,
     offset,

@@ -1,4 +1,5 @@
 import { useDispatch, useSelector } from '../states/store';
+import { BoolParam } from './BoolParam';
 import { ChannelWithGUI } from '../../ChannelWithGUI';
 import { InspectorHeader } from './InspectorHeader';
 import { InspectorHr } from './InspectorHr';
@@ -205,6 +206,30 @@ const InspectorChannelItem = ( props: Props ): JSX.Element => {
                     item: itemId,
                     value,
                     valuePrev
+                  }
+                ]
+              } );
+            } }
+          />
+        </InspectorItem>
+
+        <InspectorItem name="Reset">
+          <BoolParam
+            value={ stateItem.reset }
+            onChange={ ( reset ) => {
+              channel.changeItemReset( itemId, reset );
+            } }
+            onSettle={ ( reset, resetPrev ) => {
+              dispatch( {
+                type: 'History/Push',
+                description: 'Change Constant Value',
+                commands: [
+                  {
+                    type: 'channel/changeItemReset',
+                    channel: channelName,
+                    item: itemId,
+                    reset,
+                    resetPrev
                   }
                 ]
               } );
