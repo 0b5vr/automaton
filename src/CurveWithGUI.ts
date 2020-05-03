@@ -140,8 +140,8 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
    * @param time Time
    * @param value Value
    */
-  public setPreviewTimeValue( time: number, value: number ): void {
-    this.__emit( 'previewValue', { time, value } );
+  public setPreviewTime( time: number ): void {
+    this.__emit( 'previewTime', { time } );
   }
 
   /**
@@ -852,7 +852,7 @@ export interface CurveWithGUIEvents {
   createFx: { id: string; fx: FxSection & WithBypass & WithID };
   updateFx: { id: string; fx: FxSection & WithBypass & WithID };
   removeFx: { id: string };
-  previewValue: { time: number; value: number };
+  previewTime: { time: number };
   precalc: void;
   updateStatus: void;
   changeLength: { length: number };
