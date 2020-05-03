@@ -29,6 +29,7 @@
   },
   "files": [
     "dist",
+    "ts*",
     "types",
     "LICENSE",
     "package.json",
