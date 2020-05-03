@@ -1,6 +1,7 @@
 export type { GUISettings } from './types/GUISettings';
 export type { SerializedAutomatonWithGUI } from './types/SerializedAutomatonWithGUI';
 export type { Status } from './types/Status';
+export type { MinimizeOptions } from './types/MinimizeOptions';
 
 export { AutomatonWithGUI } from './AutomatonWithGUI';
 export { ChannelItemWithGUI } from './ChannelItemWithGUI';

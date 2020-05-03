@@ -1,4 +1,4 @@
-import { Automaton, ChannelUpdateEvent, FxDefinition, FxParam, SerializedChannel, SerializedCurve } from '@fms-cat/automaton';
+import { Automaton, ChannelUpdateEvent, FxDefinition, FxParam, SerializedAutomaton, SerializedChannel, SerializedCurve } from '@fms-cat/automaton';
 import { GUIRemocon, ToastyParams } from './GUIRemocon';
 import { GUISettings, defaultGUISettings } from './types/GUISettings';
 import { SerializedAutomatonWithGUI, defaultDataWithGUI } from './types/SerializedAutomatonWithGUI';
@@ -7,6 +7,7 @@ import { ChannelWithGUI } from './ChannelWithGUI';
 import { ContextMenuCommand } from './view/states/ContextMenu';
 import { CurveWithGUI } from './CurveWithGUI';
 import { EventEmittable } from './mixins/EventEmittable';
+import { MinimizeOptions } from './types/MinimizeOptions';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Serializable } from './types/Serializable';
@@ -15,6 +16,7 @@ import { compat } from './compat/compat';
 import { createStore } from './view/states/store';
 import fxDefinitions from './fxs';
 import { jsonCopy } from './utils/jsonCopy';
+import { minimizeData } from './minimizeData';
 import produce from 'immer';
 
 /**
@@ -66,6 +68,17 @@ export class AutomatonWithGUI extends Automaton
    * You can set {@link AutomatonWithGUIOptions.installBuiltinFxs} to `true` to install them automatically instead.
    */
   public static readonly BuiltinFxs = fxDefinitions;
+
+  /**
+   * Minimize serialized data for prod use.
+   * @param data The original data
+   */
+  public static minimizeData(
+    data: SerializedAutomatonWithGUI,
+    options: MinimizeOptions
+  ): SerializedAutomaton {
+    return minimizeData( data, options );
+  }
 
   /**
    * Overrided save procedure.

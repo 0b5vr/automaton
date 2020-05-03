@@ -2,6 +2,8 @@ import { FxSection, SerializedChannel, SerializedCurve } from '@fms-cat/automato
 import { SerializedAutomatonWithGUI } from '../types/SerializedAutomatonWithGUI';
 import { V2FxSection } from './v2types/V2FxSection';
 import { V2SerializedData } from './v2types/V2SerializedData';
+import { defaultGUISettings } from '../types/GUISettings';
+import { jsonCopy } from '../utils/jsonCopy';
 
 export function v2Compat( data: V2SerializedData ): SerializedAutomatonWithGUI {
   const curves: SerializedCurve[] = [];
@@ -33,14 +35,7 @@ export function v2Compat( data: V2SerializedData ): SerializedAutomatonWithGUI {
     curves,
     channels,
     labels: {},
-    guiSettings: {
-      snapTimeActive: data.guiSettings?.snapActive || false,
-      snapTimeInterval: data.guiSettings?.snapTime || 0.1,
-      snapValueActive: data.guiSettings?.snapActive || false,
-      snapValueInterval: data.guiSettings?.snapValue || 0.1,
-      snapBeatActive: false,
-      snapBeatBPM: 140.0
-    }
+    guiSettings: jsonCopy( defaultGUISettings )
   };
 
   return newData;

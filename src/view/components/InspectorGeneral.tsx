@@ -36,10 +36,14 @@ const InspectorGeneral = (): JSX.Element => {
   const {
     automaton,
     settingsMode,
+    minimizedPrecisionTime,
+    minimizedPrecisionValue,
     initResolution
   } = useSelector( ( state ) => ( {
     automaton: state.automaton.instance,
     settingsMode: state.settings.mode,
+    minimizedPrecisionTime: state.automaton.guiSettings.minimizedPrecisionTime,
+    minimizedPrecisionValue: state.automaton.guiSettings.minimizedPrecisionValue,
     initResolution: state.automaton.resolution
   } ) );
   const [ resolution, setResolution ] = useState( 0.0 );
@@ -59,17 +63,49 @@ const InspectorGeneral = (): JSX.Element => {
 
       <InspectorHr />
 
-      <InspectorItem name="Resolution">
+      <InspectorItem
+        name="Min Prec Time"
+        description="Specify precision of time axis for minimized serialization."
+      >
+        <NumberParam
+          type="int"
+          value={ minimizedPrecisionTime }
+          onChange={ ( value ) => {
+            automaton.setGUISettings( 'minimizedPrecisionTime', Math.max( 0, value ) );
+          } }
+        />
+      </InspectorItem>
+
+      <InspectorItem
+        name="Min Prec Value"
+        description="Specify precision of value axis for minimized serialization."
+      >
+        <NumberParam
+          type="int"
+          value={ minimizedPrecisionValue }
+          onChange={ ( value ) => {
+            automaton.setGUISettings( 'minimizedPrecisionValue', Math.max( 0, value ) );
+          } }
+        />
+      </InspectorItem>
+
+      <InspectorHr />
+
+      <InspectorItem
+        name="Resolution"
+        description="Specify samples per second of curves."
+      >
         <NumberParam
           type="int"
           value={ resolution }
           onChange={ ( value ) => {
-            setResolution( Math.max( 0.0, value ) );
+            setResolution( Math.max( 0, value ) );
           } }
         />
       </InspectorItem>
 
       <ConfirmButton
+        data-stalker="Apply the change of resolution."
         onClick={ () => {
           automaton.setResolution( resolution );
 
