@@ -89,7 +89,7 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
     // emit if the value is changed
     if ( prevValue !== this.__value ) {
       this.__emit( 'changeValue', { value: this.__value } );
-  }
+    }
   }
 
   /**
