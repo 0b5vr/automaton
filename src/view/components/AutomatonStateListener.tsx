@@ -69,11 +69,11 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
       length: channel.length
     } );
 
-    channel.on( 'changeValue', () => {
+    channel.on( 'changeValue', ( { value } ) => {
       dispatch( {
         type: 'Automaton/UpdateChannelValue',
         channel: name,
-        value: channel.currentValue
+        value
       } );
     } );
 

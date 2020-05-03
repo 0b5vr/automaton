@@ -80,9 +80,16 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
    * Call this method when you seek the time.
    */
   public reset(): void {
+    const prevValue = this.__value;
+
     super.reset();
 
     this.__emit( 'reset' );
+
+    // emit if the value is changed
+    if ( prevValue !== this.__value ) {
+      this.__emit( 'changeValue', { value: this.__value } );
+  }
   }
 
   /**
@@ -124,7 +131,7 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
 
     // emit if the value is changed
     if ( prevValue !== this.__value ) {
-      this.__emit( 'changeValue' );
+      this.__emit( 'changeValue', { value: this.__value } );
     }
   }
 
@@ -569,7 +576,7 @@ export interface ChannelWithGUIEvents {
   createItem: { id: string; item: Required<SerializedChannelItem> & WithID };
   updateItem: { id: string; item: Required<SerializedChannelItem> & WithID };
   removeItem: { id: string };
-  changeValue: void;
+  changeValue: { value: number };
   reset: void;
   updateStatus: void;
   changeLength: { length: number };
