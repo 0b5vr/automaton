@@ -10,9 +10,9 @@ You might want to check the variant w/ GUI instead, [automaton-with-gui](https:/
 
 ## Examples
 
-- [Most basic example](https://glitch.com/edit/#!/fms-cat-automaton-basic)
-- [Event system](https://glitch.com/edit/#!/fms-cat-automaton-events)
-- [Fxs](https://glitch.com/edit/#!/fms-cat-automaton-fxs)
+- [Most basic example](https://glitch.com/embed/#!/embed/fms-cat-automaton-basic?previewSize=40&path=main.js)
+- [Event system](https://glitch.com/embed/#!/embed/fms-cat-automaton-events?previewSize=40&path=main.js)
+- [Fxs](https://glitch.com/embed/#!/embed/fms-cat-automaton-fxs?previewSize=40&path=main.js)
 
 ## Install
 
