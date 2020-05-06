@@ -32,12 +32,27 @@ body {
   align-items: center;
 }
 
+#selectDescription {
+  margin: 0 0.5em;
+}
+
+#divDropdown {
+  position: fixed;
+  width: 50%;
+  height: 32px;
+  right: 0;
+  top: 0;
+  background: #222;
+  display: flex;
+  align-items: center;
+}
+
 #editor {
   position: fixed;
   width: 50%;
-  height: calc( 100% - 240px );
+  height: calc( 100% - 272px );
   right: 0;
-  top: 0;
+  top: 32px;
 }
 </style>
 
@@ -50,6 +65,14 @@ body {
     <div id="divAutomatonContainer">
     </div>
 
+    <div id="divDropdown">
+      <span id="selectDescription">Select an example:</span>
+      <select id="select">
+        <option value="demo">Demo</option>
+        <option value="getting-started">Getting Started</option>
+      </select>
+    </div>
+
     <div id="editor">// loading...</div>
   </div>
 </body>
@@ -59,9 +82,9 @@ body {
 <script>
 // editor
 const editor = ace.edit( document.getElementById( 'editor' ) );
-editor.setTheme( "ace/theme/monokai" );
+editor.setTheme( 'ace/theme/monokai' );
 editor.setShowPrintMargin( false );
-editor.getSession().setMode( "ace/mode/javascript" );
+editor.getSession().setMode( 'ace/mode/javascript' );
 editor.getSession().setTabSize( 2 );
 editor.getSession().setUseSoftTabs( true );
 
@@ -76,7 +99,7 @@ function run() {
     const func = eval( `{ ${ source } }` );
   } catch ( error ) {
     console.error( error );
-    alert( "An error has occured! See your browser console (Ctrl+Shift+J in chrome)." );
+    alert( 'An error has occured! See your browser console (Ctrl+Shift+J in chrome).' );
   }
 };
 
@@ -87,8 +110,8 @@ function update() {
 update();
 
 editor.commands.addCommand( {
-  name: "run",
-  bindKey: { win: "Ctrl-S",  mac: "Command-S" },
+  name: 'run',
+  bindKey: { win: 'Ctrl-S',  mac: 'Command-S' },
   exec: () => run()
 } );
 
@@ -101,6 +124,11 @@ async function fetchAndRun( name ) {
 }
 
 fetchAndRun( 'demo' );
+
+// listen to dropdown changes
+select.addEventListener( 'change', ( event ) => {
+  fetchAndRun( select.value );
+} );
 
 // prevent terrible consequence
 window.addEventListener( 'beforeunload', ( event ) => {
