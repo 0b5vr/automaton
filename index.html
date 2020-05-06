@@ -121,13 +121,23 @@ async function fetchAndRun( name ) {
   editor.setValue( code, -1 );
   editor.session.getUndoManager().markClean();
   run();
+  select.value = name;
 }
 
-fetchAndRun( 'demo' );
+// see the hash
+const initialExample = location.hash.substring( 1 ) || 'demo';
+history.replaceState( { example: select.value }, '', `#${ initialExample }` );
+fetchAndRun( initialExample );
 
 // listen to dropdown changes
 select.addEventListener( 'change', ( event ) => {
+  history.pushState( { example: select.value }, '', `#${ select.value }` );
   fetchAndRun( select.value );
+} );
+
+// listen to change of history
+window.addEventListener( 'popstate', ( { state } ) => {
+  fetchAndRun( state.example );
 } );
 
 // prevent terrible consequence
