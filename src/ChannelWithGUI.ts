@@ -228,6 +228,8 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
     const right = next ? next.time : Infinity;
     newItem.length = Math.min( newItem.length, right - newItem.time );
 
+    this.reset();
+
     this.__emit( 'createItem', { id, item: newItem.serializeGUI() } );
 
     // if the item is the last item, change its length
@@ -277,6 +279,8 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
     this.__items.push( item );
     this.__sortItems();
 
+    this.reset();
+
     this.__emit( 'createItem', { id, item: item.serializeGUI() } );
 
     // if the item is the last item, change its length
@@ -308,6 +312,8 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
     const right = next ? next.time : Infinity;
     item.length = Math.min( item.length, right - item.time );
 
+    this.reset();
+
     this.__emit( 'createItem', { id, item: item.serializeGUI() } );
 
     // if the item is the last item, change its length
@@ -333,6 +339,8 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
     this.__items.push( item );
     this.__sortItems();
 
+    this.reset();
+
     this.__emit( 'createItem', { id: item.$id, item: item.serializeGUI() } );
 
     // if the item is the last item, change its length
@@ -354,6 +362,8 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
 
     const isLastItem = this.isLastItem( id );
     this.__items.splice( index, 1 );
+
+    this.reset();
 
     this.__emit( 'removeItem', { id } );
 
@@ -383,6 +393,8 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
 
     this.__sortItems();
 
+    this.reset();
+
     this.__emit( 'updateItem', { id, item: item.serializeGUI() } );
 
     // if the item is the last item, change its length
@@ -408,6 +420,8 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
 
     this.__sortItems();
 
+    this.reset();
+
     this.__emit( 'updateItem', { id, item: item.serializeGUI() } );
 
     // if the item is the last item, change its length
@@ -431,6 +445,8 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
     const next = this.__items[ index + 1 ];
     const right = next ? next.time : Infinity;
     item.length = clamp( length, 0.0, right - item.time );
+
+    this.reset();
 
     this.__emit( 'updateItem', { id, item: item.serializeGUI() } );
 
@@ -463,6 +479,8 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
     item.length = Math.min( Math.max( length, 0.0 ), lengthMax );
     item.time = end - item.length;
 
+    this.reset();
+
     this.__emit( 'updateItem', { id, item: item.serializeGUI() } );
 
     this.__automaton.shouldSave = true;
@@ -480,6 +498,8 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
 
     item.value = value;
 
+    this.reset();
+
     this.__emit( 'updateItem', { id, item: item.serializeGUI() } );
 
     this.__automaton.shouldSave = true;
@@ -496,6 +516,8 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
     const item = this.__items[ index ];
 
     item.reset = reset;
+
+    this.reset();
 
     this.__emit( 'updateItem', { id, item: item.serializeGUI() } );
 
@@ -516,6 +538,8 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
     item.speed = Math.max( speed, 0.0 );
     item.offset = offset;
 
+    this.reset();
+
     this.__emit( 'updateItem', { id, item: item.serializeGUI() } );
 
     this.__automaton.shouldSave = true;
@@ -532,6 +556,8 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
     const item = this.__items[ index ];
 
     item.amp = amp;
+
+    this.reset();
 
     this.__emit( 'updateItem', { id, item: item.serializeGUI() } );
 
