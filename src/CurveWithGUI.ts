@@ -358,10 +358,7 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
   public moveHandleTime( id: string, dir: 'in' | 'out', time: number ): void {
     const index = this.__getNodeIndexById( id );
 
-    if (
-      ( index === 0 && dir === 'in' ) ||
-      ( index === ( this.getNumNode() - 1 ) && dir === 'out' )
-    ) { return; }
+    if ( index === 0 && dir === 'in' ) { return; }
 
     const node = this.__nodes[ index ];
 
@@ -386,10 +383,7 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
   public moveHandleValue( id: string, dir: 'in' | 'out', value: number ): void {
     const index = this.__getNodeIndexById( id );
 
-    if (
-      ( index === 0 && dir === 'in' ) ||
-      ( index === ( this.getNumNode() - 1 ) && dir === 'out' )
-    ) { return; }
+    if ( index === 0 && dir === 'in' ) { return; }
 
     const node = this.__nodes[ index ];
 
@@ -411,10 +405,7 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
   public resetHandle( id: string, dir: 'in' | 'out' ): void {
     const index = this.__getNodeIndexById( id );
 
-    if (
-      ( index === 0 && dir === 'in' ) ||
-      ( index === ( this.getNumNode() - 1 ) && dir === 'out' )
-    ) { return; }
+    if ( index === 0 && dir === 'in' ) { return; }
 
     const node = this.__nodes[ index ];
     node[ dir ] = {
