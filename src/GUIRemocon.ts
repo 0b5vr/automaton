@@ -1,11 +1,6 @@
 import { EventEmittable } from './mixins/EventEmittable';
+import type { ToastyParams } from './types/ToastyParams';
 import { applyMixins } from './utils/applyMixins';
-
-export interface ToastyParams {
-  kind: 'error' | 'warning' | 'info';
-  message: string;
-  timeout?: number;
-}
 
 export class GUIRemocon {
   public undo(): void {
