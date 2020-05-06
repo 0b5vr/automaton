@@ -1,5 +1,4 @@
 import { Automaton, ChannelUpdateEvent, FxDefinition, FxParam, SerializedAutomaton, SerializedChannel, SerializedCurve } from '@fms-cat/automaton';
-import { GUIRemocon, ToastyParams } from './GUIRemocon';
 import { GUISettings, defaultGUISettings } from './types/GUISettings';
 import { SerializedAutomatonWithGUI, defaultDataWithGUI } from './types/SerializedAutomatonWithGUI';
 import { App } from './view/components/App';
@@ -7,10 +6,12 @@ import { ChannelWithGUI } from './ChannelWithGUI';
 import { ContextMenuCommand } from './view/states/ContextMenu';
 import { CurveWithGUI } from './CurveWithGUI';
 import { EventEmittable } from './mixins/EventEmittable';
+import { GUIRemocon } from './GUIRemocon';
 import { MinimizeOptions } from './types/MinimizeOptions';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Serializable } from './types/Serializable';
+import type { ToastyParams } from './types/ToastyParams';
 import { applyMixins } from './utils/applyMixins';
 import { compat } from './compat/compat';
 import { createStore } from './view/states/store';
