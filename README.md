@@ -1,4 +1,4 @@
-# AutomatonWIthGUI
+# AutomatonWithGUI
 
 ![Automaton](https://i.imgur.com/c4XRwNS.png)
 
