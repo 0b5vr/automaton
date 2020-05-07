@@ -1,11 +1,11 @@
 import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import { dx2dt, x2t } from '../utils/TimeValueRange';
 import { useDispatch, useSelector } from '../states/store';
 import { DopeSheetEntry } from './DopeSheetEntry';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
 import styled from 'styled-components';
 import { useRect } from '../utils/useRect';
-import { x2t } from '../utils/TimeValueRange';
 
 // == styles =======================================================================================
 const StyledDopeSheetEntry = styled( DopeSheetEntry )`
@@ -71,16 +71,22 @@ const DopeSheet = ( { className }: DopeSheetProps ): JSX.Element => {
       if ( !automaton ) { return; }
 
       const isPlaying = automaton.isPlaying;
-
       automaton.pause();
-      automaton.seek( x2t( x, range, rect.width ) );
+
+      const t0 = x2t( x - rect.left, range, rect.width );
+      automaton.seek( t0 );
+
+      let dx = 0.0;
+      let t = t0;
 
       registerMouseEvent(
-        ( event ) => {
-          automaton.seek( x2t( event.clientX - rect.left, range, rect.width ) );
+        ( event, movementSum ) => {
+          dx += movementSum.x;
+          t = t0 + dx2dt( dx, range, rect.width );
+          automaton.seek( t );
         },
-        ( event ) => {
-          automaton.seek( x2t( event.clientX - rect.left, range, rect.width ) );
+        () => {
+          automaton.seek( t );
           if ( isPlaying ) { automaton.play(); }
         }
       );
@@ -91,7 +97,7 @@ const DopeSheet = ( { className }: DopeSheetProps ): JSX.Element => {
   const handleMouseDown = useCallback(
     mouseCombo( {
       [ MouseComboBit.LMB + MouseComboBit.Alt ]: ( event ) => {
-        startSeek( event.clientX - rect.left );
+        startSeek( event.clientX );
       },
       [ MouseComboBit.MMB ]: () => {
         registerMouseEvent(
@@ -99,7 +105,7 @@ const DopeSheet = ( { className }: DopeSheetProps ): JSX.Element => {
         );
       }
     } ),
-    [ move, rect, startSeek ]
+    [ move, startSeek ]
   );
 
   const handleWheel = useCallback(

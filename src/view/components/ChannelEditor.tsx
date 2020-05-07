@@ -1,6 +1,6 @@
 import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
 import React, { useCallback, useEffect, useRef } from 'react';
-import { TimeValueRange, v2y, x2t, y2v } from '../utils/TimeValueRange';
+import { TimeValueRange, dx2dt, dy2dv, snapTime, snapValue, x2t, y2v } from '../utils/TimeValueRange';
 import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
 import { Labels } from './Labels';
@@ -96,6 +96,7 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
     automaton,
     selectedChannel,
     range,
+    guiSettings,
     automatonLength,
     lastSelectedItem,
     selectedCurve
@@ -103,6 +104,7 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
     automaton: state.automaton.instance,
     selectedChannel: state.timeline.selectedChannel,
     range: state.timeline.range,
+    guiSettings: state.automaton.guiSettings,
     automatonLength: state.automaton.length,
     lastSelectedItem: state.timeline.lastSelectedItem,
     selectedCurve: state.curveEditor.selectedCurve
@@ -291,13 +293,10 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
   );
 
   const createItemAndGrab = useCallback(
-    ( x0: number, y0: number ): void => {
+    ( x: number, y: number ): void => {
       if ( !automaton || !selectedChannel || !channel ) { return; }
 
-      let x = x0;
-      let y = y0;
-
-      const t0 = x2t( x, range, rect.width );
+      const t0 = x2t( x - rect.left, range, rect.width );
 
       const thereAreNoOtherItemsHere = channel.items.every( ( item ) => (
         !hasOverwrap( item.time, item.length, t0, 0.0 )
@@ -307,13 +306,15 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
 
       let data: Required<SerializedChannelItem> & WithID | null = null;
 
+      let v0 = y2v( y - rect.top, range, rect.height );
+
       // try last selected item
       if ( lastSelectedItem ) {
         const srcChannel = automaton.getChannel( lastSelectedItem.channel );
         const src = srcChannel?.tryGetItem( lastSelectedItem.id );
         if ( src ) {
           data = channel.duplicateItem( t0, src );
-          y = v2y( data.value, range, rect.height );
+          v0 = data.value;
         }
       }
 
@@ -321,14 +322,14 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
         // try selected curve
         if ( selectedCurve != null ) {
           data = channel.createItemCurve( selectedCurve, t0 );
-          channel.changeItemValue( data.$id, y2v( y, range, rect.height ) );
+          channel.changeItemValue( data.$id, v0 );
         }
       }
 
       // fallback to constant
       if ( !data ) {
         data = channel.createItemConstant( t0 );
-        channel.changeItemValue( data.$id, y2v( y, range, rect.height ) );
+        channel.changeItemValue( data.$id, v0 );
       }
 
       const confirmedData = data!; // thanks TypeScript
@@ -341,22 +342,36 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
         } ]
       } );
 
+      let dx = 0.0;
+      let dy = 0.0;
+      let time = t0;
+      let value = v0;
+
       registerMouseEvent(
         ( event, movementSum ) => {
-          x += movementSum.x;
-          y += movementSum.y;
+          dx += movementSum.x;
+          dy += movementSum.y;
 
-          channel.moveItem( confirmedData.$id, x2t( x, range, rect.width ) );
-          channel.changeItemValue( confirmedData.$id, y2v( y, range, rect.height ) );
+          const holdTime = event.ctrlKey || event.metaKey;
+          const holdValue = event.shiftKey;
+          const ignoreSnap = event.altKey;
+
+          time = holdTime ? t0 : ( t0 + dx2dt( dx, range, rect.width ) );
+          value = holdValue ? v0 : ( v0 + dy2dv( dy, range, rect.height ) );
+
+          if ( !ignoreSnap ) {
+            if ( !holdTime ) { time = snapTime( time, range, rect.width, guiSettings ); }
+            if ( !holdValue ) { value = snapValue( value, range, rect.height, guiSettings ); }
+          }
+
+          channel.moveItem( confirmedData.$id, time );
+          channel.changeItemValue( confirmedData.$id, value );
         },
         () => {
-          const t = x2t( x, range, rect.width );
-          channel.moveItem( confirmedData.$id, t );
-          confirmedData.time = t;
-
-          const v = y2v( y, range, rect.height );
-          channel.changeItemValue( confirmedData.$id, v );
-          confirmedData.value = v;
+          channel.moveItem( confirmedData.$id, time );
+          confirmedData.time = time;
+          channel.changeItemValue( confirmedData.$id, value );
+          confirmedData.value = value;
 
           dispatch( {
             type: 'History/Push',
@@ -372,7 +387,16 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
         }
       );
     },
-    [ automaton, lastSelectedItem, selectedCurve, range, rect, selectedChannel, channel ]
+    [
+      automaton,
+      lastSelectedItem,
+      selectedCurve,
+      range,
+      rect,
+      guiSettings,
+      selectedChannel,
+      channel
+    ]
   );
 
   const startSeek = useCallback(
@@ -380,16 +404,22 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
       if ( !automaton ) { return; }
 
       const isPlaying = automaton.isPlaying;
-
       automaton.pause();
-      automaton.seek( x2t( x, range, rect.width ) );
+
+      const t0 = x2t( x - rect.left, range, rect.width );
+      automaton.seek( t0 );
+
+      let dx = 0.0;
+      let t = t0;
 
       registerMouseEvent(
-        ( event ) => {
-          automaton.seek( x2t( event.clientX - rect.left, range, rect.width ) );
+        ( event, movementSum ) => {
+          dx += movementSum.x;
+          t = t0 + dx2dt( dx, range, rect.width );
+          automaton.seek( t );
         },
-        ( event ) => {
-          automaton.seek( x2t( event.clientX - rect.left, range, rect.width ) );
+        () => {
+          automaton.seek( t );
           if ( isPlaying ) { automaton.play(); }
         }
       );
@@ -401,12 +431,12 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
     mouseCombo( {
       [ MouseComboBit.LMB ]: ( event ) => {
         createItemAndGrab(
-          event.clientX - rect.left,
-          event.clientY - rect.top
+          event.clientX,
+          event.clientY
         );
       },
       [ MouseComboBit.LMB + MouseComboBit.Alt ]: ( event ) => {
-        startSeek( event.clientX - rect.left );
+        startSeek( event.clientX );
       },
       [ MouseComboBit.MMB ]: () => {
         registerMouseEvent(
@@ -414,7 +444,7 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
         );
       }
     } ),
-    [ createItemAndGrab, startSeek, rect, move ]
+    [ createItemAndGrab, startSeek, move ]
   );
 
   const handleContextMenu = useCallback(

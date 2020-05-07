@@ -1,5 +1,6 @@
 import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
 import React, { useCallback, useRef } from 'react';
+import { dx2dt, snapTime, x2t } from '../utils/TimeValueRange';
 import { useDispatch, useSelector } from '../states/store';
 import { SerializedChannelItem } from '@fms-cat/automaton';
 import { TimelineItem } from './TimelineItem';
@@ -9,7 +10,6 @@ import { registerMouseEvent } from '../utils/registerMouseEvent';
 import { showToasty } from '../states/Toasty';
 import styled from 'styled-components';
 import { useRect } from '../utils/useRect';
-import { x2t } from '../utils/TimeValueRange';
 
 // == styles =======================================================================================
 const SVGRoot = styled.svg`
@@ -40,13 +40,15 @@ const DopeSheetEntry = ( props: Props ): JSX.Element => {
     range,
     lastSelectedItem,
     selectedCurve,
-    stateItems
+    stateItems,
+    guiSettings
   } = useSelector( ( state ) => ( {
     automaton: state.automaton.instance,
     range: state.timeline.range,
     lastSelectedItem: state.timeline.lastSelectedItem,
     selectedCurve: state.curveEditor.selectedCurve,
-    stateItems: state.automaton.channels[ channelName ].items
+    stateItems: state.automaton.channels[ channelName ].items,
+    guiSettings: state.automaton.guiSettings
   } ) );
   const channel = automaton?.getChannel( channelName );
   const refRoot = useRef<HTMLDivElement>( null );
@@ -182,12 +184,10 @@ const DopeSheetEntry = ( props: Props ): JSX.Element => {
   );
 
   const createItemAndGrab = useCallback(
-    ( x0: number ): void => {
+    ( x: number ): void => {
       if ( !automaton || !channel ) { return; }
 
-      let x = x0;
-
-      const t0 = x2t( x, range, rect.width );
+      const t0 = x2t( x - rect.left, range, rect.width );
 
       const thereAreNoOtherItemsHere = channel.items.every( ( item ) => (
         !hasOverwrap( item.time, item.length, t0, 0.0 )
@@ -228,16 +228,26 @@ const DopeSheetEntry = ( props: Props ): JSX.Element => {
         } ]
       } );
 
+      let dx = 0.0;
+      let time = t0;
+
       registerMouseEvent(
         ( event, movementSum ) => {
-          x += movementSum.x;
+          dx += movementSum.x;
 
-          channel.moveItem( confirmedData.$id, x2t( x, range, rect.width ) );
+          const ignoreSnap = event.altKey;
+
+          time = t0 + dx2dt( dx, range, rect.width );
+
+          if ( !ignoreSnap ) {
+            time = snapTime( time, range, rect.width, guiSettings );
+          }
+
+          channel.moveItem( confirmedData.$id, time );
         },
         () => {
-          const t = x2t( x, range, rect.width );
-          channel.moveItem( confirmedData.$id, t );
-          confirmedData.time = t;
+          channel.moveItem( confirmedData.$id, time );
+          confirmedData.time = time;
 
           dispatch( {
             type: 'History/Push',
@@ -253,16 +263,16 @@ const DopeSheetEntry = ( props: Props ): JSX.Element => {
         }
       );
     },
-    [ automaton, lastSelectedItem, selectedCurve, range, rect, channelName, channel ]
+    [ automaton, lastSelectedItem, selectedCurve, range, rect, guiSettings, channelName, channel ]
   );
 
   const handleMouseDown = useCallback(
     mouseCombo( {
       [ MouseComboBit.LMB ]: ( event ) => {
-        createItemAndGrab( event.clientX - rect.left );
+        createItemAndGrab( event.clientX );
       }
     } ),
-    [ createItemAndGrab, rect ]
+    [ createItemAndGrab ]
   );
 
   const handleContextMenu = useCallback(
