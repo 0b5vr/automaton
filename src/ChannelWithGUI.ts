@@ -37,6 +37,11 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
   protected __items!: Array<ChannelItemWithGUI>;
 
   /**
+   * Whether it should reset itself in next update call or not.
+   */
+  private __shouldReset = false;
+
+  /**
    * List of fx sections.
    */
   public get items(): Array<ChannelItemWithGUI> {
@@ -93,6 +98,13 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
   }
 
   /**
+   * Mark this channel as should be reset in next update call.
+   */
+  public cueReset(): void {
+    this.__shouldReset = true;
+  }
+
+  /**
    * If you want to grab a value from GUI for some reasons, use this.
    * This supresses updating the preview value for curves.
    * @param time Time at the point you want to grab the value.
@@ -125,6 +137,12 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
    */
   public update( time: number ): void {
     const prevValue = this.__value;
+
+    // Reset this, if required
+    if ( this.__shouldReset ) {
+      this.__shouldReset = false;
+      this.reset();
+    }
 
     // update
     super.update( time );

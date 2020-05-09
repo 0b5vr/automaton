@@ -176,7 +176,7 @@ automaton.on( 'pause', () => {
 
 automaton.on( 'seek', ( event ) => {
   time = event.time;
-  automaton.reset(); // we should call this when we seek the time
+  automaton.cueReset(); // we should call this when we seek the time
 } );
 
 // == update loop ==================================================================================

@@ -313,6 +313,15 @@ export class AutomatonWithGUI extends Automaton
   }
 
   /**
+   * Mark this channel as should be reset in next update call.
+   */
+  public cueReset(): void {
+    Object.values( this.__channels ).map( ( channel ) => {
+      channel.cueReset();
+    } );
+  }
+
+  /**
    * Update the entire automaton.
    * **You may want to call this in your update loop.**
    * @param time Current time
