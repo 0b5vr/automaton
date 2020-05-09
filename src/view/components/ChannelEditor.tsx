@@ -7,6 +7,7 @@ import { Labels } from './Labels';
 import { RangeBar } from './RangeBar';
 import { Resolution } from '../utils/Resolution';
 import { SerializedChannelItem } from '@fms-cat/automaton';
+import { TimeLoopRegion } from './TimeLoopRegion';
 import { TimeValueGrid } from './TimeValueGrid';
 import { TimeValueLines } from './TimeValueLines';
 import { TimelineItem } from './TimelineItem';
@@ -575,6 +576,10 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
             />
           </> }
           <Labels
+            range={ range }
+            size={ rect }
+          />
+          <TimeLoopRegion
             range={ range }
             size={ rect }
           />

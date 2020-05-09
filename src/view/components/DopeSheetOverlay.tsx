@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import { Labels } from './Labels';
 import { RangeBar } from './RangeBar';
 import { Resolution } from '../utils/Resolution';
+import { TimeLoopRegion } from './TimeLoopRegion';
 import { TimeValueLines } from './TimeValueLines';
 import { TimeValueRange } from '../utils/TimeValueRange';
 import styled from 'styled-components';
@@ -69,6 +70,10 @@ const DopeSheetOverlay = ( props: DopeSheetOverlayProps ): JSX.Element => {
       <Body ref={ refBody }>
         <SVGRoot>
           <Labels
+            range={ range }
+            size={ rect }
+          />
+          <TimeLoopRegion
             range={ range }
             size={ rect }
           />
