@@ -427,6 +427,45 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
     [ automaton, range, rect ]
   );
 
+  const startSetLoopRegion = useCallback(
+    ( x: number ): void => {
+      if ( !automaton ) { return; }
+
+      const t0Raw = x2t( x - rect.left, range, rect.width );
+      const t0 = snapTime( t0Raw, range, rect.width, guiSettings );
+
+      let dx = 0.0;
+      let t = t0;
+
+      registerMouseEvent(
+        ( event, movementSum ) => {
+          dx += movementSum.x;
+
+          const tRaw = t0 + dx2dt( dx, range, rect.width );
+          t = snapTime( tRaw, range, rect.width, guiSettings );
+
+          if ( t - t0 === 0.0 ) {
+            automaton.setLoopRegion( null );
+          } else {
+            const begin = Math.min( t, t0 );
+            const end = Math.max( t, t0 );
+            automaton.setLoopRegion( { begin, end } );
+          }
+        },
+        () => {
+          if ( t - t0 === 0.0 ) {
+            automaton.setLoopRegion( null );
+          } else {
+            const begin = Math.min( t, t0 );
+            const end = Math.max( t, t0 );
+            automaton.setLoopRegion( { begin, end } );
+          }
+        }
+      );
+    },
+    [ automaton, range, rect, guiSettings ]
+  );
+
   const handleMouseDown = useCallback(
     mouseCombo( {
       [ MouseComboBit.LMB ]: ( event ) => {
@@ -438,13 +477,16 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
       [ MouseComboBit.LMB + MouseComboBit.Alt ]: ( event ) => {
         startSeek( event.clientX );
       },
+      [ MouseComboBit.LMB + MouseComboBit.Shift + MouseComboBit.Alt ]: ( event ) => {
+        startSetLoopRegion( event.clientX );
+      },
       [ MouseComboBit.MMB ]: () => {
         registerMouseEvent(
           ( event, movementSum ) => move( movementSum.x, movementSum.y )
         );
       }
     } ),
-    [ createItemAndGrab, startSeek, move ]
+    [ createItemAndGrab, startSeek, move, startSetLoopRegion ]
   );
 
   const handleContextMenu = useCallback(
