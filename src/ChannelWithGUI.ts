@@ -99,6 +99,7 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
 
   /**
    * Mark this channel as should be reset in next update call.
+   * Almost same as {@link update}, but not instant.
    */
   public cueReset(): void {
     this.__shouldReset = true;
