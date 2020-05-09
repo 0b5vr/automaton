@@ -152,6 +152,63 @@ const DopeSheet = ( { className }: DopeSheetProps ): JSX.Element => {
     [ move, startSeek, startSetLoopRegion ]
   );
 
+  const createLabel = useCallback(
+    ( x: number, y: number ): void => {
+      if ( !automaton ) { return; }
+
+      const time = x2t( x - rect.left, range, rect.width );
+
+      dispatch( {
+        type: 'TextPrompt/Open',
+        position: { x, y },
+        placeholder: 'A name for the new label',
+        checkValid: ( name: string ) => {
+          if ( name === '' ) { return 'Create Label: Name cannot be empty.'; }
+          if ( automaton.labels[ name ] != null ) { return 'Create Label: A label for the given name already exists.'; }
+          return null;
+        },
+        callback: ( name ) => {
+          automaton.setLabel( name, time );
+
+          dispatch( {
+            type: 'History/Push',
+            description: 'Set Label',
+            commands: [
+              {
+                type: 'automaton/createLabel',
+                name,
+                time
+              }
+            ],
+          } );
+        }
+      } );
+    },
+    [ automaton, range, rect ]
+  );
+
+  const handleContextMenu = useCallback(
+    ( event: React.MouseEvent ): void => {
+      event.preventDefault();
+
+      const x = event.clientX;
+      const y = event.clientY;
+
+      dispatch( {
+        type: 'ContextMenu/Push',
+        position: { x, y },
+        commands: [
+          {
+            name: 'Create Label',
+            description: 'Create a label.',
+            callback: () => createLabel( x, y )
+          }
+        ]
+      } );
+    },
+    [ createLabel ]
+  );
+
   const handleWheel = useCallback(
     ( event: WheelEvent ): void => {
       if ( event.shiftKey ) {
@@ -182,6 +239,7 @@ const DopeSheet = ( { className }: DopeSheetProps ): JSX.Element => {
       className={ className }
       ref={ refRoot }
       onMouseDown={ handleMouseDown }
+      onContextMenu={ handleContextMenu }
     >
       { sortedChannelNames.map( ( channel ) => (
         <StyledDopeSheetEntry

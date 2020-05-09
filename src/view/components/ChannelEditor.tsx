@@ -493,13 +493,12 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
   const handleContextMenu = useCallback(
     ( event: React.MouseEvent ): void => {
       event.preventDefault();
-      event.stopPropagation();
 
       const x = event.clientX;
       const y = event.clientY;
 
       dispatch( {
-        type: 'ContextMenu/Open',
+        type: 'ContextMenu/Push',
         position: { x, y },
         commands: [
           {

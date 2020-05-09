@@ -203,13 +203,13 @@ const Header = ( { className }: HeaderProps ): JSX.Element => {
 
       if ( automaton.saveContextMenuCommands ) {
         dispatch( {
-          type: 'ContextMenu/Open',
+          type: 'ContextMenu/Push',
           position: { x: event.clientX, y: event.clientY },
           commands: automaton.saveContextMenuCommands
         } );
       } else {
         dispatch( {
-          type: 'ContextMenu/Open',
+          type: 'ContextMenu/Push',
           position: { x: event.clientX, y: event.clientY },
           commands: [
             {

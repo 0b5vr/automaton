@@ -1,7 +1,8 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
 import { ContextMenuEntry } from './ContextMenuEntry';
+import { ContextMenuHr } from './ContextMenuHr';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
@@ -63,25 +64,44 @@ const ContextMenu = ( { className }: ContextMenuProps ): JSX.Element => {
     [ position ]
   );
 
+  const handleClickBG = useCallback(
+    () => {
+      dispatch( { type: 'ContextMenu/Close' } );
+    },
+    []
+  );
+
+  const handleContextMenuBG = useCallback(
+    () => {
+      dispatch( { type: 'ContextMenu/Close' } );
+    },
+    []
+  );
+
   return <Root
     className={ className }
   >
     <OverlayBG
-      onClick={ () => dispatch( { type: 'ContextMenu/Close' } ) }
+      onClick={ handleClickBG }
+      onContextMenu={ handleContextMenuBG }
     />
     <Container
       style={ style }
     >
-      { commands.map( ( command ) => (
-        <ContextMenuEntry
-          key={ command.name }
-          name={ command.name }
-          description={ command.description }
-          onClick={ () => {
-            command.callback();
-            dispatch( { type: 'ContextMenu/Close' } );
-          } }
-        />
+      { commands.map( ( command, iCommand ) => (
+        command === 'hr'
+          ? <ContextMenuHr key={ iCommand } />
+          : (
+            <ContextMenuEntry
+              key={ iCommand }
+              name={ command.name }
+              description={ command.description }
+              onClick={ () => {
+                command.callback();
+                dispatch( { type: 'ContextMenu/Close' } );
+              } }
+            />
+          )
       ) ) }
     </Container>
   </Root>;

@@ -179,32 +179,31 @@ const ChannelListEntry = ( props: ChannelListEntryProps ): JSX.Element => {
   const handleContextMenu = useCallback(
     ( event: React.MouseEvent ): void => {
       event.preventDefault();
-      event.stopPropagation();
 
       const x = event.clientX;
       const y = event.clientY;
 
       dispatch( {
-        type: 'ContextMenu/Open',
+        type: 'ContextMenu/Push',
         position: { x, y },
         commands: [
           {
-            name: 'Edit',
+            name: 'Edit Channel',
             description: 'Edit the channel.',
             callback: () => editChannel()
           },
           {
-            name: 'Rename',
+            name: 'Rename Channel',
             description: 'Rename the channel.',
             callback: () => renameChannel( x, y )
           },
           {
-            name: 'Duplicate',
+            name: 'Duplicate Channel',
             description: 'Duplicate the channel.',
             callback: () => duplicateChannel()
           },
           {
-            name: 'Remove',
+            name: 'Remove Channel',
             description: 'Remove the channel.',
             callback: () => removeChannel()
           }

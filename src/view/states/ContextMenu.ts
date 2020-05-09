@@ -11,7 +11,7 @@ export interface ContextMenuCommand {
 export interface State {
   isVisible: boolean;
   position: { x: number; y: number };
-  commands: Array<ContextMenuCommand>;
+  commands: Array<ContextMenuCommand | 'hr'>;
 }
 
 export const initialState: Readonly<State> = {
@@ -22,7 +22,7 @@ export const initialState: Readonly<State> = {
 
 // == action =======================================================================================
 export type Action = {
-  type: 'ContextMenu/Open';
+  type: 'ContextMenu/Push';
   position: { x: number; y: number };
   commands: Array<ContextMenuCommand>;
 } | {
@@ -32,10 +32,14 @@ export type Action = {
 // == reducer ======================================================================================
 export const reducer: Reducer<State, Action> = ( state = initialState, action ) => {
   return produce( state, ( newState: State ) => {
-    if ( action.type === 'ContextMenu/Open' ) {
+    if ( action.type === 'ContextMenu/Push' ) {
       newState.isVisible = true;
       newState.position = action.position;
-      newState.commands = action.commands;
+
+      if ( state.commands.length !== 0 ) {
+        newState.commands.push( 'hr' );
+      }
+      newState.commands.push( ...action.commands );
     } else if ( action.type === 'ContextMenu/Close' ) {
       newState.isVisible = false;
       newState.commands = [];
