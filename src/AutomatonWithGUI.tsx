@@ -17,6 +17,7 @@ import { compat } from './compat/compat';
 import { createStore } from './view/states/store';
 import fxDefinitions from './fxs';
 import { jsonCopy } from './utils/jsonCopy';
+import { lofi } from './utils/lofi';
 import { minimizeData } from './minimizeData';
 import produce from 'immer';
 
@@ -148,9 +149,17 @@ export class AutomatonWithGUI extends Automaton
 
   /**
    * A cache of previous {@link length}.
-   * You should not touch this from any place but {@link tryUpdateLength}.
+   * You should not touch this from any place but {@link __tryUpdateLength}.
    */
   private __lengthPrev = 1.0;
+
+  /**
+   * Timeline will loop between these timepoints.
+   */
+  private __loopRegion: { begin: number; end: number } | null = null;
+  public get loopRegion(): { begin: number; end: number } | null {
+    return this.__loopRegion;
+  }
 
   /**
    * It's currently playing or not.
@@ -310,7 +319,17 @@ export class AutomatonWithGUI extends Automaton
    */
   public update( time: number ): void {
     super.update( time );
+
     this.__emit( 'update', { time: this.time } );
+
+    if ( this.__loopRegion ) {
+      const { begin, end } = this.__loopRegion;
+
+      if ( time < begin || end <= time ) {
+        const newTime = time - begin - lofi( time - begin, end - begin ) + begin;
+        this.seek( newTime );
+      }
+    }
   }
 
   /**
@@ -668,6 +687,14 @@ export class AutomatonWithGUI extends Automaton
   }
 
   /**
+   * Set a loop region.
+   */
+  public setLoopRegion( loopRegion: { begin: number; end: number } | null ): void {
+    this.__loopRegion = loopRegion;
+    this.__emit( 'setLoopRegion', { loopRegion } );
+  }
+
+  /**
    * Undo a step.
    * Intended to be used by automaton-electron.
    * You cannot call this function when you are not using GUI.
@@ -779,6 +806,7 @@ export interface AutomatonWithGUIEvents {
   changeResolution: { resolution: number };
   updateGUISettings: { settings: GUISettings };
   changeShouldSave: { shouldSave: boolean };
+  setLoopRegion: { loopRegion: { begin: number; end: number } | null };
 }
 
 export interface AutomatonWithGUI extends EventEmittable<AutomatonWithGUIEvents> {}
