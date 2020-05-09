@@ -19,7 +19,7 @@
     "dev": "webpack-dev-server --hot --mode development",
     "all": "yarn lint && yarn test && yarn clean && yarn build && yarn docs",
     "version": "yarn all",
-    "clean": "rimraf dist docs types",
+    "clean": "rimraf dist docs ts*/ types",
     "build": "yarn build-dev && yarn build-prod && yarn types",
     "build-dev": "webpack --mode development",
     "build-prod": "webpack --mode production",
@@ -29,11 +29,12 @@
     "test": "jest"
   },
   "files": [
-    "dist",
-    "types",
-    "LICENSE",
-    "package.json",
-    "README.md"
+    "/dist/",
+    "/ts*/",
+    "/types/",
+    "/LICENSE",
+    "/package.json",
+    "/README.md"
   ],
   "devDependencies": {
     "@babel/core": "^7.9.0",
