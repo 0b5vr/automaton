@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
 import { ContextMenuEntry } from './ContextMenuEntry';
@@ -64,11 +64,26 @@ const ContextMenu = ( { className }: ContextMenuProps ): JSX.Element => {
     [ position ]
   );
 
+  const handleClickBG = useCallback(
+    () => {
+      dispatch( { type: 'ContextMenu/Close' } );
+    },
+    []
+  );
+
+  const handleContextMenuBG = useCallback(
+    () => {
+      dispatch( { type: 'ContextMenu/Close' } );
+    },
+    []
+  );
+
   return <Root
     className={ className }
   >
     <OverlayBG
-      onClick={ () => dispatch( { type: 'ContextMenu/Close' } ) }
+      onClick={ handleClickBG }
+      onContextMenu={ handleContextMenuBG }
     />
     <Container
       style={ style }
