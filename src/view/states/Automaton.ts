@@ -36,6 +36,7 @@ export interface State {
     previewValue: number | null;
   }>;
   labels: { [ name: string ]: number };
+  loopRegion: { begin: number; end: number } | null;
   isPlaying: boolean;
   time: number;
   length: number;
@@ -50,6 +51,7 @@ export const initialState: Readonly<State> = {
   curves: [],
   curvesPreview: [],
   labels: {},
+  loopRegion: null,
   fxDefinitions: {},
   isPlaying: false,
   time: 0.0,
@@ -151,6 +153,9 @@ export type Action = {
   type: 'Automaton/DeleteLabel';
   name: string;
 } | {
+  type: 'Automaton/SetLoopRegion';
+  loopRegion: { begin: number; end: number } | null;
+} | {
   type: 'Automaton/UpdateIsPlaying';
   isPlaying: boolean;
 } | {
@@ -237,6 +242,8 @@ export const reducer: Reducer<State, Action> = ( state = initialState, action ) 
       newState.labels[ action.name ] = action.time;
     } else if ( action.type === 'Automaton/DeleteLabel' ) {
       delete newState.labels[ action.name ];
+    } else if ( action.type === 'Automaton/SetLoopRegion' ) {
+      newState.loopRegion = action.loopRegion;
     } else if ( action.type === 'Automaton/UpdateIsPlaying' ) {
       newState.isPlaying = action.isPlaying;
     } else if ( action.type === 'Automaton/UpdateTime' ) {

@@ -308,6 +308,11 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
     } );
 
     dispatch( {
+      type: 'Automaton/SetLoopRegion',
+      loopRegion: automaton.loopRegion
+    } );
+
+    dispatch( {
       type: 'Automaton/SetShouldSave',
       shouldSave: automaton.shouldSave
     } );
@@ -427,6 +432,13 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
         } );
       } );
 
+      const handleSetLoopRegion = automaton.on( 'setLoopRegion', ( { loopRegion } ) => {
+        dispatch( {
+          type: 'Automaton/SetLoopRegion',
+          loopRegion
+        } );
+      } );
+
       return () => {
         automaton.off( 'load', handleLoad );
         automaton.off( 'update', handleUpdate );
@@ -442,6 +454,7 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
         automaton.off( 'removeCurve', handleRemoveCurve );
         automaton.off( 'setLabel', handleSetLabel );
         automaton.off( 'deleteLabel', handleDeleteLabel );
+        automaton.off( 'setLoopRegion', handleSetLoopRegion );
         automaton.off( 'changeShouldSave', handleChangeShouldSave );
       };
     },
