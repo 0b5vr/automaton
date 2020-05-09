@@ -2,6 +2,7 @@ import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
 import React, { useCallback, useRef } from 'react';
 import { dx2dt, snapTime, x2t } from '../utils/TimeValueRange';
 import { useDispatch, useSelector } from '../states/store';
+import { Colors } from '../constants/Colors';
 import { SerializedChannelItem } from '@fms-cat/automaton';
 import { TimelineItem } from './TimelineItem';
 import { WithID } from '../../types/WithID';
@@ -15,6 +16,19 @@ import { useRect } from '../utils/useRect';
 const SVGRoot = styled.svg`
   width: 100%;
   height: 100%;
+`;
+
+const Underlay = styled.div`
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.1;
+
+  &:hover {
+    background: ${ Colors.fore };
+  }
 `;
 
 const Root = styled.div`
@@ -274,6 +288,7 @@ const DopeSheetEntry = ( props: Props ): JSX.Element => {
       onMouseDown={ handleMouseDown }
       onContextMenu={ handleContextMenu }
     >
+      <Underlay />
       <SVGRoot>
         { Object.entries( stateItems ).map( ( [ id, item ] ) => (
           <TimelineItem
