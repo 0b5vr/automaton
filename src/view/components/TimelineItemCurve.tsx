@@ -525,7 +525,7 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
         position: { x: event.clientX, y: event.clientY },
         commands: [
           {
-            name: 'Edit',
+            name: 'Edit Curve',
             description: 'Edit the curve.',
             callback: () => editCurve()
           },
