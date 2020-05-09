@@ -24,11 +24,8 @@ const Underlay = styled.div`
   top: 0;
   width: 100%;
   height: 100%;
-  opacity: 0.1;
-
-  &:hover {
-    background: ${ Colors.fore };
-  }
+  opacity: 0.08;
+  pointer-events: none;
 `;
 
 const Root = styled.div`
@@ -37,6 +34,10 @@ const Root = styled.div`
   width: 100%;
   height: 20px;
   overflow: hidden;
+
+  &:hover ${ Underlay } {
+    background: ${ Colors.fore };
+  }
 `;
 
 // == component ====================================================================================
