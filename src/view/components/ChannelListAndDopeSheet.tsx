@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { useDispatch, useSelector } from '../states/store';
 import { ChannelList } from './ChannelList';
 import { DopeSheet } from './DopeSheet';
@@ -7,6 +7,7 @@ import { DopeSheetUnderlay } from './DopeSheetUnderlay';
 import { Metrics } from '../constants/Metrics';
 import { Scrollable } from './Scrollable';
 import styled from 'styled-components';
+import { useRect } from '../utils/useRect';
 
 // == styles =======================================================================================
 const StyledChannelList = styled( ChannelList )`
@@ -65,6 +66,8 @@ const ChannelListAndDopeSheet = ( props: {
     automaton: state.automaton.instance,
     mode: state.workspace.mode
   } ) );
+  const refRoot = useRef<HTMLDivElement>( null );
+  const rect = useRect( refRoot );
 
   const shouldShowChannelList = mode === 'dope' || mode === 'channel';
 
@@ -128,12 +131,16 @@ const ChannelListAndDopeSheet = ( props: {
   );
 
   return (
-    <Root className={ className }
+    <Root
+      ref={ refRoot }
+      className={ className }
       onContextMenu={ handleContextMenu }
     >
       { mode === 'dope' && <StyledDopeSheetUnderlay /> }
       <ChannelListAndDopeSheetScrollable barPosition='left'>
-        <ChannelListAndDopeSheetContainer>
+        <ChannelListAndDopeSheetContainer
+          style={ { minHeight: rect.height } }
+        >
           { shouldShowChannelList && <StyledChannelList /> }
           { mode === 'dope' && <StyledDopeSheet /> }
         </ChannelListAndDopeSheetContainer>
