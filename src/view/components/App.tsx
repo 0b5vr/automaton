@@ -1,4 +1,5 @@
 import { Action, State, useSelector } from '../states/store';
+import React, { useCallback } from 'react';
 import { About } from './About';
 import { AutomatonStateListener } from './AutomatonStateListener';
 import { AutomatonWithGUI } from '../../AutomatonWithGUI';
@@ -16,7 +17,6 @@ import { Inspector } from './Inspector';
 import { Metrics } from '../constants/Metrics';
 import { ModeSelector } from './ModeSelector';
 import { Provider } from 'react-redux';
-import React from 'react';
 import { Stalker } from './Stalker';
 import { Store } from 'redux';
 import { TextPrompt } from './TextPrompt';
@@ -132,8 +132,19 @@ const Fuck = ( { className, automaton, guiRemocon }: AppProps ): JSX.Element => 
     mode: state.workspace.mode
   } ) );
 
+  const handleContextMenu = useCallback(
+    ( event ) => {
+      event.preventDefault();
+      event.stopPropagation();
+    },
+    []
+  );
+
   return (
-    <Root className={ className }>
+    <Root
+      className={ className }
+      onContextMenu={ handleContextMenu }
+    >
       <AutomatonStateListener automaton={ automaton } />
       <GUIRemoconListener guiRemocon={ guiRemocon } />
       <StyledHeader />

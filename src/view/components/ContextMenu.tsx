@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
 import { ContextMenuEntry } from './ContextMenuEntry';
+import { ContextMenuHr } from './ContextMenuHr';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
@@ -72,16 +73,20 @@ const ContextMenu = ( { className }: ContextMenuProps ): JSX.Element => {
     <Container
       style={ style }
     >
-      { commands.map( ( command ) => (
-        <ContextMenuEntry
-          key={ command.name }
-          name={ command.name }
-          description={ command.description }
-          onClick={ () => {
-            command.callback();
-            dispatch( { type: 'ContextMenu/Close' } );
-          } }
-        />
+      { commands.map( ( command, iCommand ) => (
+        command === 'hr'
+          ? <ContextMenuHr key={ iCommand } />
+          : (
+            <ContextMenuEntry
+              key={ iCommand }
+              name={ command.name }
+              description={ command.description }
+              onClick={ () => {
+                command.callback();
+                dispatch( { type: 'ContextMenu/Close' } );
+              } }
+            />
+          )
       ) ) }
     </Container>
   </Root>;

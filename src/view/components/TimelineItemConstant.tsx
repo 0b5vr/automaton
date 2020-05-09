@@ -357,10 +357,9 @@ const TimelineItemConstant = ( props: TimelineItemConstantProps ): JSX.Element =
   const handleContextMenu = useCallback(
     ( event: React.MouseEvent ): void => {
       event.preventDefault();
-      event.stopPropagation();
 
       dispatch( {
-        type: 'ContextMenu/Open',
+        type: 'ContextMenu/Push',
         position: { x: event.clientX, y: event.clientY },
         commands: [
           {

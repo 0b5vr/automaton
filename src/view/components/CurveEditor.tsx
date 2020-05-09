@@ -317,13 +317,12 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
   const handleContextMenu = useCallback(
     ( event: React.MouseEvent ): void => {
       event.preventDefault();
-      event.stopPropagation();
 
       const x = event.clientX - rect.left;
       const y = event.clientY - rect.top;
 
       dispatch( {
-        type: 'ContextMenu/Open',
+        type: 'ContextMenu/Push',
         position: { x: event.clientX, y: event.clientY },
         commands: [
           {
