@@ -186,7 +186,7 @@ export function parseHistoryCommand( command: HistoryCommand ): {
     };
   } else if ( command.type === 'automaton/removeChannel' ) {
     return {
-      undo: ( automaton ) => automaton.createChannel( command.channel, command.data ),
+      undo: ( automaton ) => automaton.createOrOverwriteChannel( command.channel, command.data ),
       redo: ( automaton ) => automaton.removeChannel( command.channel )
     };
   } else if ( command.type === 'automaton/renameChannel' ) {
