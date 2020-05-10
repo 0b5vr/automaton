@@ -33,16 +33,14 @@ function calcPoints(
 }
 
 // == component ====================================================================================
-interface Props {
-  curve: number;
+const CurveEditorGraph = ( props: {
+  curveId: string;
   range: TimeValueRange;
   size: Resolution;
-}
-
-const CurveEditorGraph = ( props: Props ): JSX.Element => {
-  const { curve, range, size } = props;
+} ): JSX.Element => {
+  const { curveId, range, size } = props;
   const automaton = useSelector( ( state ) => state.automaton.instance );
-  const channel = automaton?.getCurve( curve );
+  const channel = automaton?.getCurveById( curveId );
 
   const [ points, setPoints ] = useState( '' );
 

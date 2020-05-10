@@ -70,16 +70,13 @@ const Root = styled.g`
 `;
 
 // == element ======================================================================================
-interface Props {
-  curve: number;
+const CurveEditorFx = ( props: {
+  curveId: string;
   fx: FxSection & WithBypass & WithID;
   range: TimeValueRange;
   size: Resolution;
-}
-
-const CurveEditorFx = ( props: Props ): JSX.Element => {
-  const { fx, range, size } = props;
-  const curveIndex = props.curve;
+} ): JSX.Element => {
+  const { curveId, fx, range, size } = props;
   const {
     guiSettings,
     automaton,
@@ -91,7 +88,7 @@ const CurveEditorFx = ( props: Props ): JSX.Element => {
   } ) );
   const dispatch = useDispatch();
   const checkDoubleClick = useDoubleClick();
-  const curve = automaton?.getCurve( curveIndex ) || null;
+  const curve = automaton?.getCurveById( curveId ) || null;
   const selectedFxs = useSelector( ( state ) => state.curveEditor.selected.fxs );
   const definition = fxDefinitions[ fx.def ];
 
@@ -146,7 +143,7 @@ const CurveEditorFx = ( props: Props ): JSX.Element => {
             commands: [
               {
                 type: 'curve/forceMoveFx',
-                curve: curveIndex,
+                curveId,
                 fx: fx.$id,
                 time: actualTime,
                 timePrev,
@@ -158,7 +155,7 @@ const CurveEditorFx = ( props: Props ): JSX.Element => {
         }
       );
     },
-    [ fx, curve, range, size, guiSettings ]
+    [ fx, curve, curveId, range, size, guiSettings ]
   );
 
   const removeFx = useCallback(
@@ -173,13 +170,13 @@ const CurveEditorFx = ( props: Props ): JSX.Element => {
         commands: [
           {
             type: 'curve/removeFx',
-            curve: curveIndex,
+            curveId,
             data: fx
           }
         ],
       } );
     },
-    [ fx, curve ]
+    [ fx, curve, curveId ]
   );
 
   const handleFxBodyClick = useCallback(
@@ -241,7 +238,7 @@ const CurveEditorFx = ( props: Props ): JSX.Element => {
               commands: [
                 {
                   type: 'curve/resizeFxByLeft',
-                  curve: curveIndex,
+                  curveId,
                   fx: fx.$id,
                   length: otherEnd - time,
                   lengthPrev: otherEnd - timePrev
@@ -257,7 +254,7 @@ const CurveEditorFx = ( props: Props ): JSX.Element => {
               commands: [
                 {
                   type: 'curve/resizeFx',
-                  curve: curveIndex,
+                  curveId,
                   fx: fx.$id,
                   length: time - otherEnd,
                   lengthPrev: timePrev - otherEnd
@@ -268,7 +265,7 @@ const CurveEditorFx = ( props: Props ): JSX.Element => {
         }
       );
     },
-    [ fx, curve, range, size, guiSettings ]
+    [ fx, curve, curveId, range, size, guiSettings ]
   );
 
   const handleFxLeftClick = useCallback(

@@ -8,7 +8,7 @@ import { produce } from 'immer';
 
 // == state ========================================================================================
 export interface State {
-  selectedCurve: number | null;
+  selectedCurve: string | null;
   selected: {
     nodes: string[];
     fxs: string[];
@@ -35,7 +35,7 @@ export type Action = {
   type: 'CurveEditor/Reset';
 } | {
   type: 'CurveEditor/SelectCurve';
-  curve: number | null;
+  curveId: string | null;
 } | {
   type: 'CurveEditor/SelectItems';
   nodes?: string[];
@@ -70,7 +70,7 @@ export const reducer: Reducer<State, ContextAction> = ( state = initialState, ac
     if ( action.type === 'CurveEditor/Reset' ) {
       newState = jsonCopy( initialState );
     } else if ( action.type === 'CurveEditor/SelectCurve' ) {
-      newState.selectedCurve = action.curve;
+      newState.selectedCurve = action.curveId;
       newState.selected.nodes = [];
       newState.selected.fxs = [];
     } else if ( action.type === 'CurveEditor/SelectItems' ) {
@@ -146,7 +146,7 @@ export const reducer: Reducer<State, ContextAction> = ( state = initialState, ac
         newState.range.t1 = length;
       }
     } else if ( action.type === 'Automaton/RemoveCurve' ) {
-      if ( state.selectedCurve === action.curve ) {
+      if ( state.selectedCurve === action.curveId ) {
         newState.selectedCurve = null;
       }
     } else if ( action.type === 'Automaton/RemoveCurveNode' ) {

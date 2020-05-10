@@ -68,12 +68,12 @@ const Inspector = ( { className }: {
     if ( selectedCurve != null ) {
       if ( stateSelectedNodes.length === 1 ) {
         content = <InspectorCurveNode
-          curve={ selectedCurve }
+          curveId={ selectedCurve }
           node={ stateSelectedNodes[ 0 ] }
         />;
       } else if ( stateSelectedFxs.length === 1 ) {
         content = <InspectorCurveFx
-          curve={ selectedCurve }
+          curveId={ selectedCurve }
           fx={ stateSelectedFxs[ 0 ] }
         />;
       }

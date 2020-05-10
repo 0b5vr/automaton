@@ -39,6 +39,14 @@ export class WithStatus<TCode extends number> {
     );
   }
 
+  /**
+   * Return a status that matches to the given code, if exist.
+   * @param code The code of status you want to get
+   */
+  public getSpecificStatus<T extends TCode>( code: T ): Status<T> | null {
+    return ( this.__statusList?.get( code ) as ( Status<T> | undefined ) ) ?? null;
+  }
+
   protected __setStatus( status: Status<TCode> ): void {
     if ( !this.__statusList ) {
       this.__statusList = new Map();

@@ -5,8 +5,7 @@ import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
 import { Icons } from '../icons/Icons';
 import { Resolution } from '../utils/Resolution';
-import { SerializedChannelItem } from '@fms-cat/automaton';
-import { WithID } from '../../types/WithID';
+import type { StateChannelItem } from '../../types/StateChannelItem';
 import { objectMapHas } from '../utils/objectMap';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
 import styled from 'styled-components';
@@ -57,7 +56,7 @@ const Root = styled.g`
 // == props ========================================================================================
 export interface TimelineItemConstantProps {
   channel: string;
-  item: Required<SerializedChannelItem> & WithID;
+  item: StateChannelItem;
   range: TimeValueRange;
   size: Resolution;
   dopeSheetMode?: boolean;

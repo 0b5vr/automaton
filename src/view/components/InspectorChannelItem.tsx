@@ -6,8 +6,7 @@ import { InspectorHr } from './InspectorHr';
 import { InspectorItem } from './InspectorItem';
 import { NumberParam } from './NumberParam';
 import React from 'react';
-import { SerializedChannelItem } from '@fms-cat/automaton';
-import { WithID } from '../../types/WithID';
+import type { StateChannelItem } from '../../types/StateChannelItem';
 import styled from 'styled-components';
 
 // == microcomponents ==============================================================================
@@ -17,12 +16,12 @@ interface Props {
 const InspectorChannelItemCurveParams = ( props: {
   channel: ChannelWithGUI;
   channelName: string;
-  stateItem: Required<SerializedChannelItem> & WithID;
+  stateItem: StateChannelItem;
   itemId: string;
 } ): JSX.Element => {
   const dispatch = useDispatch();
 
-  if ( props.stateItem.curve == null ) { return <></>; }
+  if ( props.stateItem.curveId == null ) { return <></>; }
 
   const { channel, channelName, itemId } = props;
   const stateItem = props.stateItem;

@@ -18,14 +18,14 @@ import { useDoubleClick } from '../utils/useDoubleClick';
 import { useRect } from '../utils/useRect';
 
 // == microcomponent ===============================================================================
-const Lines = ( { curve, range, size }: {
-  curve: number;
+const Lines = ( { curveId, range, size }: {
+  curveId: string;
   range: TimeValueRange;
   size: Resolution;
 } ): JSX.Element => {
   const { time, value } = useSelector( ( state ) => ( {
-    time: state.automaton.curvesPreview[ curve ].previewTime,
-    value: state.automaton.curvesPreview[ curve ].previewValue
+    time: state.automaton.curvesPreview[ curveId ].previewTime,
+    value: state.automaton.curvesPreview[ curveId ].previewValue
   } ) );
 
   return <TimeValueLines
@@ -36,20 +36,20 @@ const Lines = ( { curve, range, size }: {
   />;
 };
 
-const Nodes = ( { curve, range, size }: {
-  curve: number;
+const Nodes = ( { curveId, range, size }: {
+  curveId: string;
   range: TimeValueRange;
   size: Resolution;
 } ): JSX.Element => {
   const { nodes } = useSelector( ( state ) => ( {
-    nodes: state.automaton.curves[ curve ].nodes
+    nodes: state.automaton.curves[ curveId ].nodes
   } ) );
 
   return <>
     { nodes && Object.values( nodes ).map( ( node ) => (
       <CurveEditorNode
         key={ node.$id }
-        curve={ curve }
+        curveId={ curveId }
         node={ node }
         range={ range }
         size={ size }
@@ -58,20 +58,19 @@ const Nodes = ( { curve, range, size }: {
   </>;
 };
 
-const Fxs = ( { curve, range, size }: {
-  curve: number;
+const Fxs = ( { curveId, range, size }: {
+  curveId: string;
   range: TimeValueRange;
   size: Resolution;
 } ): JSX.Element => {
   const { fxs } = useSelector( ( state ) => ( {
-    fxs: state.automaton.curves[ curve ].fxs
+    fxs: state.automaton.curves[ curveId ].fxs
   } ) );
 
   return <>
     { fxs && Object.values( fxs ).map( ( fx ) => (
       <CurveEditorFxBg
         key={ fx.$id }
-        curve={ curve }
         fx={ fx }
         range={ range }
         size={ size }
@@ -80,7 +79,7 @@ const Fxs = ( { curve, range, size }: {
     { fxs && Object.values( fxs ).map( ( fx ) => (
       <CurveEditorFx
         key={ fx.$id }
-        curve={ curve }
+        curveId={ curveId }
         fx={ fx }
         range={ range }
         size={ size }
@@ -141,7 +140,7 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
     curveLength: selectedCurve != null ? state.automaton.curves[ selectedCurve ].length : null
   } ) );
 
-  const curve = selectedCurve != null && automaton?.getCurve( selectedCurve ) || null;
+  const curve = selectedCurve != null && automaton?.getCurveById( selectedCurve ) || null;
 
   const refBody = useRef<HTMLDivElement>( null );
   const rect = useRect( refBody );
@@ -213,7 +212,7 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
             commands: [
               {
                 type: 'curve/createNodeFromData',
-                curve: selectedCurve,
+                curveId: selectedCurve,
                 data
               }
             ]
@@ -265,7 +264,7 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
         commands: [
           {
             type: 'curve/createNodeFromData',
-            curve: selectedCurve,
+            curveId: selectedCurve,
             data
           }
         ]
@@ -302,7 +301,7 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
               commands: [
                 {
                   type: 'curve/createFxFromData',
-                  curve: selectedCurve,
+                  curveId: selectedCurve,
                   data
                 }
               ]
@@ -382,22 +381,22 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
           />
           { selectedCurve != null && <>
             <Fxs
-              curve={ selectedCurve }
+              curveId={ selectedCurve }
               range={ range }
               size={ rect }
             />
             <CurveEditorGraph
-              curve={ selectedCurve }
+              curveId={ selectedCurve }
               range={ range }
               size={ rect }
             />
             <Nodes
-              curve={ selectedCurve }
+              curveId={ selectedCurve }
               range={ range }
               size={ rect }
             />
             <StyledLines
-              curve={ selectedCurve }
+              curveId={ selectedCurve }
               range={ range }
               size={ rect }
             />

@@ -57,11 +57,11 @@ const CurveList = ( { className }: CurveListProps ): JSX.Element => {
       if ( !automaton ) { return; }
 
       const curve = automaton.createCurve();
-      const index = automaton.getCurveIndex( curve );
+      const curveId = curve.$id;
 
       dispatch( {
         type: 'CurveEditor/SelectCurve',
-        curve: index
+        curveId
       } );
 
       dispatch( {
@@ -70,7 +70,7 @@ const CurveList = ( { className }: CurveListProps ): JSX.Element => {
         commands: [
           {
             type: 'automaton/createCurve',
-            index
+            data: curve.serializeWithID()
           }
         ],
       } );
@@ -80,10 +80,10 @@ const CurveList = ( { className }: CurveListProps ): JSX.Element => {
 
   return (
     <Root className={ className } barPosition='left'>
-      { curves.map( ( curve, iCurve ) => (
+      { Object.keys( curves ).map( ( id ) => (
         <StyledCurveListEntry
-          key={ iCurve }
-          index={ iCurve }
+          key={ id }
+          curveId={ id }
         />
       ) ) }
       <NewCurveButton

@@ -1,5 +1,6 @@
-import { BezierNode, FxSection, SerializedChannel, SerializedChannelItem, SerializedCurve } from '@fms-cat/automaton';
+import { BezierNode, FxSection, SerializedChannel, SerializedCurve } from '@fms-cat/automaton';
 import { AutomatonWithGUI } from '../../AutomatonWithGUI';
+import type { StateChannelItem } from '../../types/StateChannelItem';
 import { WithBypass } from '../../types/WithBypass';
 import { WithID } from '../../types/WithID';
 
@@ -19,8 +20,10 @@ export type HistoryCommand = {
   data: SerializedChannel;
 } | {
   type: 'automaton/createCurve';
-  data?: SerializedCurve;
-  index: number;
+  data: SerializedCurve & WithID;
+} | {
+  type: 'automaton/removeCurve';
+  data: SerializedCurve & WithID;
 } | {
   type: 'automaton/createLabel';
   name: string;
@@ -37,11 +40,11 @@ export type HistoryCommand = {
 } | {
   type: 'channel/createItemFromData';
   channel: string;
-  data: Required<SerializedChannelItem> & WithID;
+  data: StateChannelItem;
 } | {
   type: 'channel/removeItem';
   channel: string;
-  data: Required<SerializedChannelItem> & WithID;
+  data: StateChannelItem;
 } | {
   type: 'channel/moveItem';
   channel: string;
@@ -88,61 +91,61 @@ export type HistoryCommand = {
   ampPrev: number;
 } | {
   type: 'curve/createNodeFromData';
-  curve: number;
+  curveId: string;
   data: BezierNode & WithID;
 } | {
   type: 'curve/removeNode';
-  curve: number;
+  curveId: string;
   data: BezierNode & WithID;
 } | {
   type: 'curve/moveNodeTime';
-  curve: number;
+  curveId: string;
   node: string;
   time: number;
   timePrev: number;
 } | {
   type: 'curve/moveNodeValue';
-  curve: number;
+  curveId: string;
   node: string;
   value: number;
   valuePrev: number;
 } | {
   type: 'curve/moveHandleTime';
-  curve: number;
+  curveId: string;
   node: string;
   dir: 'in' | 'out';
   time: number;
   timePrev: number;
 } | {
   type: 'curve/moveHandleValue';
-  curve: number;
+  curveId: string;
   node: string;
   dir: 'in' | 'out';
   value: number;
   valuePrev: number;
 } | {
   type: 'curve/createFxFromData';
-  curve: number;
+  curveId: string;
   data: FxSection & WithBypass & WithID;
 } | {
   type: 'curve/removeFx';
-  curve: number;
+  curveId: string;
   data: FxSection & WithBypass & WithID;
 } | {
   type: 'curve/moveFx';
-  curve: number;
+  curveId: string;
   fx: string;
   time: number;
   timePrev: number;
 } | {
   type: 'curve/changeFxRow';
-  curve: number;
+  curveId: string;
   fx: string;
   row: number;
   rowPrev: number;
 } | {
   type: 'curve/forceMoveFx';
-  curve: number;
+  curveId: string;
   fx: string;
   time: number;
   timePrev: number;
@@ -150,24 +153,24 @@ export type HistoryCommand = {
   rowPrev: number;
 } | {
   type: 'curve/resizeFx';
-  curve: number;
+  curveId: string;
   fx: string;
   length: number;
   lengthPrev: number;
 } | {
   type: 'curve/resizeFxByLeft';
-  curve: number;
+  curveId: string;
   fx: string;
   length: number;
   lengthPrev: number;
 } | {
   type: 'curve/bypassFx';
-  curve: number;
+  curveId: string;
   fx: string;
   bypass: boolean;
 } | {
   type: 'curve/changeFxParam';
-  curve: number;
+  curveId: string;
   fx: string;
   key: string;
   value: any;
@@ -202,8 +205,13 @@ export function parseHistoryCommand( command: HistoryCommand ): {
     };
   } else if ( command.type === 'automaton/createCurve' ) {
     return {
-      undo: ( automaton ) => automaton.removeCurve( command.index ),
+      undo: ( automaton ) => automaton.removeCurve( command.data.$id ),
       redo: ( automaton ) => automaton.createCurve( command.data ),
+    };
+  } else if ( command.type === 'automaton/removeCurve' ) {
+    return {
+      undo: ( automaton ) => automaton.createCurve( command.data ),
+      redo: ( automaton ) => automaton.removeCurve( command.data.$id ),
     };
   } else if ( command.type === 'automaton/createLabel' ) {
     return {
@@ -285,107 +293,107 @@ export function parseHistoryCommand( command: HistoryCommand ): {
     };
   } else if ( command.type === 'curve/createNodeFromData' ) {
     return {
-      undo: ( automaton ) => automaton.getCurve( command.curve )!
+      undo: ( automaton ) => automaton.getCurveById( command.curveId )!
         .removeNode( command.data.$id ),
-      redo: ( automaton ) => automaton.getCurve( command.curve )!
+      redo: ( automaton ) => automaton.getCurveById( command.curveId )!
         .createNodeFromData( command.data )
     };
   } else if ( command.type === 'curve/removeNode' ) {
     return {
-      undo: ( automaton ) => automaton.getCurve( command.curve )!
+      undo: ( automaton ) => automaton.getCurveById( command.curveId )!
         .createNodeFromData( command.data ),
-      redo: ( automaton ) => automaton.getCurve( command.curve )!
+      redo: ( automaton ) => automaton.getCurveById( command.curveId )!
         .removeNode( command.data.$id )
     };
   } else if ( command.type === 'curve/moveNodeTime' ) {
     return {
-      undo: ( automaton ) => automaton.getCurve( command.curve )!
+      undo: ( automaton ) => automaton.getCurveById( command.curveId )!
         .moveNodeTime( command.node, command.timePrev ),
-      redo: ( automaton ) => automaton.getCurve( command.curve )!
+      redo: ( automaton ) => automaton.getCurveById( command.curveId )!
         .moveNodeTime( command.node, command.time )
     };
   } else if ( command.type === 'curve/moveNodeValue' ) {
     return {
-      undo: ( automaton ) => automaton.getCurve( command.curve )!
+      undo: ( automaton ) => automaton.getCurveById( command.curveId )!
         .moveNodeValue( command.node, command.valuePrev ),
-      redo: ( automaton ) => automaton.getCurve( command.curve )!
+      redo: ( automaton ) => automaton.getCurveById( command.curveId )!
         .moveNodeValue( command.node, command.value )
     };
   } else if ( command.type === 'curve/moveHandleTime' ) {
     return {
-      undo: ( automaton ) => automaton.getCurve( command.curve )!
+      undo: ( automaton ) => automaton.getCurveById( command.curveId )!
         .moveHandleTime( command.node, command.dir, command.timePrev ),
-      redo: ( automaton ) => automaton.getCurve( command.curve )!
+      redo: ( automaton ) => automaton.getCurveById( command.curveId )!
         .moveHandleTime( command.node, command.dir, command.time )
     };
   } else if ( command.type === 'curve/moveHandleValue' ) {
     return {
-      undo: ( automaton ) => automaton.getCurve( command.curve )!
+      undo: ( automaton ) => automaton.getCurveById( command.curveId )!
         .moveHandleValue( command.node, command.dir, command.valuePrev ),
-      redo: ( automaton ) => automaton.getCurve( command.curve )!
+      redo: ( automaton ) => automaton.getCurveById( command.curveId )!
         .moveHandleValue( command.node, command.dir, command.value )
     };
   } else if ( command.type === 'curve/createFxFromData' ) {
     return {
-      undo: ( automaton ) => automaton.getCurve( command.curve )!
+      undo: ( automaton ) => automaton.getCurveById( command.curveId )!
         .removeFx( command.data.$id ),
-      redo: ( automaton ) => automaton.getCurve( command.curve )!
+      redo: ( automaton ) => automaton.getCurveById( command.curveId )!
         .createFxFromData( command.data )
     };
   } else if ( command.type === 'curve/removeFx' ) {
     return {
-      undo: ( automaton ) => automaton.getCurve( command.curve )!
+      undo: ( automaton ) => automaton.getCurveById( command.curveId )!
         .createFxFromData( command.data ),
-      redo: ( automaton ) => automaton.getCurve( command.curve )!
+      redo: ( automaton ) => automaton.getCurveById( command.curveId )!
         .removeFx( command.data.$id )
     };
   } else if ( command.type === 'curve/moveFx' ) {
     return {
-      undo: ( automaton ) => automaton.getCurve( command.curve )!
+      undo: ( automaton ) => automaton.getCurveById( command.curveId )!
         .moveFx( command.fx, command.timePrev ),
-      redo: ( automaton ) => automaton.getCurve( command.curve )!
+      redo: ( automaton ) => automaton.getCurveById( command.curveId )!
         .moveFx( command.fx, command.time )
     };
   } else if ( command.type === 'curve/changeFxRow' ) {
     return {
-      undo: ( automaton ) => automaton.getCurve( command.curve )!
+      undo: ( automaton ) => automaton.getCurveById( command.curveId )!
         .changeFxRow( command.fx, command.rowPrev ),
-      redo: ( automaton ) => automaton.getCurve( command.curve )!
+      redo: ( automaton ) => automaton.getCurveById( command.curveId )!
         .changeFxRow( command.fx, command.row )
     };
   } else if ( command.type === 'curve/forceMoveFx' ) {
     return {
-      undo: ( automaton ) => automaton.getCurve( command.curve )!
+      undo: ( automaton ) => automaton.getCurveById( command.curveId )!
         .forceMoveFx( command.fx, command.timePrev, command.rowPrev ),
-      redo: ( automaton ) => automaton.getCurve( command.curve )!
+      redo: ( automaton ) => automaton.getCurveById( command.curveId )!
         .forceMoveFx( command.fx, command.time, command.row )
     };
   } else if ( command.type === 'curve/resizeFx' ) {
     return {
-      undo: ( automaton ) => automaton.getCurve( command.curve )!
+      undo: ( automaton ) => automaton.getCurveById( command.curveId )!
         .resizeFx( command.fx, command.lengthPrev ),
-      redo: ( automaton ) => automaton.getCurve( command.curve )!
+      redo: ( automaton ) => automaton.getCurveById( command.curveId )!
         .resizeFx( command.fx, command.length )
     };
   } else if ( command.type === 'curve/resizeFxByLeft' ) {
     return {
-      undo: ( automaton ) => automaton.getCurve( command.curve )!
+      undo: ( automaton ) => automaton.getCurveById( command.curveId )!
         .resizeFxByLeft( command.fx, command.lengthPrev ),
-      redo: ( automaton ) => automaton.getCurve( command.curve )!
+      redo: ( automaton ) => automaton.getCurveById( command.curveId )!
         .resizeFxByLeft( command.fx, command.length )
     };
   } else if ( command.type === 'curve/bypassFx' ) {
     return {
-      undo: ( automaton ) => automaton.getCurve( command.curve )!
+      undo: ( automaton ) => automaton.getCurveById( command.curveId )!
         .bypassFx( command.fx, !command.bypass ),
-      redo: ( automaton ) => automaton.getCurve( command.curve )!
+      redo: ( automaton ) => automaton.getCurveById( command.curveId )!
         .bypassFx( command.fx, command.bypass ),
     };
   } else if ( command.type === 'curve/changeFxParam' ) {
     return {
-      undo: ( automaton ) => automaton.getCurve( command.curve )!
+      undo: ( automaton ) => automaton.getCurveById( command.curveId )!
         .changeFxParam( command.fx, command.key, command.valuePrev ),
-      redo: ( automaton ) => automaton.getCurve( command.curve )!
+      redo: ( automaton ) => automaton.getCurveById( command.curveId )!
         .changeFxParam( command.fx, command.key, command.value )
     };
   } else {

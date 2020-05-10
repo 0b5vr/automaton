@@ -2,7 +2,7 @@ import { BezierNode, Curve, FxSection, SerializedBezierNode, SerializedCurve, Se
 import { StatusLevel, WithStatus } from './types/Status';
 import { AutomatonWithGUI } from './AutomatonWithGUI';
 import { EventEmittable } from './mixins/EventEmittable';
-import { Serializable } from './types/Serializable';
+import { SerializableWithID } from './types/SerializableWithID';
 import { WithBypass } from './types/WithBypass';
 import { WithID } from './types/WithID';
 import { applyMixins } from './utils/applyMixins';
@@ -33,7 +33,7 @@ export enum CurveStatusCode {
  * @param automaton Parent automaton
  * @param data Data of the channel
  */
-export class CurveWithGUI extends Curve implements Serializable<SerializedCurve> {
+export class CurveWithGUI extends Curve {
   /**
    * The parent automaton.
    */
@@ -50,6 +50,11 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
   protected __fxs!: Array<FxSection & WithBypass & WithID>;
 
   /**
+   * I'm crying
+   */
+  private __userCount: number = 0;
+
+  /**
    * List of bezier nodes.
    */
   public get nodes(): Array<BezierNode & WithID> {
@@ -63,7 +68,14 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
     return jsonCopy( this.__fxs );
   }
 
-  public constructor( automaton: AutomatonWithGUI, data?: SerializedCurve ) {
+  /**
+   * Whether the curve is being used in somewhere or not.
+   */
+  public get isUsed(): boolean {
+    return this.getSpecificStatus( CurveStatusCode.NOT_USED ) != null;
+  }
+
+  public constructor( automaton: AutomatonWithGUI, data?: SerializedCurve & Partial<WithID> ) {
     super( automaton, data || {
       nodes: [
         {
@@ -79,6 +91,8 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
       ],
       fxs: []
     } );
+
+    this.$id = data?.$id ?? genID();
 
     this.__watchStatus( () => {
       this.__setStatus( {
@@ -145,12 +159,35 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
   }
 
   /**
-   * Mark this curve as used.
+   * I'm crying
+   * Intended to be used in {@link ChannelWithGUI} via {@link ChannelItemWithGUI#curve}.
    */
-  public markAsUsed(): void {
-    this.__watchStatus( () => {
-      this.__deleteStatus( CurveStatusCode.NOT_USED );
-    } );
+  public incrementUserCount(): void {
+    this.__userCount ++;
+
+    if ( this.__userCount === 1 ) {
+      this.__watchStatus( () => {
+        this.__deleteStatus( CurveStatusCode.NOT_USED );
+      } );
+    }
+  }
+
+  /**
+   * I'm crying
+   * Intended to be used in {@link ChannelWithGUI} via {@link ChannelItemWithGUI#curve}.
+   */
+  public decrementUserCount(): void {
+    this.__userCount --;
+
+    if ( this.__userCount === 0 ) {
+      this.__watchStatus( () => {
+        this.__setStatus( {
+          code: CurveStatusCode.NOT_USED,
+          level: StatusLevel.WARNING,
+          message: 'This curve is not used'
+        } );
+      } );
+    }
   }
 
   /**
@@ -849,6 +886,7 @@ export interface CurveWithGUIEvents {
   changeLength: { length: number };
 }
 
+export interface CurveWithGUI extends SerializableWithID<SerializedCurve> {}
 export interface CurveWithGUI extends EventEmittable<CurveWithGUIEvents> {}
 export interface CurveWithGUI extends WithStatus<CurveStatusCode> {}
-applyMixins( CurveWithGUI, [ EventEmittable, WithStatus ] );
+applyMixins( CurveWithGUI, [ SerializableWithID, EventEmittable, WithStatus ] );

@@ -3,9 +3,8 @@ import React, { useCallback, useRef } from 'react';
 import { dx2dt, snapTime, x2t } from '../utils/TimeValueRange';
 import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
-import { SerializedChannelItem } from '@fms-cat/automaton';
+import type { StateChannelItem } from '../../types/StateChannelItem';
 import { TimelineItem } from './TimelineItem';
-import { WithID } from '../../types/WithID';
 import { hasOverwrap } from '../../utils/hasOverwrap';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
 import { showToasty } from '../states/Toasty';
@@ -133,7 +132,7 @@ const DopeSheetEntry = ( props: Props ): JSX.Element => {
       }
 
       const curve = automaton.createCurve();
-      const curveId = automaton.getCurveIndex( curve );
+      const curveId = curve.$id;
       const data = channel.createItemCurve( curveId, t );
 
       dispatch( {
@@ -150,12 +149,12 @@ const DopeSheetEntry = ( props: Props ): JSX.Element => {
         commands: [
           {
             type: 'automaton/createCurve',
-            index: curveId
+            data: curve.serializeWithID()
           },
           {
             type: 'channel/createItemFromData',
             channel: channelName,
-            data: data
+            data
           }
         ],
       } );
@@ -175,7 +174,7 @@ const DopeSheetEntry = ( props: Props ): JSX.Element => {
 
       if ( !thereAreNoOtherItemsHere ) { return; }
 
-      let data: Required<SerializedChannelItem> & WithID | null = null;
+      let data: StateChannelItem | null = null;
 
       // try last selected item
       if ( lastSelectedItem ) {
@@ -231,7 +230,7 @@ const DopeSheetEntry = ( props: Props ): JSX.Element => {
 
           dispatch( {
             type: 'History/Push',
-            description: confirmedData.curve != null ? 'Add Curve' : 'Add Constant',
+            description: confirmedData.curveId != null ? 'Add Curve' : 'Add Constant',
             commands: [
               {
                 type: 'channel/createItemFromData',
