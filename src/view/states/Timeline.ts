@@ -183,6 +183,14 @@ export const reducer: Reducer<State, ContextAction> = ( state = initialState, ac
         newState.range.t1 = length;
       }
     } else if ( action.type === 'Automaton/RemoveChannel' ) {
+      newState.selected.items = jsonCopy( initialState.selected.items );
+
+      Object.entries( state.selected.items ).forEach( ( [ id, item ] ) => {
+        if ( item.channel !== action.channel ) {
+          newState.selected.items[ id ] = item;
+        }
+      } );
+
       if ( state.selectedChannel === action.channel ) {
         newState.selectedChannel = null;
       }
