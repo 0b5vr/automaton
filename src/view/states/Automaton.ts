@@ -1,9 +1,10 @@
-import { BezierNode, FxDefinition, FxSection, SerializedChannelItem } from '@fms-cat/automaton';
+import { BezierNode, FxDefinition, FxSection } from '@fms-cat/automaton';
 import { GUISettings, defaultGUISettings } from '../../types/GUISettings';
 import { AutomatonWithGUI } from '../../AutomatonWithGUI';
 import { ChannelStatusCode } from '../../ChannelWithGUI';
 import { CurveStatusCode } from '../../CurveWithGUI';
 import { Reducer } from 'redux';
+import type { StateChannelItem } from '../../types/StateChannelItem';
 import { Status } from '../../types/Status';
 import { WithBypass } from '../../types/WithBypass';
 import { WithID } from '../../types/WithID';
@@ -21,20 +22,24 @@ export interface State {
       value: number;
       length: number;
       status: Status<ChannelStatusCode> | null;
-      items: { [ id: string ]: Required<SerializedChannelItem> & WithID };
+      items: { [ id: string ]: StateChannelItem };
     };
   };
-  curves: Array<{
-    status: Status<CurveStatusCode> | null;
-    length: number;
-    path: string;
-    nodes: { [ id: string ]: BezierNode & WithID };
-    fxs: { [ id: string ]: FxSection & WithBypass & WithID };
-  }>;
-  curvesPreview: Array<{
-    previewTime: number | null;
-    previewValue: number | null;
-  }>;
+  curves: {
+    [ name: string ]: {
+      status: Status<CurveStatusCode> | null;
+      length: number;
+      path: string;
+      nodes: { [ id: string ]: BezierNode & WithID };
+      fxs: { [ id: string ]: FxSection & WithBypass & WithID };
+    };
+  };
+  curvesPreview: {
+    [ name: string ]: {
+      previewTime: number | null;
+      previewValue: number | null;
+    };
+  };
   labels: { [ name: string ]: number };
   loopRegion: { begin: number; end: number } | null;
   isPlaying: boolean;
@@ -48,8 +53,8 @@ export interface State {
 export const initialState: Readonly<State> = {
   channelNames: [],
   channels: {},
-  curves: [],
-  curvesPreview: [],
+  curves: {},
+  curvesPreview: {},
   labels: {},
   loopRegion: null,
   fxDefinitions: {},
@@ -93,57 +98,57 @@ export type Action = {
   type: 'Automaton/UpdateChannelItem';
   channel: string;
   id: string;
-  item: Required<SerializedChannelItem> & WithID;
+  item: StateChannelItem;
 } | {
   type: 'Automaton/RemoveChannelItem';
   channel: string;
   id: string;
 } | {
   type: 'Automaton/CreateCurve';
-  curve: number;
+  curveId: string;
   length: number;
   path: string;
 } | {
   type: 'Automaton/RemoveCurve';
-  curve: number;
+  curveId: string;
 } | {
   type: 'Automaton/UpdateCurvePath';
-  curve: number;
+  curveId: string;
   path: string;
 } | {
   type: 'Automaton/UpdateCurveLength';
-  curve: number;
+  curveId: string;
   length: number;
 } | {
   type: 'Automaton/UpdateCurveStatus';
-  curve: number;
+  curveId: string;
   status: Status<CurveStatusCode> | null;
 } | {
   type: 'Automaton/UpdateCurvePreviewTimeValue';
-  curve: number;
+  curveId: string;
   time: number;
   value: number;
 } | {
   type: 'Automaton/UpdateCurveNode';
-  curve: number;
+  curveId: string;
   id: string;
   node: BezierNode & WithID;
 } | {
   type: 'Automaton/RemoveCurveNode';
-  curve: number;
+  curveId: string;
   id: string;
 } | {
   type: 'Automaton/UpdateCurveFx';
-  curve: number;
+  curveId: string;
   id: string;
   fx: FxSection & WithBypass & WithID;
 } | {
   type: 'Automaton/RemoveCurveFx';
-  curve: number;
+  curveId: string;
   id: string;
 } | {
   type: 'Automaton/UpdateCurveLength';
-  curve: number;
+  curveId: string;
   length: number;
 } | {
   type: 'Automaton/SetLabel';
@@ -208,36 +213,36 @@ export const reducer: Reducer<State, Action> = ( state = initialState, action ) 
     } else if ( action.type === 'Automaton/RemoveChannelItem' ) {
       delete newState.channels[ action.channel ].items[ action.id ];
     } else if ( action.type === 'Automaton/CreateCurve' ) {
-      newState.curves[ action.curve ] = {
+      newState.curves[ action.curveId ] = {
         status: null,
         length: action.length,
         path: action.path,
         nodes: {},
         fxs: {}
       };
-      newState.curvesPreview[ action.curve ] = {
+      newState.curvesPreview[ action.curveId ] = {
         previewTime: null,
         previewValue: null
       };
     } else if ( action.type === 'Automaton/RemoveCurve' ) {
-      newState.curves.splice( action.curve, 1 );
+      delete newState.curves[ action.curveId ];
     } else if ( action.type === 'Automaton/UpdateCurvePath' ) {
-      newState.curves[ action.curve ].path = action.path;
+      newState.curves[ action.curveId ].path = action.path;
     } else if ( action.type === 'Automaton/UpdateCurveLength' ) {
-      newState.curves[ action.curve ].length = action.length;
+      newState.curves[ action.curveId ].length = action.length;
     } else if ( action.type === 'Automaton/UpdateCurveStatus' ) {
-      newState.curves[ action.curve ].status = action.status;
+      newState.curves[ action.curveId ].status = action.status;
     } else if ( action.type === 'Automaton/UpdateCurvePreviewTimeValue' ) {
-      newState.curvesPreview[ action.curve ].previewTime = action.time;
-      newState.curvesPreview[ action.curve ].previewValue = action.value;
+      newState.curvesPreview[ action.curveId ].previewTime = action.time;
+      newState.curvesPreview[ action.curveId ].previewValue = action.value;
     } else if ( action.type === 'Automaton/UpdateCurveNode' ) {
-      newState.curves[ action.curve ].nodes[ action.id ] = jsonCopy( action.node );
+      newState.curves[ action.curveId ].nodes[ action.id ] = jsonCopy( action.node );
     } else if ( action.type === 'Automaton/RemoveCurveNode' ) {
-      delete newState.curves[ action.curve ].nodes[ action.id ];
+      delete newState.curves[ action.curveId ].nodes[ action.id ];
     } else if ( action.type === 'Automaton/UpdateCurveFx' ) {
-      newState.curves[ action.curve ].fxs[ action.id ] = jsonCopy( action.fx );
+      newState.curves[ action.curveId ].fxs[ action.id ] = jsonCopy( action.fx );
     } else if ( action.type === 'Automaton/RemoveCurveFx' ) {
-      delete newState.curves[ action.curve ].fxs[ action.id ];
+      delete newState.curves[ action.curveId ].fxs[ action.id ];
     } else if ( action.type === 'Automaton/SetLabel' ) {
       newState.labels[ action.name ] = action.time;
     } else if ( action.type === 'Automaton/DeleteLabel' ) {

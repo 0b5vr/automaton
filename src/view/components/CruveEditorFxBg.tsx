@@ -24,14 +24,11 @@ const Root = styled.g`
 `;
 
 // == element ======================================================================================
-interface Props {
-  curve: number;
+const CurveEditorFxBg = ( props: {
   fx: FxSection & WithBypass & WithID;
   range: TimeValueRange;
   size: Resolution;
-}
-
-const CurveEditorFxBg = ( props: Props ): JSX.Element | null => {
+} ): JSX.Element | null => {
   const { fx, range, size } = props;
 
   const x = t2x( fx.time, range, size.width );

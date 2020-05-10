@@ -7,7 +7,7 @@ import React from 'react';
 
 // == compoennt ====================================================================================
 interface Props {
-  curve: number;
+  curveId: string;
   node: string;
 }
 
@@ -17,8 +17,8 @@ const InspectorCurveNode = ( props: Props ): JSX.Element => {
     automaton: state.automaton.instance,
     curves: state.automaton.curves
   } ) );
-  const curve = automaton?.getCurve( props.curve ) || null;
-  const node = curves[ props.curve ].nodes[ props.node ];
+  const curve = automaton?.getCurveById( props.curveId ) || null;
+  const node = curves[ props.curveId ].nodes[ props.node ];
 
   return <>
     { curve && <>
@@ -38,7 +38,7 @@ const InspectorCurveNode = ( props: Props ): JSX.Element => {
               commands: [
                 {
                   type: 'curve/moveNodeTime',
-                  curve: props.curve,
+                  curveId: props.curveId,
                   node: node.$id,
                   time,
                   timePrev
@@ -60,7 +60,7 @@ const InspectorCurveNode = ( props: Props ): JSX.Element => {
               commands: [
                 {
                   type: 'curve/moveNodeValue',
-                  curve: props.curve,
+                  curveId: props.curveId,
                   node: node.$id,
                   value,
                   valuePrev
@@ -85,7 +85,7 @@ const InspectorCurveNode = ( props: Props ): JSX.Element => {
               commands: [
                 {
                   type: 'curve/moveHandleTime',
-                  curve: props.curve,
+                  curveId: props.curveId,
                   node: node.$id,
                   dir: 'in',
                   time,
@@ -108,7 +108,7 @@ const InspectorCurveNode = ( props: Props ): JSX.Element => {
               commands: [
                 {
                   type: 'curve/moveHandleValue',
-                  curve: props.curve,
+                  curveId: props.curveId,
                   node: node.$id,
                   dir: 'in',
                   value,
@@ -134,7 +134,7 @@ const InspectorCurveNode = ( props: Props ): JSX.Element => {
               commands: [
                 {
                   type: 'curve/moveHandleTime',
-                  curve: props.curve,
+                  curveId: props.curveId,
                   node: node.$id,
                   dir: 'out',
                   time,
@@ -157,7 +157,7 @@ const InspectorCurveNode = ( props: Props ): JSX.Element => {
               commands: [
                 {
                   type: 'curve/moveHandleValue',
-                  curve: props.curve,
+                  curveId: props.curveId,
                   node: node.$id,
                   dir: 'out',
                   value,

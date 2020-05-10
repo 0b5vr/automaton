@@ -36,16 +36,13 @@ const Root = styled.g`
 `;
 
 // == element ======================================================================================
-interface Props {
-  curve: number;
+const CurveEditorNode = ( props: {
+  curveId: string;
   node: BezierNode & WithID;
   range: TimeValueRange;
   size: Resolution;
-}
-
-const CurveEditorNode = ( props: Props ): JSX.Element => {
-  const { node, range, size } = props;
-  const curveIndex = props.curve;
+} ): JSX.Element => {
+  const { node, range, size, curveId } = props;
   const {
     guiSettings,
     automaton
@@ -55,7 +52,7 @@ const CurveEditorNode = ( props: Props ): JSX.Element => {
   } ) );
   const dispatch = useDispatch();
   const checkDoubleClick = useDoubleClick();
-  const curve = automaton?.getCurve( curveIndex ) || null;
+  const curve = automaton?.getCurveById( curveId ) || null;
   const selectedNodes = useSelector( ( state ) => state.curveEditor.selected.nodes );
 
   const grabNode = useCallback(
@@ -103,14 +100,14 @@ const CurveEditorNode = ( props: Props ): JSX.Element => {
             commands: [
               {
                 type: 'curve/moveNodeTime',
-                curve: curveIndex,
+                curveId,
                 node: node.$id,
                 time,
                 timePrev
               },
               {
                 type: 'curve/moveNodeValue',
-                curve: curveIndex,
+                curveId,
                 node: node.$id,
                 value,
                 valuePrev
@@ -120,7 +117,7 @@ const CurveEditorNode = ( props: Props ): JSX.Element => {
         }
       );
     },
-    [ node, curve, curveIndex, range, size, guiSettings ]
+    [ node, curve, curveId, range, size, guiSettings ]
   );
 
   const removeNode = useCallback(
@@ -137,13 +134,13 @@ const CurveEditorNode = ( props: Props ): JSX.Element => {
         commands: [
           {
             type: 'curve/removeNode',
-            curve: curveIndex,
+            curveId,
             data: node
           }
         ],
       } );
     },
-    [ node, curve, curveIndex ]
+    [ node, curve, curveId ]
   );
 
   const handleNodeClick = useCallback(
@@ -229,7 +226,7 @@ const CurveEditorNode = ( props: Props ): JSX.Element => {
             commands: [
               {
                 type: 'curve/moveHandleTime',
-                curve: curveIndex,
+                curveId,
                 node: node.$id,
                 dir,
                 time,
@@ -237,7 +234,7 @@ const CurveEditorNode = ( props: Props ): JSX.Element => {
               },
               {
                 type: 'curve/moveHandleTime',
-                curve: curveIndex,
+                curveId,
                 node: node.$id,
                 dir: dirOpposite,
                 time: timeOpposite,
@@ -245,7 +242,7 @@ const CurveEditorNode = ( props: Props ): JSX.Element => {
               },
               {
                 type: 'curve/moveHandleValue',
-                curve: curveIndex,
+                curveId,
                 node: node.$id,
                 dir,
                 value,
@@ -253,7 +250,7 @@ const CurveEditorNode = ( props: Props ): JSX.Element => {
               },
               {
                 type: 'curve/moveHandleValue',
-                curve: curveIndex,
+                curveId,
                 node: node.$id,
                 dir: dirOpposite,
                 value: valueOpposite,
@@ -264,7 +261,7 @@ const CurveEditorNode = ( props: Props ): JSX.Element => {
         }
       );
     },
-    [ node, curve, curveIndex, range, size ]
+    [ node, curve, curveId, range, size ]
   );
 
   const removeHandle = useCallback(
@@ -283,7 +280,7 @@ const CurveEditorNode = ( props: Props ): JSX.Element => {
         commands: [
           {
             type: 'curve/moveHandleTime',
-            curve: curveIndex,
+            curveId,
             node: node.$id,
             dir,
             time: 0.0,
@@ -291,7 +288,7 @@ const CurveEditorNode = ( props: Props ): JSX.Element => {
           },
           {
             type: 'curve/moveHandleValue',
-            curve: curveIndex,
+            curveId,
             node: node.$id,
             dir,
             value: 0.0,
@@ -300,7 +297,7 @@ const CurveEditorNode = ( props: Props ): JSX.Element => {
         ],
       } );
     },
-    [ node, curve, curveIndex ]
+    [ node, curve, curveId ]
   );
 
   const handleHandleInClick = useCallback(

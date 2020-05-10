@@ -5,8 +5,7 @@ import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
 import { Icons } from '../icons/Icons';
 import { Resolution } from '../utils/Resolution';
-import { SerializedChannelItem } from '@fms-cat/automaton';
-import { WithID } from '../../types/WithID';
+import type { StateChannelItem } from '../../types/StateChannelItem';
 import { objectMapHas } from '../utils/objectMap';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
 import styled from 'styled-components';
@@ -64,7 +63,7 @@ const Root = styled.g`
 // == props ========================================================================================
 export interface TimelineItemCurveProps {
   channel: string;
-  item: Required<SerializedChannelItem> & WithID;
+  item: StateChannelItem;
   range: TimeValueRange;
   size: Resolution;
   dopeSheetMode?: boolean;
@@ -88,8 +87,8 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
   } = useSelector( ( state ) => ( {
     automaton: state.automaton.instance,
     selectedItems: state.timeline.selected.items,
-    path: state.automaton.curves[ item.curve! ].path,
-    curveLength: state.automaton.curves[ item.curve! ].length,
+    path: state.automaton.curves[ item.curveId! ].path,
+    curveLength: state.automaton.curves[ item.curveId! ].length,
     guiSettings: state.automaton.guiSettings
   } ) );
 
@@ -505,7 +504,7 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
     (): void => {
       dispatch( {
         type: 'CurveEditor/SelectCurve',
-        curve: item.curve
+        curveId: item.curveId
       } );
 
       dispatch( {
@@ -513,7 +512,7 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
         mode: 'curve'
       } );
     },
-    [ item.curve ]
+    [ item.curveId ]
   );
 
   const handleContextMenu = useCallback(

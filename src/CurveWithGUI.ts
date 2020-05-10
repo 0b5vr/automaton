@@ -2,7 +2,7 @@ import { BezierNode, Curve, FxSection, SerializedBezierNode, SerializedCurve, Se
 import { StatusLevel, WithStatus } from './types/Status';
 import { AutomatonWithGUI } from './AutomatonWithGUI';
 import { EventEmittable } from './mixins/EventEmittable';
-import { Serializable } from './types/Serializable';
+import { SerializableWithID } from './types/SerializableWithID';
 import { WithBypass } from './types/WithBypass';
 import { WithID } from './types/WithID';
 import { applyMixins } from './utils/applyMixins';
@@ -33,7 +33,7 @@ export enum CurveStatusCode {
  * @param automaton Parent automaton
  * @param data Data of the channel
  */
-export class CurveWithGUI extends Curve implements Serializable<SerializedCurve> {
+export class CurveWithGUI extends Curve {
   /**
    * The parent automaton.
    */
@@ -68,7 +68,7 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
     return jsonCopy( this.__fxs );
   }
 
-  public constructor( automaton: AutomatonWithGUI, data?: SerializedCurve ) {
+  public constructor( automaton: AutomatonWithGUI, data?: SerializedCurve & Partial<WithID> ) {
     super( automaton, data || {
       nodes: [
         {
@@ -84,6 +84,8 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
       ],
       fxs: []
     } );
+
+    this.$id = data?.$id ?? genID();
 
     this.__watchStatus( () => {
       this.__setStatus( {
@@ -877,6 +879,7 @@ export interface CurveWithGUIEvents {
   changeLength: { length: number };
 }
 
+export interface CurveWithGUI extends SerializableWithID<SerializedCurve> {}
 export interface CurveWithGUI extends EventEmittable<CurveWithGUIEvents> {}
 export interface CurveWithGUI extends WithStatus<CurveStatusCode> {}
-applyMixins( CurveWithGUI, [ EventEmittable, WithStatus ] );
+applyMixins( CurveWithGUI, [ SerializableWithID, EventEmittable, WithStatus ] );

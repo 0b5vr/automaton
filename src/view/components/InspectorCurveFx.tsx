@@ -10,7 +10,7 @@ import { clamp } from '../../utils/clamp';
 
 // == component ====================================================================================
 export interface InspectorCurveFxProps {
-  curve: number;
+  curveId: string;
   fx: string;
 }
 
@@ -20,8 +20,8 @@ const InspectorCurveFx = ( props: InspectorCurveFxProps ): JSX.Element => {
     automaton: state.automaton.instance,
     curves: state.automaton.curves
   } ) );
-  const curve = automaton?.getCurve( props.curve ) || null;
-  const fx = curves[ props.curve ].fxs[ props.fx ];
+  const curve = automaton?.getCurveById( props.curveId ) || null;
+  const fx = curves[ props.curveId ].fxs[ props.fx ];
   const fxDefParams = automaton?.getFxDefinitionParams( fx.def );
 
   return <>
@@ -42,7 +42,7 @@ const InspectorCurveFx = ( props: InspectorCurveFxProps ): JSX.Element => {
               commands: [
                 {
                   type: 'curve/moveFx',
-                  curve: props.curve,
+                  curveId: props.curveId,
                   fx: fx.$id,
                   time,
                   timePrev
@@ -64,7 +64,7 @@ const InspectorCurveFx = ( props: InspectorCurveFxProps ): JSX.Element => {
               commands: [
                 {
                   type: 'curve/resizeFx',
-                  curve: props.curve,
+                  curveId: props.curveId,
                   fx: fx.$id,
                   length,
                   lengthPrev
@@ -91,7 +91,7 @@ const InspectorCurveFx = ( props: InspectorCurveFxProps ): JSX.Element => {
               commands: [
                 {
                   type: 'curve/changeFxRow',
-                  curve: props.curve,
+                  curveId: props.curveId,
                   fx: fx.$id,
                   row: clamp( row, 0, CURVE_FX_ROW_MAX - 1 ),
                   rowPrev
@@ -114,7 +114,7 @@ const InspectorCurveFx = ( props: InspectorCurveFxProps ): JSX.Element => {
               commands: [
                 {
                   type: 'curve/bypassFx',
-                  curve: props.curve,
+                  curveId: props.curveId,
                   fx: fx.$id,
                   bypass: value
                 }
@@ -143,7 +143,7 @@ const InspectorCurveFx = ( props: InspectorCurveFxProps ): JSX.Element => {
                     commands: [
                       {
                         type: 'curve/changeFxParam',
-                        curve: props.curve,
+                        curveId: props.curveId,
                         fx: fx.$id,
                         key: name,
                         value,
@@ -167,7 +167,7 @@ const InspectorCurveFx = ( props: InspectorCurveFxProps ): JSX.Element => {
                     commands: [
                       {
                         type: 'curve/changeFxParam',
-                        curve: props.curve,
+                        curveId: props.curveId,
                         fx: fx.$id,
                         key: name,
                         value,

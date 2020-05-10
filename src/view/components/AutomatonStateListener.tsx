@@ -120,24 +120,24 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
     } );
   }
 
-  function initCurveState( index: number, curve: CurveWithGUI ): void {
+  function initCurveState( curveId: string, curve: CurveWithGUI ): void {
     dispatch( {
       type: 'Automaton/CreateCurve',
-      curve: index,
+      curveId,
       length: curve.length,
       path: genCurvePath( curve )
     } );
 
     dispatch( {
       type: 'Automaton/UpdateCurveStatus',
-      curve: index,
+      curveId,
       status: curve.status
     } );
 
     curve.nodes.forEach( ( node ) => {
       dispatch( {
         type: 'Automaton/UpdateCurveNode',
-        curve: index,
+        curveId,
         id: node.$id,
         node
       } );
@@ -146,7 +146,7 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
     curve.fxs.forEach( ( fx ) => {
       dispatch( {
         type: 'Automaton/UpdateCurveFx',
-        curve: index,
+        curveId,
         id: fx.$id,
         fx
       } );
@@ -155,7 +155,7 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
     curve.on( 'precalc', () => {
       dispatch( {
         type: 'Automaton/UpdateCurvePath',
-        curve: index,
+        curveId,
         path: genCurvePath( curve )
       } );
     } );
@@ -163,7 +163,7 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
     curve.on( 'previewTime', ( { time } ) => {
       dispatch( {
         type: 'Automaton/UpdateCurvePreviewTimeValue',
-        curve: index,
+        curveId,
         time,
         value: curve.getValue( time )
       } );
@@ -172,7 +172,7 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
     curve.on( 'updateStatus', () => {
       dispatch( {
         type: 'Automaton/UpdateCurveStatus',
-        curve: index,
+        curveId,
         status: curve.status
       } );
     } );
@@ -180,7 +180,7 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
     curve.on( 'createNode', ( { id, node } ) => {
       dispatch( {
         type: 'Automaton/UpdateCurveNode',
-        curve: index,
+        curveId,
         id,
         node
       } );
@@ -189,7 +189,7 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
     curve.on( 'updateNode', ( { id, node } ) => {
       dispatch( {
         type: 'Automaton/UpdateCurveNode',
-        curve: index,
+        curveId,
         id,
         node
       } );
@@ -198,7 +198,7 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
     curve.on( 'removeNode', ( { id } ) => {
       dispatch( {
         type: 'Automaton/RemoveCurveNode',
-        curve: index,
+        curveId,
         id
       } );
     } );
@@ -206,7 +206,7 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
     curve.on( 'createFx', ( { id, fx } ) => {
       dispatch( {
         type: 'Automaton/UpdateCurveFx',
-        curve: index,
+        curveId,
         id,
         fx
       } );
@@ -215,7 +215,7 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
     curve.on( 'updateFx', ( { id, fx } ) => {
       dispatch( {
         type: 'Automaton/UpdateCurveFx',
-        curve: index,
+        curveId,
         id,
         fx
       } );
@@ -224,7 +224,7 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
     curve.on( 'removeFx', ( { id } ) => {
       dispatch( {
         type: 'Automaton/RemoveCurveFx',
-        curve: index,
+        curveId,
         id
       } );
     } );
@@ -232,7 +232,7 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
     curve.on( 'changeLength', ( { length } ) => {
       dispatch( {
         type: 'Automaton/UpdateCurveLength',
-        curve: index,
+        curveId,
         length,
       } );
     } );
@@ -291,8 +291,8 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
       } );
     } );
 
-    Object.values( automaton.curves ).forEach( ( curve, iCurve ) => {
-      initCurveState( iCurve, curve );
+    Object.values( automaton.curves ).forEach( ( curve ) => {
+      initCurveState( curve.$id, curve );
     } );
 
     Object.entries( automaton.channels ).forEach( ( [ name, channel ] ) => {
@@ -400,13 +400,13 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
       } );
 
       const handleCreateCurve = automaton.on( 'createCurve', ( event ) => {
-        initCurveState( event.index, event.curve );
+        initCurveState( event.id, event.curve );
       } );
 
       const handleRemoveCurve = automaton.on( 'removeCurve', ( event ) => {
         dispatch( {
           type: 'Automaton/RemoveCurve',
-          curve: event.index
+          curveId: event.id
         } );
       } );
 

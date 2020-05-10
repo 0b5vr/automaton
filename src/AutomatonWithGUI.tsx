@@ -12,6 +12,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Serializable } from './types/Serializable';
 import type { ToastyParams } from './types/ToastyParams';
+import { WithID } from './types/WithID';
 import { applyMixins } from './utils/applyMixins';
 import { compat } from './compat/compat';
 import { createStore } from './view/states/store';
@@ -475,12 +476,11 @@ export class AutomatonWithGUI extends Automaton
    * Create a new curve.
    * @returns Created channel
    */
-  public createCurve( data?: SerializedCurve ): CurveWithGUI {
+  public createCurve( data?: SerializedCurve & Partial<WithID> ): CurveWithGUI {
     const curve = new CurveWithGUI( this, data );
-    const index = this.__curves.length;
     this.__curves.push( curve );
 
-    this.__emit( 'createCurve', { index, curve } );
+    this.__emit( 'createCurve', { id: curve.$id, curve } );
 
     this.shouldSave = true;
 
@@ -491,10 +491,16 @@ export class AutomatonWithGUI extends Automaton
    * Remove a curve.
    * @param index Index of the curve
    */
-  public removeCurve( index: number ): void {
+  public removeCurve( curveId: string ): void {
+    const index = this.__curves.findIndex( ( curve ) => curve.$id === curveId );
+    if ( index === -1 ) { return; }
+
+    const curve = this.__curves[ index ];
+    const id = curve.$id;
+
     this.__curves.splice( index, 1 );
 
-    this.__emit( 'removeCurve', { index } );
+    this.__emit( 'removeCurve', { id } );
 
     this.shouldSave = true;
   }
@@ -506,6 +512,28 @@ export class AutomatonWithGUI extends Automaton
    */
   public getCurve( index: number ): CurveWithGUI | null {
     return this.__curves[ index ] || null;
+  }
+
+  /**
+   * Get a curve by id.
+   * @param id Id of the curve
+   * @returns The curve
+   */
+  public getCurveById( id: string ): CurveWithGUI {
+    const index = this.getCurveIndexById( id );
+    return this.__curves[ index ];
+  }
+
+  /**
+   * Search for a curve that has given id then return index of it.
+   * If it couldn't find the curve, it will throw an error instead.
+   * @param id Id of the curve you want to grab
+   * @returns The index of the curve
+   */
+  public getCurveIndexById( id: string ): number {
+    const index = this.__curves.findIndex( ( curve ) => curve.$id === id );
+    if ( index === -1 ) { throw new Error( `Searched for item id: ${id} but not found` ); }
+    return index;
   }
 
   /**
@@ -807,8 +835,8 @@ export interface AutomatonWithGUIEvents {
   update: { time: number };
   createChannel: { name: string; channel: ChannelWithGUI };
   removeChannel: { name: string };
-  createCurve: { index: number; curve: CurveWithGUI };
-  removeCurve: { index: number };
+  createCurve: { id: string; curve: CurveWithGUI };
+  removeCurve: { id: string };
   addFxDefinitions: { fxDefinitions: { [ id: string ]: FxDefinition } };
   setLabel: { name: string; time: number };
   deleteLabel: { name: string };

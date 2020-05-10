@@ -2,7 +2,7 @@ import { ChannelItem, SerializedChannelItem } from '@fms-cat/automaton';
 import { AutomatonWithGUI } from './AutomatonWithGUI';
 import { CurveWithGUI } from './CurveWithGUI';
 import { SerializableWithID } from './types/SerializableWithID';
-import { WithID } from './types/WithID';
+import type { StateChannelItem } from './types/StateChannelItem';
 import { applyMixins } from './utils/applyMixins';
 
 export class ChannelItemWithGUI extends ChannelItem {
@@ -21,6 +21,17 @@ export class ChannelItemWithGUI extends ChannelItem {
       this.curve.setPreviewTime( time );
     }
     return value;
+  }
+
+  public deserialize( data: SerializedChannelItem | StateChannelItem ): void {
+    if ( 'curveId' in data && data.curveId != null ) {
+      super.deserialize( {
+        ...data,
+        curve: this.__automaton.getCurveIndexById( data.curveId )
+      } );
+    } else {
+      super.deserialize( data );
+    }
   }
 
   /**
@@ -48,8 +59,8 @@ export class ChannelItemWithGUI extends ChannelItem {
    * Serialize its current state, but every fields are required + $id is there.
    * @returns Serialized state
    */
-  public serializeGUI(): Required<SerializedChannelItem> & WithID {
-    const data: Required<SerializedChannelItem> & WithID = {
+  public serializeGUI(): StateChannelItem {
+    const data: StateChannelItem = {
       $id: this.$id,
       time: this.time,
       length: this.length,
@@ -58,7 +69,7 @@ export class ChannelItemWithGUI extends ChannelItem {
       offset: this.offset,
       speed: this.speed,
       amp: this.amp,
-      curve: this.curve ? this.__automaton.getCurveIndex( this.curve ) : null
+      curveId: this.curve?.$id ?? null,
     };
 
     return data;

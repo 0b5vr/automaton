@@ -6,12 +6,11 @@ import { Colors } from '../constants/Colors';
 import { Labels } from './Labels';
 import { RangeBar } from './RangeBar';
 import { Resolution } from '../utils/Resolution';
-import { SerializedChannelItem } from '@fms-cat/automaton';
+import type { StateChannelItem } from '../../types/StateChannelItem';
 import { TimeLoopRegion } from './TimeLoopRegion';
 import { TimeValueGrid } from './TimeValueGrid';
 import { TimeValueLines } from './TimeValueLines';
 import { TimelineItem } from './TimelineItem';
-import { WithID } from '../../types/WithID';
 import { hasOverwrap } from '../../utils/hasOverwrap';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
 import { showToasty } from '../states/Toasty';
@@ -223,7 +222,7 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
       }
 
       const curve = automaton.createCurve();
-      const curveId = automaton.getCurveIndex( curve );
+      const curveId = curve.$id;
       const data = channel.createItemCurve( curveId, t );
 
       dispatch( {
@@ -240,7 +239,7 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
         commands: [
           {
             type: 'automaton/createCurve',
-            index: curveId
+            data: curve.serializeWithID()
           },
           {
             type: 'channel/createItemFromData',
@@ -305,7 +304,7 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
 
       if ( !thereAreNoOtherItemsHere ) { return; }
 
-      let data: Required<SerializedChannelItem> & WithID | null = null;
+      let data: StateChannelItem | null = null;
 
       let v0 = y2v( y - rect.top, range, rect.height );
 

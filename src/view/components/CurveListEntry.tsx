@@ -28,32 +28,32 @@ const Root = styled.div<{ isSelected: boolean }>`
 // == element ======================================================================================
 export interface CurveListEntryProps {
   className?: string;
-  index: number;
+  curveId: string;
 }
 
 const CurveListEntry = ( props: CurveListEntryProps ): JSX.Element => {
-  const { className, index } = props;
+  const { className, curveId } = props;
   const dispatch = useDispatch();
   const { selectedCurve, status } = useSelector( ( state ) => ( {
     automaton: state.automaton.instance,
     selectedCurve: state.curveEditor.selectedCurve,
-    status: state.automaton.curves[ index ].status
+    status: state.automaton.curves[ curveId ].status
   } ) );
   const { path } = useSelector( ( state ) => ( {
-    path: state.automaton.curves[ index ].path
+    path: state.automaton.curves[ curveId ].path
   } ) );
 
   const handleClick = useCallback(
     () => {
-      if ( selectedCurve === index ) {
+      if ( selectedCurve === curveId ) {
         dispatch( {
           type: 'CurveEditor/SelectCurve',
-          curve: null
+          curveId: null
         } );
       } else {
         dispatch( {
           type: 'CurveEditor/SelectCurve',
-          curve: index
+          curveId
         } );
       }
     },
@@ -64,7 +64,7 @@ const CurveListEntry = ( props: CurveListEntryProps ): JSX.Element => {
     <Root
       className={ className }
       onClick={ handleClick }
-      isSelected={ selectedCurve === index }
+      isSelected={ selectedCurve === curveId }
     >
       <SvgRoot
         width="100%"
