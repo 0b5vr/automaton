@@ -2,6 +2,7 @@ import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
 import { StatusIcon } from './StatusIcon';
+import { showToasty } from '../states/Toasty';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
@@ -34,7 +35,7 @@ export interface CurveListEntryProps {
 const CurveListEntry = ( props: CurveListEntryProps ): JSX.Element => {
   const { className, curveId } = props;
   const dispatch = useDispatch();
-  const { selectedCurve, status } = useSelector( ( state ) => ( {
+  const { automaton, selectedCurve, status } = useSelector( ( state ) => ( {
     automaton: state.automaton.instance,
     selectedCurve: state.curveEditor.selectedCurve,
     status: state.automaton.curves[ curveId ].status
@@ -60,10 +61,119 @@ const CurveListEntry = ( props: CurveListEntryProps ): JSX.Element => {
     [ selectedCurve ]
   );
 
+  const editCurve = useCallback(
+    (): void => {
+      dispatch( {
+        type: 'CurveEditor/SelectCurve',
+        curveId
+      } );
+
+      dispatch( {
+        type: 'Workspace/ChangeMode',
+        mode: 'curve'
+      } );
+    },
+    [ curveId ]
+  );
+
+  const duplicateCurve = useCallback(
+    () => {
+      if ( !automaton ) { return; }
+
+      const src = automaton.getCurveById( curveId )!.serialize();
+
+      const newData = automaton.createCurve( src );
+
+      dispatch( {
+        type: 'CurveEditor/SelectCurve',
+        curveId: newData.$id
+      } );
+
+      dispatch( {
+        type: 'History/Push',
+        description: 'Duplicate Curve',
+        commands: [
+          {
+            type: 'automaton/createCurve',
+            data: newData
+          }
+        ]
+      } );
+    },
+    [ automaton, curveId ]
+  );
+
+  const removeCurve = useCallback(
+    () => {
+      if ( !automaton ) { return; }
+
+      const data = automaton.getCurveById( curveId ).serializeWithID();
+
+      try {
+        automaton.removeCurve( curveId );
+      } catch ( e ) {
+        if ( e?.name === 'CurveUsedError' ) {
+          showToasty( {
+            dispatch,
+            kind: 'error',
+            message: e.message
+          } );
+          return;
+        }
+        throw e;
+      }
+
+      dispatch( {
+        type: 'History/Push',
+        description: 'Remove Curve',
+        commands: [
+          {
+            type: 'automaton/removeCurve',
+            data
+          }
+        ]
+      } );
+    },
+    [ automaton, curveId ]
+  );
+
+  const handleContextMenu = useCallback(
+    ( event: React.MouseEvent ): void => {
+      event.preventDefault();
+
+      const x = event.clientX;
+      const y = event.clientY;
+
+      dispatch( {
+        type: 'ContextMenu/Push',
+        position: { x, y },
+        commands: [
+          {
+            name: 'Edit Curve',
+            description: 'Edit the curve.',
+            callback: () => editCurve()
+          },
+          {
+            name: 'Duplicate Curve',
+            description: 'Duplicate the curve.',
+            callback: () => duplicateCurve()
+          },
+          {
+            name: 'Remove Curve',
+            description: 'Remove the curve.',
+            callback: () => removeCurve()
+          }
+        ]
+      } );
+    },
+    [ editCurve, duplicateCurve, removeCurve ]
+  );
+
   return (
     <Root
       className={ className }
       onClick={ handleClick }
+      onContextMenu={ handleContextMenu }
       isSelected={ selectedCurve === curveId }
     >
       <SvgRoot

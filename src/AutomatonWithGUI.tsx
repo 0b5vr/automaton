@@ -492,6 +492,18 @@ export class AutomatonWithGUI extends Automaton
    * @param index Index of the curve
    */
   public removeCurve( curveId: string ): void {
+    const isUsed = Object.values( this.__channels ).some( ( channel ) => {
+      return channel.items.some( ( item ) => (
+        item.curve && ( item.curve.$id === curveId )
+      ) );
+    } );
+
+    if ( isUsed ) {
+      const error = new Error( 'removeCurve: The curve is still used in somewhere!' );
+      error.name = 'CurveUsedError';
+      throw error;
+    }
+
     const index = this.__curves.findIndex( ( curve ) => curve.$id === curveId );
     if ( index === -1 ) { return; }
 
