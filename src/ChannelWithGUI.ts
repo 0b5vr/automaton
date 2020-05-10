@@ -73,11 +73,12 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
    * @param data Data of channel
    */
   public deserialize( data: SerializedChannel ): void {
-    this.__items = data.items.map( ( item ) => (
-      new ChannelItemWithGUI( this.__automaton, item )
-    ) );
-
-    this.__items.forEach( ( item ) => item.$id = genID() );
+    this.__items = data.items.map( ( itemData ) => {
+      const item = new ChannelItemWithGUI( this.__automaton, itemData );
+      item.$id = genID();
+      item.curve?.incrementUserCount();
+      return item;
+    } );
   }
 
   /**
@@ -238,6 +239,7 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
     const newItem = new ChannelItemWithGUI( this.__automaton, item );
     newItem.$id = id;
     newItem.time = time;
+    newItem.curve?.incrementUserCount();
     this.__items.push( newItem );
     this.__sortItems();
 
@@ -322,6 +324,7 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
     const id = genID();
     const item = new ChannelItemWithGUI( this.__automaton, { curve, time } );
     item.$id = id;
+    item.curve?.incrementUserCount();
     this.__items.push( item );
     this.__sortItems();
 
@@ -355,6 +358,7 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
   ): Required<SerializedChannelItem> & WithID {
     const item = new ChannelItemWithGUI( this.__automaton, data );
     item.$id = data.$id;
+    item.curve?.incrementUserCount();
     this.__items.push( item );
     this.__sortItems();
 
@@ -378,6 +382,9 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
    */
   public removeItem( id: string ): void {
     const index = this.__getItemIndexById( id );
+    const item = this.__items[ index ];
+
+    item.curve?.decrementUserCount();
 
     const isLastItem = this.isLastItem( id );
     this.__items.splice( index, 1 );

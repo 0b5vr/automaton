@@ -19,7 +19,6 @@ export class ChannelItemWithGUI extends ChannelItem {
     const value = super.getValue( time );
     if ( this.curve && !isFromGUI ) {
       this.curve.setPreviewTime( time );
-      this.curve.markAsUsed();
     }
     return value;
   }

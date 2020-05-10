@@ -50,6 +50,11 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
   protected __fxs!: Array<FxSection & WithBypass & WithID>;
 
   /**
+   * I'm crying
+   */
+  private __userCount: number = 0;
+
+  /**
    * List of bezier nodes.
    */
   public get nodes(): Array<BezierNode & WithID> {
@@ -145,12 +150,35 @@ export class CurveWithGUI extends Curve implements Serializable<SerializedCurve>
   }
 
   /**
-   * Mark this curve as used.
+   * I'm crying
+   * Intended to be used in {@link ChannelWithGUI} via {@link ChannelItemWithGUI#curve}.
    */
-  public markAsUsed(): void {
-    this.__watchStatus( () => {
-      this.__deleteStatus( CurveStatusCode.NOT_USED );
-    } );
+  public incrementUserCount(): void {
+    this.__userCount ++;
+
+    if ( this.__userCount === 1 ) {
+      this.__watchStatus( () => {
+        this.__deleteStatus( CurveStatusCode.NOT_USED );
+      } );
+    }
+  }
+
+  /**
+   * I'm crying
+   * Intended to be used in {@link ChannelWithGUI} via {@link ChannelItemWithGUI#curve}.
+   */
+  public decrementUserCount(): void {
+    this.__userCount --;
+
+    if ( this.__userCount === 0 ) {
+      this.__watchStatus( () => {
+        this.__setStatus( {
+          code: CurveStatusCode.NOT_USED,
+          level: StatusLevel.WARNING,
+          message: 'This curve is not used'
+        } );
+      } );
+    }
   }
 
   /**
