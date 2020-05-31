@@ -656,7 +656,7 @@ export class AutomatonWithGUI extends Automaton
       } );
     }
 
-    this.__labels = convertedData.labels;
+    this.__labels = convertedData.labels || {};
 
     this.__guiSettings = convertedData.guiSettings ?? jsonCopy( defaultGUISettings );
 

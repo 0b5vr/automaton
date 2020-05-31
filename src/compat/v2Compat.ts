@@ -34,7 +34,6 @@ export function v2Compat( data: V2SerializedData ): SerializedAutomatonWithGUI {
     resolution: data.resolution,
     curves,
     channels,
-    labels: {},
     guiSettings: jsonCopy( defaultGUISettings )
   };
 
