@@ -1,4 +1,4 @@
-import { GUISettings, defaultGUISettings } from './GUISettings';
+import { GUISettings } from './GUISettings';
 import { SerializedAutomaton } from '@fms-cat/automaton';
 
 /**
@@ -19,13 +19,12 @@ export interface SerializedAutomatonWithGUI extends SerializedAutomaton {
   /**
    * Field that contains [[GUISettings]].
    */
-  guiSettings: GUISettings;
+  guiSettings?: Partial<GUISettings>;
 }
 
 export const defaultDataWithGUI: Readonly<SerializedAutomatonWithGUI> = {
   version: process.env.VERSION!,
   resolution: 100,
   curves: [],
-  channels: {},
-  guiSettings: defaultGUISettings
+  channels: {}
 };
