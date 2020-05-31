@@ -291,7 +291,7 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
   );
 
   const grabLeft = useCallback(
-    (): void => {
+    ( stretch: boolean ): void => {
       if ( !channel ) { return; }
 
       const timePrev = item.time;
@@ -313,12 +313,12 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
             time = snapTime( time, range, size.width, guiSettings );
           }
 
-          channel.resizeItemByLeft( item.$id, timeEnd - time );
+          channel.resizeItemByLeft( item.$id, timeEnd - time, stretch );
         },
         () => {
           if ( !hasMoved ) { return; }
 
-          channel.resizeItemByLeft( item.$id, timeEnd - time );
+          channel.resizeItemByLeft( item.$id, timeEnd - time, stretch );
 
           dispatch( {
             type: 'History/Push',
@@ -329,7 +329,8 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
                 channel: props.channel,
                 item: item.$id,
                 length: timeEnd - time,
-                lengthPrev: timeEnd - timePrev
+                lengthPrev: timeEnd - timePrev,
+                stretch
               }
             ],
           } );
@@ -340,7 +341,7 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
   );
 
   const grabRight = useCallback(
-    (): void => {
+    ( stretch: boolean ): void => {
       if ( !channel ) { return; }
 
       const timePrev = item.time + item.length;
@@ -362,12 +363,12 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
             time = snapTime( time, range, size.width, guiSettings );
           }
 
-          channel.resizeItem( item.$id, time - timeBegin );
+          channel.resizeItem( item.$id, time - timeBegin, stretch );
         },
         () => {
           if ( !hasMoved ) { return; }
 
-          channel.resizeItem( item.$id, time - timeBegin );
+          channel.resizeItem( item.$id, time - timeBegin, stretch );
 
           dispatch( {
             type: 'History/Push',
@@ -378,7 +379,8 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
                 channel: props.channel,
                 item: item.$id,
                 length: time - timeBegin,
-                lengthPrev: timePrev - timeBegin
+                lengthPrev: timePrev - timeBegin,
+                stretch
               }
             ],
           } );
@@ -467,8 +469,11 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
   const handleClickLeft = useCallback(
     mouseCombo( {
       [ MouseComboBit.LMB ]: () => {
-        grabLeft();
-      }
+        grabLeft( false );
+      },
+      [ MouseComboBit.LMB + MouseComboBit.Shift ]: () => {
+        grabLeft( true );
+      },
     } ),
     [ grabLeft ]
   );
@@ -476,8 +481,11 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
   const handleClickRight = useCallback(
     mouseCombo( {
       [ MouseComboBit.LMB ]: () => {
-        grabRight();
-      }
+        grabRight( false );
+      },
+      [ MouseComboBit.LMB + MouseComboBit.Shift ]: () => {
+        grabRight( true );
+      },
     } ),
     [ grabRight ]
   );

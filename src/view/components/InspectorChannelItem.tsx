@@ -179,7 +179,8 @@ const InspectorChannelItem = ( props: Props ): JSX.Element => {
                     channel: channelName,
                     item: itemId,
                     length,
-                    lengthPrev
+                    lengthPrev,
+                    stretch: false
                   }
                 ]
               } );

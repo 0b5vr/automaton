@@ -69,12 +69,14 @@ export type HistoryCommand = {
   item: string;
   length: number;
   lengthPrev: number;
+  stretch: boolean;
 } | {
   type: 'channel/resizeItemByLeft';
   channel: string;
   item: string;
   length: number;
   lengthPrev: number;
+  stretch: boolean;
 } | {
   type: 'channel/changeCurveSpeedAndOffset';
   channel: string;
@@ -266,16 +268,16 @@ export function parseHistoryCommand( command: HistoryCommand ): {
   } else if ( command.type === 'channel/resizeItem' ) {
     return {
       undo: ( automaton ) => automaton.getChannel( command.channel )!
-        .resizeItem( command.item, command.lengthPrev ),
+        .resizeItem( command.item, command.lengthPrev, command.stretch ),
       redo: ( automaton ) => automaton.getChannel( command.channel )!
-        .resizeItem( command.item, command.length )
+        .resizeItem( command.item, command.length, command.stretch )
     };
   } else if ( command.type === 'channel/resizeItemByLeft' ) {
     return {
       undo: ( automaton ) => automaton.getChannel( command.channel )!
-        .resizeItemByLeft( command.item, command.lengthPrev ),
+        .resizeItemByLeft( command.item, command.lengthPrev, command.stretch ),
       redo: ( automaton ) => automaton.getChannel( command.channel )!
-        .resizeItemByLeft( command.item, command.length )
+        .resizeItemByLeft( command.item, command.length, command.stretch )
     };
   } else if ( command.type === 'channel/changeCurveSpeedAndOffset' ) {
     return {
