@@ -16,7 +16,7 @@ export class ChannelItemWithGUI extends ChannelItem {
    * @param isFromGUI If you're poking the method from Automaton GUI, set this to true otherwise you are going to suffer in redux hell
    */
   public getValue( time: number, isFromGUI?: boolean ): number {
-    const value = super.getValue( time );
+    const value = super.getValue( this.offset + time * this.speed );
     if ( this.curve && !isFromGUI ) {
       this.curve.setPreviewTime( time );
     }
