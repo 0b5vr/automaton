@@ -2,6 +2,7 @@ import { BezierNode, FxDefinition, FxSection } from '@fms-cat/automaton';
 import { GUISettings, defaultGUISettings } from '../../types/GUISettings';
 import { AutomatonWithGUI } from '../../AutomatonWithGUI';
 import { ChannelStatusCode } from '../../ChannelWithGUI';
+import { Action as ContextAction } from './store';
 import { CurveStatusCode } from '../../CurveWithGUI';
 import { Reducer } from 'redux';
 import type { StateChannelItem } from '../../types/StateChannelItem';
@@ -68,8 +69,6 @@ export const initialState: Readonly<State> = {
 
 // == action =======================================================================================
 export type Action = {
-  type: 'Automaton/Purge';
-} | {
   type: 'Automaton/SetInstance';
   automaton: AutomatonWithGUI;
 } | {
@@ -181,10 +180,22 @@ export type Action = {
 };
 
 // == reducer ======================================================================================
-export const reducer: Reducer<State, Action> = ( state = initialState, action ) => {
+export const reducer: Reducer<State, ContextAction> = ( state = initialState, action ) => {
   return produce( state, ( newState: State ) => {
-    if ( action.type === 'Automaton/Purge' ) {
-      newState = jsonCopy( initialState );
+    if ( action.type === 'Reset' ) {
+      newState.channelNames = [];
+      newState.channels = {};
+      newState.curves = {};
+      newState.curvesPreview = {};
+      newState.labels = {};
+      newState.loopRegion = null;
+      newState.fxDefinitions = {};
+      newState.isPlaying = false;
+      newState.time = 0.0;
+      newState.length = 1.0;
+      newState.resolution = 10.0;
+      newState.shouldSave = false;
+      newState.guiSettings = jsonCopy( defaultGUISettings );
     } else if ( action.type === 'Automaton/SetInstance' ) {
       newState.instance = action.automaton;
     } else if ( action.type === 'Automaton/AddFxDefinition' ) {

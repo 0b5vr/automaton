@@ -81,16 +81,17 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
   const {
     automaton,
     selectedItems,
-    path,
-    curveLength,
+    curves,
     guiSettings
   } = useSelector( ( state ) => ( {
     automaton: state.automaton.instance,
     selectedItems: state.timeline.selected.items,
-    path: state.automaton.curves[ item.curveId! ].path,
-    curveLength: state.automaton.curves[ item.curveId! ].length,
+    curves: state.automaton.curves,
     guiSettings: state.automaton.guiSettings
   } ) );
+
+  const curve = curves[ item.curveId! ];
+  const { path, length: curveLength } = curve;
 
   const x = useMemo( () => t2x( item.time, range, size.width ), [ item, range, size ] );
   const y0 = useMemo(

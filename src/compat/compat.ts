@@ -6,7 +6,7 @@ import { v2Compat } from './v2Compat';
 
 export function compat( data?: any ): SerializedAutomatonWithGUI {
   if ( !data ) {
-    return Object.assign( {}, jsonCopy( defaultDataWithGUI ) );
+    return jsonCopy( defaultDataWithGUI );
   }
 
   let newData;
@@ -14,7 +14,7 @@ export function compat( data?: any ): SerializedAutomatonWithGUI {
     newData = jsonCopy( data );
   } else {
     console.error( 'Loaded data is invalid' );
-    return Object.assign( {}, defaultDataWithGUI );
+    return jsonCopy( defaultDataWithGUI );
   }
 
   let version = parseFloat( newData.version ) || parseFloat( newData.v );
@@ -22,7 +22,7 @@ export function compat( data?: any ): SerializedAutomatonWithGUI {
   if ( !version && !newData.rev ) {
     newData = preversionCompat( newData );
     if ( newData === null ) {
-      return Object.assign( {}, defaultDataWithGUI );
+      return jsonCopy( defaultDataWithGUI );
     }
   }
 

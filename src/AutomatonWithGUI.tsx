@@ -141,7 +141,7 @@ export class AutomatonWithGUI extends Automaton
   /**
    * Mounted point of its GUI.
    */
-  private __parentNode?: HTMLElement;
+  private __parentNode?: HTMLElement | null;
 
   /**
    * This enables the Automaton instance to be able to communicate with GUI.
@@ -647,6 +647,7 @@ export class AutomatonWithGUI extends Automaton
       ( data ) => new CurveWithGUI( this, data )
     );
 
+    this.__channels = {};
     for ( const name in convertedData.channels ) {
       const channel = new ChannelWithGUI( this, convertedData.channels[ name ] );
       this.__channels[ name ] = channel;
@@ -732,6 +733,7 @@ export class AutomatonWithGUI extends Automaton
 
     ReactDOM.unmountComponentAtNode( this.__parentNode );
     this.__guiRemocon = null;
+    this.__parentNode = null;
   }
 
   /**

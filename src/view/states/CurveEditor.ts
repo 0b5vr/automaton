@@ -3,7 +3,6 @@ import { arraySetDiff, arraySetUnion } from '../utils/arraySet';
 import { Action as ContextAction } from './store';
 import { Reducer } from 'redux';
 import { Resolution } from '../utils/Resolution';
-import { jsonCopy } from '../../utils/jsonCopy';
 import { produce } from 'immer';
 
 // == state ========================================================================================
@@ -32,8 +31,6 @@ export const initialState: State = {
 
 // == action =======================================================================================
 export type Action = {
-  type: 'CurveEditor/Reset';
-} | {
   type: 'CurveEditor/SelectCurve';
   curveId: string | null;
 } | {
@@ -67,8 +64,18 @@ export type Action = {
 // == reducer ======================================================================================
 export const reducer: Reducer<State, ContextAction> = ( state = initialState, action ) => {
   return produce( state, ( newState: State ) => {
-    if ( action.type === 'CurveEditor/Reset' ) {
-      newState = jsonCopy( initialState );
+    if ( action.type === 'Reset' ) {
+      newState.selectedCurve = null;
+      newState.selected = {
+        nodes: [],
+        fxs: []
+      };
+      newState.range = {
+        t0: 0.0,
+        v0: -0.2,
+        t1: 5.0,
+        v1: 1.2
+      };
     } else if ( action.type === 'CurveEditor/SelectCurve' ) {
       newState.selectedCurve = action.curveId;
       newState.selected.nodes = [];
