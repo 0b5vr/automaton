@@ -647,6 +647,7 @@ export class AutomatonWithGUI extends Automaton
       ( data ) => new CurveWithGUI( this, data )
     );
 
+    this.__channels = {};
     for ( const name in convertedData.channels ) {
       const channel = new ChannelWithGUI( this, convertedData.channels[ name ] );
       this.__channels[ name ] = channel;
