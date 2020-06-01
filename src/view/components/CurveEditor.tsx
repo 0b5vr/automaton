@@ -1,6 +1,6 @@
 import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
 import React, { useCallback, useEffect, useRef } from 'react';
-import { TimeValueRange, x2t, y2v, snapTime, snapValue } from '../utils/TimeValueRange';
+import { TimeValueRange, snapTime, snapValue, x2t, y2v } from '../utils/TimeValueRange';
 import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
 import { CurveEditorFx } from './CurveEditorFx';
