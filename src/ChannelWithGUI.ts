@@ -463,15 +463,21 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
    * Resize an item.
    * @param id Index of the item you want to resize
    * @param length Length
+   * @param stretch Wheter it should stretch the item or not
    */
-  public resizeItem( id: string, length: number ): void {
+  public resizeItem( id: string, length: number, stretch?: boolean ): void {
     const index = this.__getItemIndexById( id );
 
     const item = this.__items[ index ];
 
     const next = this.__items[ index + 1 ];
     const right = next ? next.time : Infinity;
+    const prevLength = item.length;
     item.length = clamp( length, 0.0, right - item.time );
+
+    if ( stretch ) {
+      item.speed *= prevLength / item.length;
+    }
 
     this.reset();
 
@@ -490,8 +496,9 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
    * It's very GUI dev friendly method. yeah.
    * @param id Index of the item you want to resize
    * @param length Length
+   * @param stretch Wheter it should stretch the item or not
    */
-  public resizeItemByLeft( id: string, length: number ): void {
+  public resizeItemByLeft( id: string, length: number, stretch?: boolean ): void {
     const index = this.__getItemIndexById( id );
 
     const item = this.__items[ index ];
@@ -499,12 +506,20 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
     const prev = this.__items[ index - 1 ];
 
     const left = prev ? ( prev.time + prev.length ) : 0.0;
+    const prevLength = item.length;
+    const endOffset = item.length * item.speed + item.offset;
 
     const lengthMax = item.end - left;
 
     const end = item.end;
     item.length = Math.min( Math.max( length, 0.0 ), lengthMax );
     item.time = end - item.length;
+
+    if ( stretch ) {
+      item.speed *= prevLength / item.length;
+    } else {
+      item.offset = endOffset - item.length * item.speed;
+    }
 
     this.reset();
 

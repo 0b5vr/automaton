@@ -14,7 +14,7 @@ import { jsonCopy } from './utils/jsonCopy';
 /**
  * Handles of a new node will be created in this length.
  */
-export const CURVE_DEFAULT_HANDLE_LENGTH = 0.5;
+export const CURVE_DEFAULT_HANDLE_LENGTH = 0.1;
 
 export const CURVE_FX_ROW_MAX = 5;
 
@@ -72,7 +72,7 @@ export class CurveWithGUI extends Curve {
    * Whether the curve is being used in somewhere or not.
    */
   public get isUsed(): boolean {
-    return this.getSpecificStatus( CurveStatusCode.NOT_USED ) != null;
+    return this.getSpecificStatus( CurveStatusCode.NOT_USED ) == null;
   }
 
   public constructor( automaton: AutomatonWithGUI, data?: SerializedCurve & Partial<WithID> ) {

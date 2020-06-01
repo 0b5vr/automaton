@@ -1,6 +1,6 @@
 import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
 import React, { useCallback, useEffect, useRef } from 'react';
-import { TimeValueRange, x2t, y2v } from '../utils/TimeValueRange';
+import { TimeValueRange, snapTime, snapValue, x2t, y2v } from '../utils/TimeValueRange';
 import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
 import { CurveEditorFx } from './CurveEditorFx';
@@ -130,10 +130,12 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
   const {
     selectedCurve,
     range,
+    guiSettings,
     automaton
   } = useSelector( ( state ) => ( {
     selectedCurve: state.curveEditor.selectedCurve,
     range: state.curveEditor.range,
+    guiSettings: state.automaton.guiSettings,
     automaton: state.automaton.instance
   } ) );
   const { curveLength } = useSelector( ( state ) => ( {
@@ -177,11 +179,12 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
 
       let x = x0;
       let y = y0;
+      const timePrev = x2t( x, range, rect.width );
+      const valuePrev = y2v( y, range, rect.height );
+      let time = timePrev;
+      let value = valuePrev;
 
-      const data = curve.createNode(
-        x2t( x, range, rect.width ),
-        y2v( y, range, rect.height )
-      );
+      const data = curve.createNode( time, value );
       dispatch( {
         type: 'CurveEditor/SelectItems',
         nodes: [ data.$id ]
@@ -192,19 +195,29 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
           x += movementSum.x;
           y += movementSum.y;
 
-          curve.moveNodeTime( data.$id, x2t( x, range, rect.width ) );
-          curve.moveNodeValue( data.$id, y2v( y, range, rect.height ) );
+          const holdTime = event.ctrlKey || event.metaKey;
+          const holdValue = event.shiftKey;
+          const ignoreSnap = event.altKey;
+
+          time = holdTime ? timePrev : x2t( x, range, rect.width );
+          value = holdValue ? valuePrev : y2v( y, range, rect.height );
+
+          if ( !ignoreSnap ) {
+            if ( !holdTime ) { time = snapTime( time, range, rect.width, guiSettings ); }
+            if ( !holdValue ) { value = snapValue( value, range, rect.height, guiSettings ); }
+          }
+
+          curve.moveNodeTime( data.$id, time );
+          curve.moveNodeValue( data.$id, value );
         },
         () => {
           if ( selectedCurve == null ) { return; }
 
-          const t = x2t( x, range, rect.width );
-          const v = y2v( y, range, rect.height );
-          curve.moveNodeTime( data.$id, t );
-          curve.moveNodeValue( data.$id, v );
+          curve.moveNodeTime( data.$id, time );
+          curve.moveNodeValue( data.$id, value );
 
-          data.time = t;
-          data.value = v;
+          data.time = time;
+          data.value = value;
 
           dispatch( {
             type: 'History/Push',
@@ -220,7 +233,7 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
         }
       );
     },
-    [ range, rect, curve ]
+    [ range, rect, curve, guiSettings ]
   );
 
   const handleMouseDown = useCallback(

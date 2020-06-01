@@ -200,7 +200,8 @@ const TimelineItemConstant = ( props: TimelineItemConstantProps ): JSX.Element =
                 channel: props.channel,
                 item: item.$id,
                 length: timeEnd - time,
-                lengthPrev: timeEnd - timePrev
+                lengthPrev: timeEnd - timePrev,
+                stretch: false
               }
             ],
           } );
@@ -249,7 +250,8 @@ const TimelineItemConstant = ( props: TimelineItemConstantProps ): JSX.Element =
                 channel: props.channel,
                 item: item.$id,
                 length: time - timeBegin,
-                lengthPrev: timePrev - timeBegin
+                lengthPrev: timePrev - timeBegin,
+                stretch: false
               }
             ],
           } );
