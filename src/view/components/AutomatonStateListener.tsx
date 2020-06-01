@@ -244,23 +244,11 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
     } );
 
     dispatch( {
-      type: 'Timeline/Reset'
-    } );
-
-    dispatch( {
-      type: 'CurveEditor/Reset'
-    } );
-
-    dispatch( {
-      type: 'FxSpawner/Reset'
-    } );
-
-    dispatch( {
       type: 'ContextMenu/Close'
     } );
 
     dispatch( {
-      type: 'Automaton/Purge'
+      type: 'Reset'
     } );
 
     dispatch( {

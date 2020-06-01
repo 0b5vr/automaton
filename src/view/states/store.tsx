@@ -42,7 +42,8 @@ export type Action = (
   TextPrompt.Action |
   Timeline.Action |
   Toasty.Action |
-  Workspace.Action
+  Workspace.Action |
+  { type: 'Reset' }
 );
 
 // == reducer ======================================================================================

@@ -1,3 +1,4 @@
+import { Action as ContextAction } from './store';
 import { Reducer } from 'redux';
 import { combineArraysUnique } from '../utils/combineArraysUnique';
 import { produce } from 'immer';
@@ -17,8 +18,6 @@ export const initialState: Readonly<State> = {
 
 // == action =======================================================================================
 export type Action = {
-  type: 'FxSpawner/Reset';
-} | {
   type: 'FxSpawner/Open';
   callback: ( name: string ) => void;
 } | {
@@ -29,12 +28,12 @@ export type Action = {
 };
 
 // == reducer ======================================================================================
-export const reducer: Reducer<State, Action> = ( state = initialState, action ) => {
+export const reducer: Reducer<State, ContextAction> = ( state = initialState, action ) => {
   return produce( state, ( newState: State ) => {
-    if ( action.type === 'FxSpawner/Reset' ) {
-      newState.isVisible = initialState.isVisible;
-      newState.recently = initialState.recently;
-      newState.callback = initialState.callback;
+    if ( action.type === 'Reset' ) {
+      newState.isVisible = false;
+      newState.recently = [];
+      newState.callback = null;
     } else if ( action.type === 'FxSpawner/Open' ) {
       newState.isVisible = true;
       newState.callback = action.callback;
