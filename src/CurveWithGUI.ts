@@ -72,7 +72,7 @@ export class CurveWithGUI extends Curve {
    * Whether the curve is being used in somewhere or not.
    */
   public get isUsed(): boolean {
-    return this.getSpecificStatus( CurveStatusCode.NOT_USED ) != null;
+    return this.getSpecificStatus( CurveStatusCode.NOT_USED ) == null;
   }
 
   public constructor( automaton: AutomatonWithGUI, data?: SerializedCurve & Partial<WithID> ) {
