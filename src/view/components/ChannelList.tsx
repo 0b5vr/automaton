@@ -16,7 +16,7 @@ const NewChannelButton = styled.div`
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: 20px;
+  height: 18px;
   margin: 2px 0;
   cursor: pointer;
   background: ${ Colors.back3 };
@@ -28,7 +28,6 @@ const NewChannelButton = styled.div`
 
 const StyledChannelListEntry = styled( ChannelListEntry )`
   width: 100%;
-  height: 20px;
   margin: 2px 0;
   cursor: pointer;
 `;

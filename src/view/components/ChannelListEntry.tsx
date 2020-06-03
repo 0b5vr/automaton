@@ -1,9 +1,10 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
 import { StatusIcon } from './StatusIcon';
 import { duplicateName } from '../utils/duplicateName';
 import styled from 'styled-components';
+import { useRect } from '../utils/useRect';
 
 // == microcomponent ===============================================================================
 const Value = ( { className, name }: {
@@ -22,24 +23,25 @@ const Value = ( { className, name }: {
 // == styles =======================================================================================
 const Name = styled.div`
   position: absolute;
-  left: 0.2rem;
-  top: 0;
-  width: calc( 100% - 2rem );
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  left: 2px;
+  bottom: 2px;
+  font-size: 14px;
+  line-height: 1.0;
+  transform-origin: bottom left;
 `;
 
 const StyledValue = styled( Value )`
   position: absolute;
-  right: 0.2rem;
-  bottom: 0.1rem;
-  font-size: 0.6rem;
+  right: 2px;
+  bottom: 2px;
+  font-size: 9px;
+  line-height: 1.0;
   opacity: 0.7;
 `;
 
 const Root = styled.div<{ isSelected: boolean }>`
   position: relative;
+  height: 18px;
   background: ${ ( { isSelected } ) => ( isSelected ? Colors.back4 : Colors.back3 ) };
   box-shadow: ${ ( { isSelected } ) => ( isSelected ? `0 0 0 1px ${ Colors.accent }` : 'none' ) };
 `;
@@ -58,6 +60,22 @@ const ChannelListEntry = ( props: ChannelListEntryProps ): JSX.Element => {
     selectedChannel: state.timeline.selectedChannel,
     status: state.automaton.channels[ name ].status
   } ) );
+
+  const refRoot = useRef<HTMLDivElement>( null );
+  const rectRoot = useRect( refRoot );
+  const refText = useRef<HTMLDivElement>( null );
+  const rectText = useRect( refText );
+
+  const scale = useMemo(
+    () => {
+      if ( rectRoot.width !== 0 && rectText.width !== 0 ) {
+        return Math.min( 1.0, ( rectRoot.width - 32 ) / rectText.width );
+      } else {
+        return 1.0;
+      }
+    },
+    [ rectRoot, rectText ]
+  );
 
   const handleClick = useCallback(
     () => {
@@ -215,13 +233,21 @@ const ChannelListEntry = ( props: ChannelListEntryProps ): JSX.Element => {
 
   return (
     <Root
+      ref={ refRoot }
       className={ className }
       onClick={ handleClick }
       onContextMenu={ handleContextMenu }
       isSelected={ selectedChannel === name }
       data-stalker={ name }
     >
-      <Name>{ name }</Name>
+      <Name
+        ref={ refText }
+        style={ {
+          transform: `scaleX(${ scale })`
+        } }
+      >
+        { name }
+      </Name>
       {
         status != null
           ? <StatusIcon status={ status } />
