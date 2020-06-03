@@ -21,13 +21,21 @@ const Value = ( { className, name }: {
 };
 
 // == styles =======================================================================================
+const NameBig = styled.span`
+  font-size: 14px;
+`;
+
+const NameSmall = styled.span`
+  font-size: 9px;
+`;
+
 const Name = styled.div`
   position: absolute;
   left: 2px;
   bottom: 2px;
-  font-size: 14px;
   line-height: 1.0;
   transform-origin: bottom left;
+  white-space: nowrap;
 `;
 
 const StyledValue = styled( Value )`
@@ -60,6 +68,24 @@ const ChannelListEntry = ( props: ChannelListEntryProps ): JSX.Element => {
     selectedChannel: state.timeline.selectedChannel,
     status: state.automaton.channels[ name ].status
   } ) );
+
+  const [ nameSmall, nameBig ] = useMemo(
+    () => {
+      const tree = name.split( '/' );
+      const sep = ( tree[ tree.length - 1 ].length === 1 )
+        ? ( tree.length - 2 )
+        : ( tree.length - 1 );
+      const treeBig = tree.splice( sep );
+      let nameSmall = tree.join( '/' );
+      nameSmall = nameSmall.length === 0 ? '' : nameSmall + '/';
+      return [
+        nameSmall,
+        treeBig.join( '/' )
+      ];
+    },
+    [ name ]
+  );
+
 
   const refRoot = useRef<HTMLDivElement>( null );
   const rectRoot = useRect( refRoot );
@@ -246,7 +272,7 @@ const ChannelListEntry = ( props: ChannelListEntryProps ): JSX.Element => {
           transform: `scaleX(${ scale })`
         } }
       >
-        { name }
+        <NameSmall>{ nameSmall }</NameSmall><NameBig>{ nameBig }</NameBig>
       </Name>
       {
         status != null
