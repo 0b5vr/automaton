@@ -3,8 +3,10 @@ import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
 import { StatusIcon } from './StatusIcon';
 import { duplicateName } from '../utils/duplicateName';
+import { showToasty } from '../states/Toasty';
 import styled from 'styled-components';
 import { useRect } from '../utils/useRect';
+import { writeClipboard } from '../utils/clipboard';
 
 // == microcomponent ===============================================================================
 const Value = ( { className, name }: {
@@ -220,6 +222,20 @@ const ChannelListEntry = ( props: ChannelListEntryProps ): JSX.Element => {
     [ automaton, name ]
   );
 
+  const copyName = useCallback(
+    (): void => {
+      writeClipboard( name );
+
+      showToasty( {
+        dispatch,
+        kind: 'info',
+        message: 'Copied to clipboard!',
+        timeout: 2.0
+      } );
+    },
+    [ name ]
+  );
+
   const handleContextMenu = useCallback(
     ( event: React.MouseEvent ): void => {
       event.preventDefault();
@@ -250,11 +266,16 @@ const ChannelListEntry = ( props: ChannelListEntryProps ): JSX.Element => {
             name: 'Remove Channel',
             description: 'Remove the channel.',
             callback: () => removeChannel()
+          },
+          {
+            name: 'Copy Channel Name',
+            description: 'Copy the name of the channel to clipboard.',
+            callback: () => copyName()
           }
         ]
       } );
     },
-    [ renameChannel, duplicateChannel, removeChannel ]
+    [ editChannel, renameChannel, duplicateChannel, removeChannel, copyName ]
   );
 
   return (
