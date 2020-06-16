@@ -31,7 +31,7 @@ const Root = styled.div`
   display: block;
   position: relative;
   width: 100%;
-  height: 20px;
+  height: 18px;
   overflow: hidden;
 
   &:hover ${ Underlay } {

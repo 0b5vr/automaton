@@ -8,7 +8,7 @@ const Icon = styled.img`
   position: absolute;
   right: 1px;
   bottom: 1px;
-  height: 16px;
+  height: 14px;
 `;
 
 // == component ====================================================================================
