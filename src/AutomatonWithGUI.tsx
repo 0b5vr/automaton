@@ -100,7 +100,7 @@ export class AutomatonWithGUI extends Automaton
   /**
    * Labels.
    */
-  protected __labels: { [ name: string ]: number };
+  protected __labels!: { [ name: string ]: number }; // will be initialized @ deserialize
 
   /**
    * Version of the automaton.
@@ -110,12 +110,12 @@ export class AutomatonWithGUI extends Automaton
   /**
    * Curves of the automaton.
    */
-  protected __curves!: CurveWithGUI[];
+  protected __curves!: CurveWithGUI[]; // will be initialized @ deserialize
 
   /**
    * Channels of the timeline.
    */
-  protected __channels!: { [ name: string ]: ChannelWithGUI };
+  protected __channels!: { [ name: string ]: ChannelWithGUI }; // will be initialized @ deserialize
 
   /**
    * It's currently playing or not.
@@ -136,7 +136,7 @@ export class AutomatonWithGUI extends Automaton
   /**
    * GUI settings for this automaton.
    */
-  private __guiSettings!: GUISettings;
+  private __guiSettings!: GUISettings; // will be initialized @ deserialize
 
   /**
    * Mounted point of its GUI.
@@ -242,8 +242,6 @@ export class AutomatonWithGUI extends Automaton
     super( data );
 
     this.__isPlaying = options.isPlaying || false;
-
-    this.__labels = {};
 
     if ( options.installBuiltinFxs ) {
       this.addFxDefinitions( fxDefinitions );
