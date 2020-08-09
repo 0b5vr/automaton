@@ -54,18 +54,16 @@ const DopeSheetEntry = ( props: Props ): JSX.Element => {
     range,
     lastSelectedItem,
     selectedCurve,
-    channels,
+    stateItems,
     guiSettings
   } = useSelector( ( state ) => ( {
     automaton: state.automaton.instance,
     range: state.timeline.range,
     lastSelectedItem: state.timeline.lastSelectedItem,
     selectedCurve: state.curveEditor.selectedCurve,
-    channels: state.automaton.channels,
+    stateItems: state.automaton.channels[ channelName ].items,
     guiSettings: state.automaton.guiSettings
   } ) );
-
-  const stateItems = channels[ channelName ].items;
 
   const channel = automaton?.getChannel( channelName );
   const refRoot = useRef<HTMLDivElement>( null );
