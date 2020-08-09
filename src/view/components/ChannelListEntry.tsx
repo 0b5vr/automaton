@@ -65,9 +65,9 @@ export interface ChannelListEntryProps {
 const ChannelListEntry = ( props: ChannelListEntryProps ): JSX.Element => {
   const { className, name } = props;
   const dispatch = useDispatch();
-  const { automaton, selectedChannel, status } = useSelector( ( state ) => ( {
+  const { automaton, isSelected, status } = useSelector( ( state ) => ( {
     automaton: state.automaton.instance,
-    selectedChannel: state.timeline.selectedChannel,
+    isSelected: state.timeline.selectedChannel === name,
     status: state.automaton.channels[ name ].status
   } ) );
 
@@ -109,14 +109,14 @@ const ChannelListEntry = ( props: ChannelListEntryProps ): JSX.Element => {
     () => {
       dispatch( {
         type: 'Timeline/SelectChannel',
-        channel: selectedChannel === name ? null : name
+        channel: isSelected ? null : name
       } );
 
       dispatch( {
         type: 'Timeline/UnselectItemsOfOtherChannels'
       } );
     },
-    [ selectedChannel ]
+    [ isSelected ]
   );
 
   const editChannel = useCallback(
@@ -284,7 +284,7 @@ const ChannelListEntry = ( props: ChannelListEntryProps ): JSX.Element => {
       className={ className }
       onClick={ handleClick }
       onContextMenu={ handleContextMenu }
-      isSelected={ selectedChannel === name }
+      isSelected={ isSelected }
       data-stalker={ name }
     >
       <Name
