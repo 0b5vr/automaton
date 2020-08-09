@@ -215,7 +215,9 @@ const DopeSheet = ( { className }: DopeSheetProps ): JSX.Element => {
         event.preventDefault();
         zoom( event.clientX - rect.left, event.deltaY );
       } else {
-        move( -event.deltaX );
+        if ( event.deltaX !== 0 ) {
+          move( -event.deltaX );
+        }
       }
     },
     [ rect, zoom, move ]
