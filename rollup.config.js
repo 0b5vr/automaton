@@ -9,7 +9,8 @@ import typescript from '@rollup/plugin-typescript';
 // == constants ====================================================================================
 const copyright = '(c) 2017-2020 FMS_Cat';
 const licenseName = 'MIT License';
-const licenseUri = 'https://github.com/FMS-Cat/glcat-ts/blob/master/LICENSE';
+const licenseUri = 'https://github.com/FMS-Cat/automaton/blob/master/LICENSE';
+const globalName = 'AUTOMATON';
 
 // == envs =========================================================================================
 const DEV = process.env.DEV === '1';
@@ -45,7 +46,7 @@ export default {
   input: 'src/index.ts',
   output: {
     format: ESM ? 'esm' : 'umd',
-    name: ESM ? undefined : 'GLCAT',
+    name: ESM ? undefined : globalName,
     banner: DEV ? bannerTextDev : null,
     sourcemap: DEV ? 'inline' : false,
   },
