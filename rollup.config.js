@@ -17,11 +17,6 @@ const DEV = process.env.DEV === '1';
 const SERVE = process.env.SERVE === '1';
 const ESM = process.env.ESM === '1';
 
-// == typescript ===================================================================================
-const tsOptions = {
-  target: ESM ? 'es6' : 'es5',
-};
-
 // == banner =======================================================================================
 // uses `output.banner` in dev mode, since sourcemap matters
 const bannerTextDev = `/*!
@@ -51,7 +46,7 @@ export default {
     sourcemap: DEV ? 'inline' : false,
   },
   plugins: [
-    typescript( tsOptions ),
+    typescript(),
     ...( DEV ? [] : [ terser() ] ),
     ...( SERVE ? [ serve( serveOptions ) ] : [] ),
     ...( DEV ? [] : [ banner( bannerTextProd ) ] ),
