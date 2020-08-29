@@ -5,7 +5,7 @@
   "repository": "https://github.com/FMS-Cat/automaton",
   "author": "FMS-Cat",
   "main": "dist/automaton.js",
-  "module": "dist/glcat.module.js",
+  "module": "dist/automaton.module.js",
   "types": "types/index.d.ts",
   "typesVersions": {
     "<3.8": {
