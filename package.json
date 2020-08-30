@@ -8,7 +8,7 @@
   "module": "dist/automaton.module.js",
   "types": "types/index.d.ts",
   "typesVersions": {
-    "<3.8": {
+    "<3.9": {
       "*": [
         "ts3.4/*"
       ]
