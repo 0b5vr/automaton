@@ -84,70 +84,8 @@ export class Curve {
       Math.ceil( this.__automaton.resolution * this.length ) + 1
     );
 
-    let nodeTail = this.__nodes[ 0 ];
-    let iTail = 0;
-    for ( let iNode = 0; iNode < this.__nodes.length - 1; iNode ++ ) {
-      const node0 = nodeTail;
-      nodeTail = this.__nodes[ iNode + 1 ];
-      const i0 = iTail;
-      iTail = Math.floor( nodeTail.time * this.__automaton.resolution );
-
-      this.__values[ i0 ] = node0.value;
-      for ( let i = i0 + 1; i <= iTail; i ++ ) {
-        const time = i / this.__automaton.resolution;
-        const value = bezierEasing( node0, nodeTail, time );
-        this.__values[ i ] = value;
-      }
-    }
-
-    for ( let i = iTail + 1; i < this.__values.length; i ++ ) {
-      this.__values[ i ] = nodeTail.value;
-    }
-
-    for ( let iFx = 0; iFx < this.__fxs.length; iFx ++ ) {
-      const fx = this.__fxs[ iFx ];
-      const fxDef = this.__automaton.getFxDefinition( fx.def );
-      if ( !fxDef ) { continue; }
-
-      const availableEnd = Math.min( this.length, fx.time + fx.length );
-      const i0 = Math.ceil( this.__automaton.resolution * fx.time );
-      const i1 = Math.floor( this.__automaton.resolution * availableEnd );
-      if ( i1 <= i0 ) { continue; }
-
-      const tempLength = i1 - i0 + 1;
-      const tempValues = new Float32Array( tempLength );
-
-      const context: FxContext = {
-        index: i0,
-        i0,
-        i1,
-        time: fx.time,
-        t0: fx.time,
-        t1: fx.time + fx.length,
-        deltaTime: 1.0 / this.__automaton.resolution,
-        value: 0.0,
-        progress: 0.0,
-        resolution: this.__automaton.resolution,
-        length: fx.length,
-        params: fx.params,
-        array: this.__values,
-        getValue: this.getValue.bind( this ),
-        init: true,
-        state: {}
-      };
-
-      for ( let i = 0; i < tempLength; i ++ ) {
-        context.index = i + i0;
-        context.time = context.index / this.__automaton.resolution;
-        context.value = this.__values[ i + i0 ];
-        context.progress = ( context.time - fx.time ) / fx.length;
-        tempValues[ i ] = fxDef.func( context );
-
-        context.init = false;
-      }
-
-      this.__values.set( tempValues, i0 );
-    }
+    this.__generateCurve();
+    this.__applyFxs();
   }
 
   /**
