@@ -38,6 +38,10 @@ jobs:
     needs: build
     steps:
     - uses: actions/checkout@v2
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '14'
+        registry-url: 'https://registry.npmjs.org'
     - name: Download Builds
       uses: actions/download-artifact@v1
       with:
