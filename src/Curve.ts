@@ -84,6 +84,44 @@ export class Curve {
       Math.ceil( this.__automaton.resolution * this.length ) + 1
     );
 
+    this.__generateCurve();
+    this.__applyFxs();
+  }
+
+  /**
+   * Return the value of specified time point.
+   * @param time Time at the point you want to grab the value.
+   * @returns Result value
+   */
+  public getValue( time: number ): number {
+    if ( time < 0.0 ) {
+      // clamp left
+      return this.__values[ 0 ];
+
+    } else if ( this.length <= time ) {
+      // clamp right
+      return this.__values[ this.__values.length - 1 ];
+
+    } else {
+      // fetch two values then do the linear interpolation
+      const index = time * this.__automaton.resolution;
+      const indexi = Math.floor( index );
+      const indexf = index % 1.0;
+
+      const v0 = this.__values[ indexi ];
+      const v1 = this.__values[ indexi + 1 ];
+
+      const v = v0 + ( v1 - v0 ) * indexf;
+
+      return v;
+
+    }
+  }
+
+  /**
+   * The first step of {@link precalc}: generate a curve out of nodes.
+   */
+  protected __generateCurve(): void {
     let nodeTail = this.__nodes[ 0 ];
     let iTail = 0;
     for ( let iNode = 0; iNode < this.__nodes.length - 1; iNode ++ ) {
@@ -103,7 +141,12 @@ export class Curve {
     for ( let i = iTail + 1; i < this.__values.length; i ++ ) {
       this.__values[ i ] = nodeTail.value;
     }
+  }
 
+  /**
+   * The second step of {@link precalc}: apply fxs to the generated curves.
+   */
+  protected __applyFxs(): void {
     for ( let iFx = 0; iFx < this.__fxs.length; iFx ++ ) {
       const fx = this.__fxs[ iFx ];
       const fxDef = this.__automaton.getFxDefinition( fx.def );
@@ -147,36 +190,6 @@ export class Curve {
       }
 
       this.__values.set( tempValues, i0 );
-    }
-  }
-
-  /**
-   * Return the value of specified time point.
-   * @param time Time at the point you want to grab the value.
-   * @returns Result value
-   */
-  public getValue( time: number ): number {
-    if ( time < 0.0 ) {
-      // clamp left
-      return this.__values[ 0 ];
-
-    } else if ( this.length <= time ) {
-      // clamp right
-      return this.__values[ this.__values.length - 1 ];
-
-    } else {
-      // fetch two values then do the linear interpolation
-      const index = time * this.__automaton.resolution;
-      const indexi = Math.floor( index );
-      const indexf = index % 1.0;
-
-      const v0 = this.__values[ indexi ];
-      const v1 = this.__values[ indexi + 1 ];
-
-      const v = v0 + ( v1 - v0 ) * indexf;
-
-      return v;
-
     }
   }
 }
