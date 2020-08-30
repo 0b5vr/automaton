@@ -762,7 +762,7 @@ export class CurveWithGUI extends Curve {
 
   /**
    * Same as {@link getValue}, but without fxs.
-   * **This is an exclusive feature for WithGUI variant.
+   * This is an exclusive feature for WithGUI variant.
    * @param time Time at the point you want to grab the value.
    * @returns Result value
    */
