@@ -766,10 +766,10 @@ export class CurveWithGUI extends Curve {
         data.value = node.value;
       }
       if ( node.in.time !== 0.0 || node.in.value !== 0.0 ) {
-        data.in = node.in;
+        data.in = jsonCopy( node.in );
       }
       if ( node.out.time !== 0.0 || node.out.value !== 0.0 ) {
-        data.out = node.out;
+        data.out = jsonCopy( node.out );
       }
       return data;
     } );
@@ -785,7 +785,7 @@ export class CurveWithGUI extends Curve {
     return this.__fxs.map( ( fx ) => {
       const data: SerializedFxSection = {
         def: fx.def,
-        params: fx.params
+        params: jsonCopy( fx.params )
       };
       if ( fx.time !== 0.0 ) {
         data.time = fx.time;
