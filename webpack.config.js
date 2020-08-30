@@ -87,7 +87,7 @@ Repository: ${ packageJson.repository }`
       } ),
       ...( DEV ? [
         new webpack.NamedModulesPlugin(),
-        new ForkTsCheckerWebpackPlugin( { checkSyntacticErrors: true } ),
+        new ForkTsCheckerWebpackPlugin(),
       ] : [
         // nothing
       ] ),
