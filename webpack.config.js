@@ -40,7 +40,6 @@ Repository: ${ packageJson.repository }`
         {
           test: /\.svg$/,
           use: [
-            'babel-loader',
             {
               loader: 'react-svg-loader',
               options: {
@@ -63,7 +62,6 @@ Repository: ${ packageJson.repository }`
             }
           ]
         },
-        { test: /\.js$/, use: 'babel-loader' },
       ],
     },
     optimization: {
