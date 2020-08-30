@@ -35,6 +35,25 @@ export enum CurveStatusCode {
  */
 export class CurveWithGUI extends Curve {
   /**
+   * Default data of a curve.
+   */
+  public static readonly DEFAULT_DATA: SerializedCurve = {
+    nodes: [
+      {
+        time: 0.0,
+        value: 0.0,
+        out: { time: CURVE_DEFAULT_HANDLE_LENGTH, value: 0.0 }
+      },
+      {
+        time: 1.0,
+        value: 0.0,
+        in: { time: -CURVE_DEFAULT_HANDLE_LENGTH, value: 0.0 }
+      }
+    ],
+    fxs: []
+  };
+
+  /**
    * The parent automaton.
    */
   protected __automaton!: AutomatonWithGUI;
@@ -76,21 +95,7 @@ export class CurveWithGUI extends Curve {
   }
 
   public constructor( automaton: AutomatonWithGUI, data?: SerializedCurve & Partial<WithID> ) {
-    super( automaton, data || {
-      nodes: [
-        {
-          time: 0.0,
-          value: 0.0,
-          out: { time: CURVE_DEFAULT_HANDLE_LENGTH, value: 0.0 }
-        },
-        {
-          time: 1.0,
-          value: 0.0,
-          in: { time: -CURVE_DEFAULT_HANDLE_LENGTH, value: 0.0 }
-        }
-      ],
-      fxs: []
-    } );
+    super( automaton, data || jsonCopy( CurveWithGUI.DEFAULT_DATA ) );
 
     this.$id = data?.$id ?? genID();
 
@@ -761,10 +766,10 @@ export class CurveWithGUI extends Curve {
         data.value = node.value;
       }
       if ( node.in.time !== 0.0 || node.in.value !== 0.0 ) {
-        data.in = node.in;
+        data.in = jsonCopy( node.in );
       }
       if ( node.out.time !== 0.0 || node.out.value !== 0.0 ) {
-        data.out = node.out;
+        data.out = jsonCopy( node.out );
       }
       return data;
     } );
@@ -780,7 +785,7 @@ export class CurveWithGUI extends Curve {
     return this.__fxs.map( ( fx ) => {
       const data: SerializedFxSection = {
         def: fx.def,
-        params: fx.params
+        params: jsonCopy( fx.params )
       };
       if ( fx.time !== 0.0 ) {
         data.time = fx.time;
