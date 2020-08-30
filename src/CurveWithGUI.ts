@@ -59,6 +59,11 @@ export class CurveWithGUI extends Curve {
   protected __automaton!: AutomatonWithGUI;
 
   /**
+   * {@link __values} but without fxs.
+   */
+  protected __valuesWithoutFxs!: Float32Array;
+
+  /**
    * List of bezier nodes.
    */
   protected __nodes!: Array<BezierNode & WithID>;
@@ -128,7 +133,14 @@ export class CurveWithGUI extends Curve {
    * Precalculate value of samples.
    */
   public precalc(): void {
-    super.precalc();
+    const valuesLength = Math.ceil( this.__automaton.resolution * this.length ) + 1;
+    this.__values = new Float32Array( valuesLength );
+    this.__valuesWithoutFxs = new Float32Array( valuesLength );
+
+    this.__generateCurve();
+    this.__valuesWithoutFxs.set( this.__values );
+
+    this.__applyFxs();
 
     let hasNaN = false;
     this.__values.forEach( ( v, i ) => {
@@ -746,6 +758,37 @@ export class CurveWithGUI extends Curve {
     this.__emit( 'updateFx', { id, fx: jsonCopy( fx ) } );
 
     this.__automaton.shouldSave = true;
+  }
+
+  /**
+   * Same as {@link getValue}, but without fxs.
+   * This is an exclusive feature for WithGUI variant.
+   * @param time Time at the point you want to grab the value.
+   * @returns Result value
+   */
+  public getValueWithoutFxs( time: number ): number {
+    if ( time < 0.0 ) {
+      // clamp left
+      return this.__valuesWithoutFxs[ 0 ];
+
+    } else if ( this.length <= time ) {
+      // clamp right
+      return this.__valuesWithoutFxs[ this.__valuesWithoutFxs.length - 1 ];
+
+    } else {
+      // fetch two values then do the linear interpolation
+      const index = time * this.__automaton.resolution;
+      const indexi = Math.floor( index );
+      const indexf = index % 1.0;
+
+      const v0 = this.__valuesWithoutFxs[ indexi ];
+      const v1 = this.__valuesWithoutFxs[ indexi + 1 ];
+
+      const v = v0 + ( v1 - v0 ) * indexf;
+
+      return v;
+
+    }
   }
 
   /**
