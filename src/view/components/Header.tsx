@@ -195,7 +195,7 @@ const Header = ( { className }: HeaderProps ): JSX.Element => {
   );
 
   const handleSaveContextMenu = useCallback(
-    ( event: MouseEvent ) => {
+    ( event: React.MouseEvent ) => {
       if ( !automaton ) { return; }
 
       event.preventDefault();

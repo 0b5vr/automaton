@@ -636,11 +636,7 @@ export class CurveWithGUI extends Curve {
     const index = this.__getFxIndexById( id );
 
     const fx = this.__fxs[ index ];
-    if ( bypass ) {
-      fx.bypass = true;
-    } else {
-      delete fx.bypass;
-    }
+    fx.bypass = bypass;
 
     this.precalc();
 
