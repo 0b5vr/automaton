@@ -2,6 +2,7 @@
 
 import banner from 'rollup-plugin-banner';
 import packageJson from './package.json';
+import replace from '@rollup/plugin-replace';
 import serve from 'rollup-plugin-serve';
 import { terser } from 'rollup-plugin-terser';
 import typescript from '@rollup/plugin-typescript';
@@ -47,6 +48,10 @@ export default {
   },
   plugins: [
     typescript(),
+    replace( {
+      'process.env.VERSION': `'${ packageJson.version }'`,
+      'process.env.DEV': DEV,
+    } ),
     ...( DEV ? [] : [ terser() ] ),
     ...( SERVE ? [ serve( serveOptions ) ] : [] ),
     ...( DEV ? [] : [ banner( bannerTextProd ) ] ),
