@@ -1,20 +1,12 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "module": "commonjs",
+    "target": "es6",
+    "module": "es6",
     "strict": true,
     "moduleResolution": "node",
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "resolveJsonModule": true,
-    "removeComments": false,
-    "noUnusedLocals": true,
     "downlevelIteration": true,
-    "lib": [ "es2017" ],
-    "rootDir": "./src",
-    "outDir": "./dist",
-    "declaration": true,
-    "declarationDir": "./types"
+    "lib": [ "es2020", "dom" ],
+    "rootDir": "./src"
   },
   "include": [ "src" ],
   "exclude": [ "node_modules", "**/tests/**/*" ]
