@@ -1,0 +1,5 @@
+/dist
+/types
+/ts*
+/node_modules
+**/*.log
