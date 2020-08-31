@@ -1,5 +1,5 @@
-/dist
-/types
-/ts*
-/node_modules
+/dist/
+/types/
+/ts*/
+/node_modules/
 **/*.log
