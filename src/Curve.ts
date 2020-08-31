@@ -150,12 +150,24 @@ export class Curve {
     for ( let iFx = 0; iFx < this.__fxs.length; iFx ++ ) {
       const fx = this.__fxs[ iFx ];
       const fxDef = this.__automaton.getFxDefinition( fx.def );
-      if ( !fxDef ) { continue; }
+      if ( !fxDef ) {
+        if ( process.env.DEV ) {
+          console.warn( `No such fx definition: ${ fx.def }` );
+        }
+
+        continue;
+      }
 
       const availableEnd = Math.min( this.length, fx.time + fx.length );
       const i0 = Math.ceil( this.__automaton.resolution * fx.time );
       const i1 = Math.floor( this.__automaton.resolution * availableEnd );
-      if ( i1 <= i0 ) { continue; }
+      if ( i1 <= i0 ) {
+        if ( process.env.DEV ) {
+          console.error( 'Length of the fx section is being negative' );
+        }
+
+        continue;
+      }
 
       const tempLength = i1 - i0 + 1;
       const tempValues = new Float32Array( tempLength );
