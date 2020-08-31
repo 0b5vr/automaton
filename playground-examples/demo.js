@@ -17,7 +17,7 @@ const automaton = new AUTOMATON_WITH_GUI.AutomatonWithGUI(
   {
     gui: divAutomatonContainer, // where you want to put entire automaton GUI
     isPlaying: true, // it's playing by default
-    installBuiltinFxs: true, // install bunch of fxs by default
+    fxDefinitions: AUTOMATON_FXS, // install bunch of fxs
   }
 );
 const auto = automaton.auto; // mighty auto function!
