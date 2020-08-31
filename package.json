@@ -1,5 +1,5 @@
 {
-  "name": "automaton-fxs",
+  "name": "@fms-cat/automaton-fxs",
   "version": "3.0.0-beta7",
   "description": "Bunch of automaton fxs",
   "repository": "https://github.com/FMS-Cat/automaton-fxs",
