@@ -14,7 +14,8 @@ const licenseUri = 'https://github.com/FMS-Cat/automaton-fxs/blob/master/LICENSE
 const globalName = 'AUTOMATON_FXS';
 
 // == envs =========================================================================================
-const DEV = process.env.DEV === '1';
+const NODE_ENV = process.env.NODE_ENV;
+const DEV = NODE_ENV === 'development';
 const SERVE = process.env.SERVE === '1';
 const ESM = process.env.ESM === '1';
 
@@ -50,7 +51,7 @@ export default {
     typescript(),
     replace( {
       'process.env.VERSION': `'${ packageJson.version }'`,
-      'process.env.DEV': DEV,
+      'process.env.NODE_ENV': `'${ NODE_ENV }'`,
     } ),
     ...( DEV ? [] : [ terser() ] ),
     ...( SERVE ? [ serve( serveOptions ) ] : [] ),

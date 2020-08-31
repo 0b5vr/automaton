@@ -4,8 +4,18 @@
   "description": "Bunch of automaton fxs",
   "repository": "https://github.com/FMS-Cat/automaton-fxs",
   "author": "FMS-Cat",
-  "main": "dist/automaton-fxs.js",
-  "module": "dist/automaton-fxs.module.js",
+  "main": "dist/automaton-fxs.min.js",
+  "module": "dist/automaton-fxs.module.min.js",
+  "exports": {
+    "import": {
+      "development": "dist/automaton-fxs.module.js",
+      "production": "dist/automaton-fxs.module.min.js"
+    },
+    "require": {
+      "development": "dist/automaton-fxs.js",
+      "production": "dist/automaton-fxs.min.js"
+    }
+  },
   "types": "types/index.d.ts",
   "typesVersions": {
     "<3.9": {
