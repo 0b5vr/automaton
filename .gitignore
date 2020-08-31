@@ -1,6 +1,6 @@
-/dist
-/docs
-/types
-/ts*
-/node_modules
+/dist/
+/docs/
+/types/
+/ts*/
+/node_modules/
 **/*.log
