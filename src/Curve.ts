@@ -151,7 +151,7 @@ export class Curve {
       const fx = this.__fxs[ iFx ];
       const fxDef = this.__automaton.getFxDefinition( fx.def );
       if ( !fxDef ) {
-        if ( process.env.DEV ) {
+        if ( process.env.NODE_ENV === 'development' ) {
           console.warn( `No such fx definition: ${ fx.def }` );
         }
 
@@ -162,7 +162,7 @@ export class Curve {
       const i0 = Math.ceil( this.__automaton.resolution * fx.time );
       const i1 = Math.floor( this.__automaton.resolution * availableEnd );
       if ( i1 <= i0 ) {
-        if ( process.env.DEV ) {
+        if ( process.env.NODE_ENV === 'development' ) {
           console.error( 'Length of the fx section is being negative' );
         }
 
