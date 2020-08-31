@@ -95,6 +95,12 @@ export class Automaton {
    */
   public addFxDefinitions( fxDefinitions: { [ id: string ]: FxDefinition } ): void {
     Object.entries( fxDefinitions ).forEach( ( [ id, fxDef ] ) => {
+      if ( process.env.DEV ) {
+        if ( this.__fxDefinitions[ id ] != null ) {
+          console.warn( `Overwriting the existing fx definition: ${ id }` );
+        }
+      }
+
       this.__fxDefinitions[ id ] = fxDef;
     } );
 
