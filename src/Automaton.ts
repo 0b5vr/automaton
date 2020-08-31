@@ -1,3 +1,4 @@
+import type { AutomatonOptions } from './types/AutomatonOptions';
 import { Channel } from './Channel';
 import type { ChannelUpdateEvent } from './types/ChannelUpdateEvent';
 import { Curve } from './Curve';
@@ -51,7 +52,11 @@ export class Automaton {
    */
   protected __fxDefinitions: { [ name: string ]: FxDefinition } = {};
 
-  public constructor( data: SerializedAutomaton ) {
+  public constructor(
+    data: SerializedAutomaton,
+    options: AutomatonOptions = {}
+  ) {
+    options.fxDefinitions && this.addFxDefinitions( options.fxDefinitions );
     this.deserialize( data );
   }
 
