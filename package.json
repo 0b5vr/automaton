@@ -38,7 +38,7 @@
   ],
   "private": false,
   "devDependencies": {
-    "@fms-cat/automaton": "3.0.0-beta6.fuck2",
+    "@fms-cat/automaton": "3.0.0-beta7",
     "@rollup/plugin-replace": "^2.3.3",
     "@rollup/plugin-typescript": "^5.0.2",
     "@types/jest": "^26.0.10",
