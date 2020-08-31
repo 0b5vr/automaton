@@ -26,16 +26,16 @@
   },
   "license": "MIT",
   "scripts": {
-    "dev": "cross-env DEV=1 ESM=1 SERVE=1 rollup -w -c -o dist/automaton-fxs.module.js",
+    "dev": "cross-env NODE_ENV=development ESM=1 SERVE=1 rollup -w -c -o dist/automaton-fxs.module.js",
     "all": "yarn lint && yarn test && yarn clean && yarn build",
     "clean": "rimraf dist/ ts*/ types/",
     "test": "jest",
     "lint": "eslint \"src/**/*.{ts,tsx}\"",
     "build": "yarn build-dev && yarn build-prod && yarn build-esm && yarn build-esmprod && yarn build-types",
-    "build-dev": "cross-env DEV=1 rollup -c -o dist/automaton-fxs.js",
-    "build-prod": "rollup -c -o dist/automaton-fxs.min.js",
-    "build-esm": "cross-env DEV=1 ESM=1 rollup -c -o dist/automaton-fxs.module.js",
-    "build-esmprod": "cross-env ESM=1 rollup -c -o dist/automaton-fxs.module.min.js",
+    "build-dev": "cross-env NODE_ENV=development rollup -c -o dist/automaton-fxs.js",
+    "build-prod": "cross-env NODE_ENV=production rollup -c -o dist/automaton-fxs.min.js",
+    "build-esm": "cross-env NODE_ENV=development ESM=1 rollup -c -o dist/automaton-fxs.module.js",
+    "build-esmprod": "cross-env NODE_ENV=production ESM=1 rollup -c -o dist/automaton-fxs.module.min.js",
     "build-types": "tsc --declaration --declarationDir ./types --emitDeclarationOnly && downlevel-dts types ts3.4/types"
   },
   "files": [
