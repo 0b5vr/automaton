@@ -2,6 +2,7 @@ import { Automaton, ChannelUpdateEvent, FxDefinition, FxParam, SerializedAutomat
 import { GUISettings, defaultGUISettings } from './types/GUISettings';
 import { SerializedAutomatonWithGUI, defaultDataWithGUI } from './types/SerializedAutomatonWithGUI';
 import { App } from './view/components/App';
+import type { AutomatonOptions } from '@fms-cat/automaton/types/types/AutomatonOptions'; // 🔥🔥🔥🔥🔥🔥
 import { ChannelWithGUI } from './ChannelWithGUI';
 import { ContextMenuCommand } from './view/states/ContextMenu';
 import { CurveWithGUI } from './CurveWithGUI';
@@ -25,7 +26,7 @@ import produce from 'immer';
 /**
  * Interface for options of {@link AutomatonWithGUI}.
  */
-export interface AutomatonWithGUIOptions {
+export interface AutomatonWithGUIOptions extends AutomatonOptions {
   /**
    * DOM element where you want to attach the Automaton GUI.
    */
