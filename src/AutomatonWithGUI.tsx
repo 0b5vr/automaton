@@ -17,7 +17,6 @@ import { WithID } from './types/WithID';
 import { applyMixins } from './utils/applyMixins';
 import { compat } from './compat/compat';
 import { createStore } from './view/states/store';
-import fxDefinitions from './fxs';
 import { jsonCopy } from './utils/jsonCopy';
 import { lofi } from './utils/lofi';
 import { minimizeData } from './minimizeData';
@@ -54,12 +53,6 @@ export interface AutomatonWithGUIOptions extends AutomatonOptions {
    * Originally intended to be used by automaton-electron.
    */
   saveContextMenuCommands?: Array<ContextMenuCommand>;
-
-  /**
-   * Install builtin fxs automatically.
-   * You can install them manually instead by using {@link Automaton.BuiltinFxs}.
-   */
-  installBuiltinFxs?: boolean;
 }
 
 /**
@@ -67,12 +60,6 @@ export interface AutomatonWithGUIOptions extends AutomatonOptions {
  */
 export class AutomatonWithGUI extends Automaton
   implements Serializable<SerializedAutomatonWithGUI> {
-  /**
-   * Builtin fx definitions.
-   * You can set {@link AutomatonWithGUIOptions.installBuiltinFxs} to `true` to install them automatically instead.
-   */
-  public static readonly BuiltinFxs = fxDefinitions;
-
   /**
    * Minimize serialized data for prod use.
    * @param data The original data
@@ -240,13 +227,9 @@ export class AutomatonWithGUI extends Automaton
     data: SerializedAutomatonWithGUI = defaultDataWithGUI,
     options: AutomatonWithGUIOptions = {}
   ) {
-    super( data );
+    super( data, options );
 
     this.__isPlaying = options.isPlaying || false;
-
-    if ( options.installBuiltinFxs ) {
-      this.addFxDefinitions( fxDefinitions );
-    }
 
     this.overrideSave = options.overrideSave;
     this.saveContextMenuCommands = options.saveContextMenuCommands;
