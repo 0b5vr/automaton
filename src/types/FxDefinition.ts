@@ -44,6 +44,11 @@ export interface FxContext {
   deltaTime: number;
 
   /**
+   * Current elapsed time since the fx started.
+   */
+  elapsed: number;
+
+  /**
    * Progress of current position of the fx section, in [0-1].
    */
   progress: number;

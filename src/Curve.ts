@@ -182,6 +182,7 @@ export class Curve {
         deltaTime: 1.0 / this.__automaton.resolution,
         value: 0.0,
         progress: 0.0,
+        elapsed: 0.0,
         resolution: this.__automaton.resolution,
         length: fx.length,
         params: fx.params,
@@ -195,7 +196,8 @@ export class Curve {
         context.index = i + i0;
         context.time = context.index / this.__automaton.resolution;
         context.value = this.__values[ i + i0 ];
-        context.progress = ( context.time - fx.time ) / fx.length;
+        context.elapsed = context.time - fx.time;
+        context.progress = context.elapsed / fx.length;
         tempValues[ i ] = fxDef.func( context );
 
         context.init = false;
