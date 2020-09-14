@@ -39,7 +39,7 @@ const myFxDefinitions = {
     }
   },
 
-  exp: { // this is same as builtin one but it's good for example
+  exp: { // this is same as the builtin one but it's good for an example
     name: 'Exponential Smoothing',
     description: 'Smooth the curve. Simple but good.',
     params: {
