@@ -227,7 +227,7 @@ export class AutomatonWithGUI extends Automaton
     data: SerializedAutomatonWithGUI = defaultDataWithGUI,
     options: AutomatonWithGUIOptions = {}
   ) {
-    super( data, options );
+    super( compat( data ), options );
 
     this.__isPlaying = options.isPlaying || false;
 
@@ -620,18 +620,16 @@ export class AutomatonWithGUI extends Automaton
    * Load automaton state data.
    * @param data Object contains automaton data.
    */
-  public deserialize( data?: any ): void {
-    const convertedData = compat( data );
+  public deserialize( data: SerializedAutomatonWithGUI ): void {
+    this.__resolution = data.resolution;
 
-    this.__resolution = convertedData.resolution;
-
-    this.__curves = convertedData.curves.map(
-      ( data ) => new CurveWithGUI( this, data )
+    this.__curves = data.curves.map(
+      ( curve ) => new CurveWithGUI( this, curve )
     );
 
     this.__channels = {};
-    for ( const name in convertedData.channels ) {
-      const channel = new ChannelWithGUI( this, convertedData.channels[ name ] );
+    for ( const name in data.channels ) {
+      const channel = new ChannelWithGUI( this, data.channels[ name ] );
       this.__channels[ name ] = channel;
 
       channel.on( 'changeLength', () => {
@@ -639,11 +637,11 @@ export class AutomatonWithGUI extends Automaton
       } );
     }
 
-    this.__labels = convertedData.labels || {};
+    this.__labels = data.labels || {};
 
     this.__guiSettings = {
       ...defaultGUISettings,
-      ...convertedData.guiSettings
+      ...data.guiSettings
     };
 
     this.__emit( 'load' );
