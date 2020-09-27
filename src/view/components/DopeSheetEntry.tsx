@@ -1,15 +1,15 @@
-import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
-import React, { useCallback, useRef } from 'react';
-import { dx2dt, snapTime, x2t } from '../utils/TimeValueRange';
-import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
-import type { StateChannelItem } from '../../types/StateChannelItem';
+import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
 import { TimelineItem } from './TimelineItem';
+import { dx2dt, snapTime, x2t } from '../utils/TimeValueRange';
 import { hasOverwrap } from '../../utils/hasOverwrap';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
 import { showToasty } from '../states/Toasty';
-import styled from 'styled-components';
+import { useDispatch, useSelector } from '../states/store';
 import { useRect } from '../utils/useRect';
+import React, { useCallback, useRef } from 'react';
+import styled from 'styled-components';
+import type { StateChannelItem } from '../../types/StateChannelItem';
 
 // == styles =======================================================================================
 const SVGRoot = styled.svg`
@@ -110,7 +110,7 @@ const DopeSheetEntry = ( props: Props ): JSX.Element => {
         ],
       } );
     },
-    [ range, rect, channelName, channel ]
+    [ range, rect, channelName, channel, dispatch ]
   );
 
   const createNewCurve = useCallback(
@@ -160,7 +160,7 @@ const DopeSheetEntry = ( props: Props ): JSX.Element => {
         ],
       } );
     },
-    [ automaton, range, rect, channelName, channel ]
+    [ automaton, range, rect, channelName, channel, dispatch ]
   );
 
   const createItemAndGrab = useCallback(
@@ -243,7 +243,16 @@ const DopeSheetEntry = ( props: Props ): JSX.Element => {
         }
       );
     },
-    [ automaton, lastSelectedItem, selectedCurve, range, rect, guiSettings, channelName, channel ]
+    [ automaton,
+      lastSelectedItem,
+      selectedCurve,
+      range,
+      rect,
+      guiSettings,
+      channelName,
+      channel,
+      dispatch
+    ]
   );
 
   const handleMouseDown = useCallback(
@@ -279,7 +288,7 @@ const DopeSheetEntry = ( props: Props ): JSX.Element => {
         ]
       } );
     },
-    [ createConstant, createNewCurve ]
+    [ dispatch, createConstant, createNewCurve ]
   );
 
   return (

@@ -1,8 +1,8 @@
-import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Colors } from '../constants/Colors';
-import styled from 'styled-components';
+import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
 import { useDoubleClick } from '../utils/useDoubleClick';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import styled from 'styled-components';
 
 // == styles =======================================================================================
 const Input = styled.input< { isInvalid?: boolean } >`

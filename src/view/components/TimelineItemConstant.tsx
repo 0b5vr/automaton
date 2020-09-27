@@ -1,16 +1,16 @@
-import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
-import React, { useCallback, useMemo } from 'react';
-import { TimeValueRange, dt2dx, dx2dt, snapTime, snapValue, t2x, v2y, x2t, y2v } from '../utils/TimeValueRange';
-import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
 import { Icons } from '../icons/Icons';
+import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
 import { Resolution } from '../utils/Resolution';
-import type { StateChannelItem } from '../../types/StateChannelItem';
+import { TimeValueRange, dt2dx, dx2dt, snapTime, snapValue, t2x, v2y, x2t, y2v } from '../utils/TimeValueRange';
 import { objectMapHas } from '../utils/objectMap';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
-import styled from 'styled-components';
+import { useDispatch, useSelector } from '../states/store';
 import { useDoubleClick } from '../utils/useDoubleClick';
 import { useID } from '../utils/useID';
+import React, { useCallback, useMemo } from 'react';
+import styled from 'styled-components';
+import type { StateChannelItem } from '../../types/StateChannelItem';
 
 const HEIGHT = 12;
 
@@ -85,7 +85,7 @@ const TimelineItemConstant = ( props: TimelineItemConstantProps ): JSX.Element =
   let w = useMemo( () => dt2dx( item.length, range, size.width ), [ item, range, size ] );
   const y = useMemo(
     () => dopeSheetMode ? ( 0.5 * size.height ) : v2y( item.value, range, size.height ),
-    [ item, range, size ]
+    [ dopeSheetMode, item, range, size ]
   );
   const isSelected = objectMapHas( selectedItems, item.$id );
 
@@ -141,14 +141,14 @@ const TimelineItemConstant = ( props: TimelineItemConstantProps ): JSX.Element =
             commands: [
               {
                 type: 'channel/moveItem',
-                channel: props.channel,
+                channel: channelName,
                 item: item.$id,
                 time,
                 timePrev
               },
               {
                 type: 'channel/changeItemValue',
-                channel: props.channel,
+                channel: channelName,
                 item: item.$id,
                 value,
                 valuePrev
@@ -158,7 +158,7 @@ const TimelineItemConstant = ( props: TimelineItemConstantProps ): JSX.Element =
         }
       );
     },
-    [ channel, item, range, size, dopeSheetMode, guiSettings ]
+    [ channel, item, range, size, dopeSheetMode, guiSettings, dispatch, channelName ]
   );
 
   const grabLeft = useCallback(
@@ -197,7 +197,7 @@ const TimelineItemConstant = ( props: TimelineItemConstantProps ): JSX.Element =
             commands: [
               {
                 type: 'channel/resizeItemByLeft',
-                channel: props.channel,
+                channel: channelName,
                 item: item.$id,
                 length: timeEnd - time,
                 lengthPrev: timeEnd - timePrev,
@@ -208,7 +208,7 @@ const TimelineItemConstant = ( props: TimelineItemConstantProps ): JSX.Element =
         }
       );
     },
-    [ channel, item, range, size, guiSettings ]
+    [ channel, item, range, size, guiSettings, dispatch, channelName ]
   );
 
   const grabRight = useCallback(
@@ -247,7 +247,7 @@ const TimelineItemConstant = ( props: TimelineItemConstantProps ): JSX.Element =
             commands: [
               {
                 type: 'channel/resizeItem',
-                channel: props.channel,
+                channel: channelName,
                 item: item.$id,
                 length: time - timeBegin,
                 lengthPrev: timePrev - timeBegin,
@@ -258,7 +258,7 @@ const TimelineItemConstant = ( props: TimelineItemConstantProps ): JSX.Element =
         }
       );
     },
-    [ channel, item, range, size, guiSettings ]
+    [ channel, item, range, size, guiSettings, dispatch, channelName ]
   );
 
   const removeItem = useCallback(
@@ -273,13 +273,13 @@ const TimelineItemConstant = ( props: TimelineItemConstantProps ): JSX.Element =
         commands: [
           {
             type: 'channel/removeItem',
-            channel: props.channel,
+            channel: channelName,
             data: item
           }
         ],
       } );
     },
-    [ item, channel ]
+    [ item, channel, dispatch, channelName ]
   );
 
   const handleClickBody = useCallback(
@@ -371,7 +371,7 @@ const TimelineItemConstant = ( props: TimelineItemConstantProps ): JSX.Element =
         ]
       } );
     },
-    [ removeItem ]
+    [ removeItem, dispatch ]
   );
 
   return (
@@ -389,15 +389,13 @@ const TimelineItemConstant = ( props: TimelineItemConstantProps ): JSX.Element =
         onContextMenu={ handleContextMenu }
       />
       { item.length === 0
-        ? <>
-          <Text
-            x={ 1.5 * HEIGHT }
-            y={ 0.85 * HEIGHT }
-            dominant-baseline="middle"
-          >
-            { item.value.toFixed( 3 ) }
-          </Text>
-        </>
+        ? <Text
+          x={ 1.5 * HEIGHT }
+          y={ 0.85 * HEIGHT }
+          dominant-baseline="middle"
+        >
+          { item.value.toFixed( 3 ) }
+        </Text>
         : <>
           <clipPath id={ `${ textClipID }` }>
             <rect

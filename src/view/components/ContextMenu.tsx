@@ -1,8 +1,8 @@
-import React, { useCallback, useMemo } from 'react';
-import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
 import { ContextMenuEntry } from './ContextMenuEntry';
 import { ContextMenuHr } from './ContextMenuHr';
+import { useDispatch, useSelector } from '../states/store';
+import React, { useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
@@ -68,14 +68,14 @@ const ContextMenu = ( { className }: ContextMenuProps ): JSX.Element => {
     () => {
       dispatch( { type: 'ContextMenu/Close' } );
     },
-    []
+    [ dispatch ]
   );
 
   const handleContextMenuBG = useCallback(
     () => {
       dispatch( { type: 'ContextMenu/Close' } );
     },
-    []
+    [ dispatch ]
   );
 
   return <Root

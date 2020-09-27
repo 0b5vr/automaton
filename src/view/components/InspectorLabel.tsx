@@ -1,8 +1,8 @@
-import { useDispatch, useSelector } from '../states/store';
 import { InspectorHeader } from './InspectorHeader';
 import { InspectorHr } from './InspectorHr';
 import { InspectorItem } from './InspectorItem';
 import { NumberParam } from './NumberParam';
+import { useDispatch, useSelector } from '../states/store';
 import React from 'react';
 
 // == compoennt ====================================================================================

@@ -1,21 +1,21 @@
-import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
-import React, { useCallback, useEffect, useRef } from 'react';
-import { TimeValueRange, dx2dt, dy2dv, snapTime, snapValue, x2t, y2v } from '../utils/TimeValueRange';
-import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
 import { Labels } from './Labels';
+import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
 import { RangeBar } from './RangeBar';
 import { Resolution } from '../utils/Resolution';
-import type { StateChannelItem } from '../../types/StateChannelItem';
 import { TimeLoopRegion } from './TimeLoopRegion';
 import { TimeValueGrid } from './TimeValueGrid';
 import { TimeValueLines } from './TimeValueLines';
+import { TimeValueRange, dx2dt, dy2dv, snapTime, snapValue, x2t, y2v } from '../utils/TimeValueRange';
 import { TimelineItem } from './TimelineItem';
 import { hasOverwrap } from '../../utils/hasOverwrap';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
 import { showToasty } from '../states/Toasty';
-import styled from 'styled-components';
+import { useDispatch, useSelector } from '../states/store';
 import { useRect } from '../utils/useRect';
+import React, { useCallback, useEffect, useRef } from 'react';
+import styled from 'styled-components';
+import type { StateChannelItem } from '../../types/StateChannelItem';
 
 // == microcomponent ===============================================================================
 const Lines = ( { channel, range, size }: {
@@ -123,7 +123,7 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
         dy,
       } );
     },
-    [ rect ]
+    [ dispatch, rect ]
   );
 
   const zoom = useCallback(
@@ -137,7 +137,7 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
         dy,
       } );
     },
-    [ rect ]
+    [ dispatch, rect ]
   );
 
   const createConstant = useCallback(
@@ -191,7 +191,7 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
         ],
       } );
     },
-    [ range, rect, selectedChannel, channel ]
+    [ range, rect, selectedChannel, channel, dispatch ]
   );
 
   const createNewCurve = useCallback(
@@ -249,7 +249,7 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
         ],
       } );
     },
-    [ automaton, range, rect, selectedChannel, channel ]
+    [ automaton, range, rect, selectedChannel, channel, dispatch ]
   );
 
   const createLabel = useCallback(
@@ -289,7 +289,7 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
         }
       } );
     },
-    [ automaton, range, rect ]
+    [ automaton, range, rect, dispatch ]
   );
 
   const createItemAndGrab = useCallback(
@@ -395,7 +395,8 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
       rect,
       guiSettings,
       selectedChannel,
-      channel
+      channel,
+      dispatch
     ]
   );
 
@@ -518,7 +519,7 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
         ]
       } );
     },
-    [ createConstant, createNewCurve, createLabel ]
+    [ dispatch, createConstant, createNewCurve, createLabel ]
   );
 
   const handleWheel = useCallback(
@@ -566,13 +567,11 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
             range={ range }
             size={ rect }
           />
-          { selectedChannel && <>
-            <Items
-              channel={ selectedChannel }
-              range={ range }
-              size={ rect }
-            />
-          </> }
+          { selectedChannel && <Items
+            channel={ selectedChannel }
+            range={ range }
+            size={ rect }
+          /> }
           <Labels
             range={ range }
             size={ rect }

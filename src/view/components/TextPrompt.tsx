@@ -1,7 +1,7 @@
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
-import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
 import { showToasty } from '../states/Toasty';
+import { useDispatch, useSelector } from '../states/store';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
@@ -92,7 +92,7 @@ const TextPrompt = ( { className }: {
         text: event?.target.value
       } );
     },
-    []
+    [ dispatch ]
   );
 
   const handleKeyDown = useCallback(
@@ -113,7 +113,7 @@ const TextPrompt = ( { className }: {
         dispatch( { type: 'TextPrompt/Close' } );
       }
     },
-    [ text, checkValid, callback ]
+    [ text, checkValid, callback, dispatch ]
   );
 
   useEffect(

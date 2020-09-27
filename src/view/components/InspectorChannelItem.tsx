@@ -1,13 +1,13 @@
-import { useDispatch, useSelector } from '../states/store';
 import { BoolParam } from './BoolParam';
 import { ChannelWithGUI } from '../../ChannelWithGUI';
 import { InspectorHeader } from './InspectorHeader';
 import { InspectorHr } from './InspectorHr';
 import { InspectorItem } from './InspectorItem';
 import { NumberParam } from './NumberParam';
+import { useDispatch, useSelector } from '../states/store';
 import React from 'react';
-import type { StateChannelItem } from '../../types/StateChannelItem';
 import styled from 'styled-components';
+import type { StateChannelItem } from '../../types/StateChannelItem';
 
 // == microcomponents ==============================================================================
 interface Props {
@@ -18,10 +18,10 @@ const InspectorChannelItemCurveParams = ( props: {
   channelName: string;
   stateItem: StateChannelItem;
   itemId: string;
-} ): JSX.Element => {
+} ): JSX.Element | null => {
   const dispatch = useDispatch();
 
-  if ( props.stateItem.curveId == null ) { return <></>; }
+  if ( props.stateItem.curveId == null ) { return null; }
 
   const { channel, channelName, itemId } = props;
   const stateItem = props.stateItem;
@@ -123,7 +123,7 @@ interface Props {
   };
 }
 
-const InspectorChannelItem = ( props: Props ): JSX.Element => {
+const InspectorChannelItem = ( props: Props ): JSX.Element | null => {
   const { className } = props;
   const itemId = props.item.id;
   const channelName = props.item.channel;
@@ -132,120 +132,118 @@ const InspectorChannelItem = ( props: Props ): JSX.Element => {
     automaton: state.automaton.instance,
     stateItem: state.automaton.channels[ channelName ].items[ itemId ]
   } ) );
-  const channel = automaton?.getChannel( channelName ) || null;
+  const channel = automaton?.getChannel( channelName ) ?? null;
 
-  return <>
-    { automaton && channel && (
-      <Root className={ className }>
-        <InspectorHeader text={ 'Curve' } />
+  return ( automaton && channel && (
+    <Root className={ className }>
+      <InspectorHeader text={ 'Curve' } />
 
-        <InspectorHr />
+      <InspectorHr />
 
-        <InspectorItem name="Time">
-          <NumberParam
-            type="float"
-            value={ stateItem.time }
-            onChange={ ( value ) => { channel.moveItem( itemId, value ); } }
-            onSettle={ ( time, timePrev ) => {
-              dispatch( {
-                type: 'History/Push',
-                description: 'Change Item Time',
-                commands: [
-                  {
-                    type: 'channel/moveItem',
-                    channel: channelName,
-                    item: itemId,
-                    time,
-                    timePrev
-                  }
-                ]
-              } );
-            } }
-          />
-        </InspectorItem>
-
-        <InspectorItem name="Length">
-          <NumberParam
-            type="float"
-            value={ stateItem.length }
-            onChange={ ( value ) => { channel.resizeItem( itemId, value ); } }
-            onSettle={ ( length, lengthPrev ) => {
-              dispatch( {
-                type: 'History/Push',
-                description: 'Change Item Length',
-                commands: [
-                  {
-                    type: 'channel/resizeItem',
-                    channel: channelName,
-                    item: itemId,
-                    length,
-                    lengthPrev,
-                    stretch: false
-                  }
-                ]
-              } );
-            } }
-          />
-        </InspectorItem>
-
-        <InspectorItem name="Value">
-          <NumberParam
-            type="float"
-            value={ stateItem.value }
-            onChange={ ( value ) => {
-              channel.changeItemValue( itemId, value );
-            } }
-            onSettle={ ( value, valuePrev ) => {
-              dispatch( {
-                type: 'History/Push',
-                description: 'Change Constant Value',
-                commands: [
-                  {
-                    type: 'channel/changeItemValue',
-                    channel: channelName,
-                    item: itemId,
-                    value,
-                    valuePrev
-                  }
-                ]
-              } );
-            } }
-          />
-        </InspectorItem>
-
-        <InspectorItem name="Reset">
-          <BoolParam
-            value={ stateItem.reset }
-            onChange={ ( reset ) => {
-              channel.changeItemReset( itemId, reset );
-            } }
-            onSettle={ ( reset, resetPrev ) => {
-              dispatch( {
-                type: 'History/Push',
-                description: 'Change Item Reset',
-                commands: [
-                  {
-                    type: 'channel/changeItemReset',
-                    channel: channelName,
-                    item: itemId,
-                    reset,
-                    resetPrev
-                  }
-                ]
-              } );
-            } }
-          />
-        </InspectorItem>
-
-        <InspectorChannelItemCurveParams
-          channel={ channel }
-          channelName={ channelName }
-          stateItem={ stateItem }
-          itemId={ itemId }
+      <InspectorItem name="Time">
+        <NumberParam
+          type="float"
+          value={ stateItem.time }
+          onChange={ ( value ) => { channel.moveItem( itemId, value ); } }
+          onSettle={ ( time, timePrev ) => {
+            dispatch( {
+              type: 'History/Push',
+              description: 'Change Item Time',
+              commands: [
+                {
+                  type: 'channel/moveItem',
+                  channel: channelName,
+                  item: itemId,
+                  time,
+                  timePrev
+                }
+              ]
+            } );
+          } }
         />
-      </Root>
-    ) }
-  </>;
+      </InspectorItem>
+
+      <InspectorItem name="Length">
+        <NumberParam
+          type="float"
+          value={ stateItem.length }
+          onChange={ ( value ) => { channel.resizeItem( itemId, value ); } }
+          onSettle={ ( length, lengthPrev ) => {
+            dispatch( {
+              type: 'History/Push',
+              description: 'Change Item Length',
+              commands: [
+                {
+                  type: 'channel/resizeItem',
+                  channel: channelName,
+                  item: itemId,
+                  length,
+                  lengthPrev,
+                  stretch: false
+                }
+              ]
+            } );
+          } }
+        />
+      </InspectorItem>
+
+      <InspectorItem name="Value">
+        <NumberParam
+          type="float"
+          value={ stateItem.value }
+          onChange={ ( value ) => {
+            channel.changeItemValue( itemId, value );
+          } }
+          onSettle={ ( value, valuePrev ) => {
+            dispatch( {
+              type: 'History/Push',
+              description: 'Change Constant Value',
+              commands: [
+                {
+                  type: 'channel/changeItemValue',
+                  channel: channelName,
+                  item: itemId,
+                  value,
+                  valuePrev
+                }
+              ]
+            } );
+          } }
+        />
+      </InspectorItem>
+
+      <InspectorItem name="Reset">
+        <BoolParam
+          value={ stateItem.reset }
+          onChange={ ( reset ) => {
+            channel.changeItemReset( itemId, reset );
+          } }
+          onSettle={ ( reset, resetPrev ) => {
+            dispatch( {
+              type: 'History/Push',
+              description: 'Change Item Reset',
+              commands: [
+                {
+                  type: 'channel/changeItemReset',
+                  channel: channelName,
+                  item: itemId,
+                  reset,
+                  resetPrev
+                }
+              ]
+            } );
+          } }
+        />
+      </InspectorItem>
+
+      <InspectorChannelItemCurveParams
+        channel={ channel }
+        channelName={ channelName }
+        stateItem={ stateItem }
+        itemId={ itemId }
+      />
+    </Root>
+  ) ) ?? null;
 };
 
 export { InspectorChannelItem };

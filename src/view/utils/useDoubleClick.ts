@@ -10,6 +10,6 @@ export function useDoubleClick( interval = 250 ): () => boolean {
       refLastClick.current = date;
       return ( delta < interval );
     },
-    []
+    [ interval ]
   );
 }

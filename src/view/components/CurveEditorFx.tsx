@@ -1,18 +1,18 @@
-import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
-import React, { useCallback } from 'react';
-import { TimeValueRange, dt2dx, dx2dt, snapTime, t2x } from '../utils/TimeValueRange';
-import { useDispatch, useSelector } from '../states/store';
 import { CURVE_FX_ROW_MAX } from '../../CurveWithGUI';
 import { Colors } from '../constants/Colors';
 import { FxSection } from '@fms-cat/automaton';
+import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
 import { Resolution } from '../utils/Resolution';
+import { TimeValueRange, dt2dx, dx2dt, snapTime, t2x } from '../utils/TimeValueRange';
 import { WithBypass } from '../../types/WithBypass';
 import { WithID } from '../../types/WithID';
 import { arraySetHas } from '../utils/arraySet';
 import { clamp } from '../../utils/clamp';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
-import styled from 'styled-components';
+import { useDispatch, useSelector } from '../states/store';
 import { useDoubleClick } from '../utils/useDoubleClick';
+import React, { useCallback } from 'react';
+import styled from 'styled-components';
 
 // == constants ====================================================================================
 export const FX_HEIGHT = 16.0;
@@ -155,7 +155,7 @@ const CurveEditorFx = ( props: {
         }
       );
     },
-    [ fx, curve, curveId, range, size, guiSettings ]
+    [ fx, curve, curveId, range, size, guiSettings, dispatch ]
   );
 
   const removeFx = useCallback(
@@ -176,7 +176,7 @@ const CurveEditorFx = ( props: {
         ],
       } );
     },
-    [ fx, curve, curveId ]
+    [ fx, curve, dispatch, curveId ]
   );
 
   const handleFxBodyClick = useCallback(
@@ -265,7 +265,7 @@ const CurveEditorFx = ( props: {
         }
       );
     },
-    [ fx, curve, curveId, range, size, guiSettings ]
+    [ fx, curve, curveId, range, size, guiSettings, dispatch ]
   );
 
   const handleFxLeftClick = useCallback(

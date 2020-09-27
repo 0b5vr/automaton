@@ -3,6 +3,8 @@ module.exports = {
 
     "plugins": [
         "@typescript-eslint",
+        "sort-imports-es6-autofix",
+        "react-hooks",
         "jest"
     ],
 
@@ -46,7 +48,8 @@ module.exports = {
             "ignoreTemplateLiterals": true, // templates are also okay
             "ignoreRegExpLiterals": true, // regexs are also okay too
         } ],
-        "sort-imports": [ "error" ], // imports have to be ordered
+        "sort-imports": [ "off" ], // will be superceded by `sort-imports-es6-autofix/sort-imports-es6`
+        "sort-imports-es6-autofix/sort-imports-es6": [ "error" ], // imports have to be ordered
         "eol-last": [ "error", "always" ], // eof newline is cool
 
         // variables
@@ -86,6 +89,12 @@ module.exports = {
         "no-eval": [ "off" ], // we need to go the evil way
         "no-implied-eval": [ "warn" ], // ok don't
         "no-console": [ "error", { allow: [ "info", "warn", "error" ] } ], // don't forget to remove `console.log` !
+
+        // react-specifics
+        "react/jsx-no-useless-fragment": [ "error" ], // sounds good, huh
+        "react/display-name": [ "error" ], // yes please, it's very important to do performance monitoring
+        "react-hooks/rules-of-hooks": [ "error" ], // yes it must be followed
+        "react-hooks/exhaustive-deps": [ "warn" ], // best eslint rule ever
 
         // typescript-specifics
         "@typescript-eslint/no-explicit-any": [ "off" ], // yea

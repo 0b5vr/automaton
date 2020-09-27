@@ -1,13 +1,13 @@
-import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { TimeValueRange, dx2dt, snapTime, t2x } from '../utils/TimeValueRange';
-import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
+import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
 import { Resolution } from '../utils/Resolution';
+import { TimeValueRange, dx2dt, snapTime, t2x } from '../utils/TimeValueRange';
 import { arraySetHas } from '../utils/arraySet';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
-import styled from 'styled-components';
+import { useDispatch, useSelector } from '../states/store';
 import { useDoubleClick } from '../utils/useDoubleClick';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import styled from 'styled-components';
 
 // == styles =======================================================================================
 const Rect = styled.rect< { selected: boolean } >`
@@ -62,7 +62,7 @@ const Label = ( { name, time, range, size }: {
 
   const isSelected = useMemo(
     (): boolean => arraySetHas( selectedLabels, name ),
-    [ selectedLabels ]
+    [ name, selectedLabels ]
   );
 
   const grabLabel = useCallback(
@@ -113,7 +113,7 @@ const Label = ( { name, time, range, size }: {
         }
       );
     },
-    [ automaton, time, name, range, size, guiSettings ]
+    [ automaton, time, name, range, size, guiSettings, dispatch ]
   );
 
   const renameLabel = useCallback(
@@ -156,7 +156,7 @@ const Label = ( { name, time, range, size }: {
       } );
 
     },
-    [ automaton, time ]
+    [ automaton, time, name, dispatch ]
   );
 
   const deleteLabel = useCallback(
@@ -177,7 +177,7 @@ const Label = ( { name, time, range, size }: {
         ],
       } );
     },
-    [ automaton, time ]
+    [ automaton, time, name, dispatch ]
   );
 
   const handleMouseDown = useCallback(
@@ -217,32 +217,30 @@ const Label = ( { name, time, range, size }: {
         ]
       } );
     },
-    [ renameLabel, deleteLabel ]
+    [ dispatch, renameLabel, deleteLabel ]
   );
 
-  return <>
-    <g
-      transform={ `translate(${ x },${ size.height })` }
-      onMouseDown={ handleMouseDown }
-      onContextMenu={ handleContextMenu }
-    >
-      <Line
-        y2={ -size.height }
-        selected={ ( isSelected ? 1 : 0 ) as any as boolean } // fuck
-      />
-      <Rect
-        width={ width + 4 }
-        height="12"
-        y="-12"
-        selected={ ( isSelected ? 1 : 0 ) as any as boolean } // fuck
-      />
-      <Text
-        ref={ refText }
-        x="2"
-        y="-2"
-      >{ name }</Text>
-    </g>
-  </>;
+  return <g
+    transform={ `translate(${ x },${ size.height })` }
+    onMouseDown={ handleMouseDown }
+    onContextMenu={ handleContextMenu }
+  >
+    <Line
+      y2={ -size.height }
+      selected={ ( isSelected ? 1 : 0 ) as any as boolean } // fuck
+    />
+    <Rect
+      width={ width + 4 }
+      height="12"
+      y="-12"
+      selected={ ( isSelected ? 1 : 0 ) as any as boolean } // fuck
+    />
+    <Text
+      ref={ refText }
+      x="2"
+      y="-2"
+    >{ name }</Text>
+  </g>;
 };
 
 export { Label };

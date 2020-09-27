@@ -1,9 +1,9 @@
-import { ChannelItem, SerializedChannelItem } from '@fms-cat/automaton';
 import { AutomatonWithGUI } from './AutomatonWithGUI';
+import { ChannelItem, SerializedChannelItem } from '@fms-cat/automaton';
 import { CurveWithGUI } from './CurveWithGUI';
 import { SerializableWithID } from './types/SerializableWithID';
-import type { StateChannelItem } from './types/StateChannelItem';
 import { applyMixins } from './utils/applyMixins';
+import type { StateChannelItem } from './types/StateChannelItem';
 
 export class ChannelItemWithGUI extends ChannelItem {
   protected __automaton!: AutomatonWithGUI;

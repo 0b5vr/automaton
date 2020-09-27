@@ -1,13 +1,13 @@
-import React, { useRef } from 'react';
 import { Labels } from './Labels';
 import { RangeBar } from './RangeBar';
 import { Resolution } from '../utils/Resolution';
 import { TimeLoopRegion } from './TimeLoopRegion';
 import { TimeValueLines } from './TimeValueLines';
 import { TimeValueRange } from '../utils/TimeValueRange';
-import styled from 'styled-components';
 import { useRect } from '../utils/useRect';
 import { useSelector } from '../states/store';
+import React, { useRef } from 'react';
+import styled from 'styled-components';
 
 // == microcomponent ===============================================================================
 const Line = ( { range, size }: {

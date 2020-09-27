@@ -1,16 +1,16 @@
-import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
-import React, { useCallback, useMemo } from 'react';
-import { TimeValueRange, dt2dx, dx2dt, dy2dv, snapTime, snapValue, t2x, v2y, x2t, y2v } from '../utils/TimeValueRange';
-import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
 import { Icons } from '../icons/Icons';
+import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
 import { Resolution } from '../utils/Resolution';
-import type { StateChannelItem } from '../../types/StateChannelItem';
+import { TimeValueRange, dt2dx, dx2dt, dy2dv, snapTime, snapValue, t2x, v2y, x2t, y2v } from '../utils/TimeValueRange';
 import { objectMapHas } from '../utils/objectMap';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
-import styled from 'styled-components';
+import { useDispatch, useSelector } from '../states/store';
 import { useDoubleClick } from '../utils/useDoubleClick';
 import { useID } from '../utils/useID';
+import React, { useCallback, useMemo } from 'react';
+import styled from 'styled-components';
+import type { StateChannelItem } from '../../types/StateChannelItem';
 
 // == styles =======================================================================================
 const CurvePath = styled.polyline`
@@ -96,12 +96,12 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
   const x = useMemo( () => t2x( item.time, range, size.width ), [ item, range, size ] );
   const y0 = useMemo(
     () => dopeSheetMode ? size.height : v2y( item.value, range, size.height ),
-    [ item, range, size ]
+    [ dopeSheetMode, item, range, size ]
   );
   const w = useMemo( () => dt2dx( item.length, range, size.width ), [ item, range, size ] );
   const y1 = useMemo(
     () => dopeSheetMode ? 0.0 : v2y( item.value + item.amp, range, size.height ),
-    [ item, range, size ]
+    [ dopeSheetMode, item, range, size ]
   );
 
   const y = Math.min( y0, y1 );
@@ -165,14 +165,14 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
             commands: [
               {
                 type: 'channel/moveItem',
-                channel: props.channel,
+                channel: channelName,
                 item: item.$id,
                 time,
                 timePrev
               },
               {
                 type: 'channel/changeItemValue',
-                channel: props.channel,
+                channel: channelName,
                 item: item.$id,
                 value,
                 valuePrev
@@ -182,7 +182,7 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
         }
       );
     },
-    [ channel, item, range, size, guiSettings ]
+    [ channel, item, range, size, guiSettings, dopeSheetMode, dispatch, channelName ]
   );
 
   const grabTop = useCallback(
@@ -220,7 +220,7 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
             commands: [
               {
                 type: 'channel/changeCurveAmp',
-                channel: props.channel,
+                channel: channelName,
                 item: item.$id,
                 amp: value - item.value,
                 ampPrev: valuePrev - item.value
@@ -230,7 +230,7 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
         }
       );
     },
-    [ channel, item, range, size, guiSettings ]
+    [ channel, item, range, size, guiSettings, dispatch, channelName ]
   );
 
   const grabBottom = useCallback(
@@ -271,14 +271,14 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
             commands: [
               {
                 type: 'channel/changeItemValue',
-                channel: props.channel,
+                channel: channelName,
                 item: item.$id,
                 value,
                 valuePrev
               },
               {
                 type: 'channel/changeCurveAmp',
-                channel: props.channel,
+                channel: channelName,
                 item: item.$id,
                 amp: ceil - value,
                 ampPrev: ceil - valuePrev
@@ -288,7 +288,7 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
         }
       );
     },
-    [ channel, item, range, size, guiSettings ]
+    [ channel, item, range, size, guiSettings, dispatch, channelName ]
   );
 
   const grabLeft = useCallback(
@@ -327,7 +327,7 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
             commands: [
               {
                 type: 'channel/resizeItemByLeft',
-                channel: props.channel,
+                channel: channelName,
                 item: item.$id,
                 length: timeEnd - time,
                 lengthPrev: timeEnd - timePrev,
@@ -338,7 +338,7 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
         }
       );
     },
-    [ channel, item, range, size, guiSettings ]
+    [ channel, item, range, size, guiSettings, dispatch, channelName ]
   );
 
   const grabRight = useCallback(
@@ -377,7 +377,7 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
             commands: [
               {
                 type: 'channel/resizeItem',
-                channel: props.channel,
+                channel: channelName,
                 item: item.$id,
                 length: time - timeBegin,
                 lengthPrev: timePrev - timeBegin,
@@ -388,7 +388,7 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
         }
       );
     },
-    [ channel, item, range, size, guiSettings ]
+    [ channel, item, range, size, guiSettings, dispatch, channelName ]
   );
 
   const removeItem = useCallback(
@@ -403,13 +403,13 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
         commands: [
           {
             type: 'channel/removeItem',
-            channel: props.channel,
+            channel: channelName,
             data: item
           }
         ],
       } );
     },
-    [ item, channel ]
+    [ item, channel, dispatch, channelName ]
   );
 
   const handleClickBody = useCallback(
@@ -521,7 +521,7 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
         mode: 'curve'
       } );
     },
-    [ item.curveId ]
+    [ dispatch, item.curveId ]
   );
 
   const handleContextMenu = useCallback(
@@ -545,7 +545,7 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
         ]
       } );
     },
-    [ editCurve, removeItem ]
+    [ dispatch, editCurve, removeItem ]
   );
 
   return (

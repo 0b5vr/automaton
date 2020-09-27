@@ -1,9 +1,9 @@
-import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Colors } from '../constants/Colors';
+import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
-import styled from 'styled-components';
 import { useDoubleClick } from '../utils/useDoubleClick';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import styled from 'styled-components';
 
 // == helpers ======================================================================================
 function calcExpDiff( dy: number, currentValue: number, minDiff: number, fine: boolean ): number {
@@ -155,7 +155,7 @@ const NumberParam = ( props: NumberParamProps ): JSX.Element => {
           // const exp = event.ctrlKey || event.metaKey;
           const fine = event.altKey;
 
-          if ( props.type === 'int' ) {
+          if ( type === 'int' ) {
             if ( exp ) {
               v = calcExpDiff( -movementSum.y, v, 0.1, fine );
             } else {

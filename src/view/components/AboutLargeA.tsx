@@ -1,8 +1,8 @@
-import React, { useMemo } from 'react';
 import { Colors } from '../constants/Colors';
 import { Icons } from '../icons/Icons';
-import styled from 'styled-components';
 import { useSelector } from '../states/store';
+import React, { useMemo } from 'react';
+import styled from 'styled-components';
 
 // == styles =======================================================================================
 const LargeA = styled( Icons.AutomatonA )`

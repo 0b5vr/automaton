@@ -1,9 +1,9 @@
-import React, { useEffect } from 'react';
 import { AutomatonWithGUI } from '../../AutomatonWithGUI';
 import { ChannelWithGUI } from '../../ChannelWithGUI';
 import { CurveWithGUI } from '../../CurveWithGUI';
-import styled from 'styled-components';
 import { useDispatch } from '../states/store';
+import React, { useCallback, useEffect } from 'react';
+import styled from 'styled-components';
 
 // == utils ========================================================================================
 const CURVE_RESO = 240;
@@ -36,280 +36,289 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
   const dispatch = useDispatch();
   const automaton = props.automaton;
 
-  function initChannelState( name: string, channel: ChannelWithGUI ): void {
-    dispatch( {
-      type: 'Automaton/CreateChannel',
-      channel: name
-    } );
-
-    dispatch( {
-      type: 'Automaton/UpdateChannelValue',
-      channel: name,
-      value: channel.currentValue
-    } );
-
-    dispatch( {
-      type: 'Automaton/UpdateChannelStatus',
-      channel: name,
-      status: channel.status
-    } );
-
-    channel.items.forEach( ( item ) => {
+  const initChannelState = useCallback(
+    ( name: string, channel: ChannelWithGUI ) => {
       dispatch( {
-        type: 'Automaton/UpdateChannelItem',
-        channel: name,
-        id: item.$id,
-        item: item.serializeGUI()
+        type: 'Automaton/CreateChannel',
+        channel: name
       } );
-    } );
 
-    dispatch( {
-      type: 'Automaton/UpdateChannelLength',
-      channel: name,
-      length: channel.length
-    } );
-
-    channel.on( 'changeValue', ( { value } ) => {
       dispatch( {
         type: 'Automaton/UpdateChannelValue',
         channel: name,
-        value
+        value: channel.currentValue
       } );
-    } );
 
-    channel.on( 'updateStatus', () => {
       dispatch( {
         type: 'Automaton/UpdateChannelStatus',
         channel: name,
         status: channel.status
       } );
-    } );
 
-    channel.on( 'createItem', ( { id, item } ) => {
-      dispatch( {
-        type: 'Automaton/UpdateChannelItem',
-        channel: name,
-        id,
-        item
+      channel.items.forEach( ( item ) => {
+        dispatch( {
+          type: 'Automaton/UpdateChannelItem',
+          channel: name,
+          id: item.$id,
+          item: item.serializeGUI()
+        } );
       } );
-    } );
 
-    channel.on( 'updateItem', ( { id, item } ) => {
-      dispatch( {
-        type: 'Automaton/UpdateChannelItem',
-        channel: name,
-        id,
-        item
-      } );
-    } );
-
-    channel.on( 'removeItem', ( { id } ) => {
-      dispatch( {
-        type: 'Automaton/RemoveChannelItem',
-        channel: name,
-        id
-      } );
-    } );
-
-    channel.on( 'changeLength', ( { length } ) => {
       dispatch( {
         type: 'Automaton/UpdateChannelLength',
         channel: name,
-        length,
+        length: channel.length
       } );
-    } );
-  }
 
-  function initCurveState( curveId: string, curve: CurveWithGUI ): void {
-    dispatch( {
-      type: 'Automaton/CreateCurve',
-      curveId,
-      length: curve.length,
-      path: genCurvePath( curve )
-    } );
-
-    dispatch( {
-      type: 'Automaton/UpdateCurveStatus',
-      curveId,
-      status: curve.status
-    } );
-
-    curve.nodes.forEach( ( node ) => {
-      dispatch( {
-        type: 'Automaton/UpdateCurveNode',
-        curveId,
-        id: node.$id,
-        node
+      channel.on( 'changeValue', ( { value } ) => {
+        dispatch( {
+          type: 'Automaton/UpdateChannelValue',
+          channel: name,
+          value
+        } );
       } );
-    } );
 
-    curve.fxs.forEach( ( fx ) => {
-      dispatch( {
-        type: 'Automaton/UpdateCurveFx',
-        curveId,
-        id: fx.$id,
-        fx
+      channel.on( 'updateStatus', () => {
+        dispatch( {
+          type: 'Automaton/UpdateChannelStatus',
+          channel: name,
+          status: channel.status
+        } );
       } );
-    } );
 
-    curve.on( 'precalc', () => {
+      channel.on( 'createItem', ( { id, item } ) => {
+        dispatch( {
+          type: 'Automaton/UpdateChannelItem',
+          channel: name,
+          id,
+          item
+        } );
+      } );
+
+      channel.on( 'updateItem', ( { id, item } ) => {
+        dispatch( {
+          type: 'Automaton/UpdateChannelItem',
+          channel: name,
+          id,
+          item
+        } );
+      } );
+
+      channel.on( 'removeItem', ( { id } ) => {
+        dispatch( {
+          type: 'Automaton/RemoveChannelItem',
+          channel: name,
+          id
+        } );
+      } );
+
+      channel.on( 'changeLength', ( { length } ) => {
+        dispatch( {
+          type: 'Automaton/UpdateChannelLength',
+          channel: name,
+          length,
+        } );
+      } );
+    },
+    [ dispatch ]
+  );
+
+  const initCurveState = useCallback(
+    ( curveId: string, curve: CurveWithGUI ) => {
       dispatch( {
-        type: 'Automaton/UpdateCurvePath',
+        type: 'Automaton/CreateCurve',
         curveId,
+        length: curve.length,
         path: genCurvePath( curve )
       } );
-    } );
 
-    curve.on( 'previewTime', ( { time } ) => {
-      dispatch( {
-        type: 'Automaton/UpdateCurvePreviewTimeValue',
-        curveId,
-        time,
-        value: curve.getValue( time )
-      } );
-    } );
-
-    curve.on( 'updateStatus', () => {
       dispatch( {
         type: 'Automaton/UpdateCurveStatus',
         curveId,
         status: curve.status
       } );
-    } );
 
-    curve.on( 'createNode', ( { id, node } ) => {
-      dispatch( {
-        type: 'Automaton/UpdateCurveNode',
-        curveId,
-        id,
-        node
+      curve.nodes.forEach( ( node ) => {
+        dispatch( {
+          type: 'Automaton/UpdateCurveNode',
+          curveId,
+          id: node.$id,
+          node
+        } );
       } );
-    } );
 
-    curve.on( 'updateNode', ( { id, node } ) => {
-      dispatch( {
-        type: 'Automaton/UpdateCurveNode',
-        curveId,
-        id,
-        node
+      curve.fxs.forEach( ( fx ) => {
+        dispatch( {
+          type: 'Automaton/UpdateCurveFx',
+          curveId,
+          id: fx.$id,
+          fx
+        } );
       } );
-    } );
 
-    curve.on( 'removeNode', ( { id } ) => {
-      dispatch( {
-        type: 'Automaton/RemoveCurveNode',
-        curveId,
-        id
+      curve.on( 'precalc', () => {
+        dispatch( {
+          type: 'Automaton/UpdateCurvePath',
+          curveId,
+          path: genCurvePath( curve )
+        } );
       } );
-    } );
 
-    curve.on( 'createFx', ( { id, fx } ) => {
-      dispatch( {
-        type: 'Automaton/UpdateCurveFx',
-        curveId,
-        id,
-        fx
+      curve.on( 'previewTime', ( { time } ) => {
+        dispatch( {
+          type: 'Automaton/UpdateCurvePreviewTimeValue',
+          curveId,
+          time,
+          value: curve.getValue( time )
+        } );
       } );
-    } );
 
-    curve.on( 'updateFx', ( { id, fx } ) => {
-      dispatch( {
-        type: 'Automaton/UpdateCurveFx',
-        curveId,
-        id,
-        fx
+      curve.on( 'updateStatus', () => {
+        dispatch( {
+          type: 'Automaton/UpdateCurveStatus',
+          curveId,
+          status: curve.status
+        } );
       } );
-    } );
 
-    curve.on( 'removeFx', ( { id } ) => {
-      dispatch( {
-        type: 'Automaton/RemoveCurveFx',
-        curveId,
-        id
+      curve.on( 'createNode', ( { id, node } ) => {
+        dispatch( {
+          type: 'Automaton/UpdateCurveNode',
+          curveId,
+          id,
+          node
+        } );
       } );
-    } );
 
-    curve.on( 'changeLength', ( { length } ) => {
-      dispatch( {
-        type: 'Automaton/UpdateCurveLength',
-        curveId,
-        length,
+      curve.on( 'updateNode', ( { id, node } ) => {
+        dispatch( {
+          type: 'Automaton/UpdateCurveNode',
+          curveId,
+          id,
+          node
+        } );
       } );
-    } );
-  }
 
-  function initAutomaton(): void {
-    dispatch( {
-      type: 'History/Drop'
-    } );
-
-    dispatch( {
-      type: 'ContextMenu/Close'
-    } );
-
-    dispatch( {
-      type: 'Reset'
-    } );
-
-    dispatch( {
-      type: 'Automaton/UpdateTime',
-      time: automaton.time
-    } );
-
-    dispatch( {
-      type: 'Automaton/ChangeLength',
-      length: automaton.length
-    } );
-
-    dispatch( {
-      type: 'Automaton/ChangeResolution',
-      resolution: automaton.resolution
-    } );
-
-    dispatch( {
-      type: 'Automaton/UpdateIsPlaying',
-      isPlaying: automaton.isPlaying
-    } );
-
-    Object.entries( automaton.fxDefinitions ).forEach( ( [ name, fxDefinition ] ) => {
-      dispatch( {
-        type: 'Automaton/AddFxDefinition',
-        name,
-        fxDefinition
+      curve.on( 'removeNode', ( { id } ) => {
+        dispatch( {
+          type: 'Automaton/RemoveCurveNode',
+          curveId,
+          id
+        } );
       } );
-    } );
 
-    Object.values( automaton.curves ).forEach( ( curve ) => {
-      initCurveState( curve.$id, curve );
-    } );
-
-    Object.entries( automaton.channels ).forEach( ( [ name, channel ] ) => {
-      initChannelState( name, channel );
-    } );
-
-    Object.entries( automaton.labels ).forEach( ( [ name, time ] ) => {
-      dispatch( {
-        type: 'Automaton/SetLabel',
-        name,
-        time
+      curve.on( 'createFx', ( { id, fx } ) => {
+        dispatch( {
+          type: 'Automaton/UpdateCurveFx',
+          curveId,
+          id,
+          fx
+        } );
       } );
-    } );
 
-    dispatch( {
-      type: 'Automaton/SetLoopRegion',
-      loopRegion: automaton.loopRegion
-    } );
+      curve.on( 'updateFx', ( { id, fx } ) => {
+        dispatch( {
+          type: 'Automaton/UpdateCurveFx',
+          curveId,
+          id,
+          fx
+        } );
+      } );
 
-    dispatch( {
-      type: 'Automaton/SetShouldSave',
-      shouldSave: automaton.shouldSave
-    } );
+      curve.on( 'removeFx', ( { id } ) => {
+        dispatch( {
+          type: 'Automaton/RemoveCurveFx',
+          curveId,
+          id
+        } );
+      } );
 
-    dispatch( {
-      type: 'Automaton/UpdateGUISettings',
-      settings: automaton.guiSettings
-    } );
-  }
+      curve.on( 'changeLength', ( { length } ) => {
+        dispatch( {
+          type: 'Automaton/UpdateCurveLength',
+          curveId,
+          length,
+        } );
+      } );
+    },
+    [ dispatch ]
+  );
+
+  const initAutomaton = useCallback(
+    () => {
+      dispatch( {
+        type: 'History/Drop'
+      } );
+
+      dispatch( {
+        type: 'ContextMenu/Close'
+      } );
+
+      dispatch( {
+        type: 'Reset'
+      } );
+
+      dispatch( {
+        type: 'Automaton/UpdateTime',
+        time: automaton.time
+      } );
+
+      dispatch( {
+        type: 'Automaton/ChangeLength',
+        length: automaton.length
+      } );
+
+      dispatch( {
+        type: 'Automaton/ChangeResolution',
+        resolution: automaton.resolution
+      } );
+
+      dispatch( {
+        type: 'Automaton/UpdateIsPlaying',
+        isPlaying: automaton.isPlaying
+      } );
+
+      Object.entries( automaton.fxDefinitions ).forEach( ( [ name, fxDefinition ] ) => {
+        dispatch( {
+          type: 'Automaton/AddFxDefinition',
+          name,
+          fxDefinition
+        } );
+      } );
+
+      Object.values( automaton.curves ).forEach( ( curve ) => {
+        initCurveState( curve.$id, curve );
+      } );
+
+      Object.entries( automaton.channels ).forEach( ( [ name, channel ] ) => {
+        initChannelState( name, channel );
+      } );
+
+      Object.entries( automaton.labels ).forEach( ( [ name, time ] ) => {
+        dispatch( {
+          type: 'Automaton/SetLabel',
+          name,
+          time
+        } );
+      } );
+
+      dispatch( {
+        type: 'Automaton/SetLoopRegion',
+        loopRegion: automaton.loopRegion
+      } );
+
+      dispatch( {
+        type: 'Automaton/SetShouldSave',
+        shouldSave: automaton.shouldSave
+      } );
+
+      dispatch( {
+        type: 'Automaton/UpdateGUISettings',
+        settings: automaton.guiSettings
+      } );
+    },
+    [ automaton, dispatch, initChannelState, initCurveState ]
+  );
 
   useEffect(
     () => {
@@ -446,7 +455,7 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
         automaton.off( 'changeShouldSave', handleChangeShouldSave );
       };
     },
-    [ automaton ]
+    [ automaton, dispatch, initAutomaton, initChannelState, initCurveState ]
   );
 
   return (

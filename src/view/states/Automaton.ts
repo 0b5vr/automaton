@@ -1,17 +1,17 @@
-import { BezierNode, FxDefinition, FxSection } from '@fms-cat/automaton';
-import { GUISettings, defaultGUISettings } from '../../types/GUISettings';
 import { AutomatonWithGUI } from '../../AutomatonWithGUI';
+import { BezierNode, FxDefinition, FxSection } from '@fms-cat/automaton';
 import { ChannelStatusCode } from '../../ChannelWithGUI';
 import { Action as ContextAction } from './store';
 import { CurveStatusCode } from '../../CurveWithGUI';
+import { GUISettings, defaultGUISettings } from '../../types/GUISettings';
 import { Reducer } from 'redux';
-import type { StateChannelItem } from '../../types/StateChannelItem';
 import { Status } from '../../types/Status';
 import { WithBypass } from '../../types/WithBypass';
 import { WithID } from '../../types/WithID';
 import { arraySetDelete } from '../utils/arraySet';
 import { jsonCopy } from '../../utils/jsonCopy';
 import { produce } from 'immer';
+import type { StateChannelItem } from '../../types/StateChannelItem';
 
 // == state ========================================================================================
 export interface State {

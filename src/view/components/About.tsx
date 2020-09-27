@@ -1,8 +1,8 @@
-import { useDispatch, useSelector } from '../states/store';
 import { AboutLargeA } from './AboutLargeA';
 import { Anchor } from './Anchor';
 import { Colors } from '../constants/Colors';
 import { Icons } from '../icons/Icons';
+import { useDispatch, useSelector } from '../states/store';
 import React from 'react';
 import styled from 'styled-components';
 

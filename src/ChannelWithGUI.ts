@@ -1,13 +1,13 @@
-import { Channel, SerializedChannel, SerializedChannelItem } from '@fms-cat/automaton';
-import { StatusLevel, WithStatus } from './types/Status';
 import { AutomatonWithGUI } from './AutomatonWithGUI';
+import { Channel, SerializedChannel, SerializedChannelItem } from '@fms-cat/automaton';
 import { ChannelItemWithGUI } from './ChannelItemWithGUI';
 import { EventEmittable } from './mixins/EventEmittable';
 import { Serializable } from './types/Serializable';
-import type { StateChannelItem } from './types/StateChannelItem';
+import { StatusLevel, WithStatus } from './types/Status';
 import { applyMixins } from './utils/applyMixins';
 import { clamp } from './utils/clamp';
 import { genID } from './utils/genID';
+import type { StateChannelItem } from './types/StateChannelItem';
 
 const EPSILON = 1E-4;
 

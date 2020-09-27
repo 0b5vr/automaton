@@ -1,12 +1,12 @@
-import React, { useCallback, useMemo, useRef } from 'react';
-import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
 import { StatusIcon } from './StatusIcon';
 import { duplicateName } from '../utils/duplicateName';
 import { showToasty } from '../states/Toasty';
-import styled from 'styled-components';
+import { useDispatch, useSelector } from '../states/store';
 import { useRect } from '../utils/useRect';
 import { writeClipboard } from '../utils/clipboard';
+import React, { useCallback, useMemo, useRef } from 'react';
+import styled from 'styled-components';
 
 // == microcomponent ===============================================================================
 const Value = ( { className, name }: {
@@ -116,7 +116,7 @@ const ChannelListEntry = ( props: ChannelListEntryProps ): JSX.Element => {
         type: 'Timeline/UnselectItemsOfOtherChannels'
       } );
     },
-    [ isSelected ]
+    [ dispatch, isSelected, name ]
   );
 
   const editChannel = useCallback(
@@ -131,7 +131,7 @@ const ChannelListEntry = ( props: ChannelListEntryProps ): JSX.Element => {
         mode: 'channel'
       } );
     },
-    [ name ]
+    [ dispatch, name ]
   );
 
   const renameChannel = useCallback(
@@ -172,7 +172,7 @@ const ChannelListEntry = ( props: ChannelListEntryProps ): JSX.Element => {
         }
       } );
     },
-    [ automaton, name ]
+    [ automaton, name, dispatch ]
   );
 
   const duplicateChannel = useCallback(
@@ -196,7 +196,7 @@ const ChannelListEntry = ( props: ChannelListEntryProps ): JSX.Element => {
         ]
       } );
     },
-    [ automaton, name ]
+    [ automaton, name, dispatch ]
   );
 
   const removeChannel = useCallback(
@@ -219,7 +219,7 @@ const ChannelListEntry = ( props: ChannelListEntryProps ): JSX.Element => {
         ]
       } );
     },
-    [ automaton, name ]
+    [ automaton, name, dispatch ]
   );
 
   const copyName = useCallback(
@@ -233,7 +233,7 @@ const ChannelListEntry = ( props: ChannelListEntryProps ): JSX.Element => {
         timeout: 2.0
       } );
     },
-    [ name ]
+    [ name, dispatch ]
   );
 
   const handleContextMenu = useCallback(
@@ -275,7 +275,7 @@ const ChannelListEntry = ( props: ChannelListEntryProps ): JSX.Element => {
         ]
       } );
     },
-    [ editChannel, renameChannel, duplicateChannel, removeChannel, copyName ]
+    [ dispatch, editChannel, renameChannel, duplicateChannel, removeChannel, copyName ]
   );
 
   return (

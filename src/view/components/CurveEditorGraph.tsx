@@ -1,10 +1,10 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { TimeValueRange, v2y, x2t } from '../utils/TimeValueRange';
 import { Colors } from '../constants/Colors';
 import { CurveWithGUI } from '../../CurveWithGUI';
 import { Resolution } from '../utils/Resolution';
-import styled from 'styled-components';
+import { TimeValueRange, v2y, x2t } from '../utils/TimeValueRange';
 import { useSelector } from '../states/store';
+import React, { useEffect, useMemo, useState } from 'react';
+import styled from 'styled-components';
 
 // == styles =======================================================================================
 const GraphLineWithoutFxs = styled.polyline`

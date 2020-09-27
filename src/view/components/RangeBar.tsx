@@ -1,6 +1,6 @@
 import { Colors } from '../constants/Colors';
-import React from 'react';
 import { TimeRange } from '../utils/TimeValueRange';
+import React from 'react';
 import styled from 'styled-components';
 
 // == styles =======================================================================================

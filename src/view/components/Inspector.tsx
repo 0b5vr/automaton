@@ -1,4 +1,3 @@
-import { objectMapSize, objectMapValues } from '../utils/objectMap';
 import { Colors } from '../constants/Colors';
 import { Icons } from '../icons/Icons';
 import { InspectorChannelItem } from './InspectorChannelItem';
@@ -8,10 +7,11 @@ import { InspectorGeneral } from './InspectorGeneral';
 import { InspectorLabel } from './InspectorLabel';
 import { InspectorSnapping } from './InspectorSnapping';
 import { Metrics } from '../constants/Metrics';
-import React from 'react';
 import { Scrollable } from './Scrollable';
-import styled from 'styled-components';
+import { objectMapSize, objectMapValues } from '../utils/objectMap';
 import { useSelector } from '../states/store';
+import React from 'react';
+import styled from 'styled-components';
 
 // == styles =======================================================================================
 const Logo = styled.img`

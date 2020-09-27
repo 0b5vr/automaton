@@ -1,11 +1,11 @@
-import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
-import { dx2dt, snapTime, x2t } from '../utils/TimeValueRange';
-import { useDispatch, useSelector } from '../states/store';
 import { DopeSheetEntry } from './DopeSheetEntry';
+import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
+import { dx2dt, snapTime, x2t } from '../utils/TimeValueRange';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
-import styled from 'styled-components';
+import { useDispatch, useSelector } from '../states/store';
 import { useRect } from '../utils/useRect';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import styled from 'styled-components';
 
 // == styles =======================================================================================
 const StyledDopeSheetEntry = styled( DopeSheetEntry )`
@@ -51,7 +51,7 @@ const DopeSheet = ( { className }: DopeSheetProps ): JSX.Element => {
         dy: 0.0,
       } );
     },
-    [ rect ]
+    [ dispatch, rect ]
   );
 
   const zoom = useCallback(
@@ -65,7 +65,7 @@ const DopeSheet = ( { className }: DopeSheetProps ): JSX.Element => {
         dy: 0.0,
       } );
     },
-    [ rect ]
+    [ dispatch, rect ]
   );
 
   const startSeek = useCallback(
@@ -184,7 +184,7 @@ const DopeSheet = ( { className }: DopeSheetProps ): JSX.Element => {
         }
       } );
     },
-    [ automaton, range, rect ]
+    [ automaton, range, rect, dispatch ]
   );
 
   const handleContextMenu = useCallback(
@@ -206,7 +206,7 @@ const DopeSheet = ( { className }: DopeSheetProps ): JSX.Element => {
         ]
       } );
     },
-    [ createLabel ]
+    [ dispatch, createLabel ]
   );
 
   const handleWheel = useCallback(
