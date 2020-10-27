@@ -8,6 +8,7 @@ export function useID( deps?: DependencyList ): number {
       globalId ++;
       return globalId;
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     deps ?? []
   );
 }
