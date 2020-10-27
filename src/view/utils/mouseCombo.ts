@@ -26,8 +26,9 @@ export function mouseCombo(
   sortedCallbacks.sort( ( [ aBits ], [ bBits ] ) => parseInt( bBits ) - parseInt( aBits ) );
 
   // search and execute
-  for ( const [ cbBits, cb ] of sortedCallbacks ) {
-    if ( ( parseInt( cbBits ) & bits ) !== 0 ) {
+  for ( const [ cbBitsStr, cb ] of sortedCallbacks ) {
+    const cbBits = parseInt( cbBitsStr );
+    if ( ( cbBits & bits ) === cbBits ) {
       event.preventDefault();
       event.stopPropagation();
 
