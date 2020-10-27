@@ -98,6 +98,7 @@ module.exports = {
 
         // typescript-specifics
         "@typescript-eslint/no-explicit-any": [ "off" ], // yea
+        "@typescript-eslint/explicit-module-boundary-types": [ "off" ], // We are using explicit any on purpose because it's explicit, be permissive
         "@typescript-eslint/no-inferrable-types": [ "off" ], // it's ok
         "@typescript-eslint/no-non-null-assertion": [ "off" ], // bang is sometimes required
         "@typescript-eslint/no-empty-interface": [ "off" ], // we need to perform mixins
