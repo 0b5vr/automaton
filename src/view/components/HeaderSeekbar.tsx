@@ -89,7 +89,7 @@ const HeaderSeekbar = ( { className }: HeaderSeekbarProps ): JSX.Element => {
   } ) );
 
   const handleMouseDown = useCallback(
-    mouseCombo( {
+    ( event ) => mouseCombo( event, {
       [ MouseComboBit.LMB ]: ( event ) => {
         if ( !automaton ) { return; }
 
@@ -112,7 +112,7 @@ const HeaderSeekbar = ( { className }: HeaderSeekbarProps ): JSX.Element => {
         );
       }
     } ),
-    [ automaton, isPlaying ]
+    [ automaton, dispatch, isPlaying, length ]
   );
 
   const handleMouseEnter = useCallback(

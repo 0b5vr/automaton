@@ -181,7 +181,7 @@ const Label = ( { name, time, range, size }: {
   );
 
   const handleMouseDown = useCallback(
-    mouseCombo( {
+    ( event ) => mouseCombo( event, {
       [ MouseComboBit.LMB ]: () => {
         if ( checkDoubleClick() ) {
           deleteLabel();
@@ -190,7 +190,7 @@ const Label = ( { name, time, range, size }: {
         }
       }
     } ),
-    [ grabLabel ]
+    [ checkDoubleClick, deleteLabel, grabLabel ]
   );
 
   const handleContextMenu = useCallback(

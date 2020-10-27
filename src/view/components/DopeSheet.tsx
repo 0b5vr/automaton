@@ -136,7 +136,7 @@ const DopeSheet = ( { className }: DopeSheetProps ): JSX.Element => {
   );
 
   const handleMouseDown = useCallback(
-    mouseCombo( {
+    ( event ) => mouseCombo( event, {
       [ MouseComboBit.LMB + MouseComboBit.Alt ]: ( event ) => {
         startSeek( event.clientX );
       },

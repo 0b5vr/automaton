@@ -468,7 +468,7 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
   );
 
   const handleMouseDown = useCallback(
-    mouseCombo( {
+    ( event ) => mouseCombo( event, {
       [ MouseComboBit.LMB ]: ( event ) => {
         createItemAndGrab(
           event.clientX,

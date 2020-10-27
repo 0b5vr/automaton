@@ -180,7 +180,7 @@ const CurveEditorFx = ( props: {
   );
 
   const handleFxBodyClick = useCallback(
-    mouseCombo( {
+    ( event ) => mouseCombo( event, {
       [ MouseComboBit.LMB ]: () => {
         if ( checkDoubleClick() ) {
           removeFx();
@@ -194,7 +194,7 @@ const CurveEditorFx = ( props: {
         }
       }
     } ),
-    [ removeFx, grabFxBody ]
+    [ checkDoubleClick, removeFx, dispatch, fx.$id, grabFxBody ]
   );
 
   const grabFxSide = useCallback(
@@ -269,7 +269,7 @@ const CurveEditorFx = ( props: {
   );
 
   const handleFxLeftClick = useCallback(
-    mouseCombo( {
+    ( event ) => mouseCombo( event, {
       [ MouseComboBit.LMB ]: () => {
         grabFxSide( 'left' );
       }
@@ -278,7 +278,7 @@ const CurveEditorFx = ( props: {
   );
 
   const handleFxRightClick = useCallback(
-    mouseCombo( {
+    ( event ) => mouseCombo( event, {
       [ MouseComboBit.LMB ]: () => {
         grabFxSide( 'right' );
       }

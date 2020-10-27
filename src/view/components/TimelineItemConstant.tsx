@@ -283,7 +283,7 @@ const TimelineItemConstant = ( props: TimelineItemConstantProps ): JSX.Element =
   );
 
   const handleClickBody = useCallback(
-    mouseCombo( {
+    ( event ) => mouseCombo( event, {
       [ MouseComboBit.LMB ]: () => {
         if ( checkDoubleClick() ) {
           removeItem();
@@ -334,11 +334,11 @@ const TimelineItemConstant = ( props: TimelineItemConstantProps ): JSX.Element =
         } );
       }
     } ),
-    [ removeItem, grabBody, channel, channelName ]
+    [ checkDoubleClick, removeItem, dispatch, item.$id, channelName, grabBody, channel ]
   );
 
   const handleClickLeft = useCallback(
-    mouseCombo( {
+    ( event ) => mouseCombo( event, {
       [ MouseComboBit.LMB ]: () => {
         grabLeft();
       }
@@ -347,7 +347,7 @@ const TimelineItemConstant = ( props: TimelineItemConstantProps ): JSX.Element =
   );
 
   const handleClickRight = useCallback(
-    mouseCombo( {
+    ( event ) => mouseCombo( event, {
       [ MouseComboBit.LMB ]: () => {
         grabRight();
       }

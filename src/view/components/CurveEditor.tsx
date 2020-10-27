@@ -239,7 +239,7 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
   );
 
   const handleMouseDown = useCallback(
-    mouseCombo( {
+    ( event ) => mouseCombo( event, {
       [ MouseComboBit.LMB ]: ( event ) => {
         if ( checkDoubleClick() ) {
           createNodeAndGrab( event.clientX - rect.left, event.clientY - rect.top );
@@ -251,7 +251,7 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
         );
       }
     } ),
-    [ createNodeAndGrab, rect, move ]
+    [ checkDoubleClick, createNodeAndGrab, rect.left, rect.top, move ]
   );
 
   const createNode = useCallback(

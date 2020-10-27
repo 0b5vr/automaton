@@ -413,7 +413,7 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
   );
 
   const handleClickBody = useCallback(
-    mouseCombo( {
+    ( event ) => mouseCombo( event, {
       [ MouseComboBit.LMB ]: () => {
         if ( checkDoubleClick() ) {
           removeItem();
@@ -464,11 +464,11 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
         } );
       }
     } ),
-    [ removeItem, grabBody, channel, channelName ]
+    [ checkDoubleClick, removeItem, dispatch, item.$id, channelName, grabBody, channel ]
   );
 
   const handleClickLeft = useCallback(
-    mouseCombo( {
+    ( event ) => mouseCombo( event, {
       [ MouseComboBit.LMB ]: () => {
         grabLeft( false );
       },
@@ -480,7 +480,7 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
   );
 
   const handleClickRight = useCallback(
-    mouseCombo( {
+    ( event ) => mouseCombo( event, {
       [ MouseComboBit.LMB ]: () => {
         grabRight( false );
       },
@@ -492,21 +492,21 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
   );
 
   const handleClickTop = useCallback(
-    mouseCombo( {
+    ( event ) => mouseCombo( event, {
       [ MouseComboBit.LMB ]: () => {
         isFlipped ? grabBottom() : grabTop();
       }
     } ),
-    [ grabTop, grabBottom ]
+    [ isFlipped, grabBottom, grabTop ]
   );
 
   const handleClickBottom = useCallback(
-    mouseCombo( {
+    ( event ) => mouseCombo( event, {
       [ MouseComboBit.LMB ]: () => {
         isFlipped ? grabTop() : grabBottom();
       }
     } ),
-    [ grabTop, grabBottom ]
+    [ isFlipped, grabTop, grabBottom ]
   );
 
   const editCurve = useCallback(

@@ -184,7 +184,7 @@ const NumberParam = ( props: NumberParamProps ): JSX.Element => {
   );
 
   const handleClick = useCallback(
-    mouseCombo( {
+    ( event ) => mouseCombo( event, {
       [ MouseComboBit.LMB ]: () => {
         if ( checkDoubleClick() ) {
           openInput();
@@ -194,7 +194,7 @@ const NumberParam = ( props: NumberParamProps ): JSX.Element => {
       }
       // TODO: LMB + Shift to reset the value. probably adding `resetValue` to props
     } ),
-    [ openInput, grabValue ]
+    [ checkDoubleClick, openInput, grabValue ]
   );
 
   const handleChange = ( event: React.ChangeEvent<HTMLInputElement> ): void => { // TODO: useCallback

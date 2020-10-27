@@ -109,7 +109,7 @@ const BoolParam = ( props: BoolParamProps ): JSX.Element => {
   );
 
   const handleClick = useCallback(
-    mouseCombo( {
+    ( event ) => mouseCombo( event, {
       [ MouseComboBit.LMB ]: () => {
         if ( checkDoubleClick() ) {
           setIsInput( true );
@@ -119,11 +119,11 @@ const BoolParam = ( props: BoolParamProps ): JSX.Element => {
         }
       }
     } ),
-    [ value ]
+    [ checkDoubleClick, value ]
   );
 
   const handleClickBox = useCallback(
-    mouseCombo( {
+    ( event ) => mouseCombo( event, {
       [ MouseComboBit.LMB ]: () => {
         trySettle( !value, value );
       }

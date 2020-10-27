@@ -144,7 +144,7 @@ const CurveEditorNode = ( props: {
   );
 
   const handleNodeClick = useCallback(
-    mouseCombo( {
+    ( event ) => mouseCombo( event, {
       [ MouseComboBit.LMB ]: () => {
         if ( checkDoubleClick() ) {
           removeNode();
@@ -158,7 +158,7 @@ const CurveEditorNode = ( props: {
         }
       }
     } ),
-    [ removeNode, grabNode ]
+    [ checkDoubleClick, removeNode, dispatch, node.$id, grabNode ]
   );
 
   const grabHandle = useCallback(
@@ -301,7 +301,7 @@ const CurveEditorNode = ( props: {
   );
 
   const handleHandleInClick = useCallback(
-    mouseCombo( {
+    ( event ) => mouseCombo( event, {
       [ MouseComboBit.LMB ]: () => {
         if ( checkDoubleClick() ) {
           removeHandle( 'in' );
@@ -310,11 +310,11 @@ const CurveEditorNode = ( props: {
         }
       }
     } ),
-    [ removeHandle, grabHandle ]
+    [ checkDoubleClick, removeHandle, grabHandle ]
   );
 
   const handleHandleOutClick = useCallback(
-    mouseCombo( {
+    ( event ) => mouseCombo( event, {
       [ MouseComboBit.LMB ]: () => {
         if ( checkDoubleClick() ) {
           removeHandle( 'out' );
@@ -323,7 +323,7 @@ const CurveEditorNode = ( props: {
         }
       }
     } ),
-    [ removeHandle, grabHandle ]
+    [ checkDoubleClick, removeHandle, grabHandle ]
   );
 
   return (
