@@ -6,6 +6,7 @@ import { arraySetHas } from '../utils/arraySet';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
 import { useDispatch, useSelector } from '../states/store';
 import { useDoubleClick } from '../utils/useDoubleClick';
+import { useRect } from '../utils/useRect';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 
@@ -49,15 +50,13 @@ const Label = ( { name, time, range, size }: {
   const [ width, setWidth ] = useState( 0.0 );
   const x = t2x( time, range, size.width );
   const refText = useRef<SVGTextElement>( null );
+  const rectText = useRect( refText );
 
   useEffect(
     () => {
-      const text = refText.current;
-      if ( text ) {
-        setWidth( text.getBBox().width );
-      }
+      setWidth( rectText.width );
     },
-    [ refText.current ]
+    [ rectText.width ]
   );
 
   const isSelected = useMemo(
