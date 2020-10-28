@@ -1,9 +1,9 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
 import { FxSpawnerEntry } from './FxSpawnerEntry';
 import { Scrollable } from './Scrollable';
 import { combineArraysUnique } from '../utils/combineArraysUnique';
+import { useDispatch, useSelector } from '../states/store';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
@@ -53,7 +53,7 @@ export interface FxSpawnerProps {
   className?: string;
 }
 
-const FxSpawner = ( { className }: FxSpawnerProps ): JSX.Element => {
+const FxSpawner = ( { className }: FxSpawnerProps ): JSX.Element | null => {
   const dispatch = useDispatch();
   const [ query, setQuery ] = useState<string>( '' );
   const [ focus, setFocus ] = useState<number>( 0 );
@@ -86,7 +86,7 @@ const FxSpawner = ( { className }: FxSpawnerProps ): JSX.Element => {
       automaton?.getFxDefinitionName( fx )?.toLowerCase().includes( query.toLowerCase() ) ||
       automaton?.getFxDefinitionDescription( fx )?.toLowerCase().includes( query.toLowerCase() )
     ) ) );
-  }, [ fxs, query ] );
+  }, [ fxs, query, automaton ] );
 
   function selectFx( name: string ): void {
     callback!( name );
@@ -131,43 +131,41 @@ const FxSpawner = ( { className }: FxSpawnerProps ): JSX.Element => {
     }
   }
 
-  return <>
-    { automaton && (
-      <Root className={ className }>
-        <OverlayBG
-          onClick={ () => dispatch( { type: 'FxSpawner/Close' } ) }
+  return ( automaton && (
+    <Root className={ className }>
+      <OverlayBG
+        onClick={ () => dispatch( { type: 'FxSpawner/Close' } ) }
+      />
+      <Container>
+        <Input
+          ref={ refInput }
+          value={ query }
+          placeholder="Add an fx..."
+          onChange={ handleChange }
+          onKeyDown={ handleKeyDown }
         />
-        <Container>
-          <Input
-            ref={ refInput }
-            value={ query }
-            placeholder="Add an fx..."
-            onChange={ handleChange }
-            onKeyDown={ handleKeyDown }
-          />
-          <FxList>
-            { filteredFxs!.map( ( fx, i ) => (
-              <FxSpawnerEntry
-                key={ fx }
-                name={ automaton.getFxDefinitionName( fx ) || undefined }
-                id={ fx }
-                description={ automaton.getFxDefinitionDescription( fx ) || undefined }
-                isSelected={ focus === i }
-                onClick={ () => selectFx( fx ) }
-              />
-            ) ) }
-            { filteredFxs.length === 0 && (
-              <FxSpawnerEntry
-                name="No result found"
-                id=":("
-                description="Try another word!"
-              />
-            ) }
-          </FxList>
-        </Container>
-      </Root>
-    ) }
-  </>;
+        <FxList>
+          { filteredFxs!.map( ( fx, i ) => (
+            <FxSpawnerEntry
+              key={ fx }
+              name={ automaton.getFxDefinitionName( fx ) || undefined }
+              id={ fx }
+              description={ automaton.getFxDefinitionDescription( fx ) || undefined }
+              isSelected={ focus === i }
+              onClick={ () => selectFx( fx ) }
+            />
+          ) ) }
+          { filteredFxs.length === 0 && (
+            <FxSpawnerEntry
+              name="No result found"
+              id=":("
+              description="Try another word!"
+            />
+          ) }
+        </FxList>
+      </Container>
+    </Root>
+  ) ) ?? null;
 };
 
 export { FxSpawner };

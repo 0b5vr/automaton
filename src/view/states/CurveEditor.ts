@@ -1,8 +1,8 @@
-import { TimeValueRange, x2t, y2v } from '../utils/TimeValueRange';
-import { arraySetDiff, arraySetUnion } from '../utils/arraySet';
 import { Action as ContextAction } from './store';
 import { Reducer } from 'redux';
 import { Resolution } from '../utils/Resolution';
+import { TimeValueRange, x2t, y2v } from '../utils/TimeValueRange';
+import { arraySetDiff, arraySetUnion } from '../utils/arraySet';
 import { produce } from 'immer';
 
 // == state ========================================================================================

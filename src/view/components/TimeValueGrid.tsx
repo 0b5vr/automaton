@@ -1,11 +1,11 @@
-import React, { useMemo } from 'react';
-import { TimeValueRange, t2x, v2y } from '../utils/TimeValueRange';
 import { Colors } from '../constants/Colors';
 import { Resolution } from '../utils/Resolution';
+import { TimeValueRange, t2x, v2y } from '../utils/TimeValueRange';
 import { clamp } from '../../utils/clamp';
 import { genGrid } from '../utils/genGrid';
-import styled from 'styled-components';
 import { useSelector } from '../states/store';
+import React, { useMemo } from 'react';
+import styled from 'styled-components';
 
 // == helpers ======================================================================================
 function closeTo( a: number, b: number ): boolean {
@@ -120,7 +120,7 @@ const TimeValueGrid = ( props: TimeValueGridProps ): JSX.Element => {
           </g>
         ) )
       ),
-      [ vlines, size ]
+      [ hideValue, vlines, size ]
     ) }
 
     { useMemo(

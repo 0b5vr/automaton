@@ -1,13 +1,14 @@
-import { useMemo } from 'react';
+import { DependencyList, useMemo } from 'react';
 
 let globalId = 0;
 
-export function useID( deps?: any[] ): number {
+export function useID( deps?: DependencyList ): number {
   return useMemo(
     () => {
       globalId ++;
       return globalId;
     },
-    deps || []
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    deps ?? []
   );
 }

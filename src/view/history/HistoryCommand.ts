@@ -1,8 +1,8 @@
-import { BezierNode, FxSection, SerializedChannel, SerializedCurve } from '@fms-cat/automaton';
 import { AutomatonWithGUI } from '../../AutomatonWithGUI';
-import type { StateChannelItem } from '../../types/StateChannelItem';
+import { BezierNode, FxSection, SerializedChannel, SerializedCurve } from '@fms-cat/automaton';
 import { WithBypass } from '../../types/WithBypass';
 import { WithID } from '../../types/WithID';
+import type { StateChannelItem } from '../../types/StateChannelItem';
 
 // == commands =====================================================================================
 export type HistoryCommand = {

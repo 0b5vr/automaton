@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
 import { InspectorHeader } from './InspectorHeader';
 import { InspectorHr } from './InspectorHr';
 import { InspectorItem } from './InspectorItem';
 import { NumberParam } from './NumberParam';
+import { useDispatch, useSelector } from '../states/store';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
@@ -31,7 +31,7 @@ export interface InspectorGeneralProps {
   className?: string;
 }
 
-const InspectorGeneral = (): JSX.Element => {
+const InspectorGeneral = (): JSX.Element | null => {
   const dispatch = useDispatch();
   const {
     automaton,
@@ -57,67 +57,65 @@ const InspectorGeneral = (): JSX.Element => {
     [ automaton, settingsMode, initResolution ]
   );
 
-  return <>
-    { automaton && <>
-      <InspectorHeader text="General Config" />
+  return ( automaton && <>
+    <InspectorHeader text="General Config" />
 
-      <InspectorHr />
+    <InspectorHr />
 
-      <InspectorItem
-        name="Min Prec Time"
-        description="Specify precision of time axis for minimized serialization."
-      >
-        <NumberParam
-          type="int"
-          value={ minimizedPrecisionTime }
-          onChange={ ( value ) => {
-            automaton.setGUISettings( 'minimizedPrecisionTime', Math.max( 0, value ) );
-          } }
-        />
-      </InspectorItem>
-
-      <InspectorItem
-        name="Min Prec Value"
-        description="Specify precision of value axis for minimized serialization."
-      >
-        <NumberParam
-          type="int"
-          value={ minimizedPrecisionValue }
-          onChange={ ( value ) => {
-            automaton.setGUISettings( 'minimizedPrecisionValue', Math.max( 0, value ) );
-          } }
-        />
-      </InspectorItem>
-
-      <InspectorHr />
-
-      <InspectorItem
-        name="Resolution"
-        description="Specify samples per second of curves."
-      >
-        <NumberParam
-          type="int"
-          value={ resolution }
-          onChange={ ( value ) => {
-            setResolution( Math.max( 0, value ) );
-          } }
-        />
-      </InspectorItem>
-
-      <ConfirmButton
-        data-stalker="Apply the change of resolution."
-        onClick={ () => {
-          automaton.setResolution( resolution );
-
-          dispatch( {
-            type: 'History/Drop'
-          } );
+    <InspectorItem
+      name="Min Prec Time"
+      description="Specify precision of time axis for minimized serialization."
+    >
+      <NumberParam
+        type="int"
+        value={ minimizedPrecisionTime }
+        onChange={ ( value ) => {
+          automaton.setGUISettings( 'minimizedPrecisionTime', Math.max( 0, value ) );
         } }
-      >
-        Apply
-      </ConfirmButton>
-    </> }
-  </>;
+      />
+    </InspectorItem>
+
+    <InspectorItem
+      name="Min Prec Value"
+      description="Specify precision of value axis for minimized serialization."
+    >
+      <NumberParam
+        type="int"
+        value={ minimizedPrecisionValue }
+        onChange={ ( value ) => {
+          automaton.setGUISettings( 'minimizedPrecisionValue', Math.max( 0, value ) );
+        } }
+      />
+    </InspectorItem>
+
+    <InspectorHr />
+
+    <InspectorItem
+      name="Resolution"
+      description="Specify samples per second of curves."
+    >
+      <NumberParam
+        type="int"
+        value={ resolution }
+        onChange={ ( value ) => {
+          setResolution( Math.max( 0, value ) );
+        } }
+      />
+    </InspectorItem>
+
+    <ConfirmButton
+      data-stalker="Apply the change of resolution."
+      onClick={ () => {
+        automaton.setResolution( resolution );
+
+        dispatch( {
+          type: 'History/Drop'
+        } );
+      } }
+    >
+      Apply
+    </ConfirmButton>
+  </> ) ?? null;
 };
 
 export { InspectorGeneral };

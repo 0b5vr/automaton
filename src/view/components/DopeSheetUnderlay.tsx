@@ -1,9 +1,9 @@
-import React, { useRef } from 'react';
 import { Colors } from '../constants/Colors';
 import { TimeValueGrid } from './TimeValueGrid';
-import styled from 'styled-components';
 import { useRect } from '../utils/useRect';
 import { useSelector } from '../states/store';
+import React, { useRef } from 'react';
+import styled from 'styled-components';
 
 // == styles =======================================================================================
 const SVGRoot = styled.svg`

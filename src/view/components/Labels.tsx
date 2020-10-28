@@ -1,8 +1,8 @@
 import { Label } from './Label';
-import React from 'react';
 import { Resolution } from '../utils/Resolution';
 import { TimeValueRange } from '../utils/TimeValueRange';
 import { useSelector } from '../states/store';
+import React from 'react';
 
 const Labels = ( { range, size }: {
   range: TimeValueRange;

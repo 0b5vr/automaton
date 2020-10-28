@@ -1,5 +1,5 @@
-import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from '../states/store';
+import React, { useCallback } from 'react';
 
 import { Colors } from '../constants/Colors';
 import { CurveListEntry } from './CurveListEntry';
@@ -75,7 +75,7 @@ const CurveList = ( { className }: CurveListProps ): JSX.Element => {
         ],
       } );
     },
-    [ automaton ]
+    [ automaton, dispatch ]
   );
 
   return (

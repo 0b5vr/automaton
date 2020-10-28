@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useState } from 'react';
 import { Colors } from '../constants/Colors';
+import React, { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
@@ -18,7 +18,7 @@ export interface StalkerProps {
   className?: string;
 }
 
-const Stalker = ( { className }: StalkerProps ): JSX.Element => {
+const Stalker = ( { className }: StalkerProps ): JSX.Element | null => {
   const [ position, setPosition ] = useState( { x: 0, y: 0 } );
   const [ target, setTarget ] = useState<EventTarget | null>( null );
   const [ text, setText ] = useState<string | null>( null );
@@ -84,13 +84,11 @@ const Stalker = ( { className }: StalkerProps ): JSX.Element => {
     [ position ]
   );
 
-  return <>
-    { text && (
-      <Root className={ className } style={ style }>
-        { text }
-      </Root>
-    ) }
-  </>;
+  return ( text && (
+    <Root className={ className } style={ style }>
+      { text }
+    </Root>
+  ) ) || null;
 };
 
 export { Stalker };

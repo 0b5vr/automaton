@@ -1,10 +1,10 @@
-import { TimeValueRange, dt2dx, t2x } from '../utils/TimeValueRange';
 import { Colors } from '../constants/Colors';
 import { FxSection } from '@fms-cat/automaton';
-import React from 'react';
 import { Resolution } from '../utils/Resolution';
+import { TimeValueRange, dt2dx, t2x } from '../utils/TimeValueRange';
 import { WithBypass } from '../../types/WithBypass';
 import { WithID } from '../../types/WithID';
+import React from 'react';
 import styled from 'styled-components';
 
 // == styles =======================================================================================

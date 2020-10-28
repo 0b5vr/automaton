@@ -1,7 +1,7 @@
-import React, { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { Colors } from '../constants/Colors';
-import styled from 'styled-components';
 import { useAnimationFrame } from '../utils/useAnimationFrame';
+import React, { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
+import styled from 'styled-components';
 
 // == microcomponent ===============================================================================
 const Bar = ( { className, style, top }: {

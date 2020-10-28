@@ -1,9 +1,9 @@
-import React, { useCallback } from 'react';
-import styled, { css, keyframes } from 'styled-components';
 import { Colors } from '../constants/Colors';
 import { Icons } from '../icons/Icons';
 import { closeToasty } from '../states/Toasty';
 import { useDispatch } from '../states/store';
+import React, { useCallback } from 'react';
+import styled, { css, keyframes } from 'styled-components';
 
 // == styles =======================================================================================
 const Content = styled.div`
@@ -88,7 +88,7 @@ const ToastyEntry = ( { id, kind, message, closing }: {
 
   const handleClick = useCallback(
     () => closeToasty( { id, dispatch } ),
-    [ id ]
+    [ id, dispatch ]
   );
 
   return (

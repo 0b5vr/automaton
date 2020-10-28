@@ -1,5 +1,5 @@
-import { Dispatch, Reducer } from 'redux';
 import { Action as ContextAction } from './store';
+import { Dispatch, Reducer } from 'redux';
 import { WithID } from '../../types/WithID';
 import { genID } from '../../utils/genID';
 import { objectMapHas } from '../utils/objectMap';

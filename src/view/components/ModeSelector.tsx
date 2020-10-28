@@ -1,8 +1,8 @@
-import React, { useCallback } from 'react';
-import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
 import { Icons } from '../icons/Icons';
 import { Metrics } from '../constants/Metrics';
+import { useDispatch, useSelector } from '../states/store';
+import React, { useCallback } from 'react';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
@@ -43,7 +43,7 @@ const ModeSelector = ( props: {
         mode: 'dope'
       } );
     },
-    []
+    [ dispatch ]
   );
 
   const handleClickChannel = useCallback(
@@ -58,7 +58,7 @@ const ModeSelector = ( props: {
         mode: 'channel'
       } );
     },
-    []
+    [ dispatch ]
   );
 
   const handleClickCurve = useCallback(
@@ -68,7 +68,7 @@ const ModeSelector = ( props: {
         mode: 'curve'
       } );
     },
-    []
+    [ dispatch ]
   );
 
   return <Root className={ className }>

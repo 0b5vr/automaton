@@ -1,5 +1,5 @@
-import { Status, StatusLevel } from '../../types/Status';
 import { Icons } from '../icons/Icons';
+import { Status, StatusLevel } from '../../types/Status';
 import React from 'react';
 import styled from 'styled-components';
 

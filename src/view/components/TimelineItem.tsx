@@ -1,9 +1,9 @@
-import React from 'react';
 import { Resolution } from '../utils/Resolution';
-import type { StateChannelItem } from '../../types/StateChannelItem';
 import { TimeValueRange } from '../utils/TimeValueRange';
 import { TimelineItemConstant } from './TimelineItemConstant';
 import { TimelineItemCurve } from './TimelineItemCurve';
+import React from 'react';
+import type { StateChannelItem } from '../../types/StateChannelItem';
 
 // == props ========================================================================================
 export interface TimelineItemProps {

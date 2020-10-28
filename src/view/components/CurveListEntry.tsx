@@ -1,8 +1,8 @@
-import React, { useCallback } from 'react';
-import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
 import { StatusIcon } from './StatusIcon';
 import { showToasty } from '../states/Toasty';
+import { useDispatch, useSelector } from '../states/store';
+import React, { useCallback } from 'react';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
@@ -58,7 +58,7 @@ const CurveListEntry = ( props: CurveListEntryProps ): JSX.Element => {
         } );
       }
     },
-    [ selectedCurve ]
+    [ selectedCurve, curveId, dispatch ]
   );
 
   const editCurve = useCallback(
@@ -73,7 +73,7 @@ const CurveListEntry = ( props: CurveListEntryProps ): JSX.Element => {
         mode: 'curve'
       } );
     },
-    [ curveId ]
+    [ curveId, dispatch ]
   );
 
   const duplicateCurve = useCallback(
@@ -100,7 +100,7 @@ const CurveListEntry = ( props: CurveListEntryProps ): JSX.Element => {
         ]
       } );
     },
-    [ automaton, curveId ]
+    [ automaton, curveId, dispatch ]
   );
 
   const removeCurve = useCallback(
@@ -134,7 +134,7 @@ const CurveListEntry = ( props: CurveListEntryProps ): JSX.Element => {
         ]
       } );
     },
-    [ automaton, curveId ]
+    [ automaton, curveId, dispatch ]
   );
 
   const handleContextMenu = useCallback(
@@ -166,7 +166,7 @@ const CurveListEntry = ( props: CurveListEntryProps ): JSX.Element => {
         ]
       } );
     },
-    [ editCurve, duplicateCurve, removeCurve ]
+    [ dispatch, editCurve, duplicateCurve, removeCurve ]
   );
 
   return (

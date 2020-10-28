@@ -1,18 +1,14 @@
-import { Automaton, ChannelUpdateEvent, FxDefinition, FxParam, SerializedAutomaton, SerializedChannel, SerializedCurve } from '@fms-cat/automaton';
-import { GUISettings, defaultGUISettings } from './types/GUISettings';
-import { SerializedAutomatonWithGUI, defaultDataWithGUI } from './types/SerializedAutomatonWithGUI';
 import { App } from './view/components/App';
-import type { AutomatonOptions } from '@fms-cat/automaton/types/types/AutomatonOptions'; // 🔥🔥🔥🔥🔥🔥
+import { Automaton, ChannelUpdateEvent, FxDefinition, FxParam, SerializedAutomaton, SerializedChannel, SerializedCurve } from '@fms-cat/automaton';
 import { ChannelWithGUI } from './ChannelWithGUI';
 import { ContextMenuCommand } from './view/states/ContextMenu';
-import { CurveWithGUI } from './CurveWithGUI';
+import { CurveWithGUI } from './CurveWithGUI'; // 🔥🔥🔥🔥🔥🔥
 import { EventEmittable } from './mixins/EventEmittable';
 import { GUIRemocon } from './GUIRemocon';
+import { GUISettings, defaultGUISettings } from './types/GUISettings';
 import { MinimizeOptions } from './types/MinimizeOptions';
-import React from 'react';
-import ReactDOM from 'react-dom';
 import { Serializable } from './types/Serializable';
-import type { ToastyParams } from './types/ToastyParams';
+import { SerializedAutomatonWithGUI, defaultDataWithGUI } from './types/SerializedAutomatonWithGUI';
 import { WithID } from './types/WithID';
 import { applyMixins } from './utils/applyMixins';
 import { compat } from './compat/compat';
@@ -20,7 +16,11 @@ import { createStore } from './view/states/store';
 import { jsonCopy } from './utils/jsonCopy';
 import { lofi } from './utils/lofi';
 import { minimizeData } from './minimizeData';
+import React from 'react';
+import ReactDOM from 'react-dom';
 import produce from 'immer';
+import type { AutomatonOptions } from '@fms-cat/automaton/types/types/AutomatonOptions';
+import type { ToastyParams } from './types/ToastyParams';
 
 /**
  * Interface for options of {@link AutomatonWithGUI}.

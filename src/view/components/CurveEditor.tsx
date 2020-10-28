@@ -1,21 +1,21 @@
-import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
-import React, { useCallback, useEffect, useRef } from 'react';
-import { TimeValueRange, snapTime, snapValue, x2t, y2v } from '../utils/TimeValueRange';
-import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
 import { CurveEditorFx } from './CurveEditorFx';
 import { CurveEditorFxBg } from './CruveEditorFxBg';
 import { CurveEditorGraph } from './CurveEditorGraph';
 import { CurveEditorNode } from './CurveEditorNode';
+import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
 import { RangeBar } from './RangeBar';
 import { Resolution } from '../utils/Resolution';
 import { TimeValueGrid } from './TimeValueGrid';
 import { TimeValueLines } from './TimeValueLines';
+import { TimeValueRange, snapTime, snapValue, x2t, y2v } from '../utils/TimeValueRange';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
 import { showToasty } from '../states/Toasty';
-import styled from 'styled-components';
+import { useDispatch, useSelector } from '../states/store';
 import { useDoubleClick } from '../utils/useDoubleClick';
 import { useRect } from '../utils/useRect';
+import React, { useCallback, useEffect, useRef } from 'react';
+import styled from 'styled-components';
 
 // == microcomponent ===============================================================================
 const Lines = ( { curveId, range, size }: {
@@ -45,6 +45,8 @@ const Nodes = ( { curveId, range, size }: {
     nodes: state.automaton.curves[ curveId ].nodes
   } ) );
 
+  // 👾 See: https://github.com/yannickcr/eslint-plugin-react/issues/2584
+  // eslint-disable-next-line react/jsx-no-useless-fragment
   return <>
     { nodes && Object.values( nodes ).map( ( node ) => (
       <CurveEditorNode
@@ -156,7 +158,7 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
         dy
       } );
     },
-    [ rect, curveLength ]
+    [ dispatch, rect ]
   );
 
   const zoom = useCallback(
@@ -170,7 +172,7 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
         dy
       } );
     },
-    [ rect, curveLength ]
+    [ dispatch, rect ]
   );
 
   const createNodeAndGrab = useCallback(
@@ -233,11 +235,11 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
         }
       );
     },
-    [ range, rect, curve, guiSettings ]
+    [ range, rect, curve, guiSettings, dispatch, selectedCurve ]
   );
 
   const handleMouseDown = useCallback(
-    mouseCombo( {
+    ( event ) => mouseCombo( event, {
       [ MouseComboBit.LMB ]: ( event ) => {
         if ( checkDoubleClick() ) {
           createNodeAndGrab( event.clientX - rect.left, event.clientY - rect.top );
@@ -249,7 +251,7 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
         );
       }
     } ),
-    [ createNodeAndGrab, rect, move ]
+    [ checkDoubleClick, createNodeAndGrab, rect.left, rect.top, move ]
   );
 
   const createNode = useCallback(
@@ -283,7 +285,7 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
         ]
       } );
     },
-    [ range, rect, curve, selectedCurve ]
+    [ range, rect, curve, selectedCurve, dispatch ]
   );
 
   const createFx = useCallback(
@@ -323,7 +325,7 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
         }
       } );
     },
-    [ range, rect, curve, selectedCurve ]
+    [ range, rect, curve, selectedCurve, dispatch ]
   );
 
   const handleContextMenu = useCallback(
@@ -350,7 +352,7 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
         ]
       } );
     },
-    [ rect, createNode, createFx ]
+    [ rect, createNode, createFx, dispatch ]
   );
 
   const handleWheel = useCallback(

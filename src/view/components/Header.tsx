@@ -1,14 +1,14 @@
-import React, { useCallback, useMemo } from 'react';
-import { performRedo, performUndo } from '../history/HistoryCommand';
-import { useDispatch, useSelector } from '../states/store';
 import { AutomatonWithGUI } from '../../AutomatonWithGUI';
 import { Colors } from '../constants/Colors';
 import { HeaderSeekbar } from './HeaderSeekbar';
 import { Icons } from '../icons/Icons';
 import { Metrics } from '../constants/Metrics';
+import { performRedo, performUndo } from '../history/HistoryCommand';
 import { showToasty } from '../states/Toasty';
-import styled from 'styled-components';
+import { useDispatch, useSelector } from '../states/store';
 import { writeClipboard } from '../utils/clipboard';
+import React, { useCallback, useMemo } from 'react';
+import styled from 'styled-components';
 
 // == microcomponent ===============================================================================
 const ShouldSaveIndicator = ( { className }: {
@@ -128,7 +128,7 @@ const Header = ( { className }: HeaderProps ): JSX.Element => {
         timeout: 2.0
       } );
     },
-    [ automaton ]
+    [ automaton, dispatch ]
   );
 
   const handlePlay = useCallback(
@@ -161,7 +161,7 @@ const Header = ( { className }: HeaderProps ): JSX.Element => {
         }
       }
     },
-    [ automaton, historyIndex, historyEntries, cantUndoThis ]
+    [ automaton, historyIndex, historyEntries, dispatch, cantUndoThis ]
   );
 
   const handleRedo = useCallback(
@@ -177,7 +177,7 @@ const Header = ( { className }: HeaderProps ): JSX.Element => {
         cantUndoThis: 0
       } );
     },
-    [ automaton, historyIndex, historyEntries ]
+    [ automaton, historyIndex, historyEntries, dispatch ]
   );
 
   const handleSave = useCallback(
@@ -237,7 +237,7 @@ const Header = ( { className }: HeaderProps ): JSX.Element => {
         } );
       }
     },
-    [ automaton ]
+    [ automaton, dispatch, save ]
   );
 
   const undoText = useMemo(

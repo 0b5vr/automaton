@@ -1,8 +1,8 @@
-import { useEffect, useRef } from 'react';
+import { DependencyList, useEffect, useRef } from 'react';
 
 export function useAnimationFrame(
   callback: ( delta: number ) => void,
-  deps: any[]
+  deps: DependencyList
 ): void {
   const refPrev = useRef<number>( 0 );
 
@@ -22,5 +22,6 @@ export function useAnimationFrame(
     return () => {
       halt = true;
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ callback, ...deps ] );
 }

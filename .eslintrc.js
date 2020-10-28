@@ -3,6 +3,8 @@ module.exports = {
 
     "plugins": [
         "@typescript-eslint",
+        "sort-imports-es6-autofix",
+        "react-hooks",
         "jest"
     ],
 
@@ -46,7 +48,8 @@ module.exports = {
             "ignoreTemplateLiterals": true, // templates are also okay
             "ignoreRegExpLiterals": true, // regexs are also okay too
         } ],
-        "sort-imports": [ "error" ], // imports have to be ordered
+        "sort-imports": [ "off" ], // will be superceded by `sort-imports-es6-autofix/sort-imports-es6`
+        "sort-imports-es6-autofix/sort-imports-es6": [ "error" ], // imports have to be ordered
         "eol-last": [ "error", "always" ], // eof newline is cool
 
         // variables
@@ -87,8 +90,15 @@ module.exports = {
         "no-implied-eval": [ "warn" ], // ok don't
         "no-console": [ "error", { allow: [ "info", "warn", "error" ] } ], // don't forget to remove `console.log` !
 
+        // react-specifics
+        "react/jsx-no-useless-fragment": [ "error" ], // sounds good, huh
+        "react/display-name": [ "error" ], // yes please, it's very important to do performance monitoring
+        "react-hooks/rules-of-hooks": [ "error" ], // yes it must be followed
+        "react-hooks/exhaustive-deps": [ "warn" ], // best eslint rule ever
+
         // typescript-specifics
         "@typescript-eslint/no-explicit-any": [ "off" ], // yea
+        "@typescript-eslint/explicit-module-boundary-types": [ "off" ], // We are using explicit any on purpose because it's explicit, be permissive
         "@typescript-eslint/no-inferrable-types": [ "off" ], // it's ok
         "@typescript-eslint/no-non-null-assertion": [ "off" ], // bang is sometimes required
         "@typescript-eslint/no-empty-interface": [ "off" ], // we need to perform mixins

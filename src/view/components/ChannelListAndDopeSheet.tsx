@@ -1,13 +1,13 @@
-import React, { useCallback, useRef } from 'react';
-import { useDispatch, useSelector } from '../states/store';
 import { ChannelList } from './ChannelList';
 import { DopeSheet } from './DopeSheet';
 import { DopeSheetOverlay } from './DopeSheetOverlay';
 import { DopeSheetUnderlay } from './DopeSheetUnderlay';
 import { Metrics } from '../constants/Metrics';
 import { Scrollable } from './Scrollable';
-import styled from 'styled-components';
+import { useDispatch, useSelector } from '../states/store';
 import { useRect } from '../utils/useRect';
+import React, { useCallback, useRef } from 'react';
+import styled from 'styled-components';
 
 // == styles =======================================================================================
 const StyledChannelList = styled( ChannelList )`
@@ -105,7 +105,7 @@ const ChannelListAndDopeSheet = ( props: {
         }
       } );
     },
-    [ automaton ]
+    [ automaton, dispatch ]
   );
 
   const handleContextMenu = useCallback(
@@ -127,7 +127,7 @@ const ChannelListAndDopeSheet = ( props: {
         ]
       } );
     },
-    [ createChannel ]
+    [ dispatch, createChannel ]
   );
 
   return (

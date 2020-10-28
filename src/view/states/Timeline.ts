@@ -1,8 +1,8 @@
-import { TimeValueRange, dx2dt, dy2dv, x2t, y2v } from '../utils/TimeValueRange';
-import { arraySetDelete, arraySetDiff, arraySetUnion } from '../utils/arraySet';
 import { Action as ContextAction } from './store';
 import { Reducer } from 'redux';
 import { Resolution } from '../utils/Resolution';
+import { TimeValueRange, dx2dt, dy2dv, x2t, y2v } from '../utils/TimeValueRange';
+import { arraySetDelete, arraySetDiff, arraySetUnion } from '../utils/arraySet';
 import { jsonCopy } from '../../utils/jsonCopy';
 import { produce } from 'immer';
 

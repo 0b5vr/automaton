@@ -1,8 +1,8 @@
-import { BezierNode, Curve, FxSection, SerializedBezierNode, SerializedCurve, SerializedFxSection } from '@fms-cat/automaton';
-import { StatusLevel, WithStatus } from './types/Status';
 import { AutomatonWithGUI } from './AutomatonWithGUI';
+import { BezierNode, Curve, FxSection, SerializedBezierNode, SerializedCurve, SerializedFxSection } from '@fms-cat/automaton';
 import { EventEmittable } from './mixins/EventEmittable';
 import { SerializableWithID } from './types/SerializableWithID';
+import { StatusLevel, WithStatus } from './types/Status';
 import { WithBypass } from './types/WithBypass';
 import { WithID } from './types/WithID';
 import { applyMixins } from './utils/applyMixins';

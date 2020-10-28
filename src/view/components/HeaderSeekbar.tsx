@@ -1,9 +1,9 @@
-import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
-import React, { useCallback } from 'react';
-import { useDispatch, useSelector } from '../states/store';
 import { Colors } from '../constants/Colors';
+import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
 import { clamp } from '../../utils/clamp';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
+import { useDispatch, useSelector } from '../states/store';
+import React, { useCallback } from 'react';
 import styled from 'styled-components';
 
 // == microcomponent ===============================================================================
@@ -89,7 +89,7 @@ const HeaderSeekbar = ( { className }: HeaderSeekbarProps ): JSX.Element => {
   } ) );
 
   const handleMouseDown = useCallback(
-    mouseCombo( {
+    ( event ) => mouseCombo( event, {
       [ MouseComboBit.LMB ]: ( event ) => {
         if ( !automaton ) { return; }
 
@@ -112,21 +112,21 @@ const HeaderSeekbar = ( { className }: HeaderSeekbarProps ): JSX.Element => {
         );
       }
     } ),
-    [ automaton, isPlaying ]
+    [ automaton, dispatch, isPlaying, length ]
   );
 
   const handleMouseEnter = useCallback(
     () => {
       dispatch( { type: 'Header/SeekbarEnter' } );
     },
-    []
+    [ dispatch ]
   );
 
   const handleMouseLeave = useCallback(
     () => {
       dispatch( { type: 'Header/SeekbarLeave' } );
     },
-    []
+    [ dispatch ]
   );
 
   return (

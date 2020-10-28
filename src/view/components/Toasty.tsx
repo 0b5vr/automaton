@@ -1,8 +1,8 @@
 import { Metrics } from '../constants/Metrics';
-import React from 'react';
 import { ToastyEntry } from './ToastyEntry';
-import styled from 'styled-components';
 import { useSelector } from '../states/store';
+import React from 'react';
+import styled from 'styled-components';
 
 // == styles =======================================================================================
 const Root = styled.div`

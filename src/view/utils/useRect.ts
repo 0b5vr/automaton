@@ -21,24 +21,39 @@ const nullResult: RectResult = {
   width: 0
 };
 
-function getRect<T extends HTMLElement>( element?: T ): RectResult {
-  if ( element ) { return element.getBoundingClientRect(); }
-  else { return nullResult; }
+function getRect<T extends HTMLElement | SVGElement>( element?: T ): RectResult {
+  if ( element ) {
+    return element.getBoundingClientRect();
+  } else {
+    return nullResult;
+  }
 }
 
-export function useRect<T extends HTMLElement>(
+export function useRect<T extends HTMLElement | SVGElement>(
   ref: React.RefObject<T>
 ): RectResult {
+  const [ element, setElement ] = useState( ref.current );
   const [ rect, setRect ] = useState<RectResult>( nullResult );
-
-  const handleResize = useCallback( () => {
-    if ( !ref.current ) { return; }
-    setRect( getRect( ref.current ) ); // Update client rect
-  }, [ ref ] );
 
   useLayoutEffect(
     () => {
-      const element = ref.current;
+      if ( ref.current !== element ) {
+        setElement( ref.current );
+      }
+    },
+    [ element, ref ]
+  );
+
+  const handleResize = useCallback(
+    () => {
+      if ( !element ) { return; }
+      setRect( getRect( element ) ); // Update client rect
+    },
+    [ element ]
+  );
+
+  useLayoutEffect(
+    () => {
       if ( !element ) { return; }
 
       handleResize();
@@ -51,7 +66,7 @@ export function useRect<T extends HTMLElement>(
         resizeObserver.disconnect();
       };
     },
-    [ ref.current ]
+    [ element, handleResize ]
   );
 
   return rect;

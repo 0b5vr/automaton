@@ -1,9 +1,9 @@
-import { TimeValueRange, t2x, v2y } from '../utils/TimeValueRange';
 import { Colors } from '../constants/Colors';
-import React from 'react';
 import { Resolution } from '../utils/Resolution';
-import styled from 'styled-components';
+import { TimeValueRange, t2x, v2y } from '../utils/TimeValueRange';
 import { useSelector } from '../states/store';
+import React from 'react';
+import styled from 'styled-components';
 
 // == microcomponents ==============================================================================
 const Beat = ( { time }: { time: number } ): JSX.Element | null => {

@@ -1,6 +1,5 @@
-import { Action, State, useSelector } from '../states/store';
-import React, { useCallback } from 'react';
 import { About } from './About';
+import { Action, State, useSelector } from '../states/store';
 import { AutomatonStateListener } from './AutomatonStateListener';
 import { AutomatonWithGUI } from '../../AutomatonWithGUI';
 import { ChannelEditor } from './ChannelEditor';
@@ -21,6 +20,7 @@ import { Stalker } from './Stalker';
 import { Store } from 'redux';
 import { TextPrompt } from './TextPrompt';
 import { Toasty } from './Toasty';
+import React, { useCallback } from 'react';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
@@ -167,10 +167,8 @@ const Fuck = ( { className, automaton, guiRemocon }: AppProps ): JSX.Element => 
   );
 };
 
-const App = ( props: AppProps ): JSX.Element => <>
-  <Provider store={ props.store }>
-    <Fuck { ...props } />
-  </Provider>
-</>;
+const App = ( props: AppProps ): JSX.Element => <Provider store={ props.store }>
+  <Fuck { ...props } />
+</Provider>;
 
 export { App };
