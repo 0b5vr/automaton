@@ -13,7 +13,8 @@ import { registerMouseEvent } from '../utils/registerMouseEvent';
 import { showToasty } from '../states/Toasty';
 import { useDispatch, useSelector } from '../states/store';
 import { useRect } from '../utils/useRect';
-import React, { useCallback, useEffect, useRef } from 'react';
+import { useWheelEvent } from '../utils/useWheelEvent';
+import React, { useCallback, useRef } from 'react';
 import styled from 'styled-components';
 import type { StateChannelItem } from '../../types/StateChannelItem';
 
@@ -540,18 +541,7 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
     [ zoom, rect, move ]
   );
 
-  useEffect( // 🔥 fuck
-    () => {
-      const body = refBody.current;
-      if ( !body ) { return; }
-
-      body.addEventListener( 'wheel', handleWheel, { passive: false } );
-      return () => (
-        body.removeEventListener( 'wheel', handleWheel )
-      );
-    },
-    [ refBody.current, handleWheel ]
-  );
+  useWheelEvent( refBody, handleWheel );
 
   return (
     <Root

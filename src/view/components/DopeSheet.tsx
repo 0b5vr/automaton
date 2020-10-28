@@ -4,7 +4,8 @@ import { dx2dt, snapTime, x2t } from '../utils/TimeValueRange';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
 import { useDispatch, useSelector } from '../states/store';
 import { useRect } from '../utils/useRect';
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useWheelEvent } from '../utils/useWheelEvent';
+import React, { useCallback, useMemo, useRef } from 'react';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
@@ -223,18 +224,7 @@ const DopeSheet = ( { className }: DopeSheetProps ): JSX.Element => {
     [ rect, zoom, move ]
   );
 
-  useEffect( // 🔥 fuck
-    () => {
-      const root = refRoot.current;
-      if ( !root ) { return; }
-
-      root.addEventListener( 'wheel', handleWheel, { passive: false } );
-      return () => (
-        root.removeEventListener( 'wheel', handleWheel )
-      );
-    },
-    [ refRoot.current, handleWheel ]
-  );
+  useWheelEvent( refRoot, handleWheel );
 
   return (
     <Root
