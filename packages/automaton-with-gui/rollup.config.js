@@ -51,13 +51,13 @@ export default {
     sourcemap: DEV ? 'inline' : false,
   },
   plugins: [
-    resolve(),
-    commonjs(),
     typescript(),
     replace( {
       'process.env.VERSION': `'${ packageJson.version }'`,
       'process.env.NODE_ENV': `'${ NODE_ENV }'`,
     } ),
+    resolve(),
+    commonjs(),
     svgr(),
     ...( DEV ? [] : [ terser() ] ),
     ...( SERVE ? [ serve( serveOptions ) ] : [] ),
