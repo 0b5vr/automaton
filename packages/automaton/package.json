@@ -1,0 +1,50 @@
+{
+  "name": "@fms-cat/automaton",
+  "version": "3.0.0-beta8",
+  "description": "Animation engine for creative coding",
+  "repository": "https://github.com/FMS-Cat/automaton",
+  "author": "FMS-Cat",
+  "main": "./dist/automaton.min.js",
+  "module": "./dist/automaton.module.min.js",
+  "exports": {
+    "import": {
+      "development": "./dist/automaton.module.js",
+      "production": "./dist/automaton.module.min.js"
+    },
+    "require": {
+      "development": "./dist/automaton.js",
+      "production": "./dist/automaton.min.js"
+    }
+  },
+  "types": "types/index.d.ts",
+  "typesVersions": {
+    "<3.9": {
+      "*": [
+        "ts3.4/*"
+      ]
+    }
+  },
+  "license": "MIT",
+  "scripts": {
+    "dev": "cross-env NODE_ENV=development ESM=1 SERVE=1 rollup -w -c -o dist/automaton.module.js",
+    "all": "yarn lint && yarn test && yarn clean && yarn build && yarn docs",
+    "clean": "rimraf dist/ docs/ ts*/ types/",
+    "test": "jest",
+    "lint": "eslint \"src/**/*.{ts,tsx}\"",
+    "build": "yarn build-dev && yarn build-prod && yarn build-esm && yarn build-esmprod && yarn build-types",
+    "build-dev": "cross-env NODE_ENV=development rollup -c -o dist/automaton.js",
+    "build-prod": "cross-env NODE_ENV=production rollup -c -o dist/automaton.min.js",
+    "build-esm": "cross-env NODE_ENV=development ESM=1 rollup -c -o dist/automaton.module.js",
+    "build-esmprod": "cross-env NODE_ENV=production ESM=1 rollup -c -o dist/automaton.module.min.js",
+    "build-types": "tsc --declaration --declarationDir ./types --emitDeclarationOnly && downlevel-dts types ts3.4/types",
+    "docs": "typedoc --out docs --mode file --excludeNotExported"
+  },
+  "files": [
+    "/dist/",
+    "/ts*/",
+    "/types/",
+    "/LICENSE",
+    "/package.json",
+    "/README.md"
+  ]
+}
