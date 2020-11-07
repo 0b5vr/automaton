@@ -27,7 +27,8 @@
   "license": "MIT",
   "scripts": {
     "dev": "cross-env NODE_ENV=development ESM=1 SERVE=1 rollup -w -c -o dist/automaton.module.js",
-    "all": "yarn lint && yarn test && yarn clean && yarn build && yarn docs",
+    "all": "yarn && yarn lint && yarn test && yarn clean && yarn build && yarn docs",
+    "version": "yarn all",
     "clean": "rimraf dist/ docs/ ts*/ types/",
     "test": "jest",
     "lint": "eslint \"src/**/*.{ts,tsx}\"",
