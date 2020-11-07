@@ -117,5 +117,6 @@ jobs:
       with:
         name: build
         path: |
-          packages/automaton-fxs/dist
-          packages/automaton-fxs/types
+          packages/automaton-fxs/dist/
+          packages/automaton-fxs/types/
+          packages/automaton-fxs/ts*/
