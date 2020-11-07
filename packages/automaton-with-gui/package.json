@@ -1,0 +1,73 @@
+{
+  "name": "@fms-cat/automaton-with-gui",
+  "version": "3.0.0-beta5",
+  "description": "Animation engine for creative coding, with GUI!",
+  "repository": "https://github.com/FMS-Cat/automaton",
+  "author": "FMS-Cat",
+  "main": "dist/automaton-with-gui.min.js",
+  "module": "dist/automaton-with-gui.module.min.js",
+  "exports": {
+    "import": {
+      "development": "./dist/automaton-with-gui.module.js",
+      "production": "./dist/automaton-with-gui.module.min.js"
+    },
+    "require": {
+      "development": "./dist/automaton-with-gui.js",
+      "production": "./dist/automaton-with-gui.min.js"
+    }
+  },
+  "types": "types/index.d.ts",
+  "typesVersions": {
+    "<3.9": {
+      "*": [
+        "ts3.4/*"
+      ]
+    }
+  },
+  "license": "MIT",
+  "scripts": {
+    "dev": "cross-env NODE_ENV=development SERVE=1 rollup -w -c -o dist/automaton-with-gui.js",
+    "all": "yarn lint && yarn test && yarn clean && yarn build && yarn docs",
+    "version": "yarn all",
+    "clean": "rimraf dist/ docs/ ts*/ types/",
+    "test": "jest",
+    "lint": "eslint \"src/**/*.{ts,tsx}\"",
+    "build": "yarn build-dev && yarn build-prod && yarn build-esm && yarn build-esmprod && yarn build-types",
+    "build-dev": "cross-env NODE_ENV=development rollup -c -o dist/automaton-with-gui.js",
+    "build-prod": "cross-env NODE_ENV=production rollup -c -o dist/automaton-with-gui.min.js",
+    "build-esm": "cross-env NODE_ENV=development ESM=1 rollup -c -o dist/automaton-with-gui.module.js",
+    "build-esmprod": "cross-env NODE_ENV=production ESM=1 rollup -c -o dist/automaton-with-gui.module.min.js",
+    "build-types": "tsc --declaration --declarationDir ./types --emitDeclarationOnly && downlevel-dts types ts3.4/types",
+    "docs": "typedoc --out docs --mode file --excludeNotExported"
+  },
+  "files": [
+    "/dist/",
+    "/ts*/",
+    "/types/",
+    "/LICENSE",
+    "/package.json",
+    "/README.md"
+  ],
+  "dependencies": {
+    "@fms-cat/automaton": "^3.0.0-beta7"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^16.0.0",
+    "@rollup/plugin-node-resolve": "^10.0.0",
+    "@svgr/rollup": "^5.4.0",
+    "@types/react": "^16.9.48",
+    "@types/react-dom": "^16.9.8",
+    "@types/react-redux": "^7.1.9",
+    "@types/styled-components": "5.1.2",
+    "eslint-plugin-react": "^7.20.6",
+    "eslint-plugin-react-hooks": "^4.1.2",
+    "eslint-plugin-sort-imports-es6-autofix": "^0.5.0",
+    "immer": "^7.0.8",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-redux": "^7.2.1",
+    "redux": "^4.0.5",
+    "resize-observer-polyfill": "^1.5.1",
+    "styled-components": "^5.1.1"
+  }
+}

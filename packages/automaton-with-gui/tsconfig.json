@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "types": [ "react", "node", "jest" ],
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "downlevelIteration": true,
+    "resolveJsonModule": true,
+    "removeComments": false,
+    "noUnusedLocals": true,
+    "jsx": "react",
+    "rootDir": "src",
+  },
+  "exclude": [
+    "**/tests/**"
+  ]
+}
