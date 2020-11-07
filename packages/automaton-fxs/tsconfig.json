@@ -4,6 +4,7 @@
     "rootDir": "src"
   },
   "exclude": [
-    "**/tests/**"
+    "**/tests/**",
+    "types/**"
   ]
 }
