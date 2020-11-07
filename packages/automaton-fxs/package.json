@@ -45,5 +45,8 @@
     "/LICENSE",
     "/package.json",
     "/README.md"
-  ]
+  ],
+  "dependencies": {
+    "@fms-cat/automaton": "^3.0.0-beta8"
+  }
 }
