@@ -1,6 +1,4 @@
-# AutomatonWithGUI
-
-![Automaton](https://i.imgur.com/c4XRwNS.png)
+# automaton-with-gui
 
 [![Latest NPM release](https://img.shields.io/npm/v/@fms-cat/automaton-with-gui.svg)](https://www.npmjs.com/package/@fms-cat/automaton-with-gui)
 
@@ -12,7 +10,7 @@ Originally made for [Shift](https://GitHub.com/fms-cat/shift), my WebGL demo
 
 ## Playground!
 
-![Playground](https://i.imgur.com/Ys4OdJb.gif)
+![Playground](./readme-images/playground.gif)
 
 Try our playground!
 It comes with bunch of examples.
