@@ -8,11 +8,11 @@ Originally made for [Shift](https://GitHub.com/fms-cat/shift), my WebGL demo
 
 ## Packages
 
-- [`automaton`](./packages/automaton) [![Latest NPM release](https://img.shields.io/npm/v/@fms-cat/automaton.svg)](https://www.npmjs.com/package/@fms-cat/automaton)
+- [`@fms-cat/automaton`](./packages/automaton) [![Latest NPM release](https://img.shields.io/npm/v/@fms-cat/automaton.svg)](https://www.npmjs.com/package/@fms-cat/automaton)
   - Core package of the automaton
-- [`automaton-fxs`](./packages/automaton-fxs) [![Latest NPM release](https://img.shields.io/npm/v/@fms-cat/automaton-fxs.svg)](https://www.npmjs.com/package/@fms-cat/automaton-fxs)
+- [`@fms-cat/automaton-fxs`](./packages/automaton-fxs) [![Latest NPM release](https://img.shields.io/npm/v/@fms-cat/automaton-fxs.svg)](https://www.npmjs.com/package/@fms-cat/automaton-fxs)
   - A package that contains bunch of automaton fxs
-- [`automaton-with-gui`](./packages/automaton-with-gui) [![Latest NPM release](https://img.shields.io/npm/v/@fms-cat/automaton-with-gui.svg)](https://www.npmjs.com/package/@fms-cat/automaton-with-gui)
+- [`@fms-cat/automaton-with-gui`](./packages/automaton-with-gui) [![Latest NPM release](https://img.shields.io/npm/v/@fms-cat/automaton-with-gui.svg)](https://www.npmjs.com/package/@fms-cat/automaton-with-gui)
   - A variant of automaton that comes with GUI!
 
 ## License
