@@ -1,9 +1,9 @@
 import { Automaton } from './Automaton';
+import { bezierEasing } from './utils/bezierEasing';
 import type { BezierNode } from './types/BezierNode';
 import type { FxContext } from './types/FxDefinition';
 import type { FxSection } from './types/FxSection';
 import type { SerializedCurve } from './types/SerializedCurve';
-import { bezierEasing } from './utils/bezierEasing';
 
 /**
  * It represents a curve of Automaton.

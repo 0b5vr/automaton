@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+
+<meta charset="UTF-8">
+<title>Automaton Playground</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900');
+@import url('https://fonts.googleapis.com/css?family=Roboto+Mono');
+
+body {
+  background: #000;
+  color: #fff;
+  font: 300 16px/1.2 "Roboto", sans-serif;
+}
+
+#divAutomatonContainer {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 240px;
+}
+
+#divCanvasContainer {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 50%;
+  height: calc( 100% - 240px );
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#selectDescription {
+  margin: 0 0.5em;
+}
+
+#divDropdown {
+  position: fixed;
+  width: 50%;
+  height: 32px;
+  right: 0;
+  top: 0;
+  background: #222;
+  display: flex;
+  align-items: center;
+}
+
+#editor {
+  position: fixed;
+  width: 50%;
+  height: calc( 100% - 272px );
+  right: 0;
+  top: 32px;
+}
+</style>
+
+<body>
+  <div id="container">
+    <div id="divCanvasContainer">
+      <canvas id="canvas"></canvas>
+    </div>
+
+    <div id="divAutomatonContainer">
+    </div>
+
+    <div id="divDropdown">
+      <span id="selectDescription">Select an example:</span>
+      <select id="select">
+        <option value="demo">Demo</option>
+        <option value="getting-started">Getting Started</option>
+        <option value="fxs">How to use FXs</option>
+        <option value="fx-definition">Define your own FX definition</option>
+      </select>
+    </div>
+
+    <div id="editor">// loading...</div>
+  </div>
+</body>
+
+<script src="https://unpkg.com/ace-builds@1.4.11/src-min-noconflict/ace.js"></script>
+<script src="https://unpkg.com/@fms-cat/automaton-fxs@3.0.0-beta7/dist/automaton-fxs.min.js"></script>
+<script src="./dist/automaton-with-gui.js"></script>
+<script>
+// editor
+const editor = ace.edit( document.getElementById( 'editor' ) );
+editor.setTheme( 'ace/theme/monokai' );
+editor.setShowPrintMargin( false );
+editor.getSession().setMode( 'ace/mode/javascript' );
+editor.getSession().setTabSize( 2 );
+editor.getSession().setUseSoftTabs( true );
+
+// playground
+let playground = {};
+
+function run() {
+  const source = editor.getValue();
+  playground.unload && playground.unload();
+
+  try {
+    const func = eval( `{ ${ source } }` );
+  } catch ( error ) {
+    console.error( error );
+    alert( 'An error has occured! See your browser console (Ctrl+Shift+J in chrome).' );
+  }
+};
+
+function update() {
+  requestAnimationFrame( update );
+  playground.update && playground.update();
+}
+update();
+
+editor.commands.addCommand( {
+  name: 'run',
+  bindKey: { win: 'Ctrl-S',  mac: 'Command-S' },
+  exec: () => run()
+} );
+
+// fetch and run
+async function fetchAndRun( name ) {
+  const code = await ( await fetch( `/playground-examples/${ name }.js` ) ).text();
+  editor.setValue( code, -1 );
+  editor.session.getUndoManager().markClean();
+  run();
+  select.value = name;
+}
+
+// see the hash
+const initialExample = location.hash.substring( 1 ) || 'demo';
+history.replaceState( { example: select.value }, '', `#${ initialExample }` );
+fetchAndRun( initialExample );
+
+// listen to dropdown changes
+select.addEventListener( 'change', ( event ) => {
+  history.pushState( { example: select.value }, '', `#${ select.value }` );
+  fetchAndRun( select.value );
+} );
+
+// listen to change of history
+window.addEventListener( 'popstate', ( { state } ) => {
+  fetchAndRun( state.example );
+} );
+
+// prevent terrible consequence
+window.addEventListener( 'beforeunload', ( event ) => {
+  if ( !editor.session.getUndoManager().isClean() ) {
+    const confirmationMessage = 'You will lose all of your changes on the editor!';
+    event.returnValue = confirmationMessage;
+    return confirmationMessage;
+  }
+} );
+</script>
