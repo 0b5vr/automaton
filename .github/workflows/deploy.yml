@@ -83,6 +83,9 @@ jobs:
     - name: Copy index.html
       shell: bash
       run: cp index.html pages/index.html
+    - name: Copy playground-examples
+      shell: bash
+      run: cp -r playground-examples pages/playground-examples
     - name: Deploy gh-pages
       uses: peaceiris/actions-gh-pages@v2
       env:

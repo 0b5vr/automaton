@@ -455,6 +455,18 @@ export class AutomatonWithGUI extends Automaton
   }
 
   /**
+   * Get a channel.
+   * If the channel doesn't exist, create immediately.
+   * @param name Name of the channel
+   * @returns The channel
+   */
+  public getOrCreateChannel( name: string ): ChannelWithGUI {
+    let channel = this.__channels[ name ];
+    if ( !channel ) { channel = this.createChannel( name ); }
+    return channel;
+  }
+
+  /**
    * Create a new curve.
    * @returns Created channel
    */
@@ -806,8 +818,7 @@ export class AutomatonWithGUI extends Automaton
     name: string,
     listener?: ( event: ChannelUpdateEvent ) => void
   ): number {
-    let channel = this.__channels[ name ];
-    if ( !channel ) { channel = this.createChannel( name ); }
+    const channel = this.getOrCreateChannel( name );
 
     if ( listener ) {
       channel.subscribe( listener );

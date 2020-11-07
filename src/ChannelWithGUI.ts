@@ -20,7 +20,7 @@ export enum ChannelStatusCode {
 
 /**
  * It represents a channel of Automaton.
- * It's `automaton.js` and `automaton.min.js` version.
+ * It has even more pretty APIs than raw {@link Channel} yay
  * It has even more pretty APIs yay
  * @param automaton Parent automaton
  * @param data Data of the channel

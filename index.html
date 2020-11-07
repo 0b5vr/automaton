@@ -8,7 +8,7 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto+Mono');
 
 body {
-  background: #222;
+  background: #000;
   color: #fff;
   font: 300 16px/1.2 "Roboto", sans-serif;
 }
@@ -21,246 +21,134 @@ body {
   height: 240px;
 }
 
-#canvas {
+#divCanvasContainer {
   position: fixed;
-  top: 0;
   left: 0;
+  top: 0;
+  width: 50%;
+  height: calc( 100% - 240px );
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-#text {
-  white-space: pre-wrap;
-  width: 60%;
+#selectDescription {
+  margin: 0 0.5em;
+}
 
-  padding-top: 260px;
-  padding-bottom: 250px;
+#divDropdown {
+  position: fixed;
+  width: 50%;
+  height: 32px;
+  right: 0;
+  top: 0;
+  background: #222;
+  display: flex;
+  align-items: center;
 }
 
 #editor {
   position: fixed;
-  width: 40%;
-  height: calc( 100% - 240px );
+  width: 50%;
+  height: calc( 100% - 272px );
   right: 0;
-  top: 0;
-}
-
-a {
-  color: #f8a;
-}
-
-h1 {
-  margin-bottom: 0;
-}
-
-b {
-  padding: 0 4px;
-  background: #903;
-  border-radius: 2px;
-}
-
-code {
-  font: 300 12px/1.2 'Roboto Mono', monospace;
-  padding: 0 4px;
-  background: #444;
-  border-radius: 2px;
-}
-
-b code {
-  background: #903;
+  top: 32px;
 }
 </style>
 
 <body>
   <div id="container">
+    <div id="divCanvasContainer">
+      <canvas id="canvas"></canvas>
+    </div>
+
     <div id="divAutomatonContainer">
     </div>
 
-    <canvas id="canvas"></canvas>
-
-    <div id="text">
-<h1>Automaton Playground!</h1>
-Hi there! This is Automaton playground.
-You can code anything (not dangerous) on editor and tweak parameters on Automaton GUI.
-
-GitHub (Download): <a href="https://github.com/fms-cat/automaton">https://github.com/fms-cat/automaton</a>
-
-<h1>What is Automaton?</h1>
-Automaton is <b>animation engine with Timeline GUI for creative coding</b>.
-I hope it helps your creative coding!
-Automaton is still under development so some features will be added / changed in future.
-
-First you might want to define a function named <code>auto</code> like <code>var auto = automaton.auto</code> .
-<code>auto</code> is magical function, it pours cool animation into your code!
-When you use <code>auto</code> like <b><code>auto( "rectX" )</code></b> for the first time, new parameter channel named "rectX" will be created on Automaton, and it appears on GUI.
-Then, you can tweak the channel using timeline!
-
-Be careful that you cannot use these Automaton channels outside of your update loop.
-Doing that will create your channel on Automaton, but not updated.
-Also, don't forget to call <code>automaton.update()</code> !
-
-<h1>How to use GUI</h1>
-The Automaton GUI has a lot of feature!
-
-First, choose the channel you want to tweak by left menu.
-Then the GUI will be show animation curve on the timeline.
-
-When you <code>doubleclick</code> inside the timeline, new <b>node</b> will be created.
-The animation curve will transform to pass through nodes.
-You can grab and move around the node by <code>drag</code>ging.
-And you <code>doubleclick</code> the node, the node will be removed.
-
-You also can put cutting-edge <b>Fx</b>s on this timeline.
-<code>Right-click</code> on the timeline will show you a context menu, then <code>click</code>ing <code>Add Fx</code> will show you a list of Fx definition.
-Fxs deforms your animation curve into various form. Try various!
-Or do you still want to do something wacky? Call <code>automaton.addFxDefinitions()</code> to define your own Fx definitions!
-
-You can scroll around the timeline using mouse <code>wheel</code>.
-<code>Shift-Scroll</code> lets the timeline horizontal zoom.
-<code>Ctrl-Scroll</code> lets the timeline vertical zoom.
-
-<h1>Saving GUI changes</h1>
-Once you tweaked animations using GUI, you might want to save your changes.
-Saving can be performed by <code>click</code>ing floppy icon at rightmost of GUI.
-It will send very long JSON string to your clipboard.
-You can load this JSON savedata by adding a parameter named <code>data</code> when you initialize Automaton.
+    <div id="divDropdown">
+      <span id="selectDescription">Select an example:</span>
+      <select id="select">
+        <option value="demo">Demo</option>
+        <option value="getting-started">Getting Started</option>
+        <option value="fxs">How to use FXs</option>
+        <option value="fx-definition">Define your own FX definition</option>
+      </select>
     </div>
 
-    <div id="editor">// Press Ctrl+S (Cmd+S on MacOS) to run script
-// The script will be run under 🔥 eval() 🔥. be calm, safety first.
-
-var width = canvas.width = 300;
-var height = canvas.height = 300;
-
-var ctx = canvas.getContext( "2d" );
-
-var isHalted = false;
-
-// == initialize an automaton instance =============================================================
-var automaton = new AUTOMATON_WITH_GUI.AutomatonWithGUI(
-  JSON.parse( `
-{"v":"2.0.0","length":5,"resolution":100,"params":{"rectX":{"nodes":[{"time":0,"value":0.2,"out":{"time":0.5,"value":0}},{"time":1,"value":0.6,"in":{"time":-0.5,"value":0},"out":{"time":0,"value":0}},{"time":1.1,"value":0,"in":{"time":0,"value":0},"out":{"time":0,"value":0}},{"time":2.2,"value":0,"in":{"time":0,"value":0},"out":{"time":0.2029702970297027,"value":0}},{"time":2.683168316831683,"value":0.2,"in":{"time":-0.0058960808318827985,"value":-0.16171574263249228},"out":{"time":0.029151407919009283,"value":0.7995551137822344}},{"time":3.0792079207920793,"value":0.8,"in":{"time":-0.26237623762376217,"value":0},"out":{"time":0,"value":0}},{"time":4,"value":0.8,"in":{"time":0,"value":0},"out":{"time":0.5,"value":0}},{"time":5,"value":0.2,"in":{"time":-0.22277227722772253,"value":0.46032643646145566}}],"fxs":[{"time":1,"length":1.2,"row":0,"def":"gravity","params":{"a":20,"e":0.5,"preserve":false},"bypass":false},{"time":2.2,"length":1.8,"row":0,"def":"cds","params":{"factor":1000,"ratio":0.15,"preserve":true},"bypass":false},{"time":4,"length":1,"row":0,"def":"sine","params":{"amp":0.2,"freq":2,"phase":0}},{"def":"lofi","bypass":false,"row":1,"time":4.5,"length":0.5,"params":{"reso":10,"relative":true,"rate":20,"round":true}}]},"rectY":{"nodes":[{"time":0,"value":0,"out":{"time":0,"value":0}},{"time":5,"value":1,"in":{"time":0,"value":0}}],"fxs":[]}},"guiSettings":{"snapActive":false,"snapTime":0.1,"snapValue":0.1}}
-  ` ), // put your automaton savedata here
-  {
-    gui: divAutomatonContainer, // where you want to put entire automaton GUI
-    isPlaying: true, // it's playing by default
-    installBuiltinFxs: true, // install bunch of fxs by default
-  }
-);
-var auto = automaton.auto; // mighty auto function!
-
-// == define clock =================================================================================
-var prevDate = Date.now();
-var time = 0.0;
-var isPaused = false;
-
-function updateClock() {
-  var now = Date.now();
-  if ( !isPaused ) {
-    var delta = now - prevDate;
-    time += delta * 0.001;
-  }
-  prevDate = now;
-
-  if ( automaton.length <= time ) {
-    automaton.reset(); // we should call this when we seek the time
-    time = time % automaton.length;
-  }
-}
-
-automaton.on( 'play', () => {
-  isPaused = false;
-} );
-
-automaton.on( 'pause', () => {
-  isPaused = true;
-} );
-
-automaton.on( 'seek', ( event ) => {
-  time = event.time;
-  automaton.cueReset(); // we should call this when we seek the time
-} );
-
-// == update loop ==================================================================================
-function update() {
-  if ( isHalted ) { return; }
-
-  // update it
-  updateClock();
-  automaton.update( time );
-
-  ctx.fillStyle = "#fff";
-  ctx.fillRect( 0, 0, width, height );
-
-  ctx.fillStyle = "#f00";
-
-  // here's the auto function!
-  ctx.fillRect(
-    auto( "rectX" ) * 100,
-    auto( "rectY" ) * 100,
-    100,
-    100
-  );
-
-  requestAnimationFrame( update );
-}
-update();
-
-// == automaton the hard way: an example of a user-defined fx ======================================
-automaton.addFxDefinitions( {
-  sawtooth: {
-    name: 'Sawtooth', // display name
-    description: 'Example of user-defined fx definition', // description of the fx definition
-    params: { // params. can be float, int or boolean
-      freq: { name: 'Frequency', type: 'float', default: 10.0, min: 0.0, max: 100.0 },
-      amp: { name: 'Amp', type: 'float', default: 0.1 }
-    },
-    func( context ) { // define your procedure here
-      if ( context.init ) {
-        context.state.saw = 0.0;
-      }
-      context.state.saw += context.params.freq * context.deltaTime;
-      context.state.saw = context.state.saw % 1.0;
-      return context.value + context.params.amp * context.state.saw;
-    }
-  }
-} );
-
-// == destroying procedure =========================================================================
-playground.unload = function() {
-  isHalted = true;
-  automaton = null;
-}
-</div>
+    <div id="editor">// loading...</div>
   </div>
 </body>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.6/ace.js"></script>
+<script src="https://unpkg.com/ace-builds@1.4.11/src-min-noconflict/ace.js"></script>
+<script src="https://unpkg.com/@fms-cat/automaton-fxs@3.0.0-beta7/dist/automaton-fxs.min.js"></script>
 <script src="./dist/automaton-with-gui.js"></script>
 <script>
-
-let editor = ace.edit( "editor" );
-editor.setTheme( "ace/theme/monokai" );
-editor.getSession().setMode( "ace/mode/javascript" );
+// editor
+const editor = ace.edit( document.getElementById( 'editor' ) );
+editor.setTheme( 'ace/theme/monokai' );
+editor.setShowPrintMargin( false );
+editor.getSession().setMode( 'ace/mode/javascript' );
 editor.getSession().setTabSize( 2 );
 editor.getSession().setUseSoftTabs( true );
 
+// playground
 let playground = {};
 
-let run = () => {
-  let source = editor.getValue();
-  if ( typeof playground.unload === "function" ) { playground.unload(); }
+function run() {
+  const source = editor.getValue();
+  playground.unload && playground.unload();
+
   try {
-    let func = eval( source );
-  } catch ( exception ) {
-    console.error( exception );
-    alert( "An error occured! See browser console (Ctrl+Shift+J in chrome)." );
+    const func = eval( `{ ${ source } }` );
+  } catch ( error ) {
+    console.error( error );
+    alert( 'An error has occured! See your browser console (Ctrl+Shift+J in chrome).' );
   }
 };
-run();
+
+function update() {
+  requestAnimationFrame( update );
+  playground.update && playground.update();
+}
+update();
 
 editor.commands.addCommand( {
-  name: "run",
-  bindKey: { win: "Ctrl-S",  mac: "Command-S" },
+  name: 'run',
+  bindKey: { win: 'Ctrl-S',  mac: 'Command-S' },
   exec: () => run()
 } );
 
+// fetch and run
+async function fetchAndRun( name ) {
+  const code = await ( await fetch( `/playground-examples/${ name }.js` ) ).text();
+  editor.setValue( code, -1 );
+  editor.session.getUndoManager().markClean();
+  run();
+  select.value = name;
+}
+
+// see the hash
+const initialExample = location.hash.substring( 1 ) || 'demo';
+history.replaceState( { example: select.value }, '', `#${ initialExample }` );
+fetchAndRun( initialExample );
+
+// listen to dropdown changes
+select.addEventListener( 'change', ( event ) => {
+  history.pushState( { example: select.value }, '', `#${ select.value }` );
+  fetchAndRun( select.value );
+} );
+
+// listen to change of history
+window.addEventListener( 'popstate', ( { state } ) => {
+  fetchAndRun( state.example );
+} );
+
+// prevent terrible consequence
+window.addEventListener( 'beforeunload', ( event ) => {
+  if ( !editor.session.getUndoManager().isClean() ) {
+    const confirmationMessage = 'You will lose all of your changes on the editor!';
+    event.returnValue = confirmationMessage;
+    return confirmationMessage;
+  }
+} );
 </script>
