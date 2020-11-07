@@ -1,7 +1,7 @@
-import type { AutomatonOptions } from './types/AutomatonOptions';
 import { Channel } from './Channel';
-import type { ChannelUpdateEvent } from './types/ChannelUpdateEvent';
 import { Curve } from './Curve';
+import type { AutomatonOptions } from './types/AutomatonOptions';
+import type { ChannelUpdateEvent } from './types/ChannelUpdateEvent';
 import type { FxDefinition } from './types/FxDefinition';
 import type { SerializedAutomaton } from './types/SerializedAutomaton';
 

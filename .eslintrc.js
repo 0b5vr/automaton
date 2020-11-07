@@ -2,6 +2,7 @@ module.exports = {
     "root": true,
 
     "plugins": [
+        "sort-imports-es6-autofix",
         "@typescript-eslint",
         "jest"
     ],
@@ -32,7 +33,7 @@ module.exports = {
         // basics
         "@typescript-eslint/indent": [ "error", 2, { // indentation should be 2 spaces
             "flatTernaryExpressions": true, // ternary should be performed in flat
-            "MemberExpression": 0 // member chain should be performed in flat
+            "MemberExpression": 1 // member chain should be performed with an indent
         } ], // it forces 2 spaces indentation
         "linebreak-style": [ "error", "unix" ], // fuck you, CRLF
         "quotes": [ "error", "single" ], // quotes must be single
@@ -44,7 +45,7 @@ module.exports = {
             "ignoreTemplateLiterals": true, // templates are also okay
             "ignoreRegExpLiterals": true, // regexs are also okay too
         } ],
-        "sort-imports": [ "error" ], // imports have to be ordered
+        "sort-imports-es6-autofix/sort-imports-es6": [ "error" ], // imports have to be ordered
         "eol-last": [ "error", "always" ], // eof newline is cool
 
         // variables

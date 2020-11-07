@@ -1,6 +1,5 @@
 module.exports = {
     "plugins": [
-        "sort-imports-es6-autofix",
         "react-hooks",
     ],
 
@@ -13,8 +12,6 @@ module.exports = {
     ],
 
     "rules": {
-        "sort-imports-es6-autofix/sort-imports-es6": [ "error" ], // imports have to be ordered
-
         // react-specifics
         "react/jsx-no-useless-fragment": [ "error" ], // sounds good, huh
         "react/display-name": [ "error" ], // yes please, it's very important to do performance monitoring
