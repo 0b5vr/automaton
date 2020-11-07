@@ -1,12 +1,12 @@
 # ![Automaton](https://i.imgur.com/c4XRwNS.png)
 
-[![Latest NPM release](https://img.shields.io/npm/v/@fms-cat/automaton.svg)](https://www.npmjs.com/package/@fms-cat/automaton) [![Inspect](https://github.com/FMS-Cat/automaton/workflows/Inspect/badge.svg)](https://github.com/FMS-Cat/automaton/actions)
+[![Latest NPM release](https://img.shields.io/npm/v/@fms-cat/automaton.svg)](https://www.npmjs.com/package/@fms-cat/automaton)
 
 Animation engine for creative coding
 
 Originally made for [Shift](https://GitHub.com/fms-cat/shift), my WebGL demo
 
-You might want to check the variant w/ GUI instead, [automaton-with-gui](https://github.com/FMS-Cat/automaton-with-gui)
+You might want to check the variant w/ GUI instead, [automaton-with-gui](https://github.com/FMS-Cat/automaton/packages/automaton-with-gui)
 
 ## Examples
 
@@ -18,10 +18,13 @@ You might want to check the variant w/ GUI instead, [automaton-with-gui](https:/
 
 ### Include directly
 
-**Releases**: [https://github.com/FMS-Cat/automaton/releases](https://github.com/FMS-Cat/automaton/releases)
+- [`automaton.js`](https://fms-cat.github.io/automaton/automaton/dist/automaton.js)
+- [`automaton.min.js`](https://fms-cat.github.io/automaton/automaton/dist/automaton.min.js)
+- [`automaton.module.js`](https://fms-cat.github.io/automaton/automaton/dist/automaton.module.js)
+- [`automaton.module.min.js`](https://fms-cat.github.io/automaton/automaton/dist/automaton.module.min.js)
 
-- `automaton.js` - Isn't minified, Easy to debug. for development stage.
-- `automaton.min.js` - Minimal build. for production stage.
+`.min` builds are minified. otherwise it isn't minified and comes with source maps.  
+`.module` builds are ESM. otherwise it's UMD.
 
 Code like this:
 
@@ -59,7 +62,7 @@ const automaton = new Automaton( data );
 
 ## Docs
 
-[https://fms-cat.github.io/automaton/docs/](https://fms-cat.github.io/automaton/docs/)
+[https://fms-cat.github.io/automaton/automaton/docs/](https://fms-cat.github.io/automaton/automaton/docs/)
 
 ## License
 

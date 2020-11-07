@@ -2,11 +2,11 @@
 
 ![Automaton](https://i.imgur.com/c4XRwNS.png)
 
-[![Latest NPM release](https://img.shields.io/npm/v/@fms-cat/automaton-with-gui.svg)](https://www.npmjs.com/package/@fms-cat/automaton-with-gui) [![Inspect](https://github.com/FMS-Cat/automaton-with-gui/workflows/Inspect/badge.svg)](https://github.com/FMS-Cat/automaton-with-gui/actions)
+[![Latest NPM release](https://img.shields.io/npm/v/@fms-cat/automaton-with-gui.svg)](https://www.npmjs.com/package/@fms-cat/automaton-with-gui)
 
 Animation engine for creative coding, with GUI!
 
-It's an extended variant of the original [Automaton](https://github.com/FMS-Cat/automaton) engine
+It's an extended variant of the original [Automaton](https://github.com/FMS-Cat/automaton/packages/automaton) engine
 
 Originally made for [Shift](https://GitHub.com/fms-cat/shift), my WebGL demo
 
@@ -17,20 +17,23 @@ Originally made for [Shift](https://GitHub.com/fms-cat/shift), my WebGL demo
 Try our playground!
 It comes with bunch of examples.
 
-[https://fms-cat.github.io/automaton-with-gui](https://fms-cat.github.io/automaton-with-gui)
+[https://fms-cat.github.io/automaton-with-gui](https://fms-cat.github.io/automaton/automaton-with-gui)
 
-You might want to also check examples of original [Automaton](https://github.com/FMS-Cat/automaton).
+You might want to also check examples of original [Automaton](https://github.com/FMS-Cat/automaton/packages/automaton).
 
 ## Install
 
 ### Include directly
 
-**Releases**: [https://github.com/FMS-Cat/automaton-with-gui/releases](https://github.com/FMS-Cat/automaton-with-gui/releases)
+- [`automaton-with-gui.js`](https://fms-cat.github.io/automaton/automaton-with-gui/dist/automaton-with-gui.js)
+- [`automaton-with-gui.min.js`](https://fms-cat.github.io/automaton/automaton-with-gui/dist/automaton-with-gui.min.js)
+- [`automaton-with-gui.module.js`](https://fms-cat.github.io/automaton/automaton-with-gui/dist/automaton-with-gui.module.js)
+- [`automaton-with-gui.module.min.js`](https://fms-cat.github.io/automaton/automaton-with-gui/dist/automaton-with-gui.module.min.js)
 
-- `automaton-with-gui.js` - Isn't minified, Easy to debug. for development stage.
-- `automaton-with-gui.min.js` - Minimal build.
+`.min` builds are minified. otherwise it isn't minified and comes with source maps.  
+`.module` builds are ESM. otherwise it's UMD.
 
-You might want to use `automaton.min.js` of [the original engine without GUI](https://github.com/FMS-Cat/automaton/releases) for production stage.
+You might want to use `automaton.min.js` of [the core engine without GUI](https://github.com/FMS-Cat/automaton/packages/automaton) for production stage.
 
 Code like this:
 
@@ -78,8 +81,8 @@ const automaton = new AutomatonWithGUI(
 
 ## Docs
 
-[https://fms-cat.github.io/automaton-with-gui/docs/](https://fms-cat.github.io/automaton-with-gui/docs/)
+[https://fms-cat.github.io/automaton/automaton-with-gui/docs/](https://fms-cat.github.io/automaton/automaton-with-gui/docs/)
 
 ## License
 
-[MIT](./LICENSE)
+[MIT](https://github.com/FMS-Cat/automaton/blob/master/LICENSE)
