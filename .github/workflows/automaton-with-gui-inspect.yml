@@ -4,6 +4,7 @@ on:
     paths:
       - '**'
       - '!packages/**'
+      - 'packages/automaton/**'
       - 'packages/automaton-with-gui/**'
 defaults:
   run:
