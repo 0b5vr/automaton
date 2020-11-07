@@ -6,6 +6,10 @@
     "moduleResolution": "node",
     "downlevelIteration": true,
     "lib": [ "es2020", "dom" ],
-    "rootDir": "./src"
+    "baseUrl": ".",
+    "paths": {
+      "@fms-cat/automaton": [ "packages/automaton" ],
+      "@fms-cat/automaton-fxs": [ "packages/automaton-fxs" ]
+    },
   }
 }
