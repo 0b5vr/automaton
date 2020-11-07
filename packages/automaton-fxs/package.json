@@ -1,0 +1,49 @@
+{
+  "name": "@fms-cat/automaton-fxs",
+  "version": "3.0.0-beta7",
+  "description": "Bunch of automaton fxs",
+  "repository": "https://github.com/FMS-Cat/automaton",
+  "author": "FMS-Cat",
+  "main": "./dist/automaton-fxs.min.js",
+  "module": "./dist/automaton-fxs.module.min.js",
+  "exports": {
+    "import": {
+      "development": "./dist/automaton-fxs.module.js",
+      "production": "./dist/automaton-fxs.module.min.js"
+    },
+    "require": {
+      "development": "./dist/automaton-fxs.js",
+      "production": "./dist/automaton-fxs.min.js"
+    }
+  },
+  "types": "types/index.d.ts",
+  "typesVersions": {
+    "<3.9": {
+      "*": [
+        "ts3.4/*"
+      ]
+    }
+  },
+  "license": "MIT",
+  "scripts": {
+    "dev": "cross-env NODE_ENV=development ESM=1 SERVE=1 rollup -w -c -o dist/automaton-fxs.module.js",
+    "all": "yarn lint && yarn test && yarn clean && yarn build",
+    "clean": "rimraf dist/ ts*/ types/",
+    "test": "jest",
+    "lint": "eslint \"src/**/*.{ts,tsx}\"",
+    "build": "yarn build-dev && yarn build-prod && yarn build-esm && yarn build-esmprod && yarn build-types",
+    "build-dev": "cross-env NODE_ENV=development rollup -c -o dist/automaton-fxs.js",
+    "build-prod": "cross-env NODE_ENV=production rollup -c -o dist/automaton-fxs.min.js",
+    "build-esm": "cross-env NODE_ENV=development ESM=1 rollup -c -o dist/automaton-fxs.module.js",
+    "build-esmprod": "cross-env NODE_ENV=production ESM=1 rollup -c -o dist/automaton-fxs.module.min.js",
+    "build-types": "tsc --declaration --declarationDir ./types --emitDeclarationOnly && downlevel-dts types ts3.4/types"
+  },
+  "files": [
+    "/dist/",
+    "/ts*/",
+    "/types/",
+    "/LICENSE",
+    "/package.json",
+    "/README.md"
+  ]
+}
