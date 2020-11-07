@@ -2,7 +2,9 @@ name: Inspect automaton
 on:
   push:
     paths:
-      - packages/automaton/**
+      - '**'
+      - '!packages/**'
+      - 'packages/automaton/**'
 defaults:
   run:
     shell: bash

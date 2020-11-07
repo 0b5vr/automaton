@@ -2,7 +2,9 @@ name: Inspect automaton-fxs
 on:
   push:
     paths:
-      - packages/automaton-fxs/**
+      - '**'
+      - '!packages/**'
+      - 'packages/automaton-fxs/**'
 defaults:
   run:
     shell: bash
