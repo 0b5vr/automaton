@@ -1,10 +1,7 @@
 {
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
     "types": [ "react", "node", "jest" ],
-    "target": "es6",
-    "module": "es6",
-    "strict": true,
-    "moduleResolution": "node",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "downlevelIteration": true,
@@ -12,7 +9,9 @@
     "removeComments": false,
     "noUnusedLocals": true,
     "jsx": "react",
-    "lib": [ "dom", "es2017" ],
     "rootDir": "src",
-  }
+  },
+  "exclude": [
+    "**/tests/**"
+  ]
 }
