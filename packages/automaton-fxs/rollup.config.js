@@ -10,7 +10,7 @@ import typescript from '@rollup/plugin-typescript';
 // == constants ====================================================================================
 const copyright = '(c) 2020 FMS_Cat';
 const licenseName = 'MIT License';
-const licenseUri = 'https://github.com/FMS-Cat/automaton-fxs/blob/master/LICENSE';
+const licenseUri = 'https://github.com/FMS-Cat/automaton/blob/master/LICENSE';
 const globalName = 'AUTOMATON_FXS';
 
 // == envs =========================================================================================
