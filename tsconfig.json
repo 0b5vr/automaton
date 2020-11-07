@@ -2,7 +2,7 @@
   "compilerOptions": {
     "types": [ "react", "node", "jest" ],
     "target": "es6",
-    "module": "commonjs",
+    "module": "es6",
     "strict": true,
     "moduleResolution": "node",
     "esModuleInterop": true,
@@ -11,14 +11,8 @@
     "resolveJsonModule": true,
     "removeComments": false,
     "noUnusedLocals": true,
-    "sourceMap": true,
     "jsx": "react",
     "lib": [ "dom", "es2017" ],
-    "rootDir": "./src",
-    "outDir": "./dist",
-    "declaration": true,
-    "declarationDir": "./types"
-  },
-  "include": [ "src" ],
-  "exclude": [ "node_modules" ]
+    "rootDir": "src",
+  }
 }
