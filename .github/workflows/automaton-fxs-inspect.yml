@@ -1,0 +1,87 @@
+name: Inspect automaton-fxs
+on:
+  push:
+    paths:
+      - packages/automaton-fxs/**
+defaults:
+  run:
+    shell: bash
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Cache Deps
+      uses: actions/cache@v1
+      with:
+        path: |
+          node_modules
+        key: ${{ runner.os }}-yarn-${{ hashFiles( 'yarn.lock' ) }}
+        restore-keys: |
+          ${{ runner.os }}-yarn-
+    - name: Fetch Deps
+      run: yarn
+  lint:
+    runs-on: ubuntu-latest
+    needs: fetch
+    defaults:
+      run:
+        working-directory: packages/automaton-fxs
+    steps:
+    - uses: actions/checkout@v2
+    - name: Cache Deps
+      uses: actions/cache@v1
+      with:
+        path: |
+          node_modules
+        key: ${{ runner.os }}-yarn-${{ hashFiles( 'yarn.lock' ) }}
+        restore-keys: |
+          ${{ runner.os }}-yarn-
+    - name: Lint
+      run: yarn lint
+  test:
+    runs-on: ubuntu-latest
+    needs: fetch
+    defaults:
+      run:
+        working-directory: packages/automaton-fxs
+    steps:
+    - uses: actions/checkout@v2
+    - name: Cache Deps
+      uses: actions/cache@v1
+      with:
+        path: |
+          node_modules
+        key: ${{ runner.os }}-yarn-${{ hashFiles( 'yarn.lock' ) }}
+        restore-keys: |
+          ${{ runner.os }}-yarn-
+    - name: Test
+      run: yarn test
+  build:
+    runs-on: ubuntu-latest
+    needs: fetch
+    defaults:
+      run:
+        working-directory: packages/automaton-fxs
+    steps:
+    - uses: actions/checkout@v2
+    - name: Cache Deps
+      uses: actions/cache@v1
+      with:
+        path: |
+          node_modules
+        key: ${{ runner.os }}-yarn-${{ hashFiles( 'yarn.lock' ) }}
+        restore-keys: |
+          ${{ runner.os }}-yarn-
+    - name: Build
+      run: yarn build
+    - name: Upload Builds
+      uses: actions/upload-artifact@v1
+      with:
+        name: dist
+        path: packages/automaton-fxs/dist
+    - name: Upload Types
+      uses: actions/upload-artifact@v1
+      with:
+        name: types
+        path: packages/automaton-fxs/types
