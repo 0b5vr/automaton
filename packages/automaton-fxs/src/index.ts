@@ -6,4 +6,5 @@ export { gravity } from './fxs/gravity';
 export { lofi } from './fxs/lofi';
 export { noise } from './fxs/noise';
 export { pow } from './fxs/pow';
+export { repeat } from './fxs/repeat';
 export { sine } from './fxs/sine';
