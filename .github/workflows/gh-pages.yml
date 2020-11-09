@@ -176,11 +176,12 @@ jobs:
       run: |
         mkdir pages
 
+        mv readme-images pages
         mv README.md pages
 
         mkdir pages/automaton
         mv artifacts/build-automaton/* pages/automaton
-        mv artifacts/docs-automaton/* pages/automaton
+        mv artifacts/docs-automaton/* pages/automaton/docs
         mv packages/automaton/README.md pages/automaton
 
         mkdir pages/automaton-fxs
@@ -189,9 +190,10 @@ jobs:
 
         mkdir pages/automaton-with-gui
         mv artifacts/build-automaton-with-gui/* pages/automaton-with-gui
-        mv artifacts/docs-automaton-with-gui/* pages/automaton-with-gui
+        mv artifacts/docs-automaton-with-gui/* pages/automaton-with-gui/docs
         mv packages/automaton-with-gui/index.html pages/automaton-with-gui
         mv packages/automaton-with-gui/playground-examples pages/automaton-with-gui
+        mv packages/automaton-with-gui/readme-images pages/automaton-with-gui
         mv packages/automaton-with-gui/README.md pages/automaton-with-gui
     - name: Publish gh-pages
       uses: peaceiris/actions-gh-pages@v3

@@ -121,7 +121,7 @@ editor.commands.addCommand( {
 
 // fetch and run
 async function fetchAndRun( name ) {
-  const code = await ( await fetch( `/playground-examples/${ name }.js` ) ).text();
+  const code = await ( await fetch( `./playground-examples/${ name }.js` ) ).text();
   editor.setValue( code, -1 );
   editor.session.getUndoManager().markClean();
   run();
