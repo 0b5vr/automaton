@@ -1,0 +1,1141 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>@fms-cat/automaton-with-gui</title>
+	<meta name="description" content="Documentation for @fms-cat/automaton-with-gui">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.json" data-base=".">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="index.html" class="title">@fms-cat/automaton-with-gui</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="globals.html">Globals</a>
+				</li>
+			</ul>
+			<h1>@fms-cat/automaton-with-gui</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<a href="#automaton-with-gui" id="automaton-with-gui" style="color: inherit; text-decoration: none;">
+					<h1>automaton-with-gui</h1>
+				</a>
+				<p><a href="https://www.npmjs.com/package/@fms-cat/automaton-with-gui"><img src="https://img.shields.io/npm/v/@fms-cat/automaton-with-gui.svg" alt="Latest NPM release"></a></p>
+				<p>Animation engine for creative coding, with GUI!</p>
+				<p>It&#39;s an extended variant of the original <a href="https://github.com/FMS-Cat/automaton/packages/automaton">Automaton</a> engine</p>
+				<p>Originally made for <a href="https://GitHub.com/fms-cat/shift">Shift</a>, my WebGL demo</p>
+				<a href="#playground" id="playground" style="color: inherit; text-decoration: none;">
+					<h2>Playground!</h2>
+				</a>
+				<p><img src="./readme-images/playground.gif" alt="Playground"></p>
+				<p>Try our playground!
+				It comes with bunch of examples.</p>
+				<p><a href="https://fms-cat.github.io/automaton/automaton-with-gui">https://fms-cat.github.io/automaton-with-gui</a></p>
+				<p>You might want to also check examples of original <a href="https://github.com/FMS-Cat/automaton/packages/automaton">Automaton</a>.</p>
+				<a href="#install" id="install" style="color: inherit; text-decoration: none;">
+					<h2>Install</h2>
+				</a>
+				<a href="#include-directly" id="include-directly" style="color: inherit; text-decoration: none;">
+					<h3>Include directly</h3>
+				</a>
+				<ul>
+					<li><a href="https://fms-cat.github.io/automaton/automaton-with-gui/dist/automaton-with-gui.js"><code>automaton-with-gui.js</code></a></li>
+					<li><a href="https://fms-cat.github.io/automaton/automaton-with-gui/dist/automaton-with-gui.min.js"><code>automaton-with-gui.min.js</code></a></li>
+					<li><a href="https://fms-cat.github.io/automaton/automaton-with-gui/dist/automaton-with-gui.module.js"><code>automaton-with-gui.module.js</code></a></li>
+					<li><a href="https://fms-cat.github.io/automaton/automaton-with-gui/dist/automaton-with-gui.module.min.js"><code>automaton-with-gui.module.min.js</code></a></li>
+				</ul>
+				<p><code>.min</code> builds are minified. otherwise it isn&#39;t minified and comes with source maps.<br><code>.module</code> builds are ESM. otherwise it&#39;s UMD.</p>
+				<p>You might want to use <code>automaton.min.js</code> of <a href="https://github.com/FMS-Cat/automaton/packages/automaton">the core engine without GUI</a> for production stage.</p>
+				<p>Code like this:</p>
+				<pre><code class="language-js"><span class="hljs-keyword">const</span> { AutomatonWithGUI } = AUTOMATON_WITH_GUI;
+
+<span class="hljs-keyword">const</span> data = <span class="hljs-keyword">await</span> ( <span class="hljs-keyword">await</span> fetch( <span class="hljs-string">'automaton.json'</span> ) ).json();
+
+<span class="hljs-keyword">const</span> automaton = <span class="hljs-keyword">new</span> AutomatonWithGUI(
+  data,
+  {
+    <span class="hljs-attr">gui</span>: yourDesiredMountpointDOM
+  }
+);
+
+<span class="hljs-comment">// ...</span></code></pre>
+				<a href="#npm" id="npm" style="color: inherit; text-decoration: none;">
+					<h3>npm</h3>
+				</a>
+				<p><a href="https://www.npmjs.com/package/@fms-cat/automaton-with-gui">https://www.npmjs.com/package/@fms-cat/automaton-with-gui</a></p>
+				<pre><code class="language-sh"><span class="hljs-comment"># npm install @fms-cat/automaton-with-gui</span>
+yarn add @fms-cat/automaton-with-gui</code></pre>
+				<p>then code like this:</p>
+				<pre><code class="language-js"><span class="hljs-comment">// const { AutomatonWithGUI } = require( '@fms-cat/automaton-with-gui' );</span>
+<span class="hljs-keyword">import</span> { AutomatonWithGUI } <span class="hljs-keyword">from</span> <span class="hljs-string">'@fms-cat/automaton-with-gui'</span>;
+
+<span class="hljs-keyword">const</span> data = <span class="hljs-keyword">await</span> ( <span class="hljs-keyword">await</span> fetch( <span class="hljs-string">'automaton.json'</span> ) ).json();
+
+<span class="hljs-keyword">const</span> automaton = <span class="hljs-keyword">new</span> AutomatonWithGUI(
+  data,
+  {
+    <span class="hljs-attr">gui</span>: yourDesiredMountpointDOM
+  }
+);
+
+<span class="hljs-comment">// ...</span></code></pre>
+				<a href="#docs" id="docs" style="color: inherit; text-decoration: none;">
+					<h2>Docs</h2>
+				</a>
+				<p><a href="https://fms-cat.github.io/automaton/automaton-with-gui/docs/">https://fms-cat.github.io/automaton/automaton-with-gui/docs/</a></p>
+				<a href="#license" id="license" style="color: inherit; text-decoration: none;">
+					<h2>License</h2>
+				</a>
+				<p><a href="https://github.com/FMS-Cat/automaton/blob/master/LICENSE">MIT</a></p>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="globals.html"><em>Globals</em></a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+					<li class=" tsd-kind-enum">
+						<a href="enums/channelstatuscode.html" class="tsd-kind-icon">Channel<wbr>Status<wbr>Code</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/curvestatuscode.html" class="tsd-kind-icon">Curve<wbr>Status<wbr>Code</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/mousecombobit.html" class="tsd-kind-icon">Mouse<wbr>Combo<wbr>Bit</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/statuslevel.html" class="tsd-kind-icon">Status<wbr>Level</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/automatonwithgui.html" class="tsd-kind-icon">Automaton<wbr>WithGUI</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/channelitemwithgui.html" class="tsd-kind-icon">Channel<wbr>Item<wbr>WithGUI</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/channelwithgui.html" class="tsd-kind-icon">Channel<wbr>WithGUI</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/curvewithgui.html" class="tsd-kind-icon">Curve<wbr>WithGUI</a>
+					</li>
+					<li class=" tsd-kind-class tsd-has-type-parameter">
+						<a href="classes/eventemittable.html" class="tsd-kind-icon">Event<wbr>Emittable</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/guiremocon.html" class="tsd-kind-icon">GUIRemocon</a>
+					</li>
+					<li class=" tsd-kind-class tsd-has-type-parameter">
+						<a href="classes/serializablewithid.html" class="tsd-kind-icon">Serializable<wbr>WithID</a>
+					</li>
+					<li class=" tsd-kind-class tsd-has-type-parameter">
+						<a href="classes/withstatus.html" class="tsd-kind-icon">With<wbr>Status</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/aboutlargeaprops.html" class="tsd-kind-icon">About<wbr>LargeAProps</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/aboutprops.html" class="tsd-kind-icon">About<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/anchorprops.html" class="tsd-kind-icon">Anchor<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/appprops.html" class="tsd-kind-icon">App<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/automatonstatelistenerprops.html" class="tsd-kind-icon">Automaton<wbr>State<wbr>Listener<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/automatonwithguievents.html" class="tsd-kind-icon">Automaton<wbr>WithGUIEvents</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/automatonwithguioptions.html" class="tsd-kind-icon">Automaton<wbr>WithGUIOptions</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/boolparamprops.html" class="tsd-kind-icon">Bool<wbr>Param<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/channellistentryprops.html" class="tsd-kind-icon">Channel<wbr>List<wbr>Entry<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/channellistprops.html" class="tsd-kind-icon">Channel<wbr>List<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/channelwithguievents.html" class="tsd-kind-icon">Channel<wbr>WithGUIEvents</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/contextmenucommand.html" class="tsd-kind-icon">Context<wbr>Menu<wbr>Command</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/contextmenuentryprops.html" class="tsd-kind-icon">Context<wbr>Menu<wbr>Entry<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/contextmenuprops.html" class="tsd-kind-icon">Context<wbr>Menu<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/curveeditorprops.html" class="tsd-kind-icon">Curve<wbr>Editor<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/curvelistentryprops.html" class="tsd-kind-icon">Curve<wbr>List<wbr>Entry<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/curvelistprops.html" class="tsd-kind-icon">Curve<wbr>List<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/curvewithguievents.html" class="tsd-kind-icon">Curve<wbr>WithGUIEvents</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/dopesheetoverlayprops.html" class="tsd-kind-icon">Dope<wbr>Sheet<wbr>Overlay<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/dopesheetprops.html" class="tsd-kind-icon">Dope<wbr>Sheet<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/dopesheetunderlayprops.html" class="tsd-kind-icon">Dope<wbr>Sheet<wbr>Underlay<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/fxspawnerentryprops.html" class="tsd-kind-icon">Fx<wbr>Spawner<wbr>Entry<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/fxspawnerprops.html" class="tsd-kind-icon">Fx<wbr>Spawner<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/guiremoconevents.html" class="tsd-kind-icon">GUIRemocon<wbr>Events</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/guisettings.html" class="tsd-kind-icon">GUISettings</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/gridentry.html" class="tsd-kind-icon">Grid<wbr>Entry</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/gridlineentry.html" class="tsd-kind-icon">Grid<wbr>Line<wbr>Entry</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/headerprops.html" class="tsd-kind-icon">Header<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/headerseekbarprops.html" class="tsd-kind-icon">Header<wbr>Seekbar<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/historyentry.html" class="tsd-kind-icon">History<wbr>Entry</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/inspectorcurvefxprops.html" class="tsd-kind-icon">Inspector<wbr>Curve<wbr>FxProps</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/inspectorgeneralprops.html" class="tsd-kind-icon">Inspector<wbr>General<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/inspectorheaderprops.html" class="tsd-kind-icon">Inspector<wbr>Header<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/inspectoritemprops.html" class="tsd-kind-icon">Inspector<wbr>Item<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/minimizeoptions.html" class="tsd-kind-icon">Minimize<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/numberparamprops.html" class="tsd-kind-icon">Number<wbr>Param<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/props.html" class="tsd-kind-icon">Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/rectresult.html" class="tsd-kind-icon">Rect<wbr>Result</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/resolution.html" class="tsd-kind-icon">Resolution</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/scrollableprops.html" class="tsd-kind-icon">Scrollable<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-has-type-parameter">
+						<a href="interfaces/serializable.html" class="tsd-kind-icon">Serializable</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/serializedautomatonwithgui.html" class="tsd-kind-icon">Serialized<wbr>Automaton<wbr>WithGUI</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/stalkerprops.html" class="tsd-kind-icon">Stalker<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/state.html" class="tsd-kind-icon">State</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/statechannelitem.html" class="tsd-kind-icon">State<wbr>Channel<wbr>Item</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-has-type-parameter">
+						<a href="interfaces/status.html" class="tsd-kind-icon">Status</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/timerange.html" class="tsd-kind-icon">Time<wbr>Range</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/timevaluegridprops.html" class="tsd-kind-icon">Time<wbr>Value<wbr>Grid<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/timevaluelinesprops.html" class="tsd-kind-icon">Time<wbr>Value<wbr>Lines<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/timevaluerange.html" class="tsd-kind-icon">Time<wbr>Value<wbr>Range</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/timelineitemconstantprops.html" class="tsd-kind-icon">Timeline<wbr>Item<wbr>Constant<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/timelineitemcurveprops.html" class="tsd-kind-icon">Timeline<wbr>Item<wbr>Curve<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/timelineitemprops.html" class="tsd-kind-icon">Timeline<wbr>Item<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/toastyparams.html" class="tsd-kind-icon">Toasty<wbr>Params</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/v2automatonguisettings.html" class="tsd-kind-icon">V2<wbr>AutomatonGUISettings</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/v2beziercontrolpoint.html" class="tsd-kind-icon">V2<wbr>Bezier<wbr>Control<wbr>Point</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/v2beziernode.html" class="tsd-kind-icon">V2<wbr>Bezier<wbr>Node</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/v2fxsection.html" class="tsd-kind-icon">V2<wbr>FxSection</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/v2serializeddata.html" class="tsd-kind-icon">V2<wbr>Serialized<wbr>Data</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/v2serializedparam.html" class="tsd-kind-icon">V2<wbr>Serialized<wbr>Param</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/valuerange.html" class="tsd-kind-icon">Value<wbr>Range</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/withbypass.html" class="tsd-kind-icon">With<wbr>Bypass</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/withid.html" class="tsd-kind-icon">WithID</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#action" class="tsd-kind-icon">Action</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="globals.html#eventlistener" class="tsd-kind-icon">Event<wbr>Listener</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#historycommand" class="tsd-kind-icon">History<wbr>Command</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#keyable" class="tsd-kind-icon">Keyable</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#settingsmode" class="tsd-kind-icon">Settings<wbr>Mode</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#valuetype" class="tsd-kind-icon">Value<wbr>Type</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#barbg" class="tsd-kind-icon">BarBG</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#body" class="tsd-kind-icon">Body</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#box" class="tsd-kind-icon">Box</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#button" class="tsd-kind-icon">Button</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#curve_default_handle_length" class="tsd-kind-icon">CURVE_<wbr>DEFAULT_<wbr>HANDLE_<wbr>LENGTH</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#curve_fx_row_max" class="tsd-kind-icon">CURVE_<wbr>FX_<wbr>ROW_<wbr>MAX</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#curve_reso" class="tsd-kind-icon">CURVE_<wbr>RESO</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#channellistanddopesheetcontainer" class="tsd-kind-icon">Channel<wbr>List<wbr>And<wbr>Dope<wbr>Sheet<wbr>Container</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#channellistanddopesheetscrollable" class="tsd-kind-icon">Channel<wbr>List<wbr>And<wbr>Dope<wbr>Sheet<wbr>Scrollable</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#check" class="tsd-kind-icon">Check</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#circle" class="tsd-kind-icon">Circle</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#close" class="tsd-kind-icon">Close</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#confirmbutton" class="tsd-kind-icon">Confirm<wbr>Button</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#container" class="tsd-kind-icon">Container</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#content" class="tsd-kind-icon">Content</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#contextmenuhr" class="tsd-kind-icon">Context<wbr>Menu<wbr>Hr</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#curvepath" class="tsd-kind-icon">Curve<wbr>Path</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#description" class="tsd-kind-icon">Description</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#epsilon" class="tsd-kind-icon">EPSILON</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#fx_height" class="tsd-kind-icon">FX_<wbr>HEIGHT</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#fill" class="tsd-kind-icon">Fill</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#fxbody" class="tsd-kind-icon">Fx<wbr>Body</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#fxlist" class="tsd-kind-icon">Fx<wbr>List</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#fxside" class="tsd-kind-icon">Fx<wbr>Side</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#fxtext" class="tsd-kind-icon">Fx<wbr>Text</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#graphline" class="tsd-kind-icon">Graph<wbr>Line</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#graphlinewithoutfxs" class="tsd-kind-icon">Graph<wbr>Line<wbr>Without<wbr>Fxs</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#gridline" class="tsd-kind-icon">Grid<wbr>Line</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#gridtext" class="tsd-kind-icon">Grid<wbr>Text</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#height" class="tsd-kind-icon">HEIGHT</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#handlecircle" class="tsd-kind-icon">Handle<wbr>Circle</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#handleline" class="tsd-kind-icon">Handle<wbr>Line</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#hr" class="tsd-kind-icon">Hr</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#icon" class="tsd-kind-icon">Icon</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#id" class="tsd-kind-icon">Id</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#input" class="tsd-kind-icon">Input</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#inspectorhr" class="tsd-kind-icon">Inspector<wbr>Hr</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#largea" class="tsd-kind-icon">LargeA</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#logo" class="tsd-kind-icon">Logo</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#logoandversion" class="tsd-kind-icon">Logo<wbr>And<wbr>Version</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#name" class="tsd-kind-icon">Name</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#namebig" class="tsd-kind-icon">Name<wbr>Big</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#namesmall" class="tsd-kind-icon">Name<wbr>Small</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#newchannelbutton" class="tsd-kind-icon">New<wbr>Channel<wbr>Button</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#newchannelicon" class="tsd-kind-icon">New<wbr>Channel<wbr>Icon</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#newcurvebutton" class="tsd-kind-icon">New<wbr>Curve<wbr>Button</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#newcurveicon" class="tsd-kind-icon">New<wbr>Curve<wbr>Icon</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#nodebody" class="tsd-kind-icon">Node<wbr>Body</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#overlaybg" class="tsd-kind-icon">OverlayBG</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#playpause" class="tsd-kind-icon">Play<wbr>Pause</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#rect" class="tsd-kind-icon">Rect</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#region" class="tsd-kind-icon">Region</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#reseticon" class="tsd-kind-icon">Reset<wbr>Icon</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#root" class="tsd-kind-icon">Root</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#svgroot" class="tsd-kind-icon">SVGRoot</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#section" class="tsd-kind-icon">Section</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#side" class="tsd-kind-icon">Side</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#stroke" class="tsd-kind-icon">Stroke</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#styledabout" class="tsd-kind-icon">Styled<wbr>About</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#styledbar" class="tsd-kind-icon">Styled<wbr>Bar</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#styledbarfg" class="tsd-kind-icon">Styled<wbr>BarFG</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#styledchanneleditor" class="tsd-kind-icon">Styled<wbr>Channel<wbr>Editor</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#styledchannellist" class="tsd-kind-icon">Styled<wbr>Channel<wbr>List</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#styledchannellistanddopesheet" class="tsd-kind-icon">Styled<wbr>Channel<wbr>List<wbr>And<wbr>Dope<wbr>Sheet</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#styledchannellistentry" class="tsd-kind-icon">Styled<wbr>Channel<wbr>List<wbr>Entry</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#styledcurrenttime" class="tsd-kind-icon">Styled<wbr>Current<wbr>Time</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#styledcurveeditor" class="tsd-kind-icon">Styled<wbr>Curve<wbr>Editor</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#styledcurvelist" class="tsd-kind-icon">Styled<wbr>Curve<wbr>List</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#styledcurvelistentry" class="tsd-kind-icon">Styled<wbr>Curve<wbr>List<wbr>Entry</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#styleddopesheet" class="tsd-kind-icon">Styled<wbr>Dope<wbr>Sheet</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#styleddopesheetentry" class="tsd-kind-icon">Styled<wbr>Dope<wbr>Sheet<wbr>Entry</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#styleddopesheetoverlay" class="tsd-kind-icon">Styled<wbr>Dope<wbr>Sheet<wbr>Overlay</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#styleddopesheetunderlay" class="tsd-kind-icon">Styled<wbr>Dope<wbr>Sheet<wbr>Underlay</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#styledfxspawner" class="tsd-kind-icon">Styled<wbr>FxSpawner</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#styledheader" class="tsd-kind-icon">Styled<wbr>Header</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#styledheaderseekbar" class="tsd-kind-icon">Styled<wbr>Header<wbr>Seekbar</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#styledinspector" class="tsd-kind-icon">Styled<wbr>Inspector</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#styledlargea" class="tsd-kind-icon">Styled<wbr>LargeA</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#styledlines" class="tsd-kind-icon">Styled<wbr>Lines</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#styledmodeselector" class="tsd-kind-icon">Styled<wbr>Mode<wbr>Selector</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#styledrangebar" class="tsd-kind-icon">Styled<wbr>Range<wbr>Bar</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#styledscrollable" class="tsd-kind-icon">Styled<wbr>Scrollable</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#styledshouldsaveindicator" class="tsd-kind-icon">Styled<wbr>Should<wbr>Save<wbr>Indicator</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#styledvalue" class="tsd-kind-icon">Styled<wbr>Value</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#subroot" class="tsd-kind-icon">Sub<wbr>Root</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#svgroot" class="tsd-kind-icon">Svg<wbr>Root</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#text" class="tsd-kind-icon">Text</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#totaltime" class="tsd-kind-icon">Total<wbr>Time</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#underlay" class="tsd-kind-icon">Underlay</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#version" class="tsd-kind-icon">Version</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#verticalside" class="tsd-kind-icon">Vertical<wbr>Side</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#closingkeyframes" class="tsd-kind-icon">closing<wbr>Keyframes</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#devtools" class="tsd-kind-icon">devtools</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#globalid" class="tsd-kind-icon">global<wbr>Id</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#openingkeyframes" class="tsd-kind-icon">opening<wbr>Keyframes</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#v2defaultdata" class="tsd-kind-icon">v2<wbr>Default<wbr>Data</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#about" class="tsd-kind-icon">About</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#aboutlargea" class="tsd-kind-icon">About<wbr>LargeA</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#anchor" class="tsd-kind-icon">Anchor</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#app" class="tsd-kind-icon">App</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#automatonstatelistener" class="tsd-kind-icon">Automaton<wbr>State<wbr>Listener</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#bar" class="tsd-kind-icon">Bar</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#barfg" class="tsd-kind-icon">BarFG</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#beat" class="tsd-kind-icon">Beat</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#boolparam" class="tsd-kind-icon">Bool<wbr>Param</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#channeleditor" class="tsd-kind-icon">Channel<wbr>Editor</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#channellist" class="tsd-kind-icon">Channel<wbr>List</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#channellistanddopesheet" class="tsd-kind-icon">Channel<wbr>List<wbr>And<wbr>Dope<wbr>Sheet</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#channellistentry" class="tsd-kind-icon">Channel<wbr>List<wbr>Entry</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#contextmenu" class="tsd-kind-icon">Context<wbr>Menu</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#contextmenuentry" class="tsd-kind-icon">Context<wbr>Menu<wbr>Entry</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#currenttime" class="tsd-kind-icon">Current<wbr>Time</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#curveeditor" class="tsd-kind-icon">Curve<wbr>Editor</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#curveeditorfx" class="tsd-kind-icon">Curve<wbr>Editor<wbr>Fx</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#curveeditorfxbg" class="tsd-kind-icon">Curve<wbr>Editor<wbr>FxBg</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#curveeditorgraph" class="tsd-kind-icon">Curve<wbr>Editor<wbr>Graph</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#curveeditornode" class="tsd-kind-icon">Curve<wbr>Editor<wbr>Node</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#curvelist" class="tsd-kind-icon">Curve<wbr>List</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#curvelistentry" class="tsd-kind-icon">Curve<wbr>List<wbr>Entry</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#dopesheet" class="tsd-kind-icon">Dope<wbr>Sheet</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#dopesheetentry" class="tsd-kind-icon">Dope<wbr>Sheet<wbr>Entry</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#dopesheetoverlay" class="tsd-kind-icon">Dope<wbr>Sheet<wbr>Overlay</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#dopesheetunderlay" class="tsd-kind-icon">Dope<wbr>Sheet<wbr>Underlay</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#fuck" class="tsd-kind-icon">Fuck</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#fxspawner" class="tsd-kind-icon">Fx<wbr>Spawner</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#fxspawnerentry" class="tsd-kind-icon">Fx<wbr>Spawner<wbr>Entry</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#fxs" class="tsd-kind-icon">Fxs</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#guiremoconlistener" class="tsd-kind-icon">GUIRemocon<wbr>Listener</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#header" class="tsd-kind-icon">Header</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#headerseekbar" class="tsd-kind-icon">Header<wbr>Seekbar</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#inspector" class="tsd-kind-icon">Inspector</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#inspectorchannelitem" class="tsd-kind-icon">Inspector<wbr>Channel<wbr>Item</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#inspectorchannelitemcurveparams" class="tsd-kind-icon">Inspector<wbr>Channel<wbr>Item<wbr>Curve<wbr>Params</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#inspectorcurvefx" class="tsd-kind-icon">Inspector<wbr>Curve<wbr>Fx</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#inspectorcurvenode" class="tsd-kind-icon">Inspector<wbr>Curve<wbr>Node</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#inspectorgeneral" class="tsd-kind-icon">Inspector<wbr>General</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#inspectorheader" class="tsd-kind-icon">Inspector<wbr>Header</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#inspectoritem" class="tsd-kind-icon">Inspector<wbr>Item</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#inspectorlabel" class="tsd-kind-icon">Inspector<wbr>Label</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#inspectorsnapping" class="tsd-kind-icon">Inspector<wbr>Snapping</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#items" class="tsd-kind-icon">Items</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#label" class="tsd-kind-icon">Label</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#labels" class="tsd-kind-icon">Labels</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#line" class="tsd-kind-icon">Line</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#lines" class="tsd-kind-icon">Lines</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#modeselector" class="tsd-kind-icon">Mode<wbr>Selector</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#nodes" class="tsd-kind-icon">Nodes</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#numberparam" class="tsd-kind-icon">Number<wbr>Param</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#rangebar" class="tsd-kind-icon">Range<wbr>Bar</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#scrollable" class="tsd-kind-icon">Scrollable</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#shouldsaveindicator" class="tsd-kind-icon">Should<wbr>Save<wbr>Indicator</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#stalker" class="tsd-kind-icon">Stalker</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#statusicon" class="tsd-kind-icon">Status<wbr>Icon</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#textprompt" class="tsd-kind-icon">Text<wbr>Prompt</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#timeloopregion" class="tsd-kind-icon">Time<wbr>Loop<wbr>Region</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#timevaluegrid" class="tsd-kind-icon">Time<wbr>Value<wbr>Grid</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#timevaluelines" class="tsd-kind-icon">Time<wbr>Value<wbr>Lines</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#timelineitem" class="tsd-kind-icon">Timeline<wbr>Item</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#timelineitemconstant" class="tsd-kind-icon">Timeline<wbr>Item<wbr>Constant</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#timelineitemcurve" class="tsd-kind-icon">Timeline<wbr>Item<wbr>Curve</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#toasty" class="tsd-kind-icon">Toasty</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#toastyentry" class="tsd-kind-icon">Toasty<wbr>Entry</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#value" class="tsd-kind-icon">Value</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#applymixins" class="tsd-kind-icon">apply<wbr>Mixins</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#arraysetadd" class="tsd-kind-icon">array<wbr>Set<wbr>Add</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#arraysetdelete" class="tsd-kind-icon">array<wbr>Set<wbr>Delete</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#arraysetdiff" class="tsd-kind-icon">array<wbr>Set<wbr>Diff</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#arraysethas" class="tsd-kind-icon">array<wbr>Set<wbr>Has</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#arraysetunion" class="tsd-kind-icon">array<wbr>Set<wbr>Union</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#calcexpdiff" class="tsd-kind-icon">calc<wbr>Exp<wbr>Diff</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#calcpoints" class="tsd-kind-icon">calc<wbr>Points</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#clamp" class="tsd-kind-icon">clamp</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#closeto" class="tsd-kind-icon">close<wbr>To</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#closetozero" class="tsd-kind-icon">close<wbr>ToZero</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#closetoasty" class="tsd-kind-icon">close<wbr>Toasty</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#combinearraysunique" class="tsd-kind-icon">combine<wbr>Arrays<wbr>Unique</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#compat" class="tsd-kind-icon">compat</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createstore" class="tsd-kind-icon">create<wbr>Store</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#dt2dx" class="tsd-kind-icon">dt2dx</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#duplicatename" class="tsd-kind-icon">duplicate<wbr>Name</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#dv2dy" class="tsd-kind-icon">dv2dy</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#dx2dt" class="tsd-kind-icon">dx2dt</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#dy2dv" class="tsd-kind-icon">dy2dv</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#gencurvepath" class="tsd-kind-icon">gen<wbr>Curve<wbr>Path</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#gengrid" class="tsd-kind-icon">gen<wbr>Grid</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#genid" class="tsd-kind-icon">genID</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#getrect" class="tsd-kind-icon">get<wbr>Rect</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#hasoverwrap" class="tsd-kind-icon">has<wbr>Overwrap</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#inputtovalue" class="tsd-kind-icon">input<wbr>ToValue</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#intorempty" class="tsd-kind-icon">int<wbr>OrEmpty</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#jsoncopy" class="tsd-kind-icon">json<wbr>Copy</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#lofi" class="tsd-kind-icon">lofi</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#minimizechannel" class="tsd-kind-icon">minimize<wbr>Channel</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#minimizechannelitem" class="tsd-kind-icon">minimize<wbr>Channel<wbr>Item</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#minimizecurve" class="tsd-kind-icon">minimize<wbr>Curve</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#minimizedata" class="tsd-kind-icon">minimize<wbr>Data</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#minimizefx" class="tsd-kind-icon">minimize<wbr>Fx</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#minimizenode" class="tsd-kind-icon">minimize<wbr>Node</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#mod" class="tsd-kind-icon">mod</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#mousecombo" class="tsd-kind-icon">mouse<wbr>Combo</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#objectmaphas" class="tsd-kind-icon">object<wbr>Map<wbr>Has</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#objectmapsize" class="tsd-kind-icon">object<wbr>Map<wbr>Size</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#objectmapvalues" class="tsd-kind-icon">object<wbr>Map<wbr>Values</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#parsehistorycommand" class="tsd-kind-icon">parse<wbr>History<wbr>Command</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#performredo" class="tsd-kind-icon">perform<wbr>Redo</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#performundo" class="tsd-kind-icon">perform<wbr>Undo</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#prec" class="tsd-kind-icon">prec</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#precorundefined" class="tsd-kind-icon">prec<wbr>OrUndefined</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#preversioncompat" class="tsd-kind-icon">preversion<wbr>Compat</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#reducer" class="tsd-kind-icon">reducer</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#registermouseevent" class="tsd-kind-icon">register<wbr>Mouse<wbr>Event</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#showtoasty" class="tsd-kind-icon">show<wbr>Toasty</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#snaptime" class="tsd-kind-icon">snap<wbr>Time</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#snapvalue" class="tsd-kind-icon">snap<wbr>Value</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#t2x" class="tsd-kind-icon">t2x</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#useanimationframe" class="tsd-kind-icon">use<wbr>Animation<wbr>Frame</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usedispatch" class="tsd-kind-icon">use<wbr>Dispatch</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usedoubleclick" class="tsd-kind-icon">use<wbr>Double<wbr>Click</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#useid" class="tsd-kind-icon">useID</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#userect" class="tsd-kind-icon">use<wbr>Rect</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#useselector" class="tsd-kind-icon">use<wbr>Selector</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#usewheelevent" class="tsd-kind-icon">use<wbr>Wheel<wbr>Event</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#v1compat" class="tsd-kind-icon">v1<wbr>Compat</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#v2compat" class="tsd-kind-icon">v2<wbr>Compat</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#v2y" class="tsd-kind-icon">v2y</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#valuetoinput" class="tsd-kind-icon">value<wbr>ToInput</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#writeclipboard" class="tsd-kind-icon">write<wbr>Clipboard</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#x2t" class="tsd-kind-icon">x2t</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#y2v" class="tsd-kind-icon">y2v</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#colors" class="tsd-kind-icon">Colors</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#icons" class="tsd-kind-icon">Icons</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#metrics" class="tsd-kind-icon">Metrics</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#defaultdatawithgui" class="tsd-kind-icon">default<wbr>Data<wbr>WithGUI</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#defaultguisettings" class="tsd-kind-icon">defaultGUISettings</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#initialstate" class="tsd-kind-icon">initial<wbr>State</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#nullresult" class="tsd-kind-icon">null<wbr>Result</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="assets/js/main.js"></script>
+</body>
+</html>
