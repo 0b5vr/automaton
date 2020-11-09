@@ -1,5 +1,5 @@
 /*!
-* @fms-cat/automaton-fxs v3.0.0
+* @fms-cat/automaton-fxs v3.0.1
 * Bunch of automaton fxs
 *
 * Copyright (c) 2020 FMS_Cat

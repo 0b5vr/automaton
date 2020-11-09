@@ -1,5 +1,5 @@
 /*!
-* @fms-cat/automaton v3.0.0
+* @fms-cat/automaton v3.0.1
 * Animation engine for creative coding
 *
 * Copyright (c) 2017-2020 FMS_Cat
@@ -504,7 +504,7 @@
             /**
              * Version of the automaton.
              */
-            this.__version = '3.0.0';
+            this.__version = '3.0.1';
             /**
              * Resolution of the timeline.
              */
