@@ -126,7 +126,7 @@ jobs:
     - name: Upload Builds
       uses: actions/upload-artifact@v2
       with:
-        name: build
+        name: build-automaton-with-gui
         path: |
           packages/automaton-with-gui/dist/
           packages/automaton-with-gui/types/
