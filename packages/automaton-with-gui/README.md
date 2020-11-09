@@ -15,7 +15,7 @@ Originally made for [Shift](https://GitHub.com/fms-cat/shift), my WebGL demo
 Try our playground!
 It comes with bunch of examples.
 
-[https://fms-cat.github.io/automaton-with-gui](https://fms-cat.github.io/automaton/automaton-with-gui)
+[https://fms-cat.github.io/automaton/automaton-with-gui](https://fms-cat.github.io/automaton/automaton-with-gui)
 
 You might want to also check examples of original [Automaton](https://github.com/FMS-Cat/automaton/packages/automaton).
 
