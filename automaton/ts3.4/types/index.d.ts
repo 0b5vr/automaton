@@ -1,0 +1,15 @@
+export { BezierControlPoint, BezierNode, SerializedBezierNode } from './types/BezierNode';
+export { AutomatonOptions } from './types/AutomatonOptions';
+export { ChannelUpdateEvent } from './types/ChannelUpdateEvent';
+export { FxContext, FxDefinition, FxParam } from './types/FxDefinition';
+export { FxSection, SerializedFxSection } from './types/FxSection';
+export { SerializedAutomaton } from './types/SerializedAutomaton';
+export { SerializedChannel } from './types/SerializedChannel';
+export { SerializedChannelItem } from './types/SerializedChannelItem';
+export { SerializedCurve } from './types/SerializedCurve';
+export { Automaton } from './Automaton';
+export { Channel } from './Channel';
+export { ChannelItem } from './ChannelItem';
+export { Curve } from './Curve';
+import { Automaton } from './Automaton';
+export default Automaton;
