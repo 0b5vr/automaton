@@ -1,2 +1,6 @@
-/dist/**
+**/*.js
 /node_modules/**
+/packages/*/dist/**
+/packages/*/types/**
+/packages/*/ts*/**
+/packages/*/node_modules/**

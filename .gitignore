@@ -1,5 +1,7 @@
-/dist
-/docs
-/types
-/node_modules
+/node_modules/
+/packages/*/dist/
+/packages/*/docs/
+/packages/*/node_modules/
+/packages/*/types/
+/packages/*/ts*/
 **/*.log

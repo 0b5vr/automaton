@@ -1,49 +1,34 @@
-# ![Automaton](https://i.imgur.com/c4XRwNS.png)
+<p align="center">
+  <img alt="Automaton" src="./readme-images/automaton.png"><br />
+</p>
 
-[![Latest NPM release](https://img.shields.io/npm/v/@fms-cat/automaton.svg)](https://www.npmjs.com/package/@fms-cat/automaton) [![CircleCI](https://circleci.com/gh/FMS-Cat/automaton.svg?style=svg)](https://circleci.com/gh/FMS-Cat/automaton)
+<p align="center">
+  Animation engine for creative coding
+</p>
 
-Animation engine with Timeline GUI for creative coding
+[![Inspect](https://github.com/FMS-Cat/automaton/workflows/Inspect/badge.svg)](https://github.com/FMS-Cat/automaton/actions)
 
 Originally made for [Shift](https://GitHub.com/fms-cat/shift), my WebGL demo
 
+## Packages
+
+- [`@fms-cat/automaton`](./packages/automaton) [![Latest NPM release](https://img.shields.io/npm/v/@fms-cat/automaton.svg)](https://www.npmjs.com/package/@fms-cat/automaton)
+  - Core package of the automaton
+- [`@fms-cat/automaton-fxs`](./packages/automaton-fxs) [![Latest NPM release](https://img.shields.io/npm/v/@fms-cat/automaton-fxs.svg)](https://www.npmjs.com/package/@fms-cat/automaton-fxs)
+  - A package that contains bunch of automaton fxs
+- [`@fms-cat/automaton-with-gui`](./packages/automaton-with-gui) [![Latest NPM release](https://img.shields.io/npm/v/@fms-cat/automaton-with-gui.svg)](https://www.npmjs.com/package/@fms-cat/automaton-with-gui)
+  - A variant of automaton that comes with GUI!
+
 ## Playground!
 
-![](https://i.imgur.com/oLnoWaU.gif)
+![Playground](./packages/automaton-with-gui/readme-images/playground.gif)
 
-You can try Automaton experience here!  
-[https://fms-cat.github.io/automaton](https://fms-cat.github.io/automaton)
+Try our playground!
+It comes with bunch of examples.
 
-## Install
+[https://fms-cat.github.io/automaton-with-gui](https://fms-cat.github.io/automaton/automaton-with-gui)
 
-### Include directly
-
-**Releases**: [https://github.com/FMS-Cat/automaton/releases](https://github.com/FMS-Cat/automaton/releases)  
-
-`automaton.js` - Isn't minified, Easy to debug. for development stage.  
-`automaton.min.js` - Minimal build w/ GUI. for production stage.  
-`automaton.nogui.js` - r u mad
-
-Including these files will set `window.Automaton`.
-
-### npm
-
-[https://www.npmjs.com/package/@fms-cat/automaton](https://www.npmjs.com/package/@fms-cat/automaton)
-
-```sh
-# npm install @fms-cat/automaton
-yarn add @fms-cat/automaton
-```
-
-then
-
-```js
-// const Automaton = require( '@fms-cat/automaton' );
-import Automaton from '@fms-cat/automaton';
-```
-
-## Docs
-
-[https://fms-cat.github.io/automaton/docs/](https://fms-cat.github.io/automaton/docs/)
+You might want to also check examples of [the core package](https://github.com/FMS-Cat/automaton/packages/automaton).
 
 ## License
 
