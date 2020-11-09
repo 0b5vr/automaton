@@ -30,6 +30,13 @@ It comes with bunch of examples.
 
 You might want to also check examples of [the core package](https://github.com/FMS-Cat/automaton/packages/automaton).
 
+## Friend projects
+
+- [automaton-electron](https://github.com/FMS-Cat/automaton-electron)
+  - Electron client of automaton
+- [automaton-lua](https://github.com/FMS-Cat/automaton-lua)
+  - Lua binding of automaton
+
 ## License
 
 [MIT](./LICENSE)
