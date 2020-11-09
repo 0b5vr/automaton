@@ -180,6 +180,7 @@ jobs:
         mv README.md pages
 
         mkdir pages/automaton
+        mkdir pages/automaton/docs
         mv artifacts/build-automaton/* pages/automaton
         mv artifacts/docs-automaton/* pages/automaton/docs
         mv packages/automaton/README.md pages/automaton
@@ -189,6 +190,7 @@ jobs:
         mv packages/automaton-fxs/README.md pages/automaton-fxs
 
         mkdir pages/automaton-with-gui
+        mkdir pages/automaton-with-gui/docs
         mv artifacts/build-automaton-with-gui/* pages/automaton-with-gui
         mv artifacts/docs-automaton-with-gui/* pages/automaton-with-gui/docs
         mv packages/automaton-with-gui/index.html pages/automaton-with-gui
