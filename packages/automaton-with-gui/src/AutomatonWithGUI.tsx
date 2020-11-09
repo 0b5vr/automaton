@@ -644,6 +644,11 @@ export class AutomatonWithGUI extends Automaton
       const channel = new ChannelWithGUI( this, data.channels[ name ] );
       this.__channels[ name ] = channel;
 
+      // if `options.disableChannelNotUsedWarning` is true, mark every channels as used
+      if ( this.__isDisabledChannelNotUsedWarning ) {
+        channel.markAsUsed();
+      }
+
       channel.on( 'changeLength', () => {
         this.__tryUpdateLength();
       } );
