@@ -194,8 +194,7 @@ jobs:
         mv packages/automaton-with-gui/playground-examples pages/automaton-with-gui
         mv packages/automaton-with-gui/README.md pages/automaton-with-gui
     - name: Publish gh-pages
-      uses: peaceiris/actions-gh-pages@v2
-      env:
-        ACTIONS_DEPLOY_KEY: ${{ secrets.GITHUB_TOKEN }}
-        PUBLISH_BRANCH: gh-pages
-        PUBLISH_DIR: pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        deploy_key: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: pages
