@@ -1,3 +1,6 @@
+import * as v2compat from './fxs/v2compat';
+export { v2compat };
+
 export { add } from './fxs/add';
 export { cds } from './fxs/cds';
 export { clamp } from './fxs/clamp';
