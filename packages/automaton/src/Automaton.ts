@@ -95,13 +95,15 @@ export class Automaton {
    */
   public addFxDefinitions( fxDefinitions: { [ id: string ]: FxDefinition } ): void {
     Object.entries( fxDefinitions ).forEach( ( [ id, fxDef ] ) => {
-      if ( process.env.NODE_ENV === 'development' ) {
-        if ( this.__fxDefinitions[ id ] != null ) {
-          console.warn( `Overwriting the existing fx definition: ${ id }` );
+      if ( typeof fxDef.func === 'function' ) { // ignore unrelated entries
+        if ( process.env.NODE_ENV === 'development' ) {
+          if ( this.__fxDefinitions[ id ] != null ) {
+            console.warn( `Overwriting the existing fx definition: ${ id }` );
+          }
         }
-      }
 
-      this.__fxDefinitions[ id ] = fxDef;
+        this.__fxDefinitions[ id ] = fxDef;
+      }
     } );
 
     this.precalcAll();
