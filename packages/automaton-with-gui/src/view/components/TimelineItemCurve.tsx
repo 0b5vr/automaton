@@ -462,7 +462,8 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
             }
           ]
         } );
-      }
+      },
+      [ MouseComboBit.LMB + MouseComboBit.Alt ]: false, // give a way to seek!
     } ),
     [ checkDoubleClick, removeItem, dispatch, item.$id, channelName, grabBody, channel ]
   );
@@ -475,6 +476,7 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
       [ MouseComboBit.LMB + MouseComboBit.Shift ]: () => {
         grabLeft( true );
       },
+      [ MouseComboBit.LMB + MouseComboBit.Alt ]: false, // give a way to seek!
     } ),
     [ grabLeft ]
   );
@@ -487,6 +489,7 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
       [ MouseComboBit.LMB + MouseComboBit.Shift ]: () => {
         grabRight( true );
       },
+      [ MouseComboBit.LMB + MouseComboBit.Alt ]: false, // give a way to seek!
     } ),
     [ grabRight ]
   );
@@ -495,7 +498,8 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
     ( event ) => mouseCombo( event, {
       [ MouseComboBit.LMB ]: () => {
         isFlipped ? grabBottom() : grabTop();
-      }
+      },
+      [ MouseComboBit.LMB + MouseComboBit.Alt ]: false, // give a way to seek!
     } ),
     [ isFlipped, grabBottom, grabTop ]
   );
@@ -504,7 +508,8 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
     ( event ) => mouseCombo( event, {
       [ MouseComboBit.LMB ]: () => {
         isFlipped ? grabTop() : grabBottom();
-      }
+      },
+      [ MouseComboBit.LMB + MouseComboBit.Alt ]: false, // give a way to seek!
     } ),
     [ isFlipped, grabTop, grabBottom ]
   );
