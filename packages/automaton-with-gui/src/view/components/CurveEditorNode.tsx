@@ -165,22 +165,25 @@ const CurveEditorNode = ( props: {
     ( dir: 'in' | 'out' ): void => {
       if ( !curve ) { return; }
 
-      const timePrev = node[ dir ]?.time || 0.0;
-      const valuePrev = node[ dir ]?.value || 0.0;
-      const dirOpposite = dir === 'in' ? 'out' : 'in';
-      const timeOppositePrev = node[ dirOpposite ]?.time || 0.0;
-      const valueOppositePrev = node[ dirOpposite ]?.value || 0.0;
-      const xPrev = dt2dx( timePrev, range, size.width );
-      const yPrev = dv2dy( valuePrev, range, size.height );
-      const lPrev = Math.sqrt( xPrev * xPrev + yPrev * yPrev );
-      const nxPrev = xPrev / lPrev;
-      const nyPrev = yPrev / lPrev;
+      const tPrev = node[ dir ]?.time || 0.0;
+      const vPrev = node[ dir ]?.value || 0.0;
+      const dirOp = dir === 'in' ? 'out' : 'in';
+      const tOpPrev = node[ dirOp ]?.time || 0.0;
+      const vOpPrev = node[ dirOp ]?.value || 0.0;
+      const xPrev = dt2dx( tPrev, range, size.width );
+      const yPrev = dv2dy( vPrev, range, size.height );
+      const slPrev = Math.sqrt( xPrev * xPrev + yPrev * yPrev );
+      const nxPrev = xPrev / slPrev;
+      const nyPrev = yPrev / slPrev;
+      const xOpPrev = dt2dx( tOpPrev, range, size.width );
+      const yOpPrev = dv2dy( vOpPrev, range, size.height );
+      const slOpPrev = Math.sqrt( xOpPrev * xOpPrev + yOpPrev * yOpPrev );
       let x = xPrev;
       let y = yPrev;
-      let time = timePrev;
-      let value = valuePrev;
-      let timeOpposite = timeOppositePrev;
-      let valueOpposite = valueOppositePrev;
+      let time = tPrev;
+      let value = vPrev;
+      let tOp = tOpPrev;
+      let vOp = vOpPrev;
       let hasMoved = false;
 
       registerMouseEvent(
@@ -191,6 +194,7 @@ const CurveEditorNode = ( props: {
 
           const holdDir = event.shiftKey;
           const moveBoth = event.ctrlKey || event.metaKey;
+          const independent = event.altKey;
 
           let xDash = x;
           let yDash = y;
@@ -204,21 +208,32 @@ const CurveEditorNode = ( props: {
           time = dx2dt( xDash, range, size.width );
           value = dy2dv( yDash, range, size.height );
 
-          timeOpposite = moveBoth ? -time : timeOppositePrev;
-          valueOpposite = moveBoth ? -value : valueOppositePrev;
+          if ( independent ) {
+            tOp = tOpPrev;
+            vOp = vOpPrev;
+          } else if ( moveBoth ) {
+            tOp = -time;
+            vOp = -value;
+          } else {
+            const sl = Math.sqrt( xDash * xDash + yDash * yDash );
+            const nxDash = xDash / sl;
+            const nyDash = yDash / sl;
+            tOp = -dx2dt( slOpPrev * nxDash, range, size.width );
+            vOp = -dy2dv( slOpPrev * nyDash, range, size.height );
+          }
 
           curve.moveHandleTime( node.$id, dir, time );
           curve.moveHandleValue( node.$id, dir, value );
-          curve.moveHandleTime( node.$id, dirOpposite, timeOpposite );
-          curve.moveHandleValue( node.$id, dirOpposite, valueOpposite );
+          curve.moveHandleTime( node.$id, dirOp, tOp );
+          curve.moveHandleValue( node.$id, dirOp, vOp );
         },
         () => {
           if ( !hasMoved ) { return; }
 
           curve.moveHandleTime( node.$id, dir, time );
           curve.moveHandleValue( node.$id, dir, value );
-          curve.moveHandleTime( node.$id, dirOpposite, timeOpposite );
-          curve.moveHandleValue( node.$id, dirOpposite, valueOpposite );
+          curve.moveHandleTime( node.$id, dirOp, tOp );
+          curve.moveHandleValue( node.$id, dirOp, vOp );
 
           dispatch( {
             type: 'History/Push',
@@ -230,15 +245,15 @@ const CurveEditorNode = ( props: {
                 node: node.$id,
                 dir,
                 time,
-                timePrev
+                timePrev: tPrev
               },
               {
                 type: 'curve/moveHandleTime',
                 curveId,
                 node: node.$id,
-                dir: dirOpposite,
-                time: timeOpposite,
-                timePrev: timeOppositePrev
+                dir: dirOp,
+                time: tOp,
+                timePrev: tOpPrev
               },
               {
                 type: 'curve/moveHandleValue',
@@ -246,15 +261,15 @@ const CurveEditorNode = ( props: {
                 node: node.$id,
                 dir,
                 value,
-                valuePrev
+                valuePrev: vPrev
               },
               {
                 type: 'curve/moveHandleValue',
                 curveId,
                 node: node.$id,
-                dir: dirOpposite,
-                value: valueOpposite,
-                valuePrev: valueOppositePrev
+                dir: dirOp,
+                value: vOp,
+                valuePrev: vOpPrev
               }
             ],
           } );
