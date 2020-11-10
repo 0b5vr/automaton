@@ -7,9 +7,16 @@ export enum MouseComboBit {
   Alt = 32
 }
 
+/**
+ * Do a job based on mouse button + key combination.
+ * It will event.preventDefault + event.stopPropagation automatically.
+ *
+ * @param event The mouse event
+ * @param callbacks A map of mouse button + key combination bits vs. callbacks. set `false` to bypass
+ */
 export function mouseCombo(
   event: React.MouseEvent,
-  callbacks: { [ combo: number ]: ( event: React.MouseEvent ) => void },
+  callbacks: { [ combo: number ]: ( ( event: React.MouseEvent ) => void ) | false },
 ): void {
   let bits = 0;
 
@@ -29,10 +36,12 @@ export function mouseCombo(
   for ( const [ cbBitsStr, cb ] of sortedCallbacks ) {
     const cbBits = parseInt( cbBitsStr );
     if ( ( cbBits & bits ) === cbBits ) {
-      event.preventDefault();
-      event.stopPropagation();
+      if ( cb ) {
+        event.preventDefault();
+        event.stopPropagation();
 
-      cb( event );
+        cb( event );
+      }
 
       return;
     }

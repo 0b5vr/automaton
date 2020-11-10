@@ -259,7 +259,8 @@ const DopeSheetEntry = ( props: Props ): JSX.Element => {
     ( event ) => mouseCombo( event, {
       [ MouseComboBit.LMB ]: ( event ) => {
         createItemAndGrab( event.clientX );
-      }
+      },
+      [ MouseComboBit.LMB + MouseComboBit.Alt ]: false, // give a way to seek!
     } ),
     [ createItemAndGrab ]
   );

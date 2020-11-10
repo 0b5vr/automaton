@@ -332,7 +332,8 @@ const TimelineItemConstant = ( props: TimelineItemConstantProps ): JSX.Element =
             }
           ]
         } );
-      }
+      },
+      [ MouseComboBit.LMB + MouseComboBit.Alt ]: false, // give a way to seek!
     } ),
     [ checkDoubleClick, removeItem, dispatch, item.$id, channelName, grabBody, channel ]
   );
@@ -341,7 +342,8 @@ const TimelineItemConstant = ( props: TimelineItemConstantProps ): JSX.Element =
     ( event ) => mouseCombo( event, {
       [ MouseComboBit.LMB ]: () => {
         grabLeft();
-      }
+      },
+      [ MouseComboBit.LMB + MouseComboBit.Alt ]: false, // give a way to seek!
     } ),
     [ grabLeft ]
   );
@@ -350,7 +352,8 @@ const TimelineItemConstant = ( props: TimelineItemConstantProps ): JSX.Element =
     ( event ) => mouseCombo( event, {
       [ MouseComboBit.LMB ]: () => {
         grabRight();
-      }
+      },
+      [ MouseComboBit.LMB + MouseComboBit.Alt ]: false, // give a way to seek!
     } ),
     [ grabRight ]
   );
