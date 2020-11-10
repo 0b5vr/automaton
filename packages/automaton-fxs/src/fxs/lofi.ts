@@ -6,7 +6,7 @@ export const lofi: FxDefinition = {
   params: {
     rate: { name: 'Frame Rate', type: 'float', default: 10.0, min: 0.0, max: 1000.0 },
     relative: { name: 'Relative', type: 'boolean', default: false },
-    reso: { name: 'Reso Per Unit', type: 'float', default: 0.1, min: 0.0, max: 1000.0 },
+    reso: { name: 'Reso Per Unit', type: 'float', default: 10.0, min: 0.0, max: 1000.0 },
     round: { name: 'Round', type: 'boolean', default: false }
   },
   func( context ) {
