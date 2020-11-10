@@ -1,6 +1,14 @@
 // Welcome to Automaton playground!
 // Use the dropdown above to see other examples and tutorials...
 
+// This script is evaluated using 🔥🔥🔥 eval 🔥🔥🔥
+
+// `AUTOMATON_FXS` is the module `@fms-cat/automaton-fxs`
+// `AUTOMATON_WITH_GUI` is the module `@fms-cat/automaton-with-gui`
+
+// `playground.update` will be executed every frame
+// `playground.unload` will be executed when it gets unloaded
+
 const PI = Math.PI;
 const TAU = PI * 2.0;
 
