@@ -1,6 +1,6 @@
 {
   "name": "@fms-cat/automaton-fxs",
-  "version": "3.0.1",
+  "version": "3.1.0",
   "description": "Bunch of automaton fxs",
   "repository": "https://github.com/FMS-Cat/automaton",
   "author": "FMS-Cat",
@@ -48,6 +48,6 @@
     "/README.md"
   ],
   "dependencies": {
-    "@fms-cat/automaton": "^3.0.1"
+    "@fms-cat/automaton": "^3.1.0"
   }
 }
