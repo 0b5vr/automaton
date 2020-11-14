@@ -1,5 +1,6 @@
 import { Colors } from '../constants/Colors';
 import { Icons } from '../icons/Icons';
+import { InspectorBeat } from './InspectorBeat';
 import { InspectorChannelItem } from './InspectorChannelItem';
 import { InspectorCurveFx } from './InspectorCurveFx';
 import { InspectorCurveNode } from './InspectorCurveNode';
@@ -62,6 +63,8 @@ const Inspector = ( { className }: {
   let content: JSX.Element | null = null;
   if ( settingsMode === 'snapping' ) {
     content = <InspectorSnapping />;
+  } else if ( settingsMode === 'beat' ) {
+    content = <InspectorBeat />;
   } else if ( settingsMode === 'general' ) {
     content = <InspectorGeneral />;
   } else if ( mode === 'curve' ) {

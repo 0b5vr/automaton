@@ -69,29 +69,6 @@ const InspectorSnapping = (): JSX.Element | null => {
         } }
       />
     </InspectorItem>
-    <InspectorItem
-      name="BPM"
-      description="Beat per minute of the song."
-    >
-      <NumberParam
-        type="float"
-        value={ guiSettings.snapBeatBPM }
-        onChange={ ( value ) => {
-          automaton.setGUISettings( 'snapBeatBPM', Math.max( 0.0, value ) );
-        } }
-      />
-    </InspectorItem>
-    <InspectorItem
-      name="Use Beat in GUI"
-      description="Show beat instead of time in GUI."
-    >
-      <BoolParam
-        value={ guiSettings.useBeatInGUI }
-        onChange={ ( value ) => {
-          automaton.setGUISettings( 'useBeatInGUI', value );
-        } }
-      />
-    </InspectorItem>
   </> ) ?? null;
 };
 
