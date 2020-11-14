@@ -58,7 +58,10 @@ const InspectorSnapping = (): JSX.Element | null => {
 
     <InspectorHr />
 
-    <InspectorItem name="Beat">
+    <InspectorItem
+      name="Beat Snap"
+      description="Make items snap to the beat."
+    >
       <BoolParam
         value={ guiSettings.snapBeatActive }
         onChange={ ( value ) => {
@@ -66,7 +69,10 @@ const InspectorSnapping = (): JSX.Element | null => {
         } }
       />
     </InspectorItem>
-    <InspectorItem name="BPM">
+    <InspectorItem
+      name="BPM"
+      description="Beat per minute of the song."
+    >
       <NumberParam
         type="float"
         value={ guiSettings.snapBeatBPM }
@@ -76,8 +82,8 @@ const InspectorSnapping = (): JSX.Element | null => {
       />
     </InspectorItem>
     <InspectorItem
-      name="Use Beat"
-      data-stalker="Show beat instead of time in GUI."
+      name="Use Beat in GUI"
+      description="Show beat instead of time in GUI."
     >
       <BoolParam
         value={ guiSettings.useBeatInGUI }
