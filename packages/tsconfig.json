@@ -1,0 +1,8 @@
+{
+  "files": [],
+  "references": [
+    { "path": "automaton" },
+    { "path": "automaton-fxs" },
+    { "path": "automaton-with-gui" }
+  ]
+}

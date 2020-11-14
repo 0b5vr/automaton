@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "es6",
+    "strict": true,
+    "moduleResolution": "node",
+    "downlevelIteration": true,
+    "lib": [ "es2020", "dom" ]
+  }
+}
