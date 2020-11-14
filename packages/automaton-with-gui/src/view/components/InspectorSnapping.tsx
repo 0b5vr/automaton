@@ -75,6 +75,17 @@ const InspectorSnapping = (): JSX.Element | null => {
         } }
       />
     </InspectorItem>
+    <InspectorItem
+      name="Use Beat"
+      data-stalker="Show beat instead of time in GUI."
+    >
+      <BoolParam
+        value={ guiSettings.useBeatInGUI }
+        onChange={ ( value ) => {
+          automaton.setGUISettings( 'useBeatInGUI', value );
+        } }
+      />
+    </InspectorItem>
   </> ) ?? null;
 };
 

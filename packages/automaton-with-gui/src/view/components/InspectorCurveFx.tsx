@@ -6,6 +6,7 @@ import { InspectorItem } from './InspectorItem';
 import { NumberParam } from './NumberParam';
 import { clamp } from '../../utils/clamp';
 import { useDispatch, useSelector } from '../states/store';
+import { useTimeUnit } from '../utils/useTimeUnit';
 import React from 'react';
 
 // == component ====================================================================================
@@ -23,6 +24,7 @@ const InspectorCurveFx = ( props: InspectorCurveFxProps ): JSX.Element | null =>
   const curve = automaton?.getCurveById( props.curveId ) || null;
   const fx = curves[ props.curveId ].fxs[ props.fx ];
   const fxDefParams = automaton?.getFxDefinitionParams( fx.def );
+  const { displayToTime, timeToDisplay } = useTimeUnit();
 
   return ( automaton && curve && <>
     <InspectorHeader text={ `Fx: ${ automaton.getFxDefinitionName( fx.def ) }` } />
@@ -32,9 +34,9 @@ const InspectorCurveFx = ( props: InspectorCurveFxProps ): JSX.Element | null =>
     <InspectorItem name="Time">
       <NumberParam
         type="float"
-        value={ fx.time }
-        onChange={ ( value ) => { curve.moveFx( fx.$id, value ); } }
-        onSettle={ ( time, timePrev ) => {
+        value={ timeToDisplay( fx.time ) }
+        onChange={ ( value ) => { curve.moveFx( fx.$id, displayToTime( value ) ); } }
+        onSettle={ ( value, valuePrev ) => {
           dispatch( {
             type: 'History/Push',
             description: 'Change Fx Length',
@@ -43,8 +45,8 @@ const InspectorCurveFx = ( props: InspectorCurveFxProps ): JSX.Element | null =>
                 type: 'curve/moveFx',
                 curveId: props.curveId,
                 fx: fx.$id,
-                time,
-                timePrev
+                time: displayToTime( value ),
+                timePrev: displayToTime( valuePrev ),
               }
             ]
           } );
@@ -54,9 +56,9 @@ const InspectorCurveFx = ( props: InspectorCurveFxProps ): JSX.Element | null =>
     <InspectorItem name="Length">
       <NumberParam
         type="float"
-        value={ fx.length }
-        onChange={ ( value ) => { curve.resizeFx( fx.$id, value ); } }
-        onSettle={ ( length, lengthPrev ) => {
+        value={ timeToDisplay( fx.length ) }
+        onChange={ ( value ) => { curve.resizeFx( fx.$id, displayToTime( value ) ); } }
+        onSettle={ ( value, valuePrev ) => {
           dispatch( {
             type: 'History/Push',
             description: 'Change Fx Length',
@@ -65,8 +67,8 @@ const InspectorCurveFx = ( props: InspectorCurveFxProps ): JSX.Element | null =>
                 type: 'curve/resizeFx',
                 curveId: props.curveId,
                 fx: fx.$id,
-                length,
-                lengthPrev
+                length: displayToTime( value ),
+                lengthPrev: displayToTime( valuePrev ),
               }
             ]
           } );
