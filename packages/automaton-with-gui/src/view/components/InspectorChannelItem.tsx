@@ -5,6 +5,7 @@ import { InspectorHr } from './InspectorHr';
 import { InspectorItem } from './InspectorItem';
 import { NumberParam } from './NumberParam';
 import { useDispatch, useSelector } from '../states/store';
+import { useTimeUnit } from '../utils/useTimeUnit';
 import React from 'react';
 import styled from 'styled-components';
 import type { StateChannelItem } from '../../types/StateChannelItem';
@@ -133,6 +134,7 @@ const InspectorChannelItem = ( props: Props ): JSX.Element | null => {
     stateItem: state.automaton.channels[ channelName ].items[ itemId ]
   } ) );
   const channel = automaton?.getChannel( channelName ) ?? null;
+  const { displayToTime, timeToDisplay } = useTimeUnit();
 
   return ( automaton && channel && (
     <Root className={ className }>
@@ -143,9 +145,9 @@ const InspectorChannelItem = ( props: Props ): JSX.Element | null => {
       <InspectorItem name="Time">
         <NumberParam
           type="float"
-          value={ stateItem.time }
-          onChange={ ( value ) => { channel.moveItem( itemId, value ); } }
-          onSettle={ ( time, timePrev ) => {
+          value={ timeToDisplay( stateItem.time, true ) }
+          onChange={ ( value ) => { channel.moveItem( itemId, displayToTime( value, true ) ); } }
+          onSettle={ ( value, valuePrev ) => {
             dispatch( {
               type: 'History/Push',
               description: 'Change Item Time',
@@ -154,8 +156,8 @@ const InspectorChannelItem = ( props: Props ): JSX.Element | null => {
                   type: 'channel/moveItem',
                   channel: channelName,
                   item: itemId,
-                  time,
-                  timePrev
+                  time: displayToTime( value, true ),
+                  timePrev: displayToTime( valuePrev, true ),
                 }
               ]
             } );
@@ -166,9 +168,9 @@ const InspectorChannelItem = ( props: Props ): JSX.Element | null => {
       <InspectorItem name="Length">
         <NumberParam
           type="float"
-          value={ stateItem.length }
-          onChange={ ( value ) => { channel.resizeItem( itemId, value ); } }
-          onSettle={ ( length, lengthPrev ) => {
+          value={ timeToDisplay( stateItem.length ) }
+          onChange={ ( value ) => { channel.resizeItem( itemId, displayToTime( value ) ); } }
+          onSettle={ ( value, valuePrev ) => {
             dispatch( {
               type: 'History/Push',
               description: 'Change Item Length',
@@ -177,8 +179,8 @@ const InspectorChannelItem = ( props: Props ): JSX.Element | null => {
                   type: 'channel/resizeItem',
                   channel: channelName,
                   item: itemId,
-                  length,
-                  lengthPrev,
+                  length: displayToTime( value ),
+                  lengthPrev: displayToTime( valuePrev ),
                   stretch: false
                 }
               ]

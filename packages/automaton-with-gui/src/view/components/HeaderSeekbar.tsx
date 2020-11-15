@@ -3,15 +3,18 @@ import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
 import { clamp } from '../../utils/clamp';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
 import { useDispatch, useSelector } from '../states/store';
+import { useTimeUnit } from '../utils/useTimeUnit';
 import React, { useCallback } from 'react';
 import styled from 'styled-components';
 
 // == microcomponent ===============================================================================
 const CurrentTime = ( { className }: { className?: string } ): JSX.Element => {
   const time = useSelector( ( state ) => state.automaton.time );
+  const { timeToDisplay } = useTimeUnit();
+
   return (
     <span className={ className }>
-      { time.toFixed( 3 ) }
+      { timeToDisplay( time, true ).toFixed( 3 ) }
     </span>
   );
 };
@@ -87,6 +90,7 @@ const HeaderSeekbar = ( { className }: HeaderSeekbarProps ): JSX.Element => {
     isSeeking: state.header.isSeeking,
     isSeekbarHovered: state.header.isSeekbarHovered
   } ) );
+  const { timeToDisplay } = useTimeUnit();
 
   const handleMouseDown = useCallback(
     ( event ) => mouseCombo( event, {
@@ -137,7 +141,7 @@ const HeaderSeekbar = ( { className }: HeaderSeekbarProps ): JSX.Element => {
       onMouseLeave={ handleMouseLeave }
     >
       <StyledCurrentTime />
-      <TotalTime> / { length.toFixed( 3 ) }</TotalTime>
+      <TotalTime> / { timeToDisplay( length, true ).toFixed( 3 ) }</TotalTime>
       <BarBG />
       <StyledBarFG
         isSeeking={ isSeeking }

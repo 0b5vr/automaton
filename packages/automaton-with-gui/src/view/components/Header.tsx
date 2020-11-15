@@ -1,8 +1,8 @@
-import { AutomatonWithGUI } from '../../AutomatonWithGUI';
 import { Colors } from '../constants/Colors';
 import { HeaderSeekbar } from './HeaderSeekbar';
 import { Icons } from '../icons/Icons';
 import { Metrics } from '../constants/Metrics';
+import { minimizeData } from '../../minimizeData';
 import { performRedo, performUndo } from '../history/HistoryCommand';
 import { showToasty } from '../states/Toasty';
 import { useDispatch, useSelector } from '../states/store';
@@ -229,7 +229,7 @@ const Header = ( { className }: HeaderProps ): JSX.Element => {
                   precisionTime: automaton.guiSettings.minimizedPrecisionTime,
                   precisionValue: automaton.guiSettings.minimizedPrecisionValue
                 };
-                const minimized = AutomatonWithGUI.minimizeData( data, options );
+                const minimized = minimizeData( data, options );
                 save( JSON.stringify( minimized ) );
               }
             }
@@ -298,6 +298,17 @@ const Header = ( { className }: HeaderProps ): JSX.Element => {
           } }
           active={ ( settingsMode === 'snapping' ? 1 : 0 ) as any as boolean } // fuck
           data-stalker="Snapping"
+        />
+        <Button
+          as={ Icons.Beat }
+          onClick={ () => {
+            dispatch( {
+              type: 'Settings/ChangeMode',
+              mode: settingsMode === 'beat' ? 'none' : 'beat'
+            } );
+          } }
+          active={ ( settingsMode === 'beat' ? 1 : 0 ) as any as boolean } // fuck
+          data-stalker="Beat"
         />
         <Button
           as={ Icons.Cog }

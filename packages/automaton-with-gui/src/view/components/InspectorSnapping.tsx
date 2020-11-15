@@ -58,20 +58,14 @@ const InspectorSnapping = (): JSX.Element | null => {
 
     <InspectorHr />
 
-    <InspectorItem name="Beat">
+    <InspectorItem
+      name="Beat Snap"
+      description="Make items snap to the beat."
+    >
       <BoolParam
         value={ guiSettings.snapBeatActive }
         onChange={ ( value ) => {
           automaton.setGUISettings( 'snapBeatActive', value );
-        } }
-      />
-    </InspectorItem>
-    <InspectorItem name="BPM">
-      <NumberParam
-        type="float"
-        value={ guiSettings.snapBeatBPM }
-        onChange={ ( value ) => {
-          automaton.setGUISettings( 'snapBeatBPM', Math.max( 0.0, value ) );
         } }
       />
     </InspectorItem>

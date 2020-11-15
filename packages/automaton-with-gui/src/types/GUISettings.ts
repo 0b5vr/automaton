@@ -33,6 +33,11 @@ export interface GUISettings {
   snapBeatBPM: number;
 
   /**
+   * Use beat instead of time in GUI.
+   */
+  useBeatInGUI: boolean;
+
+  /**
    * Fractional precision for minimized data, for time axis.
    */
   minimizedPrecisionTime: number;
@@ -50,6 +55,7 @@ export const defaultGUISettings: Readonly<GUISettings> = {
   snapValueInterval: 0.1,
   snapBeatActive: false,
   snapBeatBPM: 140.0,
+  useBeatInGUI: false,
   minimizedPrecisionTime: 3,
   minimizedPrecisionValue: 3,
 };

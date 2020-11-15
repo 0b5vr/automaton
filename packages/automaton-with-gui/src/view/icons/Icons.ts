@@ -1,5 +1,6 @@
 import Automaton from './automaton.svg';
 import AutomatonA from './automaton-a.svg';
+import Beat from './beat.svg';
 import Channel from './channel.svg';
 import Close from './close.svg';
 import Cog from './cog.svg';
@@ -20,6 +21,7 @@ import Warning from './warning.svg';
 export const Icons = {
   Automaton,
   AutomatonA,
+  Beat,
   Channel,
   Close,
   Cog,
