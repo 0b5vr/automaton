@@ -117,15 +117,33 @@ export class CurveWithGUI extends Curve {
    * @param data Data of curve
    */
   public deserialize( data: SerializedCurve ): void {
+    data.nodes.forEach( ( node ) => {
+      // fill missing handles
+      node.in = node.in ?? { time: 0.0, value: 0.0 };
+      node.out = node.out ?? { time: 0.0, value: 0.0 };
+    } );
+
+    data.fxs?.forEach( ( fx ) => {
+      // fill missing params
+      const defParams = this.__automaton.getFxDefinitionParams( fx.def );
+      if ( defParams ) {
+        const newParams: { [ key: string ]: any } = {};
+        Object.entries( defParams ).forEach( ( [ key, value ] ) => {
+          newParams[ key ] = fx.params[ key ] ?? value.default;
+        } );
+        fx.params = newParams;
+      }
+    } );
+
     super.deserialize( jsonCopy( data ) );
 
     this.__nodes.forEach( ( node ) => {
-      node.in = node.in || { time: 0.0, value: 0.0 };
-      node.out = node.out || { time: 0.0, value: 0.0 };
       node.$id = genID();
     } );
 
-    this.__fxs.forEach( ( fx ) => fx.$id = genID() );
+    this.__fxs.forEach( ( fxs ) => {
+      fxs.$id = genID();
+    } );
   }
 
   /**

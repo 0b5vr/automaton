@@ -1,5 +1,5 @@
 import { App } from './view/components/App';
-import { Automaton, ChannelUpdateEvent, FxDefinition, FxParam, SerializedAutomaton, SerializedChannel, SerializedCurve } from '@fms-cat/automaton';
+import { Automaton, AutomatonOptions, ChannelUpdateEvent, FxDefinition, FxParam, SerializedAutomaton, SerializedChannel, SerializedCurve } from '@fms-cat/automaton';
 import { ChannelWithGUI } from './ChannelWithGUI';
 import { ContextMenuCommand } from './view/states/ContextMenu';
 import { CurveWithGUI } from './CurveWithGUI'; // 🔥🔥🔥🔥🔥🔥
@@ -19,7 +19,6 @@ import { minimizeData } from './minimizeData';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import produce from 'immer';
-import type { AutomatonOptions } from '@fms-cat/automaton/types/types/AutomatonOptions';
 import type { ToastyParams } from './types/ToastyParams';
 
 /**
