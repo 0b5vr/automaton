@@ -25,6 +25,10 @@ export type HistoryCommand = {
   type: 'automaton/removeCurve';
   data: SerializedCurve & WithID;
 } | {
+  type: 'automaton/reorderChannels';
+  name: string;
+  deltaIndex: number;
+} | {
   type: 'automaton/createLabel';
   name: string;
   time: number;
@@ -209,6 +213,11 @@ export function parseHistoryCommand( command: HistoryCommand ): {
     return {
       undo: ( automaton ) => automaton.removeCurve( command.data.$id ),
       redo: ( automaton ) => automaton.createCurve( command.data ),
+    };
+  } else if ( command.type === 'automaton/reorderChannels' ) {
+    return {
+      undo: ( automaton ) => automaton.reorderChannels( command.name, true )( -command.deltaIndex ),
+      redo: ( automaton ) => automaton.reorderChannels( command.name, true )( command.deltaIndex ),
     };
   } else if ( command.type === 'automaton/removeCurve' ) {
     return {

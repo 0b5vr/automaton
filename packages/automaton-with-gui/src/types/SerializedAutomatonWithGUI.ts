@@ -26,5 +26,5 @@ export const defaultDataWithGUI: Readonly<SerializedAutomatonWithGUI> = {
   version: process.env.VERSION!,
   resolution: 100,
   curves: [],
-  channels: {}
+  channels: []
 };

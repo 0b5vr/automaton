@@ -5,7 +5,7 @@ import { registerMouseEvent } from '../utils/registerMouseEvent';
 import { useDispatch, useSelector } from '../states/store';
 import { useRect } from '../utils/useRect';
 import { useWheelEvent } from '../utils/useWheelEvent';
-import React, { useCallback, useMemo, useRef } from 'react';
+import React, { useCallback, useRef } from 'react';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
@@ -37,11 +37,6 @@ const DopeSheet = ( { className }: DopeSheetProps ): JSX.Element => {
     range: state.timeline.range,
     guiSettings: state.automaton.guiSettings,
   } ) );
-
-  const sortedChannelNames = useMemo(
-    () => Array.from( channelNames ).sort(),
-    [ channelNames ]
-  );
 
   const move = useCallback(
     ( dx: number ): void => {
@@ -233,7 +228,7 @@ const DopeSheet = ( { className }: DopeSheetProps ): JSX.Element => {
       onMouseDown={ handleMouseDown }
       onContextMenu={ handleContextMenu }
     >
-      { sortedChannelNames.map( ( channel ) => (
+      { channelNames.map( ( channel ) => (
         <StyledDopeSheetEntry
           key={ channel }
           channel={ channel }

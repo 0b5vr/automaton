@@ -10,7 +10,7 @@ const defaultData: SerializedAutomaton = {
   curves: [
     { nodes: [ { time: 0.0, value: 0.0 }, { time: 1.0, value: 1.0 } ] },
   ],
-  channels: {}
+  channels: []
 };
 
 describe( 'add', () => {

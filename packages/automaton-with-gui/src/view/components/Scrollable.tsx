@@ -68,10 +68,11 @@ export interface ScrollableProps {
   className?: string;
   children?: ReactNode;
   barPosition?: 'left' | 'right' | 'none';
+  onScroll?: ( scroll: number ) => void;
 }
 
 const Scrollable = ( props: ScrollableProps ): JSX.Element => {
-  const { className, children, barPosition } = props;
+  const { className, children, barPosition, onScroll } = props;
   const refRoot = useRef<HTMLDivElement>( null );
   const refContainer = useRef<HTMLDivElement>( null );
   const [ top, setTop ] = useState( 0 );
@@ -91,10 +92,13 @@ const Scrollable = ( props: ScrollableProps ): JSX.Element => {
         const contentHeight = refContainer.current?.clientHeight || 1.0;
 
         const scrollMax = contentHeight - visibleHeight;
-        setTop( Math.min( Math.max( top - event.deltaY, -scrollMax ), 0.0 ) );
+        const newTop = Math.min( Math.max( top - event.deltaY, -scrollMax ), 0.0 );
+        setTop( newTop );
+
+        onScroll && onScroll( newTop );
       }
     },
-    [ top ]
+    [ onScroll, top ]
   );
 
   useEffect( // 🔥 fuck

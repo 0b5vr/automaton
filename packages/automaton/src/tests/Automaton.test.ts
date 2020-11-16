@@ -10,10 +10,10 @@ const data: SerializedAutomaton = {
     { nodes: [ { time: 0.0, value: 0.0 }, { time: 0.6, value: 1.0 } ] },
     { nodes: [ { time: 0.0, value: 2.0 }, { time: 0.6, value: 2.0 } ] }
   ],
-  channels: {
-    channelWithALinearCurve: { items: [ { curve: 0, time: 0.1 } ] },
-    channelWithAConstantCurve: { items: [ { curve: 1, time: 0.1 } ] },
-  }
+  channels: [
+    [ 'channelWithALinearCurve', { items: [ { curve: 0, time: 0.1 } ] } ],
+    [ 'channelWithAConstantCurve', { items: [ { curve: 1, time: 0.1 } ] } ],
+  ]
 };
 
 describe( 'Automaton', () => {

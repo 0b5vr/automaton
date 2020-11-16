@@ -1,8 +1,9 @@
 import { App } from './view/components/App';
 import { Automaton, AutomatonOptions, ChannelUpdateEvent, FxDefinition, FxParam, SerializedAutomaton, SerializedChannel, SerializedCurve } from '@fms-cat/automaton';
+import { BiMap } from './utils/BiMap';
 import { ChannelWithGUI } from './ChannelWithGUI';
-import { ContextMenuCommand } from './view/states/ContextMenu';
-import { CurveWithGUI } from './CurveWithGUI'; // 🔥🔥🔥🔥🔥🔥
+import { ContextMenuCommand } from './view/states/ContextMenu'; // 🔥🔥🔥🔥🔥🔥
+import { CurveWithGUI } from './CurveWithGUI';
 import { EventEmittable } from './mixins/EventEmittable';
 import { GUIRemocon } from './GUIRemocon';
 import { GUISettings, defaultGUISettings } from './types/GUISettings';
@@ -16,6 +17,7 @@ import { createStore } from './view/states/store';
 import { jsonCopy } from './utils/jsonCopy';
 import { lofi } from './utils/lofi';
 import { minimizeData } from './minimizeData';
+import { reorderArray } from './utils/reorderArray';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import produce from 'immer';
@@ -85,6 +87,21 @@ export class AutomatonWithGUI extends Automaton
   public saveContextMenuCommands?: Array<ContextMenuCommand>;
 
   /**
+   * Curves of the automaton.
+   */
+  public readonly curves!: CurveWithGUI[]; // is initialized in super constructor
+
+  /**
+   * Channels of the timeline.
+   */
+  public readonly channels!: ChannelWithGUI[]; // is initialized in super constructor
+
+  /**
+   * Map of channels, name vs. channel itself.
+   */
+  public readonly mapNameToChannel!: BiMap<string, ChannelWithGUI>; // is initialized as a Map in super constructor, will be converted to BiMap later in its constructor
+
+  /**
    * Labels.
    */
   protected __labels!: { [ name: string ]: number }; // will be initialized @ deserialize
@@ -93,16 +110,6 @@ export class AutomatonWithGUI extends Automaton
    * Version of the automaton.
    */
   protected __version: string = process.env.VERSION!;
-
-  /**
-   * Curves of the automaton.
-   */
-  protected __curves!: CurveWithGUI[]; // will be initialized @ deserialize
-
-  /**
-   * Channels of the timeline.
-   */
-  protected __channels!: { [ name: string ]: ChannelWithGUI }; // will be initialized @ deserialize
 
   /**
    * It's currently playing or not.
@@ -161,24 +168,17 @@ export class AutomatonWithGUI extends Automaton
    */
   public get length(): number {
     let result = 0.0;
-    Object.values( this.__channels ).forEach( ( channel ) => {
+    this.channels.forEach( ( channel ) => {
       result = Math.max( result, channel.length );
     } );
     return result;
   }
 
   /**
-   * A map of channels.
+   * Channel names, ordered.
    */
-  public get channels(): { [ name: string ]: ChannelWithGUI } {
-    return this.__channels;
-  }
-
-  /**
-   * Curves of the automaton.
-   */
-  public get curves(): CurveWithGUI[] {
-    return this.__curves;
+  public get channelNames(): string[] {
+    return this.channels.map( ( channel ) => this.mapNameToChannel.getFromValue( channel )! );
   }
 
   /**
@@ -227,6 +227,7 @@ export class AutomatonWithGUI extends Automaton
     options: AutomatonWithGUIOptions = {}
   ) {
     super( compat( data ), options );
+    this.mapNameToChannel = new BiMap<string, ChannelWithGUI>( this.mapNameToChannel );
 
     this.__isPlaying = options.isPlaying || false;
 
@@ -236,7 +237,7 @@ export class AutomatonWithGUI extends Automaton
 
     // if `options.disableChannelNotUsedWarning` is true, mark every channels as used
     if ( this.__isDisabledChannelNotUsedWarning ) {
-      Object.values( this.__channels ).forEach( ( channel ) => {
+      Object.values( this.channels ).forEach( ( channel ) => {
         channel.markAsUsed();
       } );
     }
@@ -299,7 +300,7 @@ export class AutomatonWithGUI extends Automaton
    * Almost same as {@link update}, but not instant.
    */
   public cueReset(): void {
-    Object.values( this.__channels ).map( ( channel ) => {
+    Object.values( this.channels ).map( ( channel ) => {
       channel.cueReset();
     } );
   }
@@ -383,12 +384,13 @@ export class AutomatonWithGUI extends Automaton
    * @returns Created channel
    */
   public createChannel( name: string, data?: SerializedChannel ): ChannelWithGUI {
-    if ( this.__channels[ name ] ) {
+    if ( this.mapNameToChannel.has( name ) ) {
       throw new Error( 'AutomatonWithGUI: A channel for the given name already exists' );
     }
 
     const channel = new ChannelWithGUI( this, data );
-    this.__channels[ name ] = channel;
+    this.channels.push( channel );
+    this.mapNameToChannel.set( name, channel );
 
     // if `options.disableChannelNotUsedWarning` is true, mark the created channels as used
     if ( this.__isDisabledChannelNotUsedWarning ) {
@@ -414,12 +416,13 @@ export class AutomatonWithGUI extends Automaton
    * @returns Created channel
    */
   public createOrOverwriteChannel( name: string, data?: SerializedChannel ): ChannelWithGUI {
-    if ( this.__channels[ name ] ) {
+    if ( this.mapNameToChannel.has( name ) ) {
       this.removeChannel( name );
     }
 
     const channel = new ChannelWithGUI( this, data );
-    this.__channels[ name ] = channel;
+    this.channels.push( channel );
+    this.mapNameToChannel.set( name, channel );
 
     channel.on( 'changeLength', () => {
       this.__tryUpdateLength();
@@ -437,11 +440,16 @@ export class AutomatonWithGUI extends Automaton
    * @param name Name of channel
    */
   public removeChannel( name: string ): void {
-    delete this.__channels[ name ];
+    const channel = this.mapNameToChannel.get( name );
 
-    this.__emit( 'removeChannel', { name } );
+    if ( channel ) {
+      this.channels.splice( this.channels.indexOf( channel ), 1 );
+      this.mapNameToChannel.delete( name );
 
-    this.shouldSave = true;
+      this.__emit( 'removeChannel', { name } );
+
+      this.shouldSave = true;
+    }
   }
 
   /**
@@ -450,7 +458,7 @@ export class AutomatonWithGUI extends Automaton
    * @returns The channel
    */
   public getChannel( name: string ): ChannelWithGUI | null {
-    return this.__channels[ name ] || null;
+    return this.mapNameToChannel.get( name ) ?? null;
   }
 
   /**
@@ -460,9 +468,54 @@ export class AutomatonWithGUI extends Automaton
    * @returns The channel
    */
   public getOrCreateChannel( name: string ): ChannelWithGUI {
-    let channel = this.__channels[ name ];
+    let channel = this.getChannel( name );
+
     if ( !channel ) { channel = this.createChannel( name ); }
     return channel;
+  }
+
+  /**
+   * Get the index of a channel.
+   * @param name Name of the channel
+   * @returns The index of the channel
+   */
+  public getChannelIndex( name: string ): number {
+    const channel = this.mapNameToChannel.get( name );
+
+    if ( !channel ) {
+      throw new Error( `getChannelIndex: A channel called ${ name } is not defined!` );
+    }
+
+    const index = this.channels.indexOf( channel );
+    return index;
+  }
+
+  /**
+   * Reorder channels.
+   * @param name Name of the channel
+   * @param isRelative Will interpret given index relatively if it's `true`
+   * @returns A function to reorder channels. Give a new index
+   */
+  public reorderChannels(
+    name: string,
+    isRelative = false
+  ): ( index: number ) => ChannelWithGUI[] {
+    const index0 = this.getChannelIndex( name );
+
+    return reorderArray(
+      this.channels,
+      index0,
+      1,
+      ( { index, length, newIndex } ) => {
+        if ( isRelative ) {
+          newIndex += index0;
+        }
+
+        this.__emit( 'reorderChannels', { index, length, newIndex } );
+
+        return newIndex;
+      }
+    );
   }
 
   /**
@@ -471,7 +524,7 @@ export class AutomatonWithGUI extends Automaton
    */
   public createCurve( data?: SerializedCurve & Partial<WithID> ): CurveWithGUI {
     const curve = new CurveWithGUI( this, data );
-    this.__curves.push( curve );
+    this.curves.push( curve );
 
     this.__emit( 'createCurve', { id: curve.$id, curve } );
 
@@ -485,10 +538,10 @@ export class AutomatonWithGUI extends Automaton
    * @param index Index of the curve
    */
   public removeCurve( curveId: string ): void {
-    const index = this.__curves.findIndex( ( curve ) => curve.$id === curveId );
+    const index = this.curves.findIndex( ( curve ) => curve.$id === curveId );
     if ( index === -1 ) { return; }
 
-    const curve = this.__curves[ index ];
+    const curve = this.curves[ index ];
 
     if ( curve.isUsed ) {
       const error = new Error( 'removeCurve: The curve is still used in somewhere!' );
@@ -498,7 +551,7 @@ export class AutomatonWithGUI extends Automaton
 
     const id = curve.$id;
 
-    this.__curves.splice( index, 1 );
+    this.curves.splice( index, 1 );
 
     this.__emit( 'removeCurve', { id } );
 
@@ -511,7 +564,7 @@ export class AutomatonWithGUI extends Automaton
    * @returns The curve
    */
   public getCurve( index: number ): CurveWithGUI | null {
-    return this.__curves[ index ] || null;
+    return this.curves[ index ] || null;
   }
 
   /**
@@ -521,7 +574,7 @@ export class AutomatonWithGUI extends Automaton
    */
   public getCurveById( id: string ): CurveWithGUI {
     const index = this.getCurveIndexById( id );
-    return this.__curves[ index ];
+    return this.curves[ index ];
   }
 
   /**
@@ -531,7 +584,7 @@ export class AutomatonWithGUI extends Automaton
    * @returns The index of the curve
    */
   public getCurveIndexById( id: string ): number {
-    const index = this.__curves.findIndex( ( curve ) => curve.$id === id );
+    const index = this.curves.findIndex( ( curve ) => curve.$id === id );
     if ( index === -1 ) { throw new Error( `Searched for item id: ${id} but not found` ); }
     return index;
   }
@@ -591,7 +644,7 @@ export class AutomatonWithGUI extends Automaton
    * @returns Count of channels
    */
   public countChannels(): number {
-    return Object.keys( this.__channels ).length;
+    return Object.keys( this.channels ).length;
   }
 
   /**
@@ -601,7 +654,7 @@ export class AutomatonWithGUI extends Automaton
    * @returns the index of the curve
    */
   public getCurveIndex( curve: CurveWithGUI ): number {
-    return this.__curves.indexOf( curve );
+    return this.curves.indexOf( curve );
   }
 
   /**
@@ -634,26 +687,35 @@ export class AutomatonWithGUI extends Automaton
   public deserialize( data: SerializedAutomatonWithGUI ): void {
     this.__resolution = data.resolution;
 
-    this.__curves = data.curves.map(
-      ( curve ) => new CurveWithGUI( this, curve )
+    this.curves.splice( 0 );
+    this.curves.push(
+      ...data.curves.map(
+        ( curve ) => new CurveWithGUI( this, curve )
+      ),
     );
 
-    this.__channels = {};
-    for ( const name in data.channels ) {
-      const channel = new ChannelWithGUI( this, data.channels[ name ] );
-      this.__channels[ name ] = channel;
+    this.mapNameToChannel.clear();
 
-      // if `options.disableChannelNotUsedWarning` is true, mark every channels as used
-      if ( this.__isDisabledChannelNotUsedWarning ) {
-        channel.markAsUsed();
-      }
+    this.channels.splice( 0 );
+    this.channels.push(
+      ...data.channels.map( ( [ name, channelData ] ) => {
+        const channel = new ChannelWithGUI( this, channelData );
+        this.mapNameToChannel.set( name, channel );
 
-      channel.on( 'changeLength', () => {
-        this.__tryUpdateLength();
-      } );
-    }
+        // if `options.disableChannelNotUsedWarning` is true, mark every channels as used
+        if ( this.__isDisabledChannelNotUsedWarning ) {
+          channel.markAsUsed();
+        }
 
-    this.__labels = data.labels || {};
+        channel.on( 'changeLength', () => {
+          this.__tryUpdateLength();
+        } );
+
+        return channel;
+      } )
+    );
+
+    this.__labels = data.labels ?? {};
 
     this.__guiSettings = {
       ...defaultGUISettings,
@@ -674,7 +736,7 @@ export class AutomatonWithGUI extends Automaton
       version: this.version,
       resolution: this.resolution,
       curves: this.__serializeCurves(),
-      channels: this.__serializeChannelList(),
+      channels: this.__serializeChannels(),
       labels: this.__labels,
       guiSettings: this.__guiSettings,
     };
@@ -793,15 +855,14 @@ export class AutomatonWithGUI extends Automaton
   }
 
   private __serializeCurves(): SerializedCurve[] {
-    return this.__curves.map( ( curve ) => curve.serialize() );
+    return this.curves.map( ( curve ) => curve.serialize() );
   }
 
-  private __serializeChannelList(): { [ name: string ]: SerializedChannel } {
-    const data: { [ name: string ]: SerializedChannel } = {};
-    Object.entries( this.__channels ).forEach( ( [ name, channel ] ) => {
-      data[ name ] = channel.serialize();
-    } );
-    return data;
+  private __serializeChannels(): [ name: string, channel: SerializedChannel ][] {
+    return this.channels.map( ( channel ) => [
+      this.mapNameToChannel.getFromValue( channel )!,
+      channel.serialize(),
+    ] );
   }
 
   private __tryUpdateLength(): void {
@@ -842,6 +903,7 @@ export interface AutomatonWithGUIEvents {
   update: { time: number };
   createChannel: { name: string; channel: ChannelWithGUI };
   removeChannel: { name: string };
+  reorderChannels: { index: number; length: number; newIndex: number };
   createCurve: { id: string; curve: CurveWithGUI };
   removeCurve: { id: string };
   addFxDefinitions: { fxDefinitions: { [ id: string ]: FxDefinition } };

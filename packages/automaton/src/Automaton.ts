@@ -19,7 +19,22 @@ export class Automaton {
    * @param listener A function that will be executed when the channel changes its value
    * @returns Current value of the channel
    */
-  public auto = this.__auto.bind( this );
+  public readonly auto = this.__auto.bind( this );
+
+  /**
+   * Curves of the automaton.
+   */
+  public readonly curves: Curve[] = [];
+
+  /**
+   * Channels of the timeline.
+   */
+  public readonly channels: Channel[] = [];
+
+  /**
+   * Map of channels, name vs. channel itself.
+   */
+  public readonly mapNameToChannel = new Map<string, Channel>();
 
   /**
    * Current time of the automaton.
@@ -36,16 +51,6 @@ export class Automaton {
    * Resolution of the timeline.
    */
   protected __resolution: number = 1000;
-
-  /**
-   * Curves of the automaton.
-   */
-  protected __curves: Curve[] = [];
-
-  /**
-   * Channels of the timeline.
-   */
-  protected __channels: { [ name: string ]: Channel } = {};
 
   /**
    * A map of fx definitions.
@@ -82,11 +87,28 @@ export class Automaton {
   public deserialize( data: SerializedAutomaton ): void {
     this.__resolution = data.resolution;
 
-    this.__curves = data.curves.map( ( data ) => new Curve( this, data ) );
+    this.curves.splice( 0 );
+    this.curves.push(
+      ...data.curves.map( ( data ) => new Curve( this, data ) )
+    );
 
-    for ( const name in data.channels ) {
-      this.__channels[ name ] = new Channel( this, data.channels[ name ] );
-    }
+    this.mapNameToChannel.clear();
+
+    this.channels.splice( 0 );
+    this.channels.push(
+      ...data.channels.map( ( [ name, data ] ) => {
+        const channel = new Channel( this, data );
+
+        if ( process.env.NODE_ENV === 'development' ) {
+          if ( this.mapNameToChannel.has( name ) ) {
+            console.warn( `Duplicated channel: ${ name }` );
+          }
+        }
+
+        this.mapNameToChannel.set( name, channel );
+        return channel;
+      } )
+    );
   }
 
   /**
@@ -123,14 +145,14 @@ export class Automaton {
    * @param index An index of the curve
    */
   public getCurve( index: number ): Curve | null {
-    return this.__curves[ index ] || null;
+    return this.curves[ index ] || null;
   }
 
   /**
    * Precalculate all curves.
    */
   public precalcAll(): void {
-    Object.values( this.__curves ).forEach( ( curve ) => curve.precalc() );
+    Object.values( this.curves ).forEach( ( curve ) => curve.precalc() );
   }
 
   /**
@@ -138,7 +160,7 @@ export class Automaton {
    * **Call this method when you seek the time.**
    */
   public reset(): void {
-    Object.values( this.__channels ).forEach( ( channel ) => channel.reset() );
+    Object.values( this.channels ).forEach( ( channel ) => channel.reset() );
   }
 
   /**
@@ -153,9 +175,9 @@ export class Automaton {
     this.__time = t;
 
     // grab the current value for each channels
-    for ( const channel of Object.values( this.__channels ) ) {
+    this.channels.forEach( ( channel ) => {
       channel.update( this.__time );
-    }
+    } );
   }
 
   /**
@@ -168,10 +190,18 @@ export class Automaton {
     name: string,
     listener?: ( event: ChannelUpdateEvent ) => void
   ): number {
-    if ( listener ) {
-      this.__channels[ name ].subscribe( listener );
+    const channel = this.mapNameToChannel.get( name );
+
+    if ( process.env.NODE_ENV === 'development' ) {
+      if ( !channel ) {
+        throw new Error( `No such channel: ${ name }` );
+      }
     }
 
-    return this.__channels[ name ].currentValue;
+    if ( listener ) {
+      channel!.subscribe( listener );
+    }
+
+    return channel!.currentValue;
   }
 }

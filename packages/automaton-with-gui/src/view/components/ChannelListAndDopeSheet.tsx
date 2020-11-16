@@ -6,7 +6,7 @@ import { Metrics } from '../constants/Metrics';
 import { Scrollable } from './Scrollable';
 import { useDispatch, useSelector } from '../states/store';
 import { useRect } from '../utils/useRect';
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
@@ -68,6 +68,7 @@ const ChannelListAndDopeSheet = ( props: {
   } ) );
   const refRoot = useRef<HTMLDivElement>( null );
   const rect = useRect( refRoot );
+  const [ scrollTop, setScrollTop ] = useState( 0.0 );
 
   const shouldShowChannelList = mode === 'dope' || mode === 'channel';
 
@@ -130,6 +131,13 @@ const ChannelListAndDopeSheet = ( props: {
     [ dispatch, createChannel ]
   );
 
+  const handleScroll = useCallback(
+    ( scroll: number ): void => {
+      setScrollTop( scroll );
+    },
+    []
+  );
+
   return (
     <Root
       ref={ refRoot }
@@ -137,11 +145,16 @@ const ChannelListAndDopeSheet = ( props: {
       onContextMenu={ handleContextMenu }
     >
       { mode === 'dope' && <StyledDopeSheetUnderlay /> }
-      <ChannelListAndDopeSheetScrollable barPosition='left'>
+      <ChannelListAndDopeSheetScrollable
+        barPosition='left'
+        onScroll={ handleScroll }
+      >
         <ChannelListAndDopeSheetContainer
           style={ { minHeight: rect.height } }
         >
-          { shouldShowChannelList && <StyledChannelList /> }
+          { shouldShowChannelList && <StyledChannelList
+            scrollTop={ scrollTop }
+          /> }
           { mode === 'dope' && <StyledDopeSheet /> }
         </ChannelListAndDopeSheetContainer>
       </ChannelListAndDopeSheetScrollable>
