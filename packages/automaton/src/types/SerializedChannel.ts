@@ -1,11 +1,11 @@
 import type { SerializedChannelItem } from './SerializedChannelItem';
 
 /**
- * Interface of a serialized channel.
+ * Represents a serialized channel.
  */
 export interface SerializedChannel {
   /**
    *List of channel items.
    */
-  items: Array<SerializedChannelItem>;
+  items?: SerializedChannelItem[];
 }

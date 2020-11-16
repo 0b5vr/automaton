@@ -286,11 +286,12 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
         } );
       } );
 
-      Object.values( automaton.curves ).forEach( ( curve ) => {
+      automaton.curves.forEach( ( curve ) => {
         initCurveState( curve.$id, curve );
       } );
 
-      Object.entries( automaton.channels ).forEach( ( [ name, channel ] ) => {
+      automaton.channels.forEach( ( channel ) => {
+        const name = automaton.mapNameToChannel.getFromValue( channel )!;
         initChannelState( name, channel );
       } );
 

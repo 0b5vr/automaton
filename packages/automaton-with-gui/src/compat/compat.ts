@@ -3,6 +3,7 @@ import { jsonCopy } from '../utils/jsonCopy';
 import { preversionCompat } from './preversionCompat';
 import { v1Compat } from './v1Compat';
 import { v2Compat } from './v2Compat';
+import { v3Compat } from './v3Compat';
 
 export function compat( data?: any ): SerializedAutomatonWithGUI {
   if ( !data ) {
@@ -39,6 +40,9 @@ export function compat( data?: any ): SerializedAutomatonWithGUI {
     newData = v2Compat( newData );
   }
 
-  newData.v = process.env.VERSION;
+  if ( version < 4.0 ) { // v3
+    newData = v3Compat( newData );
+  }
+
   return newData;
 }

@@ -40,7 +40,7 @@ function minimizeChannel(
   data: SerializedChannel,
   options: MinimizeOptions
 ): SerializedChannel {
-  const items = data.items.map( ( item ) => minimizeChannelItem( item, options ) );
+  const items = data.items?.map( ( item ) => minimizeChannelItem( item, options ) );
 
   return {
     items
@@ -121,10 +121,9 @@ export function minimizeData(
 
   const curves = data.curves.map( ( curve ) => minimizeCurve( curve, options ) );
 
-  const channels: { [ name: string ]: SerializedChannel } = {};
-  Object.entries( data.channels ).map( ( [ name, value ] ) => {
-    channels[ name ] = minimizeChannel( value, options );
-  } );
+  const channels: [ name: string, channel: SerializedChannel ][] = data.channels.map(
+    ( [ name, channelData ] ) => [ name, minimizeChannel( channelData, options ) ]
+  );
 
   const minimized = {
     resolution,

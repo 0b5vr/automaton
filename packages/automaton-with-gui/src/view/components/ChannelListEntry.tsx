@@ -179,7 +179,7 @@ const ChannelListEntry = ( props: ChannelListEntryProps ): JSX.Element => {
     () => {
       if ( !automaton ) { return; }
 
-      const dupName = duplicateName( name, new Set( Object.keys( automaton.channels ) ) );
+      const dupName = duplicateName( name, new Set( Object.keys( automaton.mapNameToChannel ) ) );
       const data = automaton.getChannel( name )!.serialize();
 
       automaton.createChannel( dupName, data );

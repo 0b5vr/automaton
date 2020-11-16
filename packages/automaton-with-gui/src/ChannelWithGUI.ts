@@ -37,16 +37,16 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
   protected __items!: Array<ChannelItemWithGUI>;
 
   /**
-   * Whether it should reset itself in next update call or not.
-   */
-  private __shouldReset = false;
-
-  /**
    * List of fx sections.
    */
   public get items(): Array<ChannelItemWithGUI> {
     return this.__items;
   }
+
+  /**
+   * Whether it should reset itself in next update call or not.
+   */
+  private __shouldReset = false;
 
   /**
    * Its length i.e. the end of the last item.
@@ -57,7 +57,7 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
   }
 
   public constructor( automaton: AutomatonWithGUI, data?: SerializedChannel ) {
-    super( automaton, data || { items: [] } );
+    super( automaton, data ?? {} );
 
     this.__watchStatus( () => {
       this.__setStatus( {
@@ -73,12 +73,12 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
    * @param data Data of channel
    */
   public deserialize( data: SerializedChannel ): void {
-    this.__items = data.items.map( ( itemData ) => {
+    this.__items = data.items?.map( ( itemData ) => {
       const item = new ChannelItemWithGUI( this.__automaton, itemData );
       item.$id = genID();
       item.curve?.incrementUserCount();
       return item;
-    } );
+    } ) ?? [];
   }
 
   /**

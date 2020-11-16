@@ -63,7 +63,7 @@ export class Channel {
    * @param data Data of a channel
    */
   public deserialize( data: SerializedChannel ): void {
-    this.__items = data.items.map( ( item ) => new ChannelItem( this.__automaton, item ) );
+    this.__items = data.items?.map( ( item ) => new ChannelItem( this.__automaton, item ) ) ?? [];
   }
 
   /**

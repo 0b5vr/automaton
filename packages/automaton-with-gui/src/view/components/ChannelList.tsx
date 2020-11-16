@@ -2,7 +2,7 @@ import { ChannelListEntry } from './ChannelListEntry';
 import { Colors } from '../constants/Colors';
 import { Icons } from '../icons/Icons';
 import { useDispatch, useSelector } from '../states/store';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback } from 'react';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
@@ -87,14 +87,9 @@ const ChannelList = ( { className }: ChannelListProps ): JSX.Element => {
     [ automaton, dispatch ]
   );
 
-  const sortedChannelNames = useMemo(
-    () => Array.from( channelNames ).sort(),
-    [ channelNames ]
-  );
-
   return (
     <Root className={ className }>
-      { sortedChannelNames.map( ( channel ) => (
+      { channelNames.map( ( channel ) => (
         <StyledChannelListEntry
           key={ channel }
           name={ channel }
