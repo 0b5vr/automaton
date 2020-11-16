@@ -38,9 +38,10 @@ const Root = styled.div`
 // == element ======================================================================================
 export interface ChannelListProps {
   className?: string;
+  scrollTop: number;
 }
 
-const ChannelList = ( { className }: ChannelListProps ): JSX.Element => {
+const ChannelList = ( { className, scrollTop }: ChannelListProps ): JSX.Element => {
   const dispatch = useDispatch();
   const {
     automaton,
@@ -93,6 +94,7 @@ const ChannelList = ( { className }: ChannelListProps ): JSX.Element => {
         <StyledChannelListEntry
           key={ channel }
           name={ channel }
+          scrollTop={ scrollTop }
         />
       ) ) }
       <NewChannelButton

@@ -1,11 +1,12 @@
 import { Colors } from '../constants/Colors';
 import { StatusIcon } from './StatusIcon';
 import { duplicateName } from '../utils/duplicateName';
+import { registerMouseEvent } from '../utils/registerMouseEvent';
 import { showToasty } from '../states/Toasty';
 import { useDispatch, useSelector } from '../states/store';
 import { useRect } from '../utils/useRect';
 import { writeClipboard } from '../utils/clipboard';
-import React, { useCallback, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import styled from 'styled-components';
 
 // == microcomponent ===============================================================================
@@ -60,16 +61,26 @@ const Root = styled.div<{ isSelected: boolean }>`
 export interface ChannelListEntryProps {
   className?: string;
   name: string;
+  scrollTop: number;
 }
 
 const ChannelListEntry = ( props: ChannelListEntryProps ): JSX.Element => {
-  const { className, name } = props;
+  const { className, name, scrollTop } = props;
   const dispatch = useDispatch();
   const { automaton, isSelected, status } = useSelector( ( state ) => ( {
     automaton: state.automaton.instance,
     isSelected: state.timeline.selectedChannel === name,
     status: state.automaton.channels[ name ].status
   } ) );
+  const refScrollTop = useRef( 0.0 );
+
+  // update refScrollTop
+  useEffect(
+    () => {
+      refScrollTop.current = scrollTop;
+    },
+    [ scrollTop ]
+  );
 
   const [ nameSmall, nameBig ] = useMemo(
     () => {
@@ -103,6 +114,40 @@ const ChannelListEntry = ( props: ChannelListEntryProps ): JSX.Element => {
       }
     },
     [ rectRoot, rectText ]
+  );
+
+  const handleMouseDown = useCallback(
+    ( event ) => {
+      if ( !automaton ) { return; }
+
+      const initY = event.clientY - refScrollTop.current;
+      const reorder = automaton.reorderChannels( name, true );
+      let deltaIndex = 0;
+
+      registerMouseEvent(
+        ( event ) => {
+          const currentY = event.clientY - refScrollTop.current;
+          deltaIndex = Math.round( ( currentY - initY ) / 20 ); // 🔥 hardcoded
+          reorder( deltaIndex );
+        },
+        () => {
+          if ( deltaIndex === 0 ) { return; }
+
+          dispatch( {
+            type: 'History/Push',
+            description: `Reorder Channels: ${ name }`,
+            commands: [
+              {
+                type: 'automaton/reorderChannels',
+                name,
+                deltaIndex,
+              }
+            ]
+          } );
+        }
+      );
+    },
+    [ automaton, dispatch, name ]
   );
 
   const handleClick = useCallback(
@@ -282,6 +327,7 @@ const ChannelListEntry = ( props: ChannelListEntryProps ): JSX.Element => {
     <Root
       ref={ refRoot }
       className={ className }
+      onMouseDown={ handleMouseDown }
       onClick={ handleClick }
       onContextMenu={ handleContextMenu }
       isSelected={ isSelected }

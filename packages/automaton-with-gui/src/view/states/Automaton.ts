@@ -11,6 +11,7 @@ import { WithID } from '../../types/WithID';
 import { arraySetDelete } from '../utils/arraySet';
 import { jsonCopy } from '../../utils/jsonCopy';
 import { produce } from 'immer';
+import { reorderArray } from '../../utils/reorderArray';
 import type { StateChannelItem } from '../../types/StateChannelItem';
 
 // == state ========================================================================================
@@ -81,6 +82,11 @@ export type Action = {
 } | {
   type: 'Automaton/RemoveChannel';
   channel: string;
+} | {
+  type: 'Automaton/ReorderChannels';
+  index: number;
+  length: number;
+  newIndex: number;
 } | {
   type: 'Automaton/UpdateChannelValue';
   channel: string;
@@ -212,6 +218,8 @@ export const reducer: Reducer<State, ContextAction> = ( state = initialState, ac
     } else if ( action.type === 'Automaton/RemoveChannel' ) {
       arraySetDelete( newState.channelNames, action.channel );
       delete newState.channels[ action.channel ];
+    } else if ( action.type === 'Automaton/ReorderChannels' ) {
+      reorderArray( newState.channelNames, action.index, action.length )( action.newIndex );
     } else if ( action.type === 'Automaton/UpdateChannelValue' ) {
       newState.channels[ action.channel ].value = action.value;
     } else if ( action.type === 'Automaton/UpdateChannelLength' ) {

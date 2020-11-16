@@ -397,6 +397,15 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
         } );
       } );
 
+      const handleReorderChannels = automaton.on( 'reorderChannels', ( event ) => {
+        dispatch( {
+          type: 'Automaton/ReorderChannels',
+          index: event.index,
+          length: event.length,
+          newIndex: event.newIndex,
+        } );
+      } );
+
       const handleCreateCurve = automaton.on( 'createCurve', ( event ) => {
         initCurveState( event.id, event.curve );
       } );
@@ -448,6 +457,7 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
         automaton.off( 'updateGUISettings', handleUpdateGUISettings );
         automaton.off( 'createChannel', handleCreateChannel );
         automaton.off( 'removeChannel', handleRemoveChannel );
+        automaton.off( 'reorderChannels', handleReorderChannels );
         automaton.off( 'createCurve', handleCreateCurve );
         automaton.off( 'removeCurve', handleRemoveCurve );
         automaton.off( 'setLabel', handleSetLabel );

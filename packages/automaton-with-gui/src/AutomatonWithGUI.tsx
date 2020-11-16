@@ -17,6 +17,7 @@ import { createStore } from './view/states/store';
 import { jsonCopy } from './utils/jsonCopy';
 import { lofi } from './utils/lofi';
 import { minimizeData } from './minimizeData';
+import { reorderArray } from './utils/reorderArray';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import produce from 'immer';
@@ -171,6 +172,13 @@ export class AutomatonWithGUI extends Automaton
       result = Math.max( result, channel.length );
     } );
     return result;
+  }
+
+  /**
+   * Channel names, ordered.
+   */
+  public get channelNames(): string[] {
+    return this.channels.map( ( channel ) => this.mapNameToChannel.getFromValue( channel )! );
   }
 
   /**
@@ -464,6 +472,50 @@ export class AutomatonWithGUI extends Automaton
 
     if ( !channel ) { channel = this.createChannel( name ); }
     return channel;
+  }
+
+  /**
+   * Get the index of a channel.
+   * @param name Name of the channel
+   * @returns The index of the channel
+   */
+  public getChannelIndex( name: string ): number {
+    const channel = this.mapNameToChannel.get( name );
+
+    if ( !channel ) {
+      throw new Error( `getChannelIndex: A channel called ${ name } is not defined!` );
+    }
+
+    const index = this.channels.indexOf( channel );
+    return index;
+  }
+
+  /**
+   * Reorder channels.
+   * @param name Name of the channel
+   * @param isRelative Will interpret given index relatively if it's `true`
+   * @returns A function to reorder channels. Give a new index
+   */
+  public reorderChannels(
+    name: string,
+    isRelative = false
+  ): ( index: number ) => ChannelWithGUI[] {
+    const index0 = this.getChannelIndex( name );
+
+    return reorderArray(
+      this.channels,
+      index0,
+      1,
+      ( { index, length, newIndex } ) => {
+        if ( isRelative ) {
+          newIndex += index0;
+        }
+
+        this.__emit( 'reorderChannels', { index, length, newIndex } );
+
+        return newIndex;
+      }
+    );
   }
 
   /**
@@ -851,6 +903,7 @@ export interface AutomatonWithGUIEvents {
   update: { time: number };
   createChannel: { name: string; channel: ChannelWithGUI };
   removeChannel: { name: string };
+  reorderChannels: { index: number; length: number; newIndex: number };
   createCurve: { id: string; curve: CurveWithGUI };
   removeCurve: { id: string };
   addFxDefinitions: { fxDefinitions: { [ id: string ]: FxDefinition } };
