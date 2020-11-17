@@ -129,9 +129,10 @@ const InspectorChannelItem = ( props: Props ): JSX.Element | null => {
   const itemId = props.item.id;
   const channelName = props.item.channel;
   const dispatch = useDispatch();
-  const { automaton, stateItem } = useSelector( ( state ) => ( {
+  const { automaton, stateItem, useBeatInGUI } = useSelector( ( state ) => ( {
     automaton: state.automaton.instance,
-    stateItem: state.automaton.channels[ channelName ].items[ itemId ]
+    stateItem: state.automaton.channels[ channelName ].items[ itemId ],
+    useBeatInGUI: state.automaton.guiSettings.useBeatInGUI,
   } ) );
   const channel = automaton?.getChannel( channelName ) ?? null;
   const { displayToTime, timeToDisplay } = useTimeUnit();
@@ -142,7 +143,7 @@ const InspectorChannelItem = ( props: Props ): JSX.Element | null => {
 
       <InspectorHr />
 
-      <InspectorItem name="Time">
+      <InspectorItem name={ useBeatInGUI ? 'Beat' : 'Time' }>
         <NumberParam
           type="float"
           value={ timeToDisplay( stateItem.time, true ) }

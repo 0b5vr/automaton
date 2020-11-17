@@ -17,9 +17,10 @@ export interface InspectorCurveFxProps {
 
 const InspectorCurveFx = ( props: InspectorCurveFxProps ): JSX.Element | null => {
   const dispatch = useDispatch();
-  const { automaton, curves } = useSelector( ( state ) => ( {
+  const { automaton, curves, useBeatInGUI } = useSelector( ( state ) => ( {
     automaton: state.automaton.instance,
-    curves: state.automaton.curves
+    curves: state.automaton.curves,
+    useBeatInGUI: state.automaton.guiSettings.useBeatInGUI,
   } ) );
   const curve = automaton?.getCurveById( props.curveId ) || null;
   const fx = curves[ props.curveId ].fxs[ props.fx ];
@@ -31,7 +32,7 @@ const InspectorCurveFx = ( props: InspectorCurveFxProps ): JSX.Element | null =>
 
     <InspectorHr />
 
-    <InspectorItem name="Time">
+    <InspectorItem name={ useBeatInGUI ? 'Beat' : 'Time' }>
       <NumberParam
         type="float"
         value={ timeToDisplay( fx.time ) }
