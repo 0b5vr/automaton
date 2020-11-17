@@ -3,6 +3,7 @@
   "compilerOptions": {
     "types": [ "react", "node", "jest" ],
     "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
     "removeComments": false,
     "noUnusedLocals": true,
     "jsx": "react"
