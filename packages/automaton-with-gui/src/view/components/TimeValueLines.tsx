@@ -2,17 +2,24 @@ import { Colors } from '../constants/Colors';
 import { Resolution } from '../utils/Resolution';
 import { TimeValueRange, t2x, v2y } from '../utils/TimeValueRange';
 import { useSelector } from '../states/store';
+import { useTimeUnit } from '../utils/useTimeUnit';
 import React from 'react';
 import styled from 'styled-components';
 
 // == microcomponents ==============================================================================
-const Beat = ( { time }: { time: number } ): JSX.Element | null => {
-  const { snapBeatActive, snapBeatBPM } = useSelector( ( state ) => ( {
+const Beat = ( props: {
+  time: number,
+  isAbsolute?: boolean,
+} ): JSX.Element | null => {
+  const { time } = props;
+  const { timeToBeat } = useTimeUnit();
+  const isAbsolute = props.isAbsolute ?? false;
+  const { snapBeatActive } = useSelector( ( state ) => ( {
     snapBeatActive: state.automaton.guiSettings.snapBeatActive,
-    snapBeatBPM: state.automaton.guiSettings.snapBeatBPM,
   } ) );
 
-  return snapBeatActive ? <>{ ( time * snapBeatBPM / 60.0 ).toFixed( 3 ) }</> : null;
+  const beat = timeToBeat( time, isAbsolute );
+  return snapBeatActive ? <>{ beat.toFixed( 3 ) }</> : null;
 };
 
 // == styles =======================================================================================
@@ -37,13 +44,18 @@ const Circle = styled.circle`
 export interface TimeValueLinesProps {
   time?: number;
   value?: number;
-  showBeat?: boolean;
+
+  /**
+   * Whether it should consider beatOffset or not
+   */
+  isAbsolute?: boolean;
+
   range: TimeValueRange;
   size: Resolution;
 }
 
 const TimeValueLines = ( props: TimeValueLinesProps ): JSX.Element => {
-  const { time, value, range, size } = props;
+  const { time, value, isAbsolute, range, size } = props;
 
   const x = time != null && t2x( time, range, size.width ) || 0.0;
   const y = value != null && v2y( value, range, size.height ) || 0.0;
@@ -54,7 +66,7 @@ const TimeValueLines = ( props: TimeValueLinesProps ): JSX.Element => {
         <g transform={ `translate(${ x },${ size.height })` }>
           <Line y2={ -size.height } />
           <Text x="2" y="-2">{ time.toFixed( 3 ) }</Text>
-          <Text x="2" y="-12"><Beat time={ time } /></Text>
+          <Text x="2" y="-12"><Beat time={ time } isAbsolute={ isAbsolute } /></Text>
         </g>
       ) }
 

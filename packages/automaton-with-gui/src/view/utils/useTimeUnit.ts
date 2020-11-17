@@ -8,31 +8,33 @@ export function useTimeUnit(): {
   timeToDisplay: ( time: number, isAbsolute?: boolean ) => number,
 } {
   const {
-    snapBeatBPM,
+    bpm,
+    beatOffset,
     useBeatInGUI,
   } = useSelector( ( state ) => ( {
-    snapBeatBPM: state.automaton.guiSettings.snapBeatBPM,
+    bpm: state.automaton.guiSettings.bpm,
+    beatOffset: state.automaton.guiSettings.beatOffset,
     useBeatInGUI: state.automaton.guiSettings.useBeatInGUI,
   } ) );
 
   const beatToTime = useCallback(
     ( beat: number, isAbsolute = false ): number => {
-      return beat / snapBeatBPM * 60.0;
+      return beat / bpm * 60.0 + ( isAbsolute ? beatOffset : 0.0 );
     },
-    [ snapBeatBPM ]
+    [ beatOffset, bpm ]
   );
 
   const timeToBeat = useCallback(
     ( time: number, isAbsolute = false ): number => {
-      return time * snapBeatBPM / 60.0;
+      return ( time - ( isAbsolute ? beatOffset : 0.0 ) ) * bpm / 60.0;
     },
-    [ snapBeatBPM ]
+    [ beatOffset, bpm ]
   );
 
   const displayToTime = useCallback(
     ( value: number, isAbsolute = false ): number => {
       if ( useBeatInGUI ) {
-        return beatToTime( value );
+        return beatToTime( value, isAbsolute );
       } else {
         return value;
       }
@@ -43,7 +45,7 @@ export function useTimeUnit(): {
   const timeToDisplay = useCallback(
     ( time: number, isAbsolute = false ): number => {
       if ( useBeatInGUI ) {
-        return timeToBeat( time );
+        return timeToBeat( time, isAbsolute );
       } else {
         return time;
       }

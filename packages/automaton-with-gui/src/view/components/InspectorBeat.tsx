@@ -24,9 +24,22 @@ const InspectorBeat = (): JSX.Element | null => {
     >
       <NumberParam
         type="float"
-        value={ guiSettings.snapBeatBPM }
+        value={ guiSettings.bpm }
         onChange={ ( value ) => {
-          automaton.setGUISettings( 'snapBeatBPM', Math.max( 0.0, value ) );
+          automaton.setGUISettings( 'bpm', Math.max( 0.0, value ) );
+        } }
+      />
+    </InspectorItem>
+
+    <InspectorItem
+      name="Beat Offset"
+      description="Offset from the beginning of the beat."
+    >
+      <NumberParam
+        type="float"
+        value={ guiSettings.beatOffset }
+        onChange={ ( value ) => {
+          automaton.setGUISettings( 'beatOffset', value );
         } }
       />
     </InspectorItem>

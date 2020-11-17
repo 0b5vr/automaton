@@ -4,6 +4,7 @@ import { TimeValueRange, t2x, v2y } from '../utils/TimeValueRange';
 import { clamp } from '../../utils/clamp';
 import { genGrid } from '../utils/genGrid';
 import { useSelector } from '../states/store';
+import { useTimeUnit } from '../utils/useTimeUnit';
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
 
@@ -34,6 +35,12 @@ const GridText = styled.text`
 export interface TimeValueGridProps {
   range: TimeValueRange;
   size: Resolution;
+
+  /**
+   * Whether it should consider beatOffset or not
+   */
+  isAbsolute?: boolean;
+
   hideValue?: boolean;
 }
 
@@ -45,11 +52,12 @@ interface GridLineEntry {
 
 const TimeValueGrid = ( props: TimeValueGridProps ): JSX.Element => {
   const { range, size, hideValue } = props;
+  const isAbsolute = props.isAbsolute ?? false;
 
-  const { snapBeatActive, snapBeatBPM } = useSelector( ( state ) => ( {
+  const { snapBeatActive } = useSelector( ( state ) => ( {
     snapBeatActive: state.automaton.guiSettings.snapBeatActive,
-    snapBeatBPM: state.automaton.guiSettings.snapBeatBPM,
   } ) );
+  const { beatToTime, timeToBeat } = useTimeUnit();
 
   const hlines: GridLineEntry[] = useMemo(
     (): GridLineEntry[] => {
@@ -60,7 +68,7 @@ const TimeValueGrid = ( props: TimeValueGridProps ): JSX.Element => {
         opacity: clamp( entry.importance - 0.01, 0.0, 0.4 )
       } ) );
     },
-    [ range, size ]
+    [ range, size.width ]
   );
 
   const vlines: GridLineEntry[] = useMemo(
@@ -72,22 +80,25 @@ const TimeValueGrid = ( props: TimeValueGridProps ): JSX.Element => {
         opacity: clamp( entry.importance - 0.01, 0.0, 0.4 )
       } ) );
     },
-    [ range, size ]
+    [ range, size.height ]
   );
 
   const beatlines: GridLineEntry[] = useMemo(
     (): GridLineEntry[] => {
       if ( !snapBeatActive ) { return []; }
 
-      const bps = snapBeatBPM / 60.0;
-      const grid = genGrid( bps * range.t0, bps * range.t1, { details: 2, base: 4 } );
+      const grid = genGrid(
+        timeToBeat( range.t0, isAbsolute ),
+        timeToBeat( range.t1, isAbsolute ),
+        { details: 2, base: 4 }
+      );
       return grid.map( ( entry ) => ( {
         value: intOrEmpty( entry.value ), // trick: to prevent -0.000
-        position: t2x( entry.value / bps, range, size.width ),
+        position: t2x( beatToTime( entry.value, isAbsolute ), range, size.width ),
         opacity: 4.0 * clamp( entry.importance - 0.0625, 0.0, 0.1 )
       } ) );
     },
-    [ snapBeatActive, snapBeatBPM, range, size ]
+    [ snapBeatActive, timeToBeat, range, isAbsolute, beatToTime, size.width ]
   );
 
   return <>

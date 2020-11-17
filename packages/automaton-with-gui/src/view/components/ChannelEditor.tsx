@@ -34,6 +34,7 @@ const Lines = ( { channel, range, size }: {
     size={ size }
     time={ time }
     value={ value ?? undefined }
+    isAbsolute
   />;
 };
 
@@ -556,6 +557,7 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
           <TimeValueGrid
             range={ range }
             size={ rect }
+            isAbsolute
           />
           { selectedChannel && <Items
             channel={ selectedChannel }

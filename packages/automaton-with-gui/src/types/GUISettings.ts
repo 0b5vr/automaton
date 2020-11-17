@@ -28,9 +28,14 @@ export interface GUISettings {
   snapBeatActive: boolean;
 
   /**
-   * BPM of the beat snap.
+   * BPM of the beat.
    */
-  snapBeatBPM: number;
+  bpm: number;
+
+  /**
+   * Time offset of the beat.
+   */
+  beatOffset: number;
 
   /**
    * Use beat instead of time in GUI.
@@ -54,7 +59,8 @@ export const defaultGUISettings: Readonly<GUISettings> = {
   snapValueActive: false,
   snapValueInterval: 0.1,
   snapBeatActive: false,
-  snapBeatBPM: 140.0,
+  bpm: 140.0,
+  beatOffset: 0.0,
   useBeatInGUI: false,
   minimizedPrecisionTime: 3,
   minimizedPrecisionValue: 3,

@@ -23,6 +23,7 @@ const Line = ( { range, size }: {
       range={ range }
       size={ size }
       time={ time }
+      isAbsolute
     />
   );
 };
