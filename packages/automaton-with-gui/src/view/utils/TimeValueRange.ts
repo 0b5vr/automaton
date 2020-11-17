@@ -51,25 +51,27 @@ export function snapTime(
   width: number,
   settings: GUISettings
 ): number {
-  let t = time;
+  const { snapTimeActive, snapBeatActive, snapTimeInterval, bpm, beatOffset } = settings;
 
-  if ( settings?.snapTimeActive ) {
-    const interval = settings.snapTimeInterval;
+  let result = time;
+
+  if ( snapTimeActive ) {
+    const interval = snapTimeInterval;
     const threshold = dx2dt( 5.0, range, width );
-    const nearest = Math.round( t / interval ) * interval;
-    t = Math.abs( t - nearest ) < threshold ? nearest : t;
+    const nearest = Math.round( time / interval ) * interval;
+    result = Math.abs( time - nearest ) < threshold ? nearest : result;
   }
 
-  if ( settings?.snapBeatActive ) {
-    let interval = 60.0 / settings.snapBeatBPM;
+  if ( snapBeatActive ) {
+    let interval = 60.0 / bpm;
     const order = Math.floor( Math.log( ( range.t1 - range.t0 ) / interval ) / Math.log( 4.0 ) );
     interval *= Math.pow( 4.0, order - 1.0 );
     const threshold = dx2dt( 5.0, range, width );
-    const nearest = Math.round( t / interval ) * interval;
-    t = Math.abs( t - nearest ) < threshold ? nearest : t;
+    const nearest = Math.round( ( time - beatOffset ) / interval ) * interval + beatOffset;
+    result = Math.abs( time - nearest ) < threshold ? nearest : result;
   }
 
-  return t;
+  return result;
 }
 
 export function snapValue(

@@ -43,6 +43,7 @@ const DopeSheetUnderlay = ( props: DopeSheetUnderlayProps ): JSX.Element => {
           <TimeValueGrid
             range={ range }
             size={ rect }
+            isAbsolute
             hideValue
           />
         </SVGRoot>

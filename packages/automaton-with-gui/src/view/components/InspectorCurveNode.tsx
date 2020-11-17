@@ -14,9 +14,10 @@ interface Props {
 
 const InspectorCurveNode = ( props: Props ): JSX.Element | null => {
   const dispatch = useDispatch();
-  const { automaton, curves } = useSelector( ( state ) => ( {
+  const { automaton, curves, useBeatInGUI } = useSelector( ( state ) => ( {
     automaton: state.automaton.instance,
-    curves: state.automaton.curves
+    curves: state.automaton.curves,
+    useBeatInGUI: state.automaton.guiSettings.useBeatInGUI,
   } ) );
   const curve = automaton?.getCurveById( props.curveId ) || null;
   const node = curves[ props.curveId ].nodes[ props.node ];
@@ -27,7 +28,7 @@ const InspectorCurveNode = ( props: Props ): JSX.Element | null => {
 
     <InspectorHr />
 
-    <InspectorItem name="Time">
+    <InspectorItem name={ useBeatInGUI ? 'Beat' : 'Time' }>
       <NumberParam
         type="float"
         value={ timeToDisplay( node.time ) }
@@ -74,7 +75,7 @@ const InspectorCurveNode = ( props: Props ): JSX.Element | null => {
 
     <InspectorHr />
 
-    <InspectorItem name="In Time">
+    <InspectorItem name={ useBeatInGUI ? 'In Beat' : 'In Time' }>
       <NumberParam
         type="float"
         value={ timeToDisplay( node.in?.time ?? 0.0 ) }
@@ -123,7 +124,7 @@ const InspectorCurveNode = ( props: Props ): JSX.Element | null => {
 
     <InspectorHr />
 
-    <InspectorItem name="Out Time">
+    <InspectorItem name={ useBeatInGUI ? 'Out Beat' : 'Out Time' }>
       <NumberParam
         type="float"
         value={ timeToDisplay( node.out?.time ?? 0.0 ) }
