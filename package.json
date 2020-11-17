@@ -4,7 +4,7 @@
     "packages/*"
   ],
   "scripts": {
-    "all": "yarn && yarn lint && yarn test && yarn clean && yarn build && yarn docs",
+    "all": "lerna run all",
     "clean": "lerna run clean",
     "test": "lerna run test",
     "lint": "lerna run lint",
