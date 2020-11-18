@@ -8,7 +8,7 @@ import type { SerializedAutomaton } from '@fms-cat/automaton';
 const defaultData: SerializedAutomaton = {
   resolution: 100.0,
   curves: [
-    { nodes: [ { time: 0.0, value: 0.0 }, { time: 1.0, value: 1.0 } ] },
+    { nodes: [ [ 0.0, 0.0 ], [ 1.0, 1.0 ] ] },
   ],
   channels: []
 };

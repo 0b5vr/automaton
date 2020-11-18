@@ -51,23 +51,14 @@ function minimizeNode(
   data: SerializedBezierNode,
   options: MinimizeOptions
 ): SerializedBezierNode {
-  const time = precOrUndefined( data.time, options.precisionTime );
-  const value = precOrUndefined( data.value, options.precisionValue );
-  const inPoint = data.in ? {
-    time: prec( data.in.time, options.precisionTime ),
-    value: prec( data.in.value, options.precisionValue )
-  } : undefined;
-  const outPoint = data.out ? {
-    time: prec( data.out.time, options.precisionTime ),
-    value: prec( data.out.value, options.precisionValue )
-  } : undefined;
-
-  return {
-    time,
-    value,
-    in: inPoint,
-    out: outPoint
-  };
+  return [
+    precOrUndefined( data[ 0 ], options.precisionTime ),
+    precOrUndefined( data[ 1 ], options.precisionValue ),
+    precOrUndefined( data[ 2 ], options.precisionTime ),
+    precOrUndefined( data[ 3 ], options.precisionValue ),
+    precOrUndefined( data[ 4 ], options.precisionTime ),
+    precOrUndefined( data[ 5 ], options.precisionValue ),
+  ];
 }
 
 function minimizeFx(

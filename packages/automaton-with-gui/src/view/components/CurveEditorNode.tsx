@@ -59,8 +59,8 @@ const CurveEditorNode = ( props: {
     (): void => {
       if ( !curve ) { return; }
 
-      const timePrev = node.time;
-      const valuePrev = node.value;
+      const timePrev = node[ 0 ];
+      const valuePrev = node[ 1 ];
       let x = t2x( timePrev, range, size.width );
       let y = v2y( valuePrev, range, size.height );
       let time = timePrev;
@@ -165,11 +165,11 @@ const CurveEditorNode = ( props: {
     ( dir: 'in' | 'out' ): void => {
       if ( !curve ) { return; }
 
-      const tPrev = node[ dir ]?.time || 0.0;
-      const vPrev = node[ dir ]?.value || 0.0;
+      const tPrev = node[ dir === 'in' ? 2 : 4 ];
+      const vPrev = node[ dir === 'in' ? 3 : 5 ];
       const dirOp = dir === 'in' ? 'out' : 'in';
-      const tOpPrev = node[ dirOp ]?.time || 0.0;
-      const vOpPrev = node[ dirOp ]?.value || 0.0;
+      const tOpPrev = node[ dir === 'in' ? 4 : 2 ];
+      const vOpPrev = node[ dir === 'in' ? 5 : 3 ];
       const xPrev = dt2dx( tPrev, range, size.width );
       const yPrev = dv2dy( vPrev, range, size.height );
       const slPrev = Math.sqrt( xPrev * xPrev + yPrev * yPrev );
@@ -283,8 +283,8 @@ const CurveEditorNode = ( props: {
     ( dir: 'in' | 'out' ): void => {
       if ( !curve ) { return; }
 
-      const timePrev = node[ dir ]!.time;
-      const valuePrev = node[ dir ]!.value;
+      const timePrev = node[ dir === 'in' ? 2 : 4 ];
+      const valuePrev = node[ dir === 'in' ? 3 : 5 ];
 
       curve.moveHandleTime( node.$id, dir, 0.0 );
       curve.moveHandleValue( node.$id, dir, 0.0 );
@@ -344,41 +344,37 @@ const CurveEditorNode = ( props: {
   return (
     <Root
       transform={ `translate(${
-        t2x( node.time, range, size.width )
+        t2x( node[ 0 ], range, size.width )
       },${
-        v2y( node.value, range, size.height )
+        v2y( node[ 1 ], range, size.height )
       })` }
     >
-      { node.in && <>
-        <HandleLine
-          x2={ dt2dx( node.in.time, range, size.width ) }
-          y2={ dv2dy( node.in.value, range, size.height ) }
-        />
-        <HandleCircle
-          r="4"
-          transform={ `translate(${
-            dt2dx( node.in.time, range, size.width )
-          },${
-            dv2dy( node.in.value, range, size.height )
-          })` }
-          onMouseDown={ handleHandleInClick }
-        />
-      </> }
-      { node.out && <>
-        <HandleLine
-          x2={ dt2dx( node.out.time, range, size.width ) }
-          y2={ dv2dy( node.out.value, range, size.height ) }
-        />
-        <HandleCircle
-          r="4"
-          transform={ `translate(${
-            dt2dx( node.out.time, range, size.width )
-          },${
-            dv2dy( node.out.value, range, size.height )
-          })` }
-          onMouseDown={ handleHandleOutClick }
-        />
-      </> }
+      <HandleLine
+        x2={ dt2dx( node[ 2 ], range, size.width ) }
+        y2={ dv2dy( node[ 3 ], range, size.height ) }
+      />
+      <HandleCircle
+        r="4"
+        transform={ `translate(${
+          dt2dx( node[ 2 ], range, size.width )
+        },${
+          dv2dy( node[ 3 ], range, size.height )
+        })` }
+        onMouseDown={ handleHandleInClick }
+      />
+      <HandleLine
+        x2={ dt2dx( node[ 4 ], range, size.width ) }
+        y2={ dv2dy( node[ 5 ], range, size.height ) }
+      />
+      <HandleCircle
+        r="4"
+        transform={ `translate(${
+          dt2dx( node[ 4 ], range, size.width )
+        },${
+          dv2dy( node[ 5 ], range, size.height )
+        })` }
+        onMouseDown={ handleHandleOutClick }
+      />
       <NodeBody
         as="circle"
         r="5"

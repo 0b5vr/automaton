@@ -218,8 +218,8 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
           curve.moveNodeTime( data.$id, time );
           curve.moveNodeValue( data.$id, value );
 
-          data.time = time;
-          data.value = value;
+          data[ 0 ] = time;
+          data[ 1 ] = value;
 
           dispatch( {
             type: 'History/Push',
