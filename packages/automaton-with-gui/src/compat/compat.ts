@@ -1,6 +1,5 @@
 import { SerializedAutomatonWithGUI, defaultDataWithGUI } from '../types/SerializedAutomatonWithGUI';
 import { jsonCopy } from '../utils/jsonCopy';
-import { preversionCompat } from './preversionCompat';
 import { v1Compat } from './v1Compat';
 import { v2Compat } from './v2Compat';
 import { v3Compat } from './v3Compat';
@@ -21,10 +20,8 @@ export function compat( data?: any ): SerializedAutomatonWithGUI {
   let version = parseFloat( newData.version ) || parseFloat( newData.v );
 
   if ( !version && !newData.rev ) {
-    newData = preversionCompat( newData );
-    if ( newData === null ) {
-      return jsonCopy( defaultDataWithGUI );
-    }
+    // assuming it's latest
+    return newData;
   }
 
   if ( newData.rev ) { // fuck
