@@ -16,6 +16,3 @@ export { Automaton } from './Automaton';
 export { Channel } from './Channel';
 export { ChannelItem } from './ChannelItem';
 export { Curve } from './Curve';
-
-import { Automaton } from './Automaton';
-export default Automaton;
