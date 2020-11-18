@@ -58,7 +58,9 @@ function minimizeNode(
     precOrUndefined( data[ 3 ], options.precisionValue ),
     precOrUndefined( data[ 4 ], options.precisionTime ),
     precOrUndefined( data[ 5 ], options.precisionValue ),
-  ];
+  ].filter( ( element ) => {
+    return element != null;
+  } ) as SerializedBezierNode;
 }
 
 function minimizeFx(
