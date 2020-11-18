@@ -14,6 +14,7 @@ import Plus from './plus.svg';
 import Power from './power.svg';
 import Redo from './redo.svg';
 import Save from './save.svg';
+import Scale from './scale.svg';
 import Snap from './snap.svg';
 import Undo from './undo.svg';
 import Warning from './warning.svg';
@@ -35,6 +36,7 @@ export const Icons = {
   Power,
   Redo,
   Save,
+  Scale,
   Snap,
   Undo,
   Warning,
