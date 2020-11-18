@@ -1,5 +1,3 @@
-import type { BezierControlPoint } from './BezierControlPoint';
-
 /**
  * Represents a bezier node.
  */
@@ -15,12 +13,22 @@ export interface BezierNode {
   value: number;
 
   /**
-   * Bezier control point of inlet.
+   * Bezier control point of inlet. Time.
    */
-  in: BezierControlPoint;
+  inTime: number;
 
   /**
-   * Bezier control point of outlet.
+   * Bezier control point of inlet. Value.
    */
-  out: BezierControlPoint;
+  inValue: number;
+
+  /**
+   * Bezier control point of outlet. Time.
+   */
+  outTime: number;
+
+  /**
+   * Bezier control point of outlet. Value.
+   */
+  outValue: number;
 }

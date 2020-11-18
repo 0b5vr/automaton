@@ -1,31 +1,41 @@
-import type { SerializedBezierControlPoint } from './SerializedBezierControlPoint';
-
 /**
  * Serialized variant of {@link BezierNode}.
  * Some values are optional.
  */
-export interface SerializedBezierNode {
+export type SerializedBezierNode = [
   /**
    * Time of the node.
    * `0.0` by default.
    */
-  time?: number;
+  time?: number,
 
   /**
    * Value of the node.
    * `0.0` by default.
    */
-  value?: number;
+  value?: number,
 
   /**
-   * Bezier control point of inlet.
-   * `{ time: 0.0, value: 0.0 }` by default.
+   * Bezier control point of inlet. Time.
+   * `0.0` by default.
    */
-  in?: SerializedBezierControlPoint;
+  inTime?: number,
 
   /**
-   * Bezier control point of outlet.
-   * `{ time: 0.0, value: 0.0 }` by default.
+   * Bezier control point of inlet. Value.
+   * `0.0` by default.
    */
-  out?: SerializedBezierControlPoint;
-}
+  inValue?: number,
+
+  /**
+   * Bezier control point of outlet. Time.
+   * `0.0` by default.
+   */
+  outTime?: number,
+
+  /**
+   * Bezier control point of outlet. Value.
+   * `0.0` by default.
+   */
+  outValue?: number,
+];

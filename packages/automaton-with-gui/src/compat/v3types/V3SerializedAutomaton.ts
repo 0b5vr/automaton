@@ -1,5 +1,5 @@
-import type { SerializedCurve } from '@fms-cat/automaton';
 import type { V3SerializedChannel } from './V3SerializedChannel';
+import type { V3SerializedCurve } from './V3SerializedCurve';
 
 /**
  * Interface of serialized automaton data.
@@ -13,7 +13,7 @@ export interface V3SerializedAutomaton {
   /**
    * Curves of the automaton.
    */
-  curves: SerializedCurve[];
+  curves: V3SerializedCurve[];
 
   /**
    * Channels of the automaton.

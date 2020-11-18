@@ -55,10 +55,12 @@ export class Curve {
    */
   public deserialize( data: SerializedCurve ): void {
     this.__nodes = data.nodes.map( ( node ) => ( {
-      time: node.time ?? 0.0,
-      value: node.value ?? 0.0,
-      in: node.in ?? { time: 0.0, value: 0.0 },
-      out: node.out ?? { time: 0.0, value: 0.0 }
+      time: node[ 0 ] ?? 0.0,
+      value: node[ 1 ] ?? 0.0,
+      inTime: node[ 2 ] ?? 0.0,
+      inValue: node[ 3 ] ?? 0.0,
+      outTime: node[ 4 ] ?? 0.0,
+      outValue: node[ 5 ] ?? 0.0,
     } ) );
 
     this.__fxs = [];

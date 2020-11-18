@@ -38,16 +38,8 @@ export class CurveWithGUI extends Curve {
    */
   public static readonly DEFAULT_DATA: SerializedCurve = {
     nodes: [
-      {
-        time: 0.0,
-        value: 0.0,
-        out: { time: CURVE_DEFAULT_HANDLE_LENGTH, value: 0.0 }
-      },
-      {
-        time: 1.0,
-        value: 0.0,
-        in: { time: -CURVE_DEFAULT_HANDLE_LENGTH, value: 0.0 }
-      }
+      [ 0.0, 0.0, 0.0, 0.0, CURVE_DEFAULT_HANDLE_LENGTH, 0.0 ],
+      [ 1.0, 0.0, -CURVE_DEFAULT_HANDLE_LENGTH, 0.0, 0.0, 0.0 ],
     ],
     fxs: []
   };
@@ -117,12 +109,6 @@ export class CurveWithGUI extends Curve {
    * @param data Data of curve
    */
   public deserialize( data: SerializedCurve ): void {
-    data.nodes.forEach( ( node ) => {
-      // fill missing handles
-      node.in = node.in ?? { time: 0.0, value: 0.0 };
-      node.out = node.out ?? { time: 0.0, value: 0.0 };
-    } );
-
     data.fxs?.forEach( ( fx ) => {
       // fill missing params
       const defParams = this.__automaton.getFxDefinitionParams( fx.def );
@@ -274,13 +260,15 @@ export class CurveWithGUI extends Curve {
    */
   public createNode( time: number, value: number ): BezierNode & WithID {
     const id = genID();
-    const data = {
-      $id: id,
+    const data: any = {
       time,
       value,
-      in: { time: -CURVE_DEFAULT_HANDLE_LENGTH, value: 0.0 },
-      out: { time: CURVE_DEFAULT_HANDLE_LENGTH, value: 0.0 }
+      inTime: -CURVE_DEFAULT_HANDLE_LENGTH,
+      inValue: 0.0,
+      outTime: CURVE_DEFAULT_HANDLE_LENGTH,
+      outValue: 0.0,
     };
+    data.$id = id;
     this.__nodes.push( data );
     this.__sortNodes();
 
@@ -435,8 +423,7 @@ export class CurveWithGUI extends Curve {
 
     const newTime = ( dir === 'in' ) ? Math.min( 0.0, time ) : Math.max( 0.0, time );
 
-    const handle = node[ dir ];
-    handle.time = newTime;
+    node[ dir === 'in' ? 'inTime' : 'outTime' ] = newTime;
 
     this.precalc();
 
@@ -458,8 +445,7 @@ export class CurveWithGUI extends Curve {
 
     const node = this.__nodes[ index ];
 
-    const handle = node[ dir ];
-    handle.value = value;
+    node[ dir === 'in' ? 'inValue' : 'outValue' ] = value;
 
     this.precalc();
 
@@ -479,10 +465,8 @@ export class CurveWithGUI extends Curve {
     if ( index === 0 && dir === 'in' ) { return; }
 
     const node = this.__nodes[ index ];
-    node[ dir ] = {
-      time: ( ( dir === 'in' ) ? -1.0 : 1.0 ) * CURVE_DEFAULT_HANDLE_LENGTH,
-      value: 0.0
-    };
+    node[ dir === 'in' ? 'inTime' : 'outTime' ] = ( ( dir === 'in' ) ? -1.0 : 1.0 ) * CURVE_DEFAULT_HANDLE_LENGTH;
+    node[ dir === 'in' ? 'inValue' : 'outValue' ] = 0.0;
 
     this.precalc();
 
@@ -814,20 +798,23 @@ export class CurveWithGUI extends Curve {
    */
   private __serializeNodes(): SerializedBezierNode[] {
     return this.__nodes.map( ( node ) => {
-      const data: SerializedBezierNode = {};
-      if ( node.time !== 0.0 ) {
-        data.time = node.time;
+      const { time, value, inTime, inValue, outTime, outValue } = node;
+
+      if ( outValue !== 0.0 ) {
+        return [ time, value, inTime, inValue, outTime, outValue ];
+      } else if ( outTime !== 0.0 ) {
+        return [ time, value, inTime, inValue, outTime ];
+      } else if ( inValue !== 0.0 ) {
+        return [ time, value, inTime, inValue ];
+      } else if ( inTime !== 0.0 ) {
+        return [ time, value, inTime ];
+      } else if ( value !== 0.0 ) {
+        return [ time, value ];
+      } else if ( time !== 0.0 ) {
+        return [ time ];
+      } else {
+        return [];
       }
-      if ( node.value !== 0.0 ) {
-        data.value = node.value;
-      }
-      if ( node.in.time !== 0.0 || node.in.value !== 0.0 ) {
-        data.in = jsonCopy( node.in );
-      }
-      if ( node.out.time !== 0.0 || node.out.value !== 0.0 ) {
-        data.out = jsonCopy( node.out );
-      }
-      return data;
     } );
   }
 

@@ -95,7 +95,7 @@ const CurveListEntry = ( props: CurveListEntryProps ): JSX.Element => {
         commands: [
           {
             type: 'automaton/createCurve',
-            data: newData
+            data: newData.serializeWithID()
           }
         ]
       } );

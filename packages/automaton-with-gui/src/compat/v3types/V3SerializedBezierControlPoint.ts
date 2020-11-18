@@ -2,7 +2,7 @@
  * Serialized variant of {@link BezierControlPoint}.
  * Some values are optional.
  */
-export interface SerializedBezierControlPoint {
+export interface V3SerializedBezierControlPoint {
   /**
    * Time of the control point.
    */

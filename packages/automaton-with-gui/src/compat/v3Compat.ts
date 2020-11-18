@@ -1,10 +1,26 @@
-import { SerializedChannel } from '@fms-cat/automaton';
 import { defaultGUISettings } from '../types/GUISettings';
 import type { SerializedAutomatonWithGUI } from '../types/SerializedAutomatonWithGUI';
+import type { SerializedBezierNode, SerializedChannel, SerializedCurve } from '@fms-cat/automaton';
 import type { V3SerializedAutomatonWithGUI } from './v3types/V3SerializedAutomatonWithGUI';
 
 export function v3Compat( data: V3SerializedAutomatonWithGUI ): SerializedAutomatonWithGUI {
   const channels: [ name: string, channel: SerializedChannel ][] = [];
+
+  const curves: SerializedCurve[] = data.curves.map( ( curve ) => {
+    const nodes = curve.nodes.map( ( node ) => [
+      node.time,
+      node.value,
+      node.in?.time,
+      node.in?.value,
+      node.out?.time,
+      node.out?.value,
+    ] as SerializedBezierNode );
+
+    return {
+      nodes,
+      fxs: curve.fxs
+    };
+  } );
 
   Object.entries( data.channels ).forEach( ( [ name, channel ] ) => {
     channels.push( [ name, channel ] );
@@ -13,7 +29,7 @@ export function v3Compat( data: V3SerializedAutomatonWithGUI ): SerializedAutoma
   const newData: SerializedAutomatonWithGUI = {
     version: data.version,
     resolution: data.resolution,
-    curves: data.curves,
+    curves,
     channels,
     labels: data.labels,
     guiSettings: {

@@ -7,8 +7,8 @@ import type { SerializedAutomaton } from '../types/SerializedAutomaton';
 const data: SerializedAutomaton = {
   resolution: 100.0,
   curves: [
-    { nodes: [ { time: 0.0, value: 0.0 }, { time: 0.6, value: 1.0 } ] },
-    { nodes: [ { time: 0.0, value: 2.0 }, { time: 0.6, value: 2.0 } ] }
+    { nodes: [ [ 0.0, 0.0 ], [ 0.6, 1.0 ] ] },
+    { nodes: [ [ 0.0, 2.0 ], [ 0.6, 2.0 ] ] }
   ],
   channels: []
 };

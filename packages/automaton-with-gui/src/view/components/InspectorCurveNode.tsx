@@ -78,7 +78,7 @@ const InspectorCurveNode = ( props: Props ): JSX.Element | null => {
     <InspectorItem name={ useBeatInGUI ? 'In Beat' : 'In Time' }>
       <NumberParam
         type="float"
-        value={ timeToDisplay( node.in?.time ?? 0.0 ) }
+        value={ timeToDisplay( node.inTime ) }
         onChange={ ( value ) => { curve.moveHandleTime( node.$id, 'in', displayToTime( value ) ); } }
         onSettle={ ( value, valuePrev ) => {
           dispatch( {
@@ -101,7 +101,7 @@ const InspectorCurveNode = ( props: Props ): JSX.Element | null => {
     <InspectorItem name="In Value">
       <NumberParam
         type="float"
-        value={ node.in?.value ?? 0.0 }
+        value={ node.inValue }
         onChange={ ( value ) => { curve.moveHandleValue( node.$id, 'in', value ); } }
         onSettle={ ( value, valuePrev ) => {
           dispatch( {
@@ -127,7 +127,7 @@ const InspectorCurveNode = ( props: Props ): JSX.Element | null => {
     <InspectorItem name={ useBeatInGUI ? 'Out Beat' : 'Out Time' }>
       <NumberParam
         type="float"
-        value={ timeToDisplay( node.out?.time ?? 0.0 ) }
+        value={ timeToDisplay( node.outTime ) }
         onChange={ ( value ) => { curve.moveHandleTime( node.$id, 'out', displayToTime( value ) ); } }
         onSettle={ ( value, valuePrev ) => {
           dispatch( {
@@ -150,7 +150,7 @@ const InspectorCurveNode = ( props: Props ): JSX.Element | null => {
     <InspectorItem name="Out Value">
       <NumberParam
         type="float"
-        value={ node.out?.value ?? 0.0 }
+        value={ node.outValue }
         onChange={ ( value ) => { curve.moveHandleValue( node.$id, 'out', value ); } }
         onSettle={ ( value, valuePrev ) => {
           dispatch( {
