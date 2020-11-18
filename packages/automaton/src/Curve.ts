@@ -34,7 +34,7 @@ export class Curve {
    * The length of this curve.
    */
   public get length(): number {
-    return this.__nodes[ this.__nodes.length - 1 ][ 0 ];
+    return this.__nodes[ this.__nodes.length - 1 ].time;
   }
 
 
@@ -54,14 +54,14 @@ export class Curve {
    * @param data Data of a curve
    */
   public deserialize( data: SerializedCurve ): void {
-    this.__nodes = data.nodes.map( ( node ) => [
-      node[ 0 ] ?? 0.0,
-      node[ 1 ] ?? 0.0,
-      node[ 2 ] ?? 0.0,
-      node[ 3 ] ?? 0.0,
-      node[ 4 ] ?? 0.0,
-      node[ 5 ] ?? 0.0,
-    ] );
+    this.__nodes = data.nodes.map( ( node ) => ( {
+      time: node[ 0 ] ?? 0.0,
+      value: node[ 1 ] ?? 0.0,
+      inTime: node[ 2 ] ?? 0.0,
+      inValue: node[ 3 ] ?? 0.0,
+      outTime: node[ 4 ] ?? 0.0,
+      outValue: node[ 5 ] ?? 0.0,
+    } ) );
 
     this.__fxs = [];
     data.fxs?.forEach( ( fx ) => {
@@ -130,9 +130,9 @@ export class Curve {
       const node0 = nodeTail;
       nodeTail = this.__nodes[ iNode + 1 ];
       const i0 = iTail;
-      iTail = Math.floor( nodeTail[ 0 ] * this.__automaton.resolution );
+      iTail = Math.floor( nodeTail.time * this.__automaton.resolution );
 
-      this.__values[ i0 ] = node0[ 1 ];
+      this.__values[ i0 ] = node0.value;
       for ( let i = i0 + 1; i <= iTail; i ++ ) {
         const time = i / this.__automaton.resolution;
         const value = bezierEasing( node0, nodeTail, time );
@@ -141,7 +141,7 @@ export class Curve {
     }
 
     for ( let i = iTail + 1; i < this.__values.length; i ++ ) {
-      this.__values[ i ] = nodeTail[ 1 ];
+      this.__values[ i ] = nodeTail.value;
     }
   }
 

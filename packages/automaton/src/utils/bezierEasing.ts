@@ -116,16 +116,16 @@ export function rawBezierEasing(
 export function bezierEasing( node0: BezierNode, node1: BezierNode, time: number ): number {
   return rawBezierEasing(
     {
-      p0: node0[ 0 ],
-      p1: node0[ 0 ] + node0[ 4 ],
-      p2: node1[ 0 ] + node1[ 2 ],
-      p3: node1[ 0 ]
+      p0: node0.time,
+      p1: node0.time + node0.outTime,
+      p2: node1.time + node1.inTime,
+      p3: node1.time
     },
     {
-      p0: node0[ 1 ],
-      p1: node0[ 1 ] + node0[ 5 ],
-      p2: node1[ 1 ] + node1[ 3 ],
-      p3: node1[ 1 ]
+      p0: node0.value,
+      p1: node0.value + node0.outValue,
+      p2: node1.value + node1.inValue,
+      p3: node1.value
     },
     time
   );

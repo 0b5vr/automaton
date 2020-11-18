@@ -1,34 +1,34 @@
 /**
  * Represents a bezier node.
  */
-export type BezierNode = [
+export interface BezierNode {
   /**
    * Time of the node.
    */
-  time: number,
+  time: number;
 
   /**
    * Value of the node.
    */
-  value: number,
+  value: number;
 
   /**
    * Bezier control point of inlet. Time.
    */
-  inTime: number,
+  inTime: number;
 
   /**
    * Bezier control point of inlet. Value.
    */
-  inValue: number,
+  inValue: number;
 
   /**
    * Bezier control point of outlet. Time.
    */
-  outTime: number,
+  outTime: number;
 
   /**
    * Bezier control point of outlet. Value.
    */
-  outValue: number,
-];
+  outValue: number;
+}

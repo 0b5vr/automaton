@@ -31,7 +31,7 @@ const InspectorCurveNode = ( props: Props ): JSX.Element | null => {
     <InspectorItem name={ useBeatInGUI ? 'Beat' : 'Time' }>
       <NumberParam
         type="float"
-        value={ timeToDisplay( node[ 0 ] ) }
+        value={ timeToDisplay( node.time ) }
         onChange={ ( time ) => { curve.moveNodeTime( node.$id, displayToTime( time ) ); } }
         onSettle={ ( value, valuePrev ) => {
           dispatch( {
@@ -53,7 +53,7 @@ const InspectorCurveNode = ( props: Props ): JSX.Element | null => {
     <InspectorItem name="Value">
       <NumberParam
         type="float"
-        value={ node[ 1 ] }
+        value={ node.value }
         onChange={ ( value ) => { curve.moveNodeValue( node.$id, value ); } }
         onSettle={ ( value, valuePrev ) => {
           dispatch( {
@@ -78,7 +78,7 @@ const InspectorCurveNode = ( props: Props ): JSX.Element | null => {
     <InspectorItem name={ useBeatInGUI ? 'In Beat' : 'In Time' }>
       <NumberParam
         type="float"
-        value={ timeToDisplay( node[ 2 ] ) }
+        value={ timeToDisplay( node.inTime ) }
         onChange={ ( value ) => { curve.moveHandleTime( node.$id, 'in', displayToTime( value ) ); } }
         onSettle={ ( value, valuePrev ) => {
           dispatch( {
@@ -101,7 +101,7 @@ const InspectorCurveNode = ( props: Props ): JSX.Element | null => {
     <InspectorItem name="In Value">
       <NumberParam
         type="float"
-        value={ node[ 3 ] }
+        value={ node.inValue }
         onChange={ ( value ) => { curve.moveHandleValue( node.$id, 'in', value ); } }
         onSettle={ ( value, valuePrev ) => {
           dispatch( {
@@ -127,7 +127,7 @@ const InspectorCurveNode = ( props: Props ): JSX.Element | null => {
     <InspectorItem name={ useBeatInGUI ? 'Out Beat' : 'Out Time' }>
       <NumberParam
         type="float"
-        value={ timeToDisplay( node[ 4 ] ) }
+        value={ timeToDisplay( node.outTime ) }
         onChange={ ( value ) => { curve.moveHandleTime( node.$id, 'out', displayToTime( value ) ); } }
         onSettle={ ( value, valuePrev ) => {
           dispatch( {
@@ -150,7 +150,7 @@ const InspectorCurveNode = ( props: Props ): JSX.Element | null => {
     <InspectorItem name="Out Value">
       <NumberParam
         type="float"
-        value={ node[ 5 ] }
+        value={ node.outValue }
         onChange={ ( value ) => { curve.moveHandleValue( node.$id, 'out', value ); } }
         onSettle={ ( value, valuePrev ) => {
           dispatch( {

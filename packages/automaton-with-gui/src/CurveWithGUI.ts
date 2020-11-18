@@ -260,14 +260,14 @@ export class CurveWithGUI extends Curve {
    */
   public createNode( time: number, value: number ): BezierNode & WithID {
     const id = genID();
-    const data: any = [
+    const data: any = {
       time,
       value,
-      -CURVE_DEFAULT_HANDLE_LENGTH,
-      0.0,
-      CURVE_DEFAULT_HANDLE_LENGTH,
-      0.0
-    ];
+      inTime: -CURVE_DEFAULT_HANDLE_LENGTH,
+      inValue: 0.0,
+      outTime: CURVE_DEFAULT_HANDLE_LENGTH,
+      outValue: 0.0,
+    };
     data.$id = id;
     this.__nodes.push( data );
     this.__sortNodes();
@@ -369,13 +369,13 @@ export class CurveWithGUI extends Curve {
     if ( index === 0 ) {
       newTime = 0;
     } else {
-      newTime = Math.max( newTime, this.__nodes[ index - 1 ][ 0 ] );
+      newTime = Math.max( newTime, this.__nodes[ index - 1 ].time );
 
       if ( index !== this.__nodes.length - 1 ) {
-        newTime = Math.min( newTime, this.__nodes[ index + 1 ][ 0 ] );
+        newTime = Math.min( newTime, this.__nodes[ index + 1 ].time );
       }
     }
-    node[ 0 ] = newTime;
+    node.time = newTime;
 
     this.precalc();
 
@@ -399,7 +399,7 @@ export class CurveWithGUI extends Curve {
 
     const node = this.__nodes[ index ];
 
-    node[ 1 ] = value;
+    node.value = value;
 
     this.precalc();
 
@@ -423,7 +423,7 @@ export class CurveWithGUI extends Curve {
 
     const newTime = ( dir === 'in' ) ? Math.min( 0.0, time ) : Math.max( 0.0, time );
 
-    node[ dir === 'in' ? 2 : 4 ] = newTime;
+    node[ dir === 'in' ? 'inTime' : 'outTime' ] = newTime;
 
     this.precalc();
 
@@ -445,7 +445,7 @@ export class CurveWithGUI extends Curve {
 
     const node = this.__nodes[ index ];
 
-    node[ dir === 'in' ? 3 : 5 ] = value;
+    node[ dir === 'in' ? 'inValue' : 'outValue' ] = value;
 
     this.precalc();
 
@@ -465,8 +465,8 @@ export class CurveWithGUI extends Curve {
     if ( index === 0 && dir === 'in' ) { return; }
 
     const node = this.__nodes[ index ];
-    node[ dir === 'in' ? 2 : 4 ] = ( ( dir === 'in' ) ? -1.0 : 1.0 ) * CURVE_DEFAULT_HANDLE_LENGTH;
-    node[ dir === 'in' ? 3 : 5 ] = 0.0;
+    node[ dir === 'in' ? 'inTime' : 'outTime' ] = ( ( dir === 'in' ) ? -1.0 : 1.0 ) * CURVE_DEFAULT_HANDLE_LENGTH;
+    node[ dir === 'in' ? 'inValue' : 'outValue' ] = 0.0;
 
     this.precalc();
 
@@ -798,15 +798,23 @@ export class CurveWithGUI extends Curve {
    */
   private __serializeNodes(): SerializedBezierNode[] {
     return this.__nodes.map( ( node ) => {
-      let data: SerializedBezierNode = [];
+      const { time, value, inTime, inValue, outTime, outValue } = node;
 
-      for ( let i = 5; i >= 0; i -- ) {
-        if ( node[ i ] !== 0.0 ) {
-          data = node.concat().splice( 0, i + 1 ) as SerializedBezierNode;
-        }
+      if ( outValue !== 0.0 ) {
+        return [ time, value, inTime, inValue, outTime, outValue ];
+      } else if ( outTime !== 0.0 ) {
+        return [ time, value, inTime, inValue, outTime ];
+      } else if ( inValue !== 0.0 ) {
+        return [ time, value, inTime, inValue ];
+      } else if ( inTime !== 0.0 ) {
+        return [ time, value, inTime ];
+      } else if ( value !== 0.0 ) {
+        return [ time, value ];
+      } else if ( time !== 0.0 ) {
+        return [ time ];
+      } else {
+        return [];
       }
-
-      return data;
     } );
   }
 
@@ -858,7 +866,7 @@ export class CurveWithGUI extends Curve {
    * Sort nodes by time.
    */
   private __sortNodes(): void {
-    this.__nodes = this.__nodes.sort( ( a, b ) => a[ 0 ] - b[ 0 ] );
+    this.__nodes = this.__nodes.sort( ( a, b ) => a.time - b.time );
   }
 
   /**
