@@ -2,7 +2,7 @@ import { Reducer } from 'redux';
 import { produce } from 'immer';
 
 // == state ========================================================================================
-type SettingsMode = 'none' | 'snapping' | 'beat' | 'general';
+type SettingsMode = 'none' | 'snapping' | 'beat' | 'general' | 'stats';
 
 export interface State {
   mode: SettingsMode;

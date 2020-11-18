@@ -7,6 +7,7 @@ import { InspectorCurveNode } from './InspectorCurveNode';
 import { InspectorGeneral } from './InspectorGeneral';
 import { InspectorLabel } from './InspectorLabel';
 import { InspectorSnapping } from './InspectorSnapping';
+import { InspectorStats } from './InspectorStats';
 import { Metrics } from '../constants/Metrics';
 import { Scrollable } from './Scrollable';
 import { objectMapSize, objectMapValues } from '../utils/objectMap';
@@ -67,6 +68,8 @@ const Inspector = ( { className }: {
     content = <InspectorBeat />;
   } else if ( settingsMode === 'general' ) {
     content = <InspectorGeneral />;
+  } else if ( settingsMode === 'stats' ) {
+    content = <InspectorStats />;
   } else if ( mode === 'curve' ) {
     if ( selectedCurve != null ) {
       if ( stateSelectedNodes.length === 1 ) {

@@ -321,6 +321,17 @@ const Header = ( { className }: HeaderProps ): JSX.Element => {
           active={ ( settingsMode === 'general' ? 1 : 0 ) as any as boolean } // fuck
           data-stalker="General Settings"
         />
+        <Button
+          as={ Icons.Scale }
+          onClick={ () => {
+            dispatch( {
+              type: 'Settings/ChangeMode',
+              mode: settingsMode === 'stats' ? 'none' : 'stats'
+            } );
+          } }
+          active={ ( settingsMode === 'stats' ? 1 : 0 ) as any as boolean } // fuck
+          data-stalker="Project Stats"
+        />
         <Button as={ Icons.Save }
           onClick={ handleSave }
           onContextMenu={ handleSaveContextMenu }
