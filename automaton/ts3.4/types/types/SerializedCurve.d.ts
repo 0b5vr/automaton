@@ -1,5 +1,5 @@
-import { SerializedBezierNode } from './BezierNode';
-import { SerializedFxSection } from './FxSection';
+import { SerializedBezierNode } from './SerializedBezierNode';
+import { SerializedFxSection } from './SerializedFxSection';
 /**
  * Interface of a serialized curve.
  */

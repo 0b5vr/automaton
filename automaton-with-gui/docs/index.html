@@ -89,12 +89,12 @@
 					<li><a href="https://fms-cat.github.io/automaton/automaton-with-gui/dist/automaton-with-gui.module.js"><code>automaton-with-gui.module.js</code></a></li>
 					<li><a href="https://fms-cat.github.io/automaton/automaton-with-gui/dist/automaton-with-gui.module.min.js"><code>automaton-with-gui.module.min.js</code></a></li>
 				</ul>
-				<p><code>.min</code> builds are minified. otherwise it isn&#39;t minified and comes with source maps.<br><code>.module</code> builds are ESM. otherwise it&#39;s UMD.</p>
+				<p><code>.min</code> builds are minified. otherwise it isn&#39;t minified and comes with source maps.<br><code>.module</code> builds are ESM. otherwise it&#39;s UMD.<br>If you want to use the UMD one using iife, everything is exposed onto global under the name <code>AUTOMATON_WITH_GUI</code>.</p>
 				<p>You might want to use <code>automaton.min.js</code> of <a href="https://github.com/FMS-Cat/automaton/packages/automaton">the core engine without GUI</a> for production stage.</p>
 				<p>Code like this:</p>
 				<pre><code class="language-js"><span class="hljs-keyword">const</span> { AutomatonWithGUI } = AUTOMATON_WITH_GUI;
 
-<span class="hljs-keyword">const</span> data = <span class="hljs-keyword">await</span> ( <span class="hljs-keyword">await</span> fetch( <span class="hljs-string">'automaton.json'</span> ) ).json();
+<span class="hljs-keyword">const</span> data = <span class="hljs-keyword">await</span> ( <span class="hljs-keyword">await</span> fetch( <span class="hljs-string">&#x27;automaton.json&#x27;</span> ) ).json();
 
 <span class="hljs-keyword">const</span> automaton = <span class="hljs-keyword">new</span> AutomatonWithGUI(
   data,
@@ -111,13 +111,13 @@
 				<pre><code class="language-sh"><span class="hljs-comment"># npm install @fms-cat/automaton-with-gui</span>
 yarn add @fms-cat/automaton-with-gui</code></pre>
 				<p>then code like this:</p>
-				<pre><code class="language-js"><span class="hljs-comment">// const { AutomatonWithGUI } = require( '@fms-cat/automaton-with-gui' );</span>
-<span class="hljs-keyword">import</span> { AutomatonWithGUI } <span class="hljs-keyword">from</span> <span class="hljs-string">'@fms-cat/automaton-with-gui'</span>;
+				<pre><code class="language-js"><span class="hljs-comment">// const { AutomatonWithGUI } = require( &#x27;@fms-cat/automaton-with-gui&#x27; );</span>
+<span class="hljs-keyword">import</span> { AutomatonWithGUI } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;@fms-cat/automaton-with-gui&#x27;</span>;
 
-<span class="hljs-keyword">const</span> data = <span class="hljs-keyword">await</span> ( <span class="hljs-keyword">await</span> fetch( <span class="hljs-string">'automaton.json'</span> ) ).json();
+<span class="hljs-keyword">const</span> data = <span class="hljs-keyword">await</span> ( <span class="hljs-keyword">await</span> fetch( <span class="hljs-string">&#x27;automaton.json&#x27;</span> ) ).json();
 
 <span class="hljs-keyword">const</span> automaton = <span class="hljs-keyword">new</span> AutomatonWithGUI(
-  data,
+  data, <span class="hljs-comment">// it&#x27;s okay to be `undefined`</span>
   {
     <span class="hljs-attr">gui</span>: yourDesiredMountpointDOM
   }
@@ -158,6 +158,9 @@ yarn add @fms-cat/automaton-with-gui</code></pre>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/automatonwithgui.html" class="tsd-kind-icon">Automaton<wbr>WithGUI</a>
+					</li>
+					<li class=" tsd-kind-class tsd-has-type-parameter">
+						<a href="classes/bimap.html" class="tsd-kind-icon">Bi<wbr>Map</a>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/channelitemwithgui.html" class="tsd-kind-icon">Channel<wbr>Item<wbr>WithGUI</a>
@@ -283,6 +286,9 @@ yarn add @fms-cat/automaton-with-gui</code></pre>
 						<a href="interfaces/inspectoritemprops.html" class="tsd-kind-icon">Inspector<wbr>Item<wbr>Props</a>
 					</li>
 					<li class=" tsd-kind-interface">
+						<a href="interfaces/inspectorstatsprops.html" class="tsd-kind-icon">Inspector<wbr>Stats<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
 						<a href="interfaces/minimizeoptions.html" class="tsd-kind-icon">Minimize<wbr>Options</a>
 					</li>
 					<li class=" tsd-kind-interface">
@@ -361,6 +367,27 @@ yarn add @fms-cat/automaton-with-gui</code></pre>
 						<a href="interfaces/v2serializedparam.html" class="tsd-kind-icon">V2<wbr>Serialized<wbr>Param</a>
 					</li>
 					<li class=" tsd-kind-interface">
+						<a href="interfaces/v3guisettings.html" class="tsd-kind-icon">V3GUISettings</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/v3serializedautomaton.html" class="tsd-kind-icon">V3<wbr>Serialized<wbr>Automaton</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/v3serializedautomatonwithgui.html" class="tsd-kind-icon">V3<wbr>Serialized<wbr>Automaton<wbr>WithGUI</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/v3serializedbeziercontrolpoint.html" class="tsd-kind-icon">V3<wbr>Serialized<wbr>Bezier<wbr>Control<wbr>Point</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/v3serializedbeziernode.html" class="tsd-kind-icon">V3<wbr>Serialized<wbr>Bezier<wbr>Node</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/v3serializedchannel.html" class="tsd-kind-icon">V3<wbr>Serialized<wbr>Channel</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/v3serializedcurve.html" class="tsd-kind-icon">V3<wbr>Serialized<wbr>Curve</a>
+					</li>
+					<li class=" tsd-kind-interface">
 						<a href="interfaces/valuerange.html" class="tsd-kind-icon">Value<wbr>Range</a>
 					</li>
 					<li class=" tsd-kind-interface">
@@ -407,6 +434,9 @@ yarn add @fms-cat/automaton-with-gui</code></pre>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#curve_reso" class="tsd-kind-icon">CURVE_<wbr>RESO</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#calculatebutton" class="tsd-kind-icon">Calculate<wbr>Button</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#channellistanddopesheetcontainer" class="tsd-kind-icon">Channel<wbr>List<wbr>And<wbr>Dope<wbr>Sheet<wbr>Container</a>
@@ -781,6 +811,9 @@ yarn add @fms-cat/automaton-with-gui</code></pre>
 						<a href="globals.html#inspector" class="tsd-kind-icon">Inspector</a>
 					</li>
 					<li class=" tsd-kind-function">
+						<a href="globals.html#inspectorbeat" class="tsd-kind-icon">Inspector<wbr>Beat</a>
+					</li>
+					<li class=" tsd-kind-function">
 						<a href="globals.html#inspectorchannelitem" class="tsd-kind-icon">Inspector<wbr>Channel<wbr>Item</a>
 					</li>
 					<li class=" tsd-kind-function">
@@ -806,6 +839,9 @@ yarn add @fms-cat/automaton-with-gui</code></pre>
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="globals.html#inspectorsnapping" class="tsd-kind-icon">Inspector<wbr>Snapping</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#inspectorstats" class="tsd-kind-icon">Inspector<wbr>Stats</a>
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="globals.html#items" class="tsd-kind-icon">Items</a>
@@ -1012,13 +1048,13 @@ yarn add @fms-cat/automaton-with-gui</code></pre>
 						<a href="globals.html#precorundefined" class="tsd-kind-icon">prec<wbr>OrUndefined</a>
 					</li>
 					<li class=" tsd-kind-function">
-						<a href="globals.html#preversioncompat" class="tsd-kind-icon">preversion<wbr>Compat</a>
-					</li>
-					<li class=" tsd-kind-function">
 						<a href="globals.html#reducer" class="tsd-kind-icon">reducer</a>
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="globals.html#registermouseevent" class="tsd-kind-icon">register<wbr>Mouse<wbr>Event</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#reorderarray" class="tsd-kind-icon">reorder<wbr>Array</a>
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="globals.html#showtoasty" class="tsd-kind-icon">show<wbr>Toasty</a>
@@ -1050,6 +1086,9 @@ yarn add @fms-cat/automaton-with-gui</code></pre>
 					<li class=" tsd-kind-function tsd-has-type-parameter">
 						<a href="globals.html#useselector" class="tsd-kind-icon">use<wbr>Selector</a>
 					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usetimeunit" class="tsd-kind-icon">use<wbr>Time<wbr>Unit</a>
+					</li>
 					<li class=" tsd-kind-function tsd-has-type-parameter">
 						<a href="globals.html#usewheelevent" class="tsd-kind-icon">use<wbr>Wheel<wbr>Event</a>
 					</li>
@@ -1061,6 +1100,9 @@ yarn add @fms-cat/automaton-with-gui</code></pre>
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="globals.html#v2y" class="tsd-kind-icon">v2y</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#v3compat" class="tsd-kind-icon">v3<wbr>Compat</a>
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="globals.html#valuetoinput" class="tsd-kind-icon">value<wbr>ToInput</a>
@@ -1124,10 +1166,11 @@ yarn add @fms-cat/automaton-with-gui</code></pre>
 				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
 			</ul>
 			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
 			</ul>
 			<ul class="tsd-legend">
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
 			</ul>
 		</div>
 	</div>

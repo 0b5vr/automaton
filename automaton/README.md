@@ -24,7 +24,8 @@ You might want to check the variant w/ GUI instead, [automaton-with-gui](https:/
 - [`automaton.module.min.js`](https://fms-cat.github.io/automaton/automaton/dist/automaton.module.min.js)
 
 `.min` builds are minified. otherwise it isn't minified and comes with source maps.  
-`.module` builds are ESM. otherwise it's UMD.
+`.module` builds are ESM. otherwise it's UMD.  
+If you want to use the UMD one using iife, everything is exposed onto global under the name `AUTOMATON`.
 
 Code like this:
 

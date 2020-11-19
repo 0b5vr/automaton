@@ -67,7 +67,7 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>Interface of serialized automaton data.</p>
+						<p>Represents a serialized automaton data.</p>
 					</div>
 				</div>
 			</section>
@@ -99,24 +99,16 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="channels" class="tsd-anchor"></a>
 					<h3>channels</h3>
-					<div class="tsd-signature tsd-kind-icon">channels<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{}</span></div>
+					<div class="tsd-signature tsd-kind-icon">channels<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">[</span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span>channel<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">SerializedChannel</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton/src/types/SerializedAutomaton.ts#L21">packages/automaton/src/types/SerializedAutomaton.ts:21</a></li>
+							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton/src/types/SerializedAutomaton.ts#L21">types/SerializedAutomaton.ts:21</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
 							<p>Channels of the automaton.</p>
 						</div>
-					</div>
-					<div class="tsd-type-declaration">
-						<h4>Type declaration</h4>
-						<ul class="tsd-parameters">
-							<li class="tsd-parameter-index-signature">
-								<h5><span class="tsd-signature-symbol">[</span>name: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><a href="serializedchannel.html" class="tsd-signature-type">SerializedChannel</a></h5>
-							</li>
-						</ul>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
@@ -125,7 +117,7 @@
 					<div class="tsd-signature tsd-kind-icon">curves<span class="tsd-signature-symbol">:</span> <a href="serializedcurve.html" class="tsd-signature-type">SerializedCurve</a><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton/src/types/SerializedAutomaton.ts#L16">packages/automaton/src/types/SerializedAutomaton.ts:16</a></li>
+							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton/src/types/SerializedAutomaton.ts#L16">types/SerializedAutomaton.ts:16</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -140,7 +132,7 @@
 					<div class="tsd-signature tsd-kind-icon">resolution<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton/src/types/SerializedAutomaton.ts#L11">packages/automaton/src/types/SerializedAutomaton.ts:11</a></li>
+							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton/src/types/SerializedAutomaton.ts#L11">types/SerializedAutomaton.ts:11</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -175,9 +167,6 @@
 					</li>
 					<li class=" tsd-kind-interface">
 						<a href="automatonoptions.html" class="tsd-kind-icon">Automaton<wbr>Options</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="beziercontrolpoint.html" class="tsd-kind-icon">Bezier<wbr>Control<wbr>Point</a>
 					</li>
 					<li class=" tsd-kind-interface">
 						<a href="beziernode.html" class="tsd-kind-icon">Bezier<wbr>Node</a>
@@ -219,9 +208,6 @@
 				</ul>
 				<ul class="after-current">
 					<li class=" tsd-kind-interface">
-						<a href="serializedbeziernode.html" class="tsd-kind-icon">Serialized<wbr>Bezier<wbr>Node</a>
-					</li>
-					<li class=" tsd-kind-interface">
 						<a href="serializedchannel.html" class="tsd-kind-icon">Serialized<wbr>Channel</a>
 					</li>
 					<li class=" tsd-kind-interface">
@@ -232,6 +218,9 @@
 					</li>
 					<li class=" tsd-kind-interface">
 						<a href="serializedfxsection.html" class="tsd-kind-icon">Serialized<wbr>FxSection</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="../globals.html#serializedbeziernode" class="tsd-kind-icon">Serialized<wbr>Bezier<wbr>Node</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="../globals.html#newton_epsilon" class="tsd-kind-icon">NEWTON_<wbr>EPSILON</a>

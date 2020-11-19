@@ -1,4 +1,5 @@
-import { Automaton, ChannelUpdateEvent, FxDefinition, FxParam, SerializedAutomaton, SerializedChannel, SerializedCurve } from '@fms-cat/automaton';
+import { Automaton, AutomatonOptions, ChannelUpdateEvent, FxDefinition, FxParam, SerializedAutomaton, SerializedChannel, SerializedCurve } from '@fms-cat/automaton';
+import { BiMap } from './utils/BiMap';
 import { ChannelWithGUI } from './ChannelWithGUI';
 import { ContextMenuCommand } from './view/states/ContextMenu';
 import { CurveWithGUI } from './CurveWithGUI';
@@ -8,7 +9,6 @@ import { MinimizeOptions } from './types/MinimizeOptions';
 import { Serializable } from './types/Serializable';
 import { SerializedAutomatonWithGUI } from './types/SerializedAutomatonWithGUI';
 import { WithID } from './types/WithID';
-import type { AutomatonOptions } from '@fms-cat/automaton/types/types/AutomatonOptions';
 import type { ToastyParams } from './types/ToastyParams';
 /**
  * Interface for options of {@link AutomatonWithGUI}.
@@ -60,6 +60,18 @@ export declare class AutomatonWithGUI extends Automaton implements Serializable<
      */
     saveContextMenuCommands?: Array<ContextMenuCommand>;
     /**
+     * Curves of the automaton.
+     */
+    readonly curves: CurveWithGUI[];
+    /**
+     * Channels of the timeline.
+     */
+    readonly channels: ChannelWithGUI[];
+    /**
+     * Map of channels, name vs. channel itself.
+     */
+    readonly mapNameToChannel: BiMap<string, ChannelWithGUI>;
+    /**
      * Labels.
      */
     protected __labels: {
@@ -69,16 +81,6 @@ export declare class AutomatonWithGUI extends Automaton implements Serializable<
      * Version of the automaton.
      */
     protected __version: string;
-    /**
-     * Curves of the automaton.
-     */
-    protected __curves: CurveWithGUI[];
-    /**
-     * Channels of the timeline.
-     */
-    protected __channels: {
-        [name: string]: ChannelWithGUI;
-    };
     /**
      * It's currently playing or not.
      */
@@ -126,15 +128,9 @@ export declare class AutomatonWithGUI extends Automaton implements Serializable<
      */
     get length(): number;
     /**
-     * A map of channels.
+     * Channel names, ordered.
      */
-    get channels(): {
-        [name: string]: ChannelWithGUI;
-    };
-    /**
-     * Curves of the automaton.
-     */
-    get curves(): CurveWithGUI[];
+    get channelNames(): string[];
     /**
      * A map of fx definitions.
      */
@@ -253,6 +249,19 @@ export declare class AutomatonWithGUI extends Automaton implements Serializable<
      * @returns The channel
      */
     getOrCreateChannel(name: string): ChannelWithGUI;
+    /**
+     * Get the index of a channel.
+     * @param name Name of the channel
+     * @returns The index of the channel
+     */
+    getChannelIndex(name: string): number;
+    /**
+     * Reorder channels.
+     * @param name Name of the channel
+     * @param isRelative Will interpret given index relatively if it's `true`
+     * @returns A function to reorder channels. Give a new index
+     */
+    reorderChannels(name: string, isRelative?: boolean): (index: number) => ChannelWithGUI[];
     /**
      * Create a new curve.
      * @returns Created channel
@@ -389,7 +398,7 @@ export declare class AutomatonWithGUI extends Automaton implements Serializable<
      */
     toasty(params: ToastyParams): void;
     private __serializeCurves;
-    private __serializeChannelList;
+    private __serializeChannels;
     private __tryUpdateLength;
     /**
      * Assigned to `Automaton.auto` at constructor.
@@ -415,6 +424,11 @@ export interface AutomatonWithGUIEvents {
     };
     removeChannel: {
         name: string;
+    };
+    reorderChannels: {
+        index: number;
+        length: number;
+        newIndex: number;
     };
     createCurve: {
         id: string;

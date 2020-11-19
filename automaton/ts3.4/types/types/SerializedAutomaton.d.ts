@@ -1,7 +1,7 @@
 import { SerializedChannel } from './SerializedChannel';
 import { SerializedCurve } from './SerializedCurve';
 /**
- * Interface of serialized automaton data.
+ * Represents a serialized automaton data.
  */
 export interface SerializedAutomaton {
     /**
@@ -15,7 +15,8 @@ export interface SerializedAutomaton {
     /**
      * Channels of the automaton.
      */
-    channels: {
-        [name: string]: SerializedChannel;
-    };
+    channels: [
+        /*name*/ string,
+        /*channel*/ SerializedChannel
+    ][];
 }

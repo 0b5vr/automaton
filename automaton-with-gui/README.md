@@ -29,7 +29,8 @@ You might want to also check examples of original [Automaton](https://github.com
 - [`automaton-with-gui.module.min.js`](https://fms-cat.github.io/automaton/automaton-with-gui/dist/automaton-with-gui.module.min.js)
 
 `.min` builds are minified. otherwise it isn't minified and comes with source maps.  
-`.module` builds are ESM. otherwise it's UMD.
+`.module` builds are ESM. otherwise it's UMD.  
+If you want to use the UMD one using iife, everything is exposed onto global under the name `AUTOMATON_WITH_GUI`.
 
 You might want to use `automaton.min.js` of [the core engine without GUI](https://github.com/FMS-Cat/automaton/packages/automaton) for production stage.
 
@@ -68,7 +69,7 @@ import { AutomatonWithGUI } from '@fms-cat/automaton-with-gui';
 const data = await ( await fetch( 'automaton.json' ) ).json();
 
 const automaton = new AutomatonWithGUI(
-  data,
+  data, // it's okay to be `undefined`
   {
     gui: yourDesiredMountpointDOM
   }

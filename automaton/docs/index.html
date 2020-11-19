@@ -89,11 +89,11 @@
 					<li><a href="https://fms-cat.github.io/automaton/automaton/dist/automaton.module.js"><code>automaton.module.js</code></a></li>
 					<li><a href="https://fms-cat.github.io/automaton/automaton/dist/automaton.module.min.js"><code>automaton.module.min.js</code></a></li>
 				</ul>
-				<p><code>.min</code> builds are minified. otherwise it isn&#39;t minified and comes with source maps.<br><code>.module</code> builds are ESM. otherwise it&#39;s UMD.</p>
+				<p><code>.min</code> builds are minified. otherwise it isn&#39;t minified and comes with source maps.<br><code>.module</code> builds are ESM. otherwise it&#39;s UMD.<br>If you want to use the UMD one using iife, everything is exposed onto global under the name <code>AUTOMATON</code>.</p>
 				<p>Code like this:</p>
 				<pre><code class="language-js"><span class="hljs-keyword">const</span> { Automaton } = AUTOMATON;
 
-<span class="hljs-keyword">const</span> data = <span class="hljs-keyword">await</span> ( <span class="hljs-keyword">await</span> fetch( <span class="hljs-string">'automaton.json'</span> ) ).json();
+<span class="hljs-keyword">const</span> data = <span class="hljs-keyword">await</span> ( <span class="hljs-keyword">await</span> fetch( <span class="hljs-string">&#x27;automaton.json&#x27;</span> ) ).json();
 
 <span class="hljs-keyword">const</span> automaton = <span class="hljs-keyword">new</span> Automaton( data );
 
@@ -105,10 +105,10 @@
 				<pre><code class="language-sh"><span class="hljs-comment"># npm install @fms-cat/automaton</span>
 yarn add @fms-cat/automaton</code></pre>
 				<p>then code like this:</p>
-				<pre><code class="language-js"><span class="hljs-comment">// const { Automaton } = require( '@fms-cat/automaton' );</span>
-<span class="hljs-keyword">import</span> { Automaton } <span class="hljs-keyword">from</span> <span class="hljs-string">'@fms-cat/automaton'</span>;
+				<pre><code class="language-js"><span class="hljs-comment">// const { Automaton } = require( &#x27;@fms-cat/automaton&#x27; );</span>
+<span class="hljs-keyword">import</span> { Automaton } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;@fms-cat/automaton&#x27;</span>;
 
-<span class="hljs-keyword">const</span> data = <span class="hljs-keyword">await</span> ( <span class="hljs-keyword">await</span> fetch( <span class="hljs-string">'automaton.json'</span> ) ).json();
+<span class="hljs-keyword">const</span> data = <span class="hljs-keyword">await</span> ( <span class="hljs-keyword">await</span> fetch( <span class="hljs-string">&#x27;automaton.json&#x27;</span> ) ).json();
 
 <span class="hljs-keyword">const</span> automaton = <span class="hljs-keyword">new</span> Automaton( data );
 
@@ -149,9 +149,6 @@ yarn add @fms-cat/automaton</code></pre>
 						<a href="interfaces/automatonoptions.html" class="tsd-kind-icon">Automaton<wbr>Options</a>
 					</li>
 					<li class=" tsd-kind-interface">
-						<a href="interfaces/beziercontrolpoint.html" class="tsd-kind-icon">Bezier<wbr>Control<wbr>Point</a>
-					</li>
-					<li class=" tsd-kind-interface">
 						<a href="interfaces/beziernode.html" class="tsd-kind-icon">Bezier<wbr>Node</a>
 					</li>
 					<li class=" tsd-kind-interface">
@@ -176,9 +173,6 @@ yarn add @fms-cat/automaton</code></pre>
 						<a href="interfaces/serializedautomaton.html" class="tsd-kind-icon">Serialized<wbr>Automaton</a>
 					</li>
 					<li class=" tsd-kind-interface">
-						<a href="interfaces/serializedbeziernode.html" class="tsd-kind-icon">Serialized<wbr>Bezier<wbr>Node</a>
-					</li>
-					<li class=" tsd-kind-interface">
 						<a href="interfaces/serializedchannel.html" class="tsd-kind-icon">Serialized<wbr>Channel</a>
 					</li>
 					<li class=" tsd-kind-interface">
@@ -189,6 +183,9 @@ yarn add @fms-cat/automaton</code></pre>
 					</li>
 					<li class=" tsd-kind-interface">
 						<a href="interfaces/serializedfxsection.html" class="tsd-kind-icon">Serialized<wbr>FxSection</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#serializedbeziernode" class="tsd-kind-icon">Serialized<wbr>Bezier<wbr>Node</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#newton_epsilon" class="tsd-kind-icon">NEWTON_<wbr>EPSILON</a>

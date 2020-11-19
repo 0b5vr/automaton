@@ -1,6 +1,7 @@
 export declare const Icons: {
     Automaton: "svg";
     AutomatonA: "svg";
+    Beat: "svg";
     Channel: "svg";
     Close: "svg";
     Cog: "svg";
@@ -14,6 +15,7 @@ export declare const Icons: {
     Power: "svg";
     Redo: "svg";
     Save: "svg";
+    Scale: "svg";
     Snap: "svg";
     Undo: "svg";
     Warning: "svg";

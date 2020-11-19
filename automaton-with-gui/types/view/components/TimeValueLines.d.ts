@@ -4,7 +4,10 @@ import { TimeValueRange } from '../utils/TimeValueRange';
 export interface TimeValueLinesProps {
     time?: number;
     value?: number;
-    showBeat?: boolean;
+    /**
+     * Whether it should consider beatOffset or not
+     */
+    isAbsolute?: boolean;
     range: TimeValueRange;
     size: Resolution;
 }

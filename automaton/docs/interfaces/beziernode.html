@@ -67,7 +67,7 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>Interface of a bezier node.</p>
+						<p>Represents a bezier node.</p>
 					</div>
 				</div>
 			</section>
@@ -86,8 +86,10 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="beziernode.html#in" class="tsd-kind-icon">in</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="beziernode.html#out" class="tsd-kind-icon">out</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="beziernode.html#intime" class="tsd-kind-icon">in<wbr>Time</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="beziernode.html#invalue" class="tsd-kind-icon">in<wbr>Value</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="beziernode.html#outtime" class="tsd-kind-icon">out<wbr>Time</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="beziernode.html#outvalue" class="tsd-kind-icon">out<wbr>Value</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="beziernode.html#time" class="tsd-kind-icon">time</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="beziernode.html#value" class="tsd-kind-icon">value</a></li>
 							</ul>
@@ -98,32 +100,62 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="in" class="tsd-anchor"></a>
-					<h3>in</h3>
-					<div class="tsd-signature tsd-kind-icon">in<span class="tsd-signature-symbol">:</span> <a href="beziercontrolpoint.html" class="tsd-signature-type">BezierControlPoint</a></div>
+					<a name="intime" class="tsd-anchor"></a>
+					<h3>in<wbr>Time</h3>
+					<div class="tsd-signature tsd-kind-icon">in<wbr>Time<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton/src/types/BezierNode.ts#L33">packages/automaton/src/types/BezierNode.ts:33</a></li>
+							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton/src/types/BezierNode.ts#L18">types/BezierNode.ts:18</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Bezier control point of inlet.</p>
+							<p>Bezier control point of inlet. Time.</p>
 						</div>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="out" class="tsd-anchor"></a>
-					<h3>out</h3>
-					<div class="tsd-signature tsd-kind-icon">out<span class="tsd-signature-symbol">:</span> <a href="beziercontrolpoint.html" class="tsd-signature-type">BezierControlPoint</a></div>
+					<a name="invalue" class="tsd-anchor"></a>
+					<h3>in<wbr>Value</h3>
+					<div class="tsd-signature tsd-kind-icon">in<wbr>Value<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton/src/types/BezierNode.ts#L38">packages/automaton/src/types/BezierNode.ts:38</a></li>
+							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton/src/types/BezierNode.ts#L23">types/BezierNode.ts:23</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Bezier control point of outlet.</p>
+							<p>Bezier control point of inlet. Value.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="outtime" class="tsd-anchor"></a>
+					<h3>out<wbr>Time</h3>
+					<div class="tsd-signature tsd-kind-icon">out<wbr>Time<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton/src/types/BezierNode.ts#L28">types/BezierNode.ts:28</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Bezier control point of outlet. Time.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="outvalue" class="tsd-anchor"></a>
+					<h3>out<wbr>Value</h3>
+					<div class="tsd-signature tsd-kind-icon">out<wbr>Value<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton/src/types/BezierNode.ts#L33">types/BezierNode.ts:33</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Bezier control point of outlet. Value.</p>
 						</div>
 					</div>
 				</section>
@@ -133,7 +165,7 @@
 					<div class="tsd-signature tsd-kind-icon">time<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton/src/types/BezierNode.ts#L23">packages/automaton/src/types/BezierNode.ts:23</a></li>
+							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton/src/types/BezierNode.ts#L8">types/BezierNode.ts:8</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -148,7 +180,7 @@
 					<div class="tsd-signature tsd-kind-icon">value<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton/src/types/BezierNode.ts#L28">packages/automaton/src/types/BezierNode.ts:28</a></li>
+							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton/src/types/BezierNode.ts#L13">types/BezierNode.ts:13</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -184,19 +216,22 @@
 					<li class=" tsd-kind-interface">
 						<a href="automatonoptions.html" class="tsd-kind-icon">Automaton<wbr>Options</a>
 					</li>
-					<li class=" tsd-kind-interface">
-						<a href="beziercontrolpoint.html" class="tsd-kind-icon">Bezier<wbr>Control<wbr>Point</a>
-					</li>
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface">
 						<a href="beziernode.html" class="tsd-kind-icon">Bezier<wbr>Node</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="beziernode.html#in" class="tsd-kind-icon">in</a>
+								<a href="beziernode.html#intime" class="tsd-kind-icon">in<wbr>Time</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="beziernode.html#out" class="tsd-kind-icon">out</a>
+								<a href="beziernode.html#invalue" class="tsd-kind-icon">in<wbr>Value</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="beziernode.html#outtime" class="tsd-kind-icon">out<wbr>Time</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="beziernode.html#outvalue" class="tsd-kind-icon">out<wbr>Value</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
 								<a href="beziernode.html#time" class="tsd-kind-icon">time</a>
@@ -230,9 +265,6 @@
 						<a href="serializedautomaton.html" class="tsd-kind-icon">Serialized<wbr>Automaton</a>
 					</li>
 					<li class=" tsd-kind-interface">
-						<a href="serializedbeziernode.html" class="tsd-kind-icon">Serialized<wbr>Bezier<wbr>Node</a>
-					</li>
-					<li class=" tsd-kind-interface">
 						<a href="serializedchannel.html" class="tsd-kind-icon">Serialized<wbr>Channel</a>
 					</li>
 					<li class=" tsd-kind-interface">
@@ -243,6 +275,9 @@
 					</li>
 					<li class=" tsd-kind-interface">
 						<a href="serializedfxsection.html" class="tsd-kind-icon">Serialized<wbr>FxSection</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="../globals.html#serializedbeziernode" class="tsd-kind-icon">Serialized<wbr>Bezier<wbr>Node</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="../globals.html#newton_epsilon" class="tsd-kind-icon">NEWTON_<wbr>EPSILON</a>

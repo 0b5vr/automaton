@@ -28,13 +28,13 @@ export declare class ChannelWithGUI extends Channel implements Serializable<Seri
      */
     protected __items: Array<ChannelItemWithGUI>;
     /**
-     * Whether it should reset itself in next update call or not.
-     */
-    private __shouldReset;
-    /**
      * List of fx sections.
      */
     get items(): Array<ChannelItemWithGUI>;
+    /**
+     * Whether it should reset itself in next update call or not.
+     */
+    private __shouldReset;
     /**
      * Its length i.e. the end of the last item.
      */

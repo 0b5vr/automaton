@@ -18,7 +18,19 @@ export declare class Automaton {
      * @param listener A function that will be executed when the channel changes its value
      * @returns Current value of the channel
      */
-    auto: (name: string, listener?: ((event: ChannelUpdateEvent) => void) | undefined) => number;
+    readonly auto: (name: string, listener?: ((event: ChannelUpdateEvent) => void) | undefined) => number;
+    /**
+     * Curves of the automaton.
+     */
+    readonly curves: Curve[];
+    /**
+     * Channels of the timeline.
+     */
+    readonly channels: Channel[];
+    /**
+     * Map of channels, name vs. channel itself.
+     */
+    readonly mapNameToChannel: Map<string, Channel>;
     /**
      * Current time of the automaton.
      * Can be set by [[update]], be retrieved by [[get time]], be used by [[auto]]
@@ -32,16 +44,6 @@ export declare class Automaton {
      * Resolution of the timeline.
      */
     protected __resolution: number;
-    /**
-     * Curves of the automaton.
-     */
-    protected __curves: Curve[];
-    /**
-     * Channels of the timeline.
-     */
-    protected __channels: {
-        [name: string]: Channel;
-    };
     /**
      * A map of fx definitions.
      */

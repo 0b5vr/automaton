@@ -23,6 +23,10 @@ export declare type HistoryCommand = {
     type: 'automaton/removeCurve';
     data: SerializedCurve & WithID;
 } | {
+    type: 'automaton/reorderChannels';
+    name: string;
+    deltaIndex: number;
+} | {
     type: 'automaton/createLabel';
     name: string;
     time: number;

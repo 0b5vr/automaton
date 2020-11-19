@@ -73,6 +73,11 @@ export declare type Action = {
     type: 'Automaton/RemoveChannel';
     channel: string;
 } | {
+    type: 'Automaton/ReorderChannels';
+    index: number;
+    length: number;
+    newIndex: number;
+} | {
     type: 'Automaton/UpdateChannelValue';
     channel: string;
     value: number;

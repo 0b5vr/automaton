@@ -12,6 +12,16 @@ body {
   font: 300 16px/1.2 "Roboto", sans-serif;
 }
 
+a {
+  color: #9df;
+}
+
+#divHeader {
+  position: fixed;
+  left: 8px;
+  top: 8px;
+}
+
 #divAutomatonContainer {
   position: fixed;
   left: 0;
@@ -74,6 +84,13 @@ body {
         <option value="fx-definition">Define your own FX definition</option>
         <option value="event">Event system</option>
       </select>
+    </div>
+
+    <div id="divHeader">
+      Automaton Playground -
+      <a href="https://github.com/FMS-Cat/automaton">
+        GitHub
+      </a>
     </div>
 
     <div id="editor">// loading...</div>

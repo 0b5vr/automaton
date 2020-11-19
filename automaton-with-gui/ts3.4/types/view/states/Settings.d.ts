@@ -1,5 +1,5 @@
 import { Reducer } from 'redux';
-declare type SettingsMode = 'none' | 'snapping' | 'general';
+declare type SettingsMode = 'none' | 'snapping' | 'beat' | 'general' | 'stats';
 export interface State {
     mode: SettingsMode;
 }

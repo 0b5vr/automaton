@@ -23,9 +23,17 @@ export interface GUISettings {
      */
     snapBeatActive: boolean;
     /**
-     * BPM of the beat snap.
+     * BPM of the beat.
      */
-    snapBeatBPM: number;
+    bpm: number;
+    /**
+     * Time offset of the beat.
+     */
+    beatOffset: number;
+    /**
+     * Use beat instead of time in GUI.
+     */
+    useBeatInGUI: boolean;
     /**
      * Fractional precision for minimized data, for time axis.
      */

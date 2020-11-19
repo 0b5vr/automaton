@@ -1,18 +1,5 @@
 /**
- * Interface of a bezier control point.
- */
-export interface BezierControlPoint {
-    /**
-     * Time of the control point.
-     */
-    time: number;
-    /**
-     * Value of the control point.
-     */
-    value: number;
-}
-/**
- * Interface of a bezier node.
+ * Represents a bezier node.
  */
 export interface BezierNode {
     /**
@@ -24,37 +11,19 @@ export interface BezierNode {
      */
     value: number;
     /**
-     * Bezier control point of inlet.
+     * Bezier control point of inlet. Time.
      */
-    in: BezierControlPoint;
+    inTime: number;
     /**
-     * Bezier control point of outlet.
+     * Bezier control point of inlet. Value.
      */
-    out: BezierControlPoint;
-}
-/**
- * Serialized variant of {@link BezierNode}.
- * Some values are optional.
- */
-export interface SerializedBezierNode {
+    inValue: number;
     /**
-     * Time of the node.
-     * `0.0` by default.
+     * Bezier control point of outlet. Time.
      */
-    time?: number;
+    outTime: number;
     /**
-     * Value of the node.
-     * `0.0` by default.
+     * Bezier control point of outlet. Value.
      */
-    value?: number;
-    /**
-     * Bezier control point of inlet.
-     * `{ time: 0.0, value: 0.0 }` by default.
-     */
-    in?: BezierControlPoint;
-    /**
-     * Bezier control point of outlet.
-     * `{ time: 0.0, value: 0.0 }` by default.
-     */
-    out?: BezierControlPoint;
+    outValue: number;
 }

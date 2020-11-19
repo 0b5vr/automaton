@@ -106,8 +106,6 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-protected"><a href="automatonwithgui.html#__channels" class="tsd-kind-icon">__channels</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-protected"><a href="automatonwithgui.html#__curves" class="tsd-kind-icon">__curves</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="automatonwithgui.html#__eventlisteners" class="tsd-kind-icon">__event<wbr>Listeners</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="automatonwithgui.html#__fxdefinitions" class="tsd-kind-icon">__fx<wbr>Definitions</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="automatonwithgui.html#__guiremocon" class="tsd-kind-icon">__gui<wbr>Remocon</a></li>
@@ -123,6 +121,9 @@
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="automatonwithgui.html#__time" class="tsd-kind-icon">__time</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-protected"><a href="automatonwithgui.html#__version" class="tsd-kind-icon">__version</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="automatonwithgui.html#auto" class="tsd-kind-icon">auto</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite"><a href="automatonwithgui.html#channels" class="tsd-kind-icon">channels</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite"><a href="automatonwithgui.html#curves" class="tsd-kind-icon">curves</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite"><a href="automatonwithgui.html#mapnametochannel" class="tsd-kind-icon">map<wbr>Name<wbr>ToChannel</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="automatonwithgui.html#overridesave" class="tsd-kind-icon">override<wbr>Save</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="automatonwithgui.html#savecontextmenucommands" class="tsd-kind-icon">save<wbr>Context<wbr>Menu<wbr>Commands</a></li>
 							</ul>
@@ -130,8 +131,7 @@
 						<section class="tsd-index-section ">
 							<h3>Accessors</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="automatonwithgui.html#channels" class="tsd-kind-icon">channels</a></li>
-								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="automatonwithgui.html#curves" class="tsd-kind-icon">curves</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="automatonwithgui.html#channelnames" class="tsd-kind-icon">channel<wbr>Names</a></li>
 								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="automatonwithgui.html#fxdefinitions" class="tsd-kind-icon">fx<wbr>Definitions</a></li>
 								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="automatonwithgui.html#guisettings" class="tsd-kind-icon">gui<wbr>Settings</a></li>
 								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="automatonwithgui.html#isplaying" class="tsd-kind-icon">is<wbr>Playing</a></li>
@@ -149,7 +149,7 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-protected"><a href="automatonwithgui.html#__auto" class="tsd-kind-icon">__auto</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-protected"><a href="automatonwithgui.html#__emit" class="tsd-kind-icon">__emit</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="automatonwithgui.html#__serializechannellist" class="tsd-kind-icon">__serialize<wbr>Channel<wbr>List</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="automatonwithgui.html#__serializechannels" class="tsd-kind-icon">__serialize<wbr>Channels</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="automatonwithgui.html#__serializecurves" class="tsd-kind-icon">__serialize<wbr>Curves</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="automatonwithgui.html#__tryupdatelength" class="tsd-kind-icon">__try<wbr>Update<wbr>Length</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="automatonwithgui.html#addfxdefinitions" class="tsd-kind-icon">add<wbr>FxDefinitions</a></li>
@@ -162,6 +162,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="automatonwithgui.html#deserialize" class="tsd-kind-icon">deserialize</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="automatonwithgui.html#generatedefaultfxparams" class="tsd-kind-icon">generate<wbr>Default<wbr>FxParams</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="automatonwithgui.html#getchannel" class="tsd-kind-icon">get<wbr>Channel</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="automatonwithgui.html#getchannelindex" class="tsd-kind-icon">get<wbr>Channel<wbr>Index</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="automatonwithgui.html#getcurve" class="tsd-kind-icon">get<wbr>Curve</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="automatonwithgui.html#getcurvebyid" class="tsd-kind-icon">get<wbr>Curve<wbr>ById</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="automatonwithgui.html#getcurveindex" class="tsd-kind-icon">get<wbr>Curve<wbr>Index</a></li>
@@ -182,6 +183,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="automatonwithgui.html#redo" class="tsd-kind-icon">redo</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="automatonwithgui.html#removechannel" class="tsd-kind-icon">remove<wbr>Channel</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="automatonwithgui.html#removecurve" class="tsd-kind-icon">remove<wbr>Curve</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="automatonwithgui.html#reorderchannels" class="tsd-kind-icon">reorder<wbr>Channels</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="automatonwithgui.html#reset" class="tsd-kind-icon">reset</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="automatonwithgui.html#seek" class="tsd-kind-icon">seek</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="automatonwithgui.html#serialize" class="tsd-kind-icon">serialize</a></li>
@@ -213,7 +215,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides Automaton.__constructor</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L219">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:219</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L218">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:218</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -247,54 +249,14 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-protected">
-					<a name="__channels" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagProtected">Protected</span> __channels</h3>
-					<div class="tsd-signature tsd-kind-icon">__channels<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{}</span></div>
-					<aside class="tsd-sources">
-						<p>Overrides Automaton.__channels</p>
-						<ul>
-							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L106">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:106</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Channels of the timeline.</p>
-						</div>
-					</div>
-					<div class="tsd-type-declaration">
-						<h4>Type declaration</h4>
-						<ul class="tsd-parameters">
-							<li class="tsd-parameter-index-signature">
-								<h5><span class="tsd-signature-symbol">[</span>name: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><a href="channelwithgui.html" class="tsd-signature-type">ChannelWithGUI</a></h5>
-							</li>
-						</ul>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-protected">
-					<a name="__curves" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagProtected">Protected</span> __curves</h3>
-					<div class="tsd-signature tsd-kind-icon">__curves<span class="tsd-signature-symbol">:</span> <a href="curvewithgui.html" class="tsd-signature-type">CurveWithGUI</a><span class="tsd-signature-symbol">[]</span></div>
-					<aside class="tsd-sources">
-						<p>Overrides Automaton.__curves</p>
-						<ul>
-							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L101">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:101</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Curves of the automaton.</p>
-						</div>
-					</div>
-				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
 					<a name="__eventlisteners" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagProtected">Protected</span> <span class="tsd-flag ts-flagOptional">Optional</span> __event<wbr>Listeners</h3>
-					<div class="tsd-signature tsd-kind-icon">__event<wbr>Listeners<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">keyof </span><a href="../interfaces/automatonwithguievents.html" class="tsd-signature-type">AutomatonWithGUIEvents</a><span class="tsd-signature-symbol">, </span><a href="../globals.html#eventlistener" class="tsd-signature-type">EventListener</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<div class="tsd-signature tsd-kind-icon">__event<wbr>Listeners<span class="tsd-signature-symbol">:</span> <a href="bimap.html#map" class="tsd-signature-type">Map</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">keyof </span><a href="../interfaces/automatonwithguievents.html" class="tsd-signature-type">AutomatonWithGUIEvents</a><span class="tsd-signature-symbol">, </span><a href="../globals.html#eventlistener" class="tsd-signature-type">EventListener</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="eventemittable.html">EventEmittable</a>.<a href="eventemittable.html#__eventlisteners">__eventListeners</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/mixins/EventEmittable.ts#L6">packages/automaton-with-gui/src/mixins/EventEmittable.ts:6</a></li>
+							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/mixins/EventEmittable.ts#L6">packages/automaton-with-gui/src/mixins/EventEmittable.ts:6</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -305,7 +267,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="automatonwithgui.html">AutomatonWithGUI</a>.<a href="automatonwithgui.html#__fxdefinitions">__fxDefinitions</a></p>
 						<ul>
-							<li>Defined in packages/automaton/types/Automaton.d.ts:48</li>
+							<li>Defined in packages/automaton/types/Automaton.d.ts:50</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -328,7 +290,7 @@
 					<div class="tsd-signature tsd-kind-icon">__gui<wbr>Remocon<span class="tsd-signature-symbol">:</span> <a href="guiremocon.html" class="tsd-signature-type">GUIRemocon</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L137">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:137</a></li>
+							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L143">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:143</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -343,7 +305,7 @@
 					<div class="tsd-signature tsd-kind-icon">__gui<wbr>Settings<span class="tsd-signature-symbol">:</span> <a href="../interfaces/guisettings.html" class="tsd-signature-type">GUISettings</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L127">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:127</a></li>
+							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L133">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:133</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -358,7 +320,7 @@
 					<div class="tsd-signature tsd-kind-icon">__is<wbr>Disabled<wbr>Channel<wbr>Not<wbr>Used<wbr>Warning<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L117">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:117</a></li>
+							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L123">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:123</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -374,7 +336,7 @@
 					<div class="tsd-signature tsd-kind-icon">__is<wbr>Playing<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L111">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:111</a></li>
+							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L117">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:117</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -389,7 +351,7 @@
 					<div class="tsd-signature tsd-kind-icon">__labels<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{}</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L91">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:91</a></li>
+							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L107">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:107</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -412,7 +374,7 @@
 					<div class="tsd-signature tsd-kind-icon">__length<wbr>Prev<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 1</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L143">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:143</a></li>
+							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L149">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:149</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -428,7 +390,7 @@
 					<div class="tsd-signature tsd-kind-icon">__loop<wbr>Region<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>begin<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>end<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> = null</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L148">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:148</a></li>
+							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L154">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:154</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -443,7 +405,7 @@
 					<div class="tsd-signature tsd-kind-icon">__parent<wbr>Node<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">HTMLElement</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L132">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:132</a></li>
+							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L138">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:138</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -459,7 +421,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="automatonwithgui.html">AutomatonWithGUI</a>.<a href="automatonwithgui.html#__resolution">__resolution</a></p>
 						<ul>
-							<li>Defined in packages/automaton/types/Automaton.d.ts:34</li>
+							<li>Defined in packages/automaton/types/Automaton.d.ts:46</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -474,7 +436,7 @@
 					<div class="tsd-signature tsd-kind-icon">__should<wbr>Save<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L122">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:122</a></li>
+							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L128">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:128</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -490,13 +452,13 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="automatonwithgui.html">AutomatonWithGUI</a>.<a href="automatonwithgui.html#__time">__time</a></p>
 						<ul>
-							<li>Defined in packages/automaton/types/Automaton.d.ts:26</li>
+							<li>Defined in packages/automaton/types/Automaton.d.ts:38</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
 							<p>Current time of the automaton.
-							Can be set by <a href="automatonwithgui.html#update">update</a>, be retrieved by [[get time]], be used by <a href="automatonwithgui.html#auto">auto</a></p>
+							Can be set by <a href="automatonwithgui.html#update">update</a>, be retrieved by <a href="bimap.html#get">time</a>, be used by <a href="automatonwithgui.html#auto">auto</a></p>
 						</div>
 					</div>
 				</section>
@@ -507,7 +469,7 @@
 					<aside class="tsd-sources">
 						<p>Overrides Automaton.__version</p>
 						<ul>
-							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L96">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:96</a></li>
+							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L112">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:112</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -518,7 +480,7 @@
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
 					<a name="auto" class="tsd-anchor"></a>
-					<h3>auto</h3>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> auto</h3>
 					<div class="tsd-signature tsd-kind-icon">auto<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, listener<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ChannelUpdateEvent</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="automatonwithgui.html">AutomatonWithGUI</a>.<a href="automatonwithgui.html#auto">auto</a></p>
@@ -569,13 +531,61 @@
 						</ul>
 					</div>
 				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-overwrite">
+					<a name="channels" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> channels</h3>
+					<div class="tsd-signature tsd-kind-icon">channels<span class="tsd-signature-symbol">:</span> <a href="channelwithgui.html" class="tsd-signature-type">ChannelWithGUI</a><span class="tsd-signature-symbol">[]</span></div>
+					<aside class="tsd-sources">
+						<p>Overrides Automaton.channels</p>
+						<ul>
+							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L97">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:97</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Channels of the timeline.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-overwrite">
+					<a name="curves" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> curves</h3>
+					<div class="tsd-signature tsd-kind-icon">curves<span class="tsd-signature-symbol">:</span> <a href="curvewithgui.html" class="tsd-signature-type">CurveWithGUI</a><span class="tsd-signature-symbol">[]</span></div>
+					<aside class="tsd-sources">
+						<p>Overrides Automaton.curves</p>
+						<ul>
+							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L92">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:92</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Curves of the automaton.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-overwrite">
+					<a name="mapnametochannel" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> map<wbr>Name<wbr>ToChannel</h3>
+					<div class="tsd-signature tsd-kind-icon">map<wbr>Name<wbr>ToChannel<span class="tsd-signature-symbol">:</span> <a href="bimap.html" class="tsd-signature-type">BiMap</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><a href="channelwithgui.html" class="tsd-signature-type">ChannelWithGUI</a><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<p>Overrides Automaton.mapNameToChannel</p>
+						<ul>
+							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L102">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:102</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Map of channels, name vs. channel itself.</p>
+						</div>
+					</div>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="overridesave" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> override<wbr>Save</h3>
 					<div class="tsd-signature tsd-kind-icon">override<wbr>Save<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L79">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:79</a></li>
+							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L80">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:80</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -592,7 +602,7 @@
 					<div class="tsd-signature tsd-kind-icon">save<wbr>Context<wbr>Menu<wbr>Commands<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/contextmenucommand.html" class="tsd-signature-type">ContextMenuCommand</a><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L86">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:86</a></li>
+							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L87">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:87</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -607,51 +617,24 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Accessors</h2>
 				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
-					<a name="channels" class="tsd-anchor"></a>
-					<h3>channels</h3>
+					<a name="channelnames" class="tsd-anchor"></a>
+					<h3>channel<wbr>Names</h3>
 					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> channels<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{}</span></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> channelNames<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L174">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:174</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L180">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:180</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>A map of channels.</p>
+									<p>Channel names, ordered.</p>
 								</div>
 							</div>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-symbol">{}</span></h4>
-							<ul class="tsd-parameters">
-								<li class="tsd-parameter-index-signature">
-									<h5><span class="tsd-signature-symbol">[</span>name: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><a href="channelwithgui.html" class="tsd-signature-type">ChannelWithGUI</a></h5>
-								</li>
-							</ul>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
-					<a name="curves" class="tsd-anchor"></a>
-					<h3>curves</h3>
-					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> curves<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="curvewithgui.html" class="tsd-signature-type">CurveWithGUI</a><span class="tsd-signature-symbol">[]</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L181">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:181</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Curves of the automaton.</p>
-								</div>
-							</div>
-							<h4 class="tsd-returns-title">Returns <a href="curvewithgui.html" class="tsd-signature-type">CurveWithGUI</a><span class="tsd-signature-symbol">[]</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -665,7 +648,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L188">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:188</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L187">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:187</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -692,7 +675,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L217">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:217</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L216">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:216</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -714,7 +697,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L156">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:156</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L162">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:162</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -736,7 +719,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L195">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:195</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L194">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:194</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -763,7 +746,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L163">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:163</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L169">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:169</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -785,7 +768,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L149">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:149</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L155">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:155</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-symbol">{ </span>begin<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>end<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h4>
@@ -803,7 +786,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="automatonwithgui.html">AutomatonWithGUI</a>.<a href="automatonwithgui.html#resolution">resolution</a></p>
 								<ul>
-									<li>Defined in packages/automaton/types/Automaton.d.ts:63</li>
+									<li>Defined in packages/automaton/types/Automaton.d.ts:65</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -826,7 +809,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L202">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:202</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L201">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:201</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -839,7 +822,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L209">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:209</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L208">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:208</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -868,7 +851,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="automatonwithgui.html">AutomatonWithGUI</a>.<a href="automatonwithgui.html#time">time</a></p>
 								<ul>
-									<li>Defined in packages/automaton/types/Automaton.d.ts:55</li>
+									<li>Defined in packages/automaton/types/Automaton.d.ts:57</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -891,7 +874,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="automatonwithgui.html">AutomatonWithGUI</a>.<a href="automatonwithgui.html#version">version</a></p>
 								<ul>
-									<li>Defined in packages/automaton/types/Automaton.d.ts:59</li>
+									<li>Defined in packages/automaton/types/Automaton.d.ts:61</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -917,7 +900,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides Automaton.__auto</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L822">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:822</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L882">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:882</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -956,7 +939,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="eventemittable.html">EventEmittable</a>.<a href="eventemittable.html#__emit">__emit</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/mixins/EventEmittable.ts#L41">packages/automaton-with-gui/src/mixins/EventEmittable.ts:41</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/mixins/EventEmittable.ts#L41">packages/automaton-with-gui/src/mixins/EventEmittable.ts:41</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -976,24 +959,19 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
-					<a name="__serializechannellist" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> __serialize<wbr>Channel<wbr>List</h3>
+					<a name="__serializechannels" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> __serialize<wbr>Channels</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
-						<li class="tsd-signature tsd-kind-icon">__serialize<wbr>Channel<wbr>List<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{}</span></li>
+						<li class="tsd-signature tsd-kind-icon">__serialize<wbr>Channels<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">[</span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span>channel<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">SerializedChannel</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">[]</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L800">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:800</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L861">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:861</a></li>
 								</ul>
 							</aside>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-symbol">{}</span></h4>
-							<ul class="tsd-parameters">
-								<li class="tsd-parameter-index-signature">
-									<h5><span class="tsd-signature-symbol">[</span>name: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">SerializedChannel</span></h5>
-								</li>
-							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-symbol">[</span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span>channel<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">SerializedChannel</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">[]</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -1007,7 +985,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L796">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:796</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L857">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:857</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">SerializedCurve</span><span class="tsd-signature-symbol">[]</span></h4>
@@ -1024,7 +1002,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L808">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:808</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L868">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:868</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -1042,7 +1020,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides Automaton.addFxDefinitions</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L292">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:292</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L292">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:292</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1078,7 +1056,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L594">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:594</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L646">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:646</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1101,7 +1079,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L386">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:386</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L386">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:386</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1139,7 +1117,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L473">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:473</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L525">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:525</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1168,7 +1146,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L417">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:417</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L418">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:418</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1207,7 +1185,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L302">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:302</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L302">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:302</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1230,7 +1208,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L625">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:625</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L677">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:677</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1262,7 +1240,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides Automaton.deserialize</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L635">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:635</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L687">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:687</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1293,7 +1271,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L333">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:333</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L333">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:333</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1330,7 +1308,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L453">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:453</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L460">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:460</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1352,6 +1330,38 @@
 						</li>
 					</ul>
 				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="getchannelindex" class="tsd-anchor"></a>
+					<h3>get<wbr>Channel<wbr>Index</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Channel<wbr>Index<span class="tsd-signature-symbol">(</span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L482">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:482</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Get the index of a channel.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>name: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Name of the channel</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+							<p>The index of the channel</p>
+						</li>
+					</ul>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
 					<a name="getcurve" class="tsd-anchor"></a>
 					<h3>get<wbr>Curve</h3>
@@ -1363,7 +1373,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides Automaton.getCurve</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L514">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:514</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L566">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:566</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1395,7 +1405,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L523">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:523</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L575">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:575</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1427,7 +1437,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L604">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:604</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L656">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:656</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1460,7 +1470,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L534">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:534</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L586">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:586</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1494,7 +1504,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="automatonwithgui.html">AutomatonWithGUI</a>.<a href="automatonwithgui.html#getfxdefinition">getFxDefinition</a></p>
 								<ul>
-									<li>Defined in packages/automaton/types/Automaton.d.ts:81</li>
+									<li>Defined in packages/automaton/types/Automaton.d.ts:83</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1526,7 +1536,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L568">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:568</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L620">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:620</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1559,7 +1569,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L544">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:544</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L596">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:596</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1582,7 +1592,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L554">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:554</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L606">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:606</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1615,7 +1625,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L582">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:582</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L634">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:634</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1648,7 +1658,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L463">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:463</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L470">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:470</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1681,7 +1691,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L702">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:702</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L763">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:763</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1710,7 +1720,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="eventemittable.html">EventEmittable</a>.<a href="eventemittable.html#off">off</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/mixins/EventEmittable.ts#L24">packages/automaton-with-gui/src/mixins/EventEmittable.ts:24</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/mixins/EventEmittable.ts#L24">packages/automaton-with-gui/src/mixins/EventEmittable.ts:24</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -1743,7 +1753,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="eventemittable.html">EventEmittable</a>.<a href="eventemittable.html#on">on</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/mixins/EventEmittable.ts#L8">packages/automaton-with-gui/src/mixins/EventEmittable.ts:8</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/mixins/EventEmittable.ts#L8">packages/automaton-with-gui/src/mixins/EventEmittable.ts:8</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -1775,7 +1785,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L775">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:775</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L836">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:836</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1799,7 +1809,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L283">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:283</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L283">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:283</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1823,7 +1833,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L273">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:273</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L273">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:273</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1848,7 +1858,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="automatonwithgui.html">AutomatonWithGUI</a>.<a href="automatonwithgui.html#precalcall">precalcAll</a></p>
 								<ul>
-									<li>Defined in packages/automaton/types/Automaton.d.ts:90</li>
+									<li>Defined in packages/automaton/types/Automaton.d.ts:92</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1870,7 +1880,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L762">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:762</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L823">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:823</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1894,7 +1904,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L440">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:440</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L442">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:442</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1925,7 +1935,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L488">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:488</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L540">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:540</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1943,6 +1953,62 @@
 						</li>
 					</ul>
 				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="reorderchannels" class="tsd-anchor"></a>
+					<h3>reorder<wbr>Channels</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">reorder<wbr>Channels<span class="tsd-signature-symbol">(</span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, isRelative<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>index<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><a href="channelwithgui.html" class="tsd-signature-type">ChannelWithGUI</a><span class="tsd-signature-symbol">[]</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L499">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:499</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Reorder channels.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>name: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Name of the channel</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> isRelative: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Will interpret given index relatively if it&#39;s <code>true</code></p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-symbol">(</span>index<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><a href="channelwithgui.html" class="tsd-signature-type">ChannelWithGUI</a><span class="tsd-signature-symbol">[]</span></h4>
+							<p>A function to reorder channels. Give a new index</p>
+							<ul class="tsd-parameters">
+								<li class="tsd-parameter-signature">
+									<ul class="tsd-signatures tsd-kind-type-literal">
+										<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>index<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="channelwithgui.html" class="tsd-signature-type">ChannelWithGUI</a><span class="tsd-signature-symbol">[]</span></li>
+									</ul>
+									<ul class="tsd-descriptions">
+										<li class="tsd-description">
+											<h4 class="tsd-parameters-title">Parameters</h4>
+											<ul class="tsd-parameters">
+												<li>
+													<h5>index: <span class="tsd-signature-type">number</span></h5>
+												</li>
+											</ul>
+											<h4 class="tsd-returns-title">Returns <a href="channelwithgui.html" class="tsd-signature-type">ChannelWithGUI</a><span class="tsd-signature-symbol">[]</span></h4>
+										</li>
+									</ul>
+								</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 					<a name="reset" class="tsd-anchor"></a>
 					<h3>reset</h3>
@@ -1954,7 +2020,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="automatonwithgui.html">AutomatonWithGUI</a>.<a href="automatonwithgui.html#reset">reset</a></p>
 								<ul>
-									<li>Defined in packages/automaton/types/Automaton.d.ts:95</li>
+									<li>Defined in packages/automaton/types/Automaton.d.ts:97</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1977,7 +2043,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L264">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:264</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L264">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:264</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -2010,7 +2076,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L673">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:673</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L734">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:734</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -2033,7 +2099,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L689">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:689</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L750">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:750</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -2076,7 +2142,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L613">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:613</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L665">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:665</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -2113,7 +2179,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L739">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:739</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L800">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:800</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -2141,7 +2207,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L358">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:358</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L358">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:358</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -2173,7 +2239,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L788">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:788</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L849">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:849</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -2203,7 +2269,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L348">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:348</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L348">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:348</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -2225,7 +2291,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L749">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:749</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L810">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:810</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -2249,7 +2315,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L726">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:726</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L787">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:787</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -2272,7 +2338,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides Automaton.update</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L313">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:313</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L313">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:313</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -2304,7 +2370,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/5b182df/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L67">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:67</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/1d534dc/packages/automaton-with-gui/src/AutomatonWithGUI.tsx#L68">packages/automaton-with-gui/src/AutomatonWithGUI.tsx:68</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -2347,12 +2413,6 @@
 						<ul>
 							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
 								<a href="automatonwithgui.html#constructor" class="tsd-kind-icon">constructor</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-protected">
-								<a href="automatonwithgui.html#__channels" class="tsd-kind-icon">__channels</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-protected">
-								<a href="automatonwithgui.html#__curves" class="tsd-kind-icon">__curves</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
 								<a href="automatonwithgui.html#__eventlisteners" class="tsd-kind-icon">__event<wbr>Listeners</a>
@@ -2399,6 +2459,15 @@
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
 								<a href="automatonwithgui.html#auto" class="tsd-kind-icon">auto</a>
 							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-overwrite">
+								<a href="automatonwithgui.html#channels" class="tsd-kind-icon">channels</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-overwrite">
+								<a href="automatonwithgui.html#curves" class="tsd-kind-icon">curves</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-overwrite">
+								<a href="automatonwithgui.html#mapnametochannel" class="tsd-kind-icon">map<wbr>Name<wbr>ToChannel</a>
+							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="automatonwithgui.html#overridesave" class="tsd-kind-icon">override<wbr>Save</a>
 							</li>
@@ -2406,10 +2475,7 @@
 								<a href="automatonwithgui.html#savecontextmenucommands" class="tsd-kind-icon">save<wbr>Context<wbr>Menu<wbr>Commands</a>
 							</li>
 							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
-								<a href="automatonwithgui.html#channels" class="tsd-kind-icon">channels</a>
-							</li>
-							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
-								<a href="automatonwithgui.html#curves" class="tsd-kind-icon">curves</a>
+								<a href="automatonwithgui.html#channelnames" class="tsd-kind-icon">channel<wbr>Names</a>
 							</li>
 							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
 								<a href="automatonwithgui.html#fxdefinitions" class="tsd-kind-icon">fx<wbr>Definitions</a>
@@ -2448,7 +2514,7 @@
 								<a href="automatonwithgui.html#__emit" class="tsd-kind-icon">__emit</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
-								<a href="automatonwithgui.html#__serializechannellist" class="tsd-kind-icon">__serialize<wbr>Channel<wbr>List</a>
+								<a href="automatonwithgui.html#__serializechannels" class="tsd-kind-icon">__serialize<wbr>Channels</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
 								<a href="automatonwithgui.html#__serializecurves" class="tsd-kind-icon">__serialize<wbr>Curves</a>
@@ -2485,6 +2551,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="automatonwithgui.html#getchannel" class="tsd-kind-icon">get<wbr>Channel</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="automatonwithgui.html#getchannelindex" class="tsd-kind-icon">get<wbr>Channel<wbr>Index</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
 								<a href="automatonwithgui.html#getcurve" class="tsd-kind-icon">get<wbr>Curve</a>
@@ -2545,6 +2614,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="automatonwithgui.html#removecurve" class="tsd-kind-icon">remove<wbr>Curve</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="automatonwithgui.html#reorderchannels" class="tsd-kind-icon">reorder<wbr>Channels</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 								<a href="automatonwithgui.html#reset" class="tsd-kind-icon">reset</a>
@@ -2618,10 +2690,11 @@
 				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
 			</ul>
 			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
 			</ul>
 			<ul class="tsd-legend">
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
 			</ul>
 		</div>
 	</div>
