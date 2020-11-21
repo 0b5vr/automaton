@@ -52,7 +52,7 @@ export declare class AutomatonWithGUI extends Automaton implements Serializable<
      * Use along with {@link deserialize}.
      * @param data The data
      */
-    static compat(data: any): SerializedAutomaton;
+    static compat(data?: any): SerializedAutomatonWithGUI;
     /**
      * Overrided save procedure.
      * Originally intended to be used by automaton-electron.
