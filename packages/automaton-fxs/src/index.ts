@@ -1,6 +1,3 @@
-import * as v2compat from './v2compat';
-export { v2compat };
-
 export { add } from './add';
 export { cds } from './cds';
 export { clamp } from './clamp';

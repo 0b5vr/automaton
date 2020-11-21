@@ -37,6 +37,8 @@ The package [`automaton-with-gui`](./packages/automaton-with-gui) intended to be
   - Core package of the automaton
 - [`@fms-cat/automaton-fxs`](./packages/automaton-fxs) [![Latest NPM release](https://img.shields.io/npm/v/@fms-cat/automaton-fxs.svg)](https://www.npmjs.com/package/@fms-cat/automaton-fxs)
   - A package that contains bunch of automaton fxs
+- [`@fms-cat/automaton-fxs-v2compat`](./packages/automaton-fxs-v2compat) [![Latest NPM release](https://img.shields.io/npm/v/@fms-cat/automaton-fxs-v2compat.svg)](https://www.npmjs.com/package/@fms-cat/automaton-fxs-v2compat)
+  - A package that contains Automaton v2 compatibility fxs
 - [`@fms-cat/automaton-with-gui`](./packages/automaton-with-gui) [![Latest NPM release](https://img.shields.io/npm/v/@fms-cat/automaton-with-gui.svg)](https://www.npmjs.com/package/@fms-cat/automaton-with-gui)
   - A variant of automaton that comes with GUI!
 

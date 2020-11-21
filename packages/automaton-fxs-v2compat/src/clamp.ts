@@ -1,5 +1,5 @@
-import { clamp as rawClamp } from '../utils/clamp';
-import { smin } from '../utils/smin';
+import { clamp as rawClamp } from './utils/clamp';
+import { smin } from './utils/smin';
 import type { FxDefinition } from '@fms-cat/automaton';
 
 export const clamp: FxDefinition = {
