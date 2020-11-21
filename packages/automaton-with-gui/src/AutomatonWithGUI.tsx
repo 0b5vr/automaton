@@ -77,7 +77,7 @@ export class AutomatonWithGUI extends Automaton
    * Use along with {@link deserialize}.
    * @param data The data
    */
-  public static compat( data?: any ): SerializedAutomaton {
+  public static compat( data?: any ): SerializedAutomatonWithGUI {
     return compat( data );
   }
 
