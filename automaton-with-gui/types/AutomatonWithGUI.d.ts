@@ -48,6 +48,12 @@ export declare class AutomatonWithGUI extends Automaton implements Serializable<
      */
     static minimizeData(data: SerializedAutomatonWithGUI, options: MinimizeOptions): SerializedAutomaton;
     /**
+     * Compat serialized data.
+     * Use along with {@link deserialize}.
+     * @param data The data
+     */
+    static compat(data: any): SerializedAutomaton;
+    /**
      * Overrided save procedure.
      * Originally intended to be used by automaton-electron.
      * Can also be specified via {@link AutomatonWithGUIOptions}.
@@ -344,6 +350,7 @@ export declare class AutomatonWithGUI extends Automaton implements Serializable<
     deleteLabel(name: string): void;
     /**
      * Load automaton state data.
+     * You might want to use {@link compat} beforehand to upgrade data made in previous versions.
      * @param data Object contains automaton data.
      */
     deserialize(data: SerializedAutomatonWithGUI): void;

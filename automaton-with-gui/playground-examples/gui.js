@@ -1,5 +1,6 @@
 // Timeline (common in Dope Sheet and Channel Editor):
-//   Left Click on channels: Create an item (last touched curve or constant)
+//   Left Drag on channel list: Reorder channels
+//   Left Click on timeline: Create an item (last touched curve or constant)
 //   Shift + Left Click on items: Duplicate the item
 //   Shift while dragging items: Lock value axis
 //   Ctrl while dragging items: Lock time axis
@@ -7,7 +8,7 @@
 //   Alt + Left Click: Seek to cursor
 //   Alt + Shift + Left Drag: Set a loop region
 //   Alt + Shift + Left Click: Clear the loop region
-//   Middle Drag: Scroll
+//   Middle Drag on timeline: Scroll
 
 // Curve Editor
 //   Double Left Click on nodes: Delete the node
@@ -23,7 +24,7 @@
 
 const automaton = new AUTOMATON_WITH_GUI.AutomatonWithGUI(
   JSON.parse( `
-{"version":"3.0.0-beta5","resolution":100,"curves":[{"nodes":[{"out":{"time":1,"value":0}},{"time":2,"value":1,"in":{"time":-1,"value":0}}]}],"channels":{"rectX":{"items":[{},{"time":1,"value":0.75},{"time":1.5,"value":0.25}]},"rectY":{"items":[{"length":2,"curve":0}]}},"labels":{},"guiSettings":{"snapTimeActive":false,"snapTimeInterval":0.1,"snapValueActive":false,"snapValueInterval":0.1,"snapBeatActive":false,"snapBeatBPM":140,"minimizedPrecisionTime":3,"minimizedPrecisionValue":3}}
+{"version":"4.0.0","resolution":100,"curves":[{"nodes":[[0,0,0,0,1],[2,1,-1]]}],"channels":[["rectX",{"items":[{},{"time":1,"value":0.75},{"time":1.5,"value":0.25}]}],["rectY",{"items":[{"length":2,"curve":0}]}]],"labels":{},"guiSettings":{"snapTimeActive":false,"snapTimeInterval":0.1,"snapValueActive":false,"snapValueInterval":0.1,"snapBeatActive":false,"bpm":140,"beatOffset":0,"minimizedPrecisionTime":3,"minimizedPrecisionValue":3}}
   ` ),
   {
     gui: divAutomatonContainer,
