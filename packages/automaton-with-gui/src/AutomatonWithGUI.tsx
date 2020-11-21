@@ -73,6 +73,17 @@ export class AutomatonWithGUI extends Automaton
   }
 
   /**
+   * Compat serialized data.
+   * Use along with {@link deserialize}.
+   * @param data The data
+   */
+  public static compat(
+    data: any,
+  ): SerializedAutomaton {
+    return compat( data );
+  }
+
+  /**
    * Overrided save procedure.
    * Originally intended to be used by automaton-electron.
    * Can also be specified via {@link AutomatonWithGUIOptions}.
@@ -682,6 +693,7 @@ export class AutomatonWithGUI extends Automaton
 
   /**
    * Load automaton state data.
+   * You might want to use {@link compat} beforehand to upgrade data made in previous versions.
    * @param data Object contains automaton data.
    */
   public deserialize( data: SerializedAutomatonWithGUI ): void {
