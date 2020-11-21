@@ -1,0 +1,103 @@
+name: Inspect automaton-fxs-v2compat
+on:
+  push:
+    paths:
+      - '**'
+      - '!packages/**'
+      - 'packages/automaton/**'
+      - 'packages/automaton-fxs-v2compat/**'
+defaults:
+  run:
+    shell: bash
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Cache Deps
+      uses: actions/cache@v1
+      with:
+        path: |
+          node_modules
+        key: ${{ runner.os }}-yarn-${{ hashFiles( 'yarn.lock' ) }}
+        restore-keys: |
+          ${{ runner.os }}-yarn-
+    - name: Fetch Deps
+      run: yarn
+  build-automaton:
+    runs-on: ubuntu-latest
+    needs: fetch
+    defaults:
+      run:
+        working-directory: packages/automaton
+    steps:
+    - uses: actions/checkout@v2
+    - name: Cache Deps
+      uses: actions/cache@v1
+      with:
+        path: |
+          node_modules
+        key: ${{ runner.os }}-yarn-${{ hashFiles( 'yarn.lock' ) }}
+        restore-keys: |
+          ${{ runner.os }}-yarn-
+    - name: Build
+      run: yarn build
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: build-automaton
+        path: |
+          packages/automaton/dist/
+          packages/automaton/types/
+  lint:
+    runs-on: ubuntu-latest
+    needs: build-automaton
+    defaults:
+      run:
+        working-directory: packages/automaton-fxs-v2compat
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/download-artifact@v2
+      with:
+        name: build-automaton
+        path: packages/automaton
+    - name: Cache Deps
+      uses: actions/cache@v1
+      with:
+        path: |
+          node_modules
+        key: ${{ runner.os }}-yarn-${{ hashFiles( 'yarn.lock' ) }}
+        restore-keys: |
+          ${{ runner.os }}-yarn-
+    - name: Lint
+      run: yarn lint
+  build:
+    runs-on: ubuntu-latest
+    needs: build-automaton
+    defaults:
+      run:
+        working-directory: packages/automaton-fxs-v2compat
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/download-artifact@v2
+      with:
+        name: build-automaton
+        path: packages/automaton
+    - name: Cache Deps
+      uses: actions/cache@v1
+      with:
+        path: |
+          node_modules
+        key: ${{ runner.os }}-yarn-${{ hashFiles( 'yarn.lock' ) }}
+        restore-keys: |
+          ${{ runner.os }}-yarn-
+    - name: Build
+      run: yarn build
+    - name: Upload Builds
+      uses: actions/upload-artifact@v2
+      with:
+        name: build
+        path: |
+          packages/automaton-fxs-v2compat/dist/
+          packages/automaton-fxs-v2compat/types/
+          packages/automaton-fxs-v2compat/ts*/
