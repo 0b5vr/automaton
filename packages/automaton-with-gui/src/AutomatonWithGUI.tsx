@@ -693,6 +693,7 @@ export class AutomatonWithGUI extends Automaton
 
   /**
    * Load automaton state data.
+   * You might want to use {@link compat} beforehand to upgrade data made in previous versions.
    * @param data Object contains automaton data.
    */
   public deserialize( data: SerializedAutomatonWithGUI ): void {
