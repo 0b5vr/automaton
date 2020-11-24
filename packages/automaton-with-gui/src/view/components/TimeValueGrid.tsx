@@ -90,12 +90,12 @@ const TimeValueGrid = ( props: TimeValueGridProps ): JSX.Element => {
       const grid = genGrid(
         timeToBeat( range.t0, isAbsolute ),
         timeToBeat( range.t1, isAbsolute ),
-        { details: 2, base: 4 }
+        { details: 3, base: 4 }
       );
       return grid.map( ( entry ) => ( {
         value: intOrEmpty( entry.value ), // trick: to prevent -0.000
         position: t2x( beatToTime( entry.value, isAbsolute ), range, size.width ),
-        opacity: 4.0 * clamp( entry.importance - 0.0625, 0.0, 0.1 )
+        opacity: 0.1 * clamp( 64.0 * entry.importance - 1.0, 0.0, 4.0 )
       } ) );
     },
     [ snapBeatActive, timeToBeat, range, isAbsolute, beatToTime, size.width ]
