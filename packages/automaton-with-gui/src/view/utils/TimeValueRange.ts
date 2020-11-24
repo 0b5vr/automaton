@@ -65,7 +65,7 @@ export function snapTime(
   if ( snapBeatActive ) {
     let interval = 60.0 / bpm;
     const order = Math.floor( Math.log( ( range.t1 - range.t0 ) / interval ) / Math.log( 4.0 ) );
-    interval *= Math.pow( 4.0, order - 1.0 );
+    interval *= Math.pow( 4.0, order - 2.0 );
     const threshold = dx2dt( 5.0, range, width );
     const nearest = Math.round( ( time - beatOffset ) / interval ) * interval + beatOffset;
     result = Math.abs( time - nearest ) < threshold ? nearest : result;
