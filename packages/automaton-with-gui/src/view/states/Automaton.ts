@@ -79,6 +79,7 @@ export type Action = {
 } | {
   type: 'Automaton/CreateChannel';
   channel: string;
+  index: number;
 } | {
   type: 'Automaton/RemoveChannel';
   channel: string;
@@ -207,7 +208,7 @@ export const reducer: Reducer<State, ContextAction> = ( state = initialState, ac
     } else if ( action.type === 'Automaton/AddFxDefinition' ) {
       newState.fxDefinitions[ action.name ] = action.fxDefinition;
     } else if ( action.type === 'Automaton/CreateChannel' ) {
-      newState.channelNames.push( action.channel );
+      newState.channelNames.splice( action.index, 0, action.channel );
 
       newState.channels[ action.channel ] = {
         value: 0.0,

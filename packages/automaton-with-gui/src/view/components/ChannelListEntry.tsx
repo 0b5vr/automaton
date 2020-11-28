@@ -199,8 +199,9 @@ const ChannelListEntry = ( props: ChannelListEntryProps ): JSX.Element => {
 
           const data = automaton.getChannel( name )!.serialize();
 
+          const index = automaton.getChannelIndex( name );
           automaton.removeChannel( name );
-          automaton.createChannel( newName, data );
+          automaton.createChannel( newName, data, index );
 
           dispatch( {
             type: 'History/Push',
@@ -210,7 +211,8 @@ const ChannelListEntry = ( props: ChannelListEntryProps ): JSX.Element => {
                 type: 'automaton/renameChannel',
                 name,
                 newName,
-                data
+                data,
+                index,
               }
             ]
           } );
@@ -227,7 +229,8 @@ const ChannelListEntry = ( props: ChannelListEntryProps ): JSX.Element => {
       const dupName = duplicateName( name, new Set( Object.keys( automaton.mapNameToChannel ) ) );
       const data = automaton.getChannel( name )!.serialize();
 
-      automaton.createChannel( dupName, data );
+      const index = automaton.getChannelIndex( name ) + 1;
+      automaton.createChannel( dupName, data, index );
 
       dispatch( {
         type: 'History/Push',
@@ -236,8 +239,9 @@ const ChannelListEntry = ( props: ChannelListEntryProps ): JSX.Element => {
           {
             type: 'automaton/createChannel',
             channel: dupName,
-            data
-          }
+            data,
+            index,
+          },
         ]
       } );
     },
@@ -250,6 +254,7 @@ const ChannelListEntry = ( props: ChannelListEntryProps ): JSX.Element => {
 
       const data = automaton.getChannel( name )!.serialize();
 
+      const index = automaton.getChannelIndex( name );
       automaton.removeChannel( name );
 
       dispatch( {
@@ -259,7 +264,8 @@ const ChannelListEntry = ( props: ChannelListEntryProps ): JSX.Element => {
           {
             type: 'automaton/removeChannel',
             channel: name,
-            data
+            data,
+            index,
           }
         ]
       } );
