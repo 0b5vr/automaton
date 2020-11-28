@@ -253,6 +253,30 @@ export class CurveWithGUI extends Curve {
   }
 
   /**
+   * Dump data of a previous node from a specified node.
+   * It might return `null` when the specified node is the first node.
+   * @param id Id of the node you want to refer
+   * @returns Data of the previous node
+   */
+  public getPreviousNode( id: string ): ( BezierNode & WithID ) | null {
+    const index = this.__getNodeIndexById( id );
+    if ( index === 0 ) { return null; }
+    return jsonCopy( this.__nodes[ index - 1 ] );
+  }
+
+  /**
+   * Dump data of a next node from a specified node.
+   * It might return `null` when the specified node is the last node.
+   * @param id Id of the node you want to refer
+   * @returns Data of the next node
+   */
+  public getNextNode( id: string ): ( BezierNode & WithID ) | null {
+    const index = this.__getNodeIndexById( id );
+    if ( index === this.__nodes.length - 1 ) { return null; }
+    return jsonCopy( this.__nodes[ index + 1 ] );
+  }
+
+  /**
    * Create a node.
    * @param time Time of new node
    * @param value Value of new node
@@ -260,17 +284,30 @@ export class CurveWithGUI extends Curve {
    */
   public createNode( time: number, value: number ): BezierNode & WithID {
     const id = genID();
-    const data: any = {
+    const data = {
       time,
       value,
-      inTime: -CURVE_DEFAULT_HANDLE_LENGTH,
+      inTime: 0.0,
       inValue: 0.0,
-      outTime: CURVE_DEFAULT_HANDLE_LENGTH,
+      outTime: 0.0,
       outValue: 0.0,
+      $id: id,
     };
-    data.$id = id;
     this.__nodes.push( data );
     this.__sortNodes();
+
+    // if there are handles in previous or next node, make a handle
+    {
+      const prev = this.getPreviousNode( id );
+      const prevHasHandle = prev == null || prev.outTime !== 0.0 || prev.outValue !== 0.0;
+      const next = this.getNextNode( id );
+      const nextHasHandle = next == null || next.inTime !== 0.0 || next.inValue !== 0.0;
+
+      if ( prevHasHandle || nextHasHandle ) {
+        data.inTime = -CURVE_DEFAULT_HANDLE_LENGTH;
+        data.outTime = CURVE_DEFAULT_HANDLE_LENGTH;
+      }
+    }
 
     this.precalc();
 
