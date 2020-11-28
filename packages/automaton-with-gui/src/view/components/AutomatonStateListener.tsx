@@ -37,10 +37,11 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
   const automaton = props.automaton;
 
   const initChannelState = useCallback(
-    ( name: string, channel: ChannelWithGUI ) => {
+    ( name: string, channel: ChannelWithGUI, index: number ) => {
       dispatch( {
         type: 'Automaton/CreateChannel',
-        channel: name
+        channel: name,
+        index,
       } );
 
       dispatch( {
@@ -290,9 +291,9 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
         initCurveState( curve.$id, curve );
       } );
 
-      automaton.channels.forEach( ( channel ) => {
+      automaton.channels.forEach( ( channel, index ) => {
         const name = automaton.mapNameToChannel.getFromValue( channel )!;
-        initChannelState( name, channel );
+        initChannelState( name, channel, index );
       } );
 
       Object.entries( automaton.labels ).forEach( ( [ name, time ] ) => {
@@ -387,7 +388,7 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
       } );
 
       const handleCreateChannel = automaton.on( 'createChannel', ( event ) => {
-        initChannelState( event.name, event.channel );
+        initChannelState( event.name, event.channel, event.index );
       } );
 
       const handleRemoveChannel = automaton.on( 'removeChannel', ( event ) => {

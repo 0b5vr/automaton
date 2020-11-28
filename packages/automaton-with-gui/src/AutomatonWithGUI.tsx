@@ -392,13 +392,15 @@ export class AutomatonWithGUI extends Automaton
    * @param data Serialized data of the channel
    * @returns Created channel
    */
-  public createChannel( name: string, data?: SerializedChannel ): ChannelWithGUI {
+  public createChannel( name: string, data?: SerializedChannel, index?: number ): ChannelWithGUI {
     if ( this.mapNameToChannel.has( name ) ) {
       throw new Error( 'AutomatonWithGUI: A channel for the given name already exists' );
     }
 
+    const actualIndex = index ?? this.channels.length;
+
     const channel = new ChannelWithGUI( this, data );
-    this.channels.push( channel );
+    this.channels.splice( actualIndex, 0, channel );
     this.mapNameToChannel.set( name, channel );
 
     // if `options.disableChannelNotUsedWarning` is true, mark the created channels as used
@@ -410,7 +412,7 @@ export class AutomatonWithGUI extends Automaton
       this.__tryUpdateLength();
     } );
 
-    this.__emit( 'createChannel', { name, channel: channel } );
+    this.__emit( 'createChannel', { name, channel, index: actualIndex } );
 
     this.shouldSave = true;
 
@@ -424,20 +426,29 @@ export class AutomatonWithGUI extends Automaton
    * @param data Serialized data of the channel
    * @returns Created channel
    */
-  public createOrOverwriteChannel( name: string, data?: SerializedChannel ): ChannelWithGUI {
+  public createOrOverwriteChannel(
+    name: string,
+    data?: SerializedChannel,
+    index?: number
+  ): ChannelWithGUI {
+    let actualIndex = this.channels.length;
+
     if ( this.mapNameToChannel.has( name ) ) {
+      actualIndex = this.getChannelIndex( name );
       this.removeChannel( name );
     }
 
+    actualIndex = index ?? actualIndex;
+
     const channel = new ChannelWithGUI( this, data );
-    this.channels.push( channel );
+    this.channels.splice( actualIndex, 0, channel );
     this.mapNameToChannel.set( name, channel );
 
     channel.on( 'changeLength', () => {
       this.__tryUpdateLength();
     } );
 
-    this.__emit( 'createChannel', { name, channel: channel } );
+    this.__emit( 'createChannel', { name, channel, index: actualIndex } );
 
     this.shouldSave = true;
 
@@ -911,7 +922,7 @@ export interface AutomatonWithGUIEvents {
   seek: { time: number };
   load: void;
   update: { time: number };
-  createChannel: { name: string; channel: ChannelWithGUI };
+  createChannel: { name: string; channel: ChannelWithGUI; index: number };
   removeChannel: { name: string };
   reorderChannels: { index: number; length: number; newIndex: number };
   createCurve: { id: string; curve: CurveWithGUI };

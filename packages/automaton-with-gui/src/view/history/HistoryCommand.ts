@@ -8,15 +8,18 @@ import type { StateChannelItem } from '../../types/StateChannelItem';
 export type HistoryCommand = {
   type: 'automaton/createChannel';
   channel: string;
+  index?: number;
   data?: SerializedChannel;
 } | {
   type: 'automaton/removeChannel';
   channel: string;
+  index: number;
   data: SerializedChannel;
 } | {
   type: 'automaton/renameChannel';
   name: string;
   newName: string;
+  index: number;
   data: SerializedChannel;
 } | {
   type: 'automaton/createCurve';
@@ -189,24 +192,26 @@ export function parseHistoryCommand( command: HistoryCommand ): {
   redo: ( automaton: AutomatonWithGUI ) => void;
 } {
   if ( command.type === 'automaton/createChannel' ) {
+    const { channel, data, index } = command;
     return {
-      undo: ( automaton ) => automaton.removeChannel( command.channel ),
-      redo: ( automaton ) => automaton.createChannel( command.channel, command.data )
+      undo: ( automaton ) => automaton.removeChannel( channel ),
+      redo: ( automaton ) => automaton.createChannel( channel, data, index ),
     };
   } else if ( command.type === 'automaton/removeChannel' ) {
+    const { channel, data, index } = command;
     return {
-      undo: ( automaton ) => automaton.createOrOverwriteChannel( command.channel, command.data ),
-      redo: ( automaton ) => automaton.removeChannel( command.channel )
+      undo: ( automaton ) => automaton.createOrOverwriteChannel( channel, data, index ),
+      redo: ( automaton ) => automaton.removeChannel( channel )
     };
   } else if ( command.type === 'automaton/renameChannel' ) {
     return {
       undo: ( automaton ) => {
         automaton.removeChannel( command.newName );
-        automaton.createOrOverwriteChannel( command.name, command.data );
+        automaton.createOrOverwriteChannel( command.name, command.data, command.index );
       },
       redo: ( automaton ) => {
         automaton.removeChannel( command.name );
-        automaton.createChannel( command.newName, command.data );
+        automaton.createChannel( command.newName, command.data, command.index );
       }
     };
   } else if ( command.type === 'automaton/createCurve' ) {
