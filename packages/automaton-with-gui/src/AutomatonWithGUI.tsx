@@ -431,28 +431,14 @@ export class AutomatonWithGUI extends Automaton
     data?: SerializedChannel,
     index?: number
   ): ChannelWithGUI {
-    let actualIndex = this.channels.length;
+    let prevIndex: number | undefined;
 
     if ( this.mapNameToChannel.has( name ) ) {
-      actualIndex = this.getChannelIndex( name );
+      prevIndex = this.getChannelIndex( name );
       this.removeChannel( name );
     }
 
-    actualIndex = index ?? actualIndex;
-
-    const channel = new ChannelWithGUI( this, data );
-    this.channels.splice( actualIndex, 0, channel );
-    this.mapNameToChannel.set( name, channel );
-
-    channel.on( 'changeLength', () => {
-      this.__tryUpdateLength();
-    } );
-
-    this.__emit( 'createChannel', { name, channel, index: actualIndex } );
-
-    this.shouldSave = true;
-
-    return channel;
+    return this.createChannel( name, data, index ?? prevIndex );
   }
 
   /**
