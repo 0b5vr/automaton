@@ -174,10 +174,9 @@ export class Automaton {
     // cache the time
     this.__time = t;
 
-    // grab the current value for each channels
-    this.channels.forEach( ( channel ) => {
-      channel.update( this.__time );
-    } );
+    // update channels
+    const array = this.channels.map( ( channel ) => channel.consume( this.__time ) ).flat( 1 );
+    array.sort( ( [ a ], [ b ] ) => a - b ).forEach( ( [ _, func ] ) => func() );
   }
 
   /**

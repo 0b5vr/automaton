@@ -135,24 +135,41 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
 
   /**
    * This method is intended to be used by [[Automaton.update]].
+   * Consume and return items.
    * @param time The current time of the parent [[Automaton]]
+   * @returns Array of tuples, [ timing of the event, a function that execute the event ]
    */
-  public update( time: number ): void {
-    const prevValue = this.__value;
-
+  public consume( time: number ): [ time: number, update: () => void ][] {
     // Reset this, if required
     if ( this.__shouldReset ) {
       this.__shouldReset = false;
       this.reset();
     }
 
-    // update
-    super.update( time );
+    // `this.reset()` also modifies the value and emit a `'changeValue'`
+    let prevValue = this.__value;
 
-    // emit if the value is changed
-    if ( prevValue !== this.__value ) {
-      this.__emit( 'changeValue', { value: this.__value } );
+    // consume
+    const ret = super.consume( time );
+
+    // replace the last event
+    if ( ret.length !== 0 ) {
+      const retLast = ret[ ret.length - 1 ];
+      const retLastUpdate = retLast[ 1 ];
+
+      retLast[ 1 ] = () => {
+        // call the update
+        retLastUpdate();
+
+        // emit if the value is changed
+        if ( prevValue !== this.__value ) {
+          this.__emit( 'changeValue', { value: this.__value } );
+          prevValue = this.__value;
+        }
+      };
     }
+
+    return ret;
   }
 
   /**
