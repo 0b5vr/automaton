@@ -112,11 +112,13 @@ export class Channel {
 
   /**
    * This method is intended to be used by [[Automaton.update]].
+   * Consume and return items.
    * @param time The current time of the parent [[Automaton]]
    * @returns whether the value has been changed or not
    */
-  public update( time: number ): void {
-    let value = this.__value;
+  public consume( time: number ): [ time: number, update: () => void ][] {
+    const ret: [ number, () => void ][] = [];
+
     const prevTime = this.__time;
 
     for ( let i = this.__head; i < this.__items.length; i ++ ) {
@@ -149,23 +151,26 @@ export class Channel {
           init = true;
         }
 
-        value = item.getValue( elapsed );
+        ret.push( [ begin + elapsed, () => {
+          this.__value = item.getValue( elapsed );
 
-        this.__listeners.forEach( ( listener ) => listener( {
-          time,
-          elapsed,
-          begin,
-          end,
-          length,
-          value,
-          progress,
-          init,
-          uninit,
-        } ) );
+          this.__listeners.forEach( ( listener ) => listener( {
+            time,
+            elapsed,
+            begin,
+            end,
+            length,
+            value: this.__value,
+            progress,
+            init,
+            uninit,
+          } ) );
+        } ] );
       }
     }
 
     this.__time = time;
-    this.__value = value;
+
+    return ret;
   }
 }
