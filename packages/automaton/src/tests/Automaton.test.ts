@@ -98,5 +98,78 @@ describe( 'Automaton', () => {
       expect( result?.value ).toBeCloseTo( 2.0 );
       expect( result?.progress ).toBeCloseTo( 0.5 );
     } );
+
+    it( 'must execute callback functions in a proper order', () => {
+      const automaton = new Automaton( {
+        resolution: 100.0,
+        curves: [],
+        channels: [
+          // a 1.....8.
+          // b ..3.5...
+          // c 2...6...
+          // d ..4..7..
+          [ 'a', { items: [ { time: 0.00 }, { time: 1.50 } ] } ],
+          [ 'b', { items: [ { time: 0.50 }, { time: 1.00 } ] } ],
+          [ 'c', { items: [ { time: 0.00 }, { time: 1.00 } ] } ],
+          [ 'd', { items: [ { time: 0.50 }, { time: 1.25 } ] } ],
+        ]
+      } );
+      const auto = automaton.auto;
+
+      const result: [ number, string ][] = [];
+
+      auto( 'a', ( event ) => result.push( [ event.begin, 'a' ] ) );
+      auto( 'b', ( event ) => result.push( [ event.begin, 'b' ] ) );
+      auto( 'c', ( event ) => result.push( [ event.begin, 'c' ] ) );
+      auto( 'd', ( event ) => result.push( [ event.begin, 'd' ] ) );
+
+      automaton.update( 1.5 );
+
+      expect( result ).toEqual( [
+        [ 0.00, 'a' ],
+        [ 0.00, 'c' ],
+        [ 0.50, 'b' ],
+        [ 0.50, 'd' ],
+        [ 1.00, 'b' ],
+        [ 1.00, 'c' ],
+        [ 1.25, 'd' ],
+        [ 1.50, 'a' ],
+      ] );
+    } );
+
+    it( 'must execute callback functions in a proper order', () => {
+      const automaton = new Automaton( {
+        resolution: 100.0,
+        curves: [],
+        channels: [
+          // a 1...3...
+          // b ....4==.
+          // c .5======
+          // d ..2=....
+          [ 'a', { items: [ { time: 0.00, length: 0.25 }, { time: 1.00, length: 0.25 } ] } ],
+          [ 'b', { items: [ { time: 1.00, length: 0.75 } ] } ],
+          [ 'c', { items: [ { time: 0.25, length: 1.75 } ] } ],
+          [ 'd', { items: [ { time: 0.50, length: 0.50 } ] } ],
+        ]
+      } );
+      const auto = automaton.auto;
+
+      const result: [ number, string ][] = [];
+
+      auto( 'a', ( event ) => result.push( [ event.begin, 'a' ] ) );
+      auto( 'b', ( event ) => result.push( [ event.begin, 'b' ] ) );
+      auto( 'c', ( event ) => result.push( [ event.begin, 'c' ] ) );
+      auto( 'd', ( event ) => result.push( [ event.begin, 'd' ] ) );
+
+      automaton.update( 1.5 );
+
+      expect( result ).toEqual( [
+        [ 0.00, 'a' ],
+        [ 0.50, 'd' ],
+        [ 1.00, 'a' ],
+        [ 1.00, 'b' ],
+        [ 0.25, 'c' ],
+      ] );
+    } );
   } );
 } );
