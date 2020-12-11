@@ -99,7 +99,36 @@ describe( 'Automaton', () => {
       expect( result?.progress ).toBeCloseTo( 0.5 );
     } );
 
-    it( 'must execute callback functions in a proper order', () => {
+    it( 'must read a proper value from a callback function', () => {
+      const automaton = new Automaton( {
+        resolution: 100.0,
+        curves: [],
+        channels: [
+          // a ..1...2.
+          // b 1..2....
+          // c O=======
+          // d O====...
+          [ 'a', { items: [ { time: 0.50, value: 1.0 }, { time: 1.50, value: 2.0 } ] } ],
+          [ 'b', { items: [ { time: 0.00, value: 1.0 }, { time: 0.75, value: 2.0 } ] } ],
+          [ 'c', { items: [ { time: 0.00, length: 2.00 } ] } ],
+          [ 'd', { items: [ { time: 0.00, length: 1.25 } ] } ],
+        ]
+      } );
+      const auto = automaton.auto;
+
+      let resultC: [ number, number ] | undefined;
+      let resultD: [ number, number ] | undefined;
+
+      auto( 'c', () => resultC = [ auto( 'a' ), auto( 'b' ) ] );
+      auto( 'd', () => resultD = [ auto( 'a' ), auto( 'b' ) ] );
+
+      automaton.update( 2.5 );
+
+      expect( resultC ).toEqual( [ 2.0, 2.0 ] );
+      expect( resultD ).toEqual( [ 1.0, 2.0 ] );
+    } );
+
+    it( 'must execute callback functions in a proper order (case 1)', () => {
       const automaton = new Automaton( {
         resolution: 100.0,
         curves: [],
@@ -137,7 +166,7 @@ describe( 'Automaton', () => {
       ] );
     } );
 
-    it( 'must execute callback functions in a proper order', () => {
+    it( 'must execute callback functions in a proper order (case 2)', () => {
       const automaton = new Automaton( {
         resolution: 100.0,
         curves: [],
