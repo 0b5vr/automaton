@@ -3,6 +3,8 @@ import { Icons } from '../icons/Icons';
 import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
 import { Resolution } from '../utils/Resolution';
 import { TimeValueRange, dt2dx, dx2dt, dy2dv, snapTime, snapValue, t2x, v2y, x2t, y2v } from '../utils/TimeValueRange';
+import { genID } from '@fms-cat/automaton-with-gui/src/utils/genID';
+import { jsonCopy } from '@fms-cat/automaton-with-gui/src/utils/jsonCopy';
 import { objectMapHas } from '../utils/objectMap';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
 import { useDispatch, useSelector } from '../states/store';
@@ -529,6 +531,54 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
     [ dispatch, item.curveId ]
   );
 
+  const makeCurveUnique = useCallback(
+    (): void => {
+      if ( !automaton || !channel || !item.curveId ) { return; }
+
+      const src = automaton.getCurveById( item.curveId )!.serialize();
+      const newCurveData = automaton.createCurve( src ).serializeWithID();
+
+      const newItemData = jsonCopy( item );
+      newItemData.$id = genID();
+      newItemData.curveId = newCurveData.$id;
+
+      channel.removeItem( item.$id );
+      channel.createItemFromData( newItemData );
+
+      dispatch( {
+        type: 'CurveEditor/SelectCurve',
+        curveId: newCurveData.$id
+      } );
+
+      dispatch( {
+        type: 'Workspace/ChangeMode',
+        mode: 'curve'
+      } );
+
+      dispatch( {
+        type: 'History/Push',
+        description: 'Make Curve Unique',
+        commands: [
+          {
+            type: 'automaton/createCurve',
+            data: newCurveData,
+          },
+          {
+            type: 'channel/removeItem',
+            channel: channelName,
+            data: item,
+          },
+          {
+            type: 'channel/createItemFromData',
+            channel: channelName,
+            data: newItemData,
+          }
+        ],
+      } );
+    },
+    [ automaton, channel, channelName, dispatch, item ]
+  );
+
   const handleContextMenu = useCallback(
     ( event: React.MouseEvent ): void => {
       event.preventDefault();
@@ -543,6 +593,11 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
             callback: () => editCurve()
           },
           {
+            name: 'Make Curve Unique',
+            description: 'Duplicate the curve.',
+            callback: () => makeCurveUnique()
+          },
+          {
             name: 'Remove',
             description: 'Remove the curve.',
             callback: () => removeItem()
@@ -550,7 +605,7 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
         ]
       } );
     },
-    [ dispatch, editCurve, removeItem ]
+    [ dispatch, editCurve, makeCurveUnique, removeItem ]
   );
 
   return (
