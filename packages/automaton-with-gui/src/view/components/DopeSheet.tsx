@@ -5,7 +5,7 @@ import { registerMouseEvent } from '../utils/registerMouseEvent';
 import { useDispatch, useSelector } from '../states/store';
 import { useRect } from '../utils/useRect';
 import { useWheelEvent } from '../utils/useWheelEvent';
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
@@ -19,10 +19,11 @@ const Root = styled.div`
 // == props ========================================================================================
 export interface DopeSheetProps {
   className?: string;
+  intersectionRoot: HTMLElement | null;
 }
 
 // == component ====================================================================================
-const DopeSheet = ( { className }: DopeSheetProps ): JSX.Element => {
+const DopeSheet = ( { className, intersectionRoot }: DopeSheetProps ): JSX.Element => {
   const dispatch = useDispatch();
   const refRoot = useRef<HTMLDivElement>( null );
   const rect = useRect( refRoot );
@@ -37,6 +38,14 @@ const DopeSheet = ( { className }: DopeSheetProps ): JSX.Element => {
     range: state.timeline.range,
     guiSettings: state.automaton.guiSettings,
   } ) );
+
+  const timeRange = useMemo(
+    () => ( {
+      t0: range.t0,
+      t1: range.t1,
+    } ),
+    [ range.t0, range.t1 ]
+  );
 
   const move = useCallback(
     ( dx: number ): void => {
@@ -71,7 +80,7 @@ const DopeSheet = ( { className }: DopeSheetProps ): JSX.Element => {
       const isPlaying = automaton.isPlaying;
       automaton.pause();
 
-      const t0 = x2t( x - rect.left, range, rect.width );
+      const t0 = x2t( x - rect.left, timeRange, rect.width );
       automaton.seek( t0 );
 
       let dx = 0.0;
@@ -80,7 +89,7 @@ const DopeSheet = ( { className }: DopeSheetProps ): JSX.Element => {
       registerMouseEvent(
         ( event, movementSum ) => {
           dx += movementSum.x;
-          t = t0 + dx2dt( dx, range, rect.width );
+          t = t0 + dx2dt( dx, timeRange, rect.width );
           automaton.seek( t );
         },
         () => {
@@ -89,15 +98,15 @@ const DopeSheet = ( { className }: DopeSheetProps ): JSX.Element => {
         }
       );
     },
-    [ automaton, range, rect ]
+    [ automaton, timeRange, rect ]
   );
 
   const startSetLoopRegion = useCallback(
     ( x: number ): void => {
       if ( !automaton ) { return; }
 
-      const t0Raw = x2t( x - rect.left, range, rect.width );
-      const t0 = snapTime( t0Raw, range, rect.width, guiSettings );
+      const t0Raw = x2t( x - rect.left, timeRange, rect.width );
+      const t0 = snapTime( t0Raw, timeRange, rect.width, guiSettings );
 
       let dx = 0.0;
       let t = t0;
@@ -106,8 +115,8 @@ const DopeSheet = ( { className }: DopeSheetProps ): JSX.Element => {
         ( event, movementSum ) => {
           dx += movementSum.x;
 
-          const tRaw = t0 + dx2dt( dx, range, rect.width );
-          t = snapTime( tRaw, range, rect.width, guiSettings );
+          const tRaw = t0 + dx2dt( dx, timeRange, rect.width );
+          t = snapTime( tRaw, timeRange, rect.width, guiSettings );
 
           if ( t - t0 === 0.0 ) {
             automaton.setLoopRegion( null );
@@ -128,7 +137,7 @@ const DopeSheet = ( { className }: DopeSheetProps ): JSX.Element => {
         }
       );
     },
-    [ automaton, range, rect, guiSettings ]
+    [ automaton, timeRange, rect, guiSettings ]
   );
 
   const handleMouseDown = useCallback(
@@ -152,7 +161,7 @@ const DopeSheet = ( { className }: DopeSheetProps ): JSX.Element => {
     ( x: number, y: number ): void => {
       if ( !automaton ) { return; }
 
-      const time = x2t( x - rect.left, range, rect.width );
+      const time = x2t( x - rect.left, timeRange, rect.width );
 
       dispatch( {
         type: 'TextPrompt/Open',
@@ -180,7 +189,7 @@ const DopeSheet = ( { className }: DopeSheetProps ): JSX.Element => {
         }
       } );
     },
-    [ automaton, range, rect, dispatch ]
+    [ automaton, timeRange, rect, dispatch ]
   );
 
   const handleContextMenu = useCallback(
@@ -221,6 +230,20 @@ const DopeSheet = ( { className }: DopeSheetProps ): JSX.Element => {
 
   useWheelEvent( refRoot, handleWheel );
 
+  const entries = useMemo(
+    () => (
+      channelNames.map( ( channel ) => (
+        <StyledDopeSheetEntry
+          key={ channel }
+          channel={ channel }
+          range={ timeRange }
+          intersectionRoot={ intersectionRoot }
+        />
+      ) )
+    ),
+    [ channelNames, intersectionRoot, timeRange ]
+  );
+
   return (
     <Root
       className={ className }
@@ -228,12 +251,7 @@ const DopeSheet = ( { className }: DopeSheetProps ): JSX.Element => {
       onMouseDown={ handleMouseDown }
       onContextMenu={ handleContextMenu }
     >
-      { channelNames.map( ( channel ) => (
-        <StyledDopeSheetEntry
-          key={ channel }
-          channel={ channel }
-        />
-      ) ) }
+      { entries }
     </Root>
   );
 };

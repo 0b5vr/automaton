@@ -1,6 +1,7 @@
 // Ref: https://codesandbox.io/s/userect-hook-1y5t7
 
 import { useCallback, useLayoutEffect, useState } from 'react';
+import { useElement } from './useElement';
 import ResizeObserver from 'resize-observer-polyfill';
 
 export interface RectResult {
@@ -32,17 +33,8 @@ function getRect<T extends HTMLElement | SVGElement>( element?: T ): RectResult 
 export function useRect<T extends HTMLElement | SVGElement>(
   ref: React.RefObject<T>
 ): RectResult {
-  const [ element, setElement ] = useState( ref.current );
+  const element = useElement( ref );
   const [ rect, setRect ] = useState<RectResult>( nullResult );
-
-  useLayoutEffect(
-    () => {
-      if ( ref.current !== element ) {
-        setElement( ref.current );
-      }
-    },
-    [ element, ref ]
-  );
 
   const handleResize = useCallback(
     () => {

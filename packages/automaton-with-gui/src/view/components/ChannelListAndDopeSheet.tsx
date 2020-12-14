@@ -5,8 +5,9 @@ import { DopeSheetUnderlay } from './DopeSheetUnderlay';
 import { Metrics } from '../constants/Metrics';
 import { Scrollable } from './Scrollable';
 import { useDispatch, useSelector } from '../states/store';
+import { useElement } from '../utils/useElement';
 import { useRect } from '../utils/useRect';
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
@@ -67,8 +68,9 @@ const ChannelListAndDopeSheet = ( props: {
     mode: state.workspace.mode
   } ) );
   const refRoot = useRef<HTMLDivElement>( null );
+  const root = useElement( refRoot );
   const rect = useRect( refRoot );
-  const [ scrollTop, setScrollTop ] = useState( 0.0 );
+  const refScrollTop = useRef( 0.0 );
 
   const shouldShowChannelList = mode === 'dope' || mode === 'channel';
 
@@ -133,9 +135,23 @@ const ChannelListAndDopeSheet = ( props: {
 
   const handleScroll = useCallback(
     ( scroll: number ): void => {
-      setScrollTop( scroll );
+      refScrollTop.current = scroll;
     },
     []
+  );
+
+  const underlay = useMemo(
+    () => (
+      mode === 'dope' && <StyledDopeSheetUnderlay />
+    ),
+    [ mode ]
+  );
+
+  const overlay = useMemo(
+    () => (
+      mode === 'dope' && <StyledDopeSheetOverlay />
+    ),
+    [ mode ]
   );
 
   return (
@@ -144,7 +160,7 @@ const ChannelListAndDopeSheet = ( props: {
       className={ className }
       onContextMenu={ handleContextMenu }
     >
-      { mode === 'dope' && <StyledDopeSheetUnderlay /> }
+      { underlay }
       <ChannelListAndDopeSheetScrollable
         barPosition='left'
         onScroll={ handleScroll }
@@ -153,12 +169,16 @@ const ChannelListAndDopeSheet = ( props: {
           style={ { minHeight: rect.height } }
         >
           { shouldShowChannelList && <StyledChannelList
-            scrollTop={ scrollTop }
+            refScrollTop={ refScrollTop }
           /> }
-          { mode === 'dope' && <StyledDopeSheet /> }
+          { mode === 'dope' && (
+            <StyledDopeSheet
+              intersectionRoot={ root }
+            />
+          ) }
         </ChannelListAndDopeSheetContainer>
       </ChannelListAndDopeSheetScrollable>
-      { mode === 'dope' && <StyledDopeSheetOverlay /> }
+      { overlay }
     </Root>
   );
 };

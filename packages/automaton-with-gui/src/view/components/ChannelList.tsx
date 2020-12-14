@@ -2,7 +2,7 @@ import { ChannelListEntry } from './ChannelListEntry';
 import { Colors } from '../constants/Colors';
 import { Icons } from '../icons/Icons';
 import { useDispatch, useSelector } from '../states/store';
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
@@ -38,10 +38,10 @@ const Root = styled.div`
 // == element ======================================================================================
 export interface ChannelListProps {
   className?: string;
-  scrollTop: number;
+  refScrollTop: React.RefObject<number>;
 }
 
-const ChannelList = ( { className, scrollTop }: ChannelListProps ): JSX.Element => {
+const ChannelList = ( { className, refScrollTop }: ChannelListProps ): JSX.Element => {
   const dispatch = useDispatch();
   const {
     automaton,
@@ -88,15 +88,22 @@ const ChannelList = ( { className, scrollTop }: ChannelListProps ): JSX.Element 
     [ automaton, dispatch ]
   );
 
-  return (
-    <Root className={ className }>
-      { channelNames.map( ( channel ) => (
+  const entries = useMemo(
+    () => (
+      channelNames.map( ( channel ) => (
         <StyledChannelListEntry
           key={ channel }
           name={ channel }
-          scrollTop={ scrollTop }
+          refScrollTop={ refScrollTop }
         />
-      ) ) }
+      ) )
+    ),
+    [ channelNames, refScrollTop ]
+  );
+
+  return (
+    <Root className={ className }>
+      { entries }
       <NewChannelButton
         data-stalker="Create a new channel"
         onClick={ handleClickNewChannel }

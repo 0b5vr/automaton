@@ -1,13 +1,15 @@
 import { Colors } from '../constants/Colors';
 import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
+import { TimeRange, dt2dx, dx2dt, snapTime, x2t } from '../utils/TimeValueRange';
 import { TimelineItem } from './TimelineItem';
-import { dx2dt, snapTime, x2t } from '../utils/TimeValueRange';
+import { binarySearch } from '../utils/binarySearch';
 import { hasOverwrap } from '../../utils/hasOverwrap';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
 import { showToasty } from '../states/Toasty';
 import { useDispatch, useSelector } from '../states/store';
+import { useIntersection } from '../utils/useIntersection';
 import { useRect } from '../utils/useRect';
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import styled from 'styled-components';
 import type { StateChannelItem } from '../../types/StateChannelItem';
 
@@ -24,7 +26,6 @@ const Underlay = styled.div`
   width: 100%;
   height: 100%;
   opacity: 0.08;
-  pointer-events: none;
 `;
 
 const Root = styled.div`
@@ -39,35 +40,58 @@ const Root = styled.div`
   }
 `;
 
-// == component ====================================================================================
-interface Props {
-  className?: string;
+// == a content - if it isn't intersecting, return an empty div instead ============================
+const Content = ( props: {
   channel: string;
-}
-
-const DopeSheetEntry = ( props: Props ): JSX.Element => {
-  const { className } = props;
+  range: TimeRange;
+  refRoot: React.RefObject<HTMLDivElement>;
+} ): JSX.Element => {
+  const { range, refRoot } = props;
   const channelName = props.channel;
   const dispatch = useDispatch();
   const {
     automaton,
-    range,
     lastSelectedItem,
     selectedCurve,
-    stateItems,
+    sortedItems,
     guiSettings
   } = useSelector( ( state ) => ( {
     automaton: state.automaton.instance,
-    range: state.timeline.range,
     lastSelectedItem: state.timeline.lastSelectedItem,
     selectedCurve: state.curveEditor.selectedCurve,
     stateItems: state.automaton.channels[ channelName ].items,
+    sortedItems: state.automaton.channels[ channelName ].sortedItems,
     guiSettings: state.automaton.guiSettings
   } ) );
 
   const channel = automaton?.getChannel( channelName );
-  const refRoot = useRef<HTMLDivElement>( null );
   const rect = useRect( refRoot );
+
+  // since TimelineItem only accepts TimeValueRange,,,
+  const timeValueRange = useMemo(
+    () => ( {
+      t0: range.t0,
+      t1: range.t1,
+      v0: 0.0,
+      v1: 1.0,
+    } ),
+    [ range.t0, range.t1 ]
+  );
+
+  const itemsInRange = useMemo(
+    () => {
+      const i0 = binarySearch(
+        sortedItems,
+        ( item ) => dt2dx( ( item.time + item.length ) - range.t0, range, rect.width ) < -20.0,
+      );
+      const i1 = binarySearch(
+        sortedItems,
+        ( item ) => dt2dx( item.time - range.t1, range, rect.width ) < 20.0,
+      );
+      return sortedItems.slice( i0, i1 );
+    },
+    [ range, rect.width, sortedItems ]
+  );
 
   const createConstant = useCallback(
     ( x: number ): void => {
@@ -292,26 +316,56 @@ const DopeSheetEntry = ( props: Props ): JSX.Element => {
     [ dispatch, createConstant, createNewCurve ]
   );
 
+  const items = useMemo(
+    () => (
+      Object.entries( itemsInRange ).map( ( [ id, item ] ) => (
+        <TimelineItem
+          channel={ channelName }
+          key={ id }
+          item={ item }
+          range={ timeValueRange }
+          size={ rect }
+          dopeSheetMode
+        />
+      ) )
+    ),
+    [ channelName, itemsInRange, rect, timeValueRange ]
+  );
+
+  return <>
+    <Underlay
+      onMouseDown={ handleMouseDown }
+      onContextMenu={ handleContextMenu }
+    />
+    <SVGRoot>
+      { items }
+    </SVGRoot>
+  </>;
+};
+
+// == component ====================================================================================
+const DopeSheetEntry = ( props: {
+  className?: string;
+  channel: string;
+  range: TimeRange;
+  intersectionRoot: HTMLElement | null;
+} ): JSX.Element => {
+  const { className, intersectionRoot } = props;
+
+  const refRoot = useRef<HTMLDivElement>( null );
+
+  const isIntersecting = useIntersection( refRoot, { root: intersectionRoot } );
+
   return (
     <Root
       className={ className }
       ref={ refRoot }
-      onMouseDown={ handleMouseDown }
-      onContextMenu={ handleContextMenu }
     >
-      <Underlay />
-      <SVGRoot>
-        { Object.entries( stateItems ).map( ( [ id, item ] ) => (
-          <TimelineItem
-            channel={ channelName }
-            key={ id }
-            item={ item }
-            range={ range }
-            size={ rect }
-            dopeSheetMode
-          />
-        ) ) }
-      </SVGRoot>
+      { isIntersecting ? <Content
+        channel={ props.channel }
+        range={ props.range }
+        refRoot={ refRoot }
+      /> : null }
     </Root>
   );
 };
