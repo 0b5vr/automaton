@@ -1,13 +1,14 @@
 import { Colors } from '../constants/Colors';
 import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
 import { TimelineItem } from './TimelineItem';
-import { dx2dt, snapTime, x2t } from '../utils/TimeValueRange';
+import { binarySearch } from '../utils/binarySearch';
+import { dt2dx, dx2dt, snapTime, x2t } from '../utils/TimeValueRange';
 import { hasOverwrap } from '../../utils/hasOverwrap';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
 import { showToasty } from '../states/Toasty';
 import { useDispatch, useSelector } from '../states/store';
 import { useRect } from '../utils/useRect';
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import styled from 'styled-components';
 import type { StateChannelItem } from '../../types/StateChannelItem';
 
@@ -54,7 +55,7 @@ const DopeSheetEntry = ( props: Props ): JSX.Element => {
     range,
     lastSelectedItem,
     selectedCurve,
-    stateItems,
+    sortedItems,
     guiSettings
   } = useSelector( ( state ) => ( {
     automaton: state.automaton.instance,
@@ -62,12 +63,28 @@ const DopeSheetEntry = ( props: Props ): JSX.Element => {
     lastSelectedItem: state.timeline.lastSelectedItem,
     selectedCurve: state.curveEditor.selectedCurve,
     stateItems: state.automaton.channels[ channelName ].items,
+    sortedItems: state.automaton.channels[ channelName ].sortedItems,
     guiSettings: state.automaton.guiSettings
   } ) );
 
   const channel = automaton?.getChannel( channelName );
   const refRoot = useRef<HTMLDivElement>( null );
   const rect = useRect( refRoot );
+
+  const itemsInRange = useMemo(
+    () => {
+      const i0 = binarySearch(
+        sortedItems,
+        ( item ) => dt2dx( ( item.time + item.length ) - range.t0, range, rect.width ) < -20.0,
+      );
+      const i1 = binarySearch(
+        sortedItems,
+        ( item ) => dt2dx( item.time - range.t1, range, rect.width ) < 20.0,
+      );
+      return sortedItems.slice( i0, i1 );
+    },
+    [ range, rect.width, sortedItems ]
+  );
 
   const createConstant = useCallback(
     ( x: number ): void => {
@@ -301,7 +318,7 @@ const DopeSheetEntry = ( props: Props ): JSX.Element => {
     >
       <Underlay />
       <SVGRoot>
-        { Object.entries( stateItems ).map( ( [ id, item ] ) => (
+        { Object.entries( itemsInRange ).map( ( [ id, item ] ) => (
           <TimelineItem
             channel={ channelName }
             key={ id }

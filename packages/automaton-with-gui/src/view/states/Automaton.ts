@@ -9,6 +9,7 @@ import { Status } from '../../types/Status';
 import { WithBypass } from '../../types/WithBypass';
 import { WithID } from '../../types/WithID';
 import { arraySetDelete } from '../utils/arraySet';
+import { binarySearch } from '../utils/binarySearch';
 import { jsonCopy } from '../../utils/jsonCopy';
 import { produce } from 'immer';
 import { reorderArray } from '../../utils/reorderArray';
@@ -25,6 +26,7 @@ export interface State {
       length: number;
       status: Status<ChannelStatusCode> | null;
       items: { [ id: string ]: StateChannelItem };
+      sortedItems: StateChannelItem[];
     };
   };
   curves: {
@@ -214,7 +216,8 @@ export const reducer: Reducer<State, ContextAction> = ( state = initialState, ac
         value: 0.0,
         length: 1.0,
         status: null,
-        items: {}
+        items: {},
+        sortedItems: [],
       };
     } else if ( action.type === 'Automaton/RemoveChannel' ) {
       arraySetDelete( newState.channelNames, action.channel );
@@ -228,9 +231,35 @@ export const reducer: Reducer<State, ContextAction> = ( state = initialState, ac
     } else if ( action.type === 'Automaton/UpdateChannelStatus' ) {
       newState.channels[ action.channel ].status = action.status;
     } else if ( action.type === 'Automaton/UpdateChannelItem' ) {
+      const prevTime = state.channels[ action.channel ].items[ action.id ]?.time;
       newState.channels[ action.channel ].items[ action.id ] = action.item;
+
+      if ( prevTime !== action.item.time ) {
+        if ( prevTime != null ) {
+          const index = binarySearch(
+            state.channels[ action.channel ].sortedItems,
+            ( item ) => item.time < prevTime
+          );
+          newState.channels[ action.channel ].sortedItems.splice( index, 1 );
+        }
+
+        const index = binarySearch(
+          state.channels[ action.channel ].sortedItems,
+          ( item ) => item.time < action.item.time
+        );
+        newState.channels[ action.channel ].sortedItems.splice( index, 0, action.item );
+      }
     } else if ( action.type === 'Automaton/RemoveChannelItem' ) {
+      const prevTime = state.channels[ action.channel ].items[ action.id ]?.time;
       delete newState.channels[ action.channel ].items[ action.id ];
+
+      if ( prevTime != null ) {
+        const index = binarySearch(
+          state.channels[ action.channel ].sortedItems,
+          ( item ) => item.time < prevTime
+        );
+        newState.channels[ action.channel ].sortedItems.splice( index, 1 );
+      }
     } else if ( action.type === 'Automaton/CreateCurve' ) {
       newState.curves[ action.curveId ] = {
         status: null,

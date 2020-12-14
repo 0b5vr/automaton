@@ -6,15 +6,16 @@ import { Resolution } from '../utils/Resolution';
 import { TimeLoopRegion } from './TimeLoopRegion';
 import { TimeValueGrid } from './TimeValueGrid';
 import { TimeValueLines } from './TimeValueLines';
-import { TimeValueRange, dx2dt, dy2dv, snapTime, snapValue, x2t, y2v } from '../utils/TimeValueRange';
+import { TimeValueRange, dt2dx, dx2dt, dy2dv, snapTime, snapValue, x2t, y2v } from '../utils/TimeValueRange';
 import { TimelineItem } from './TimelineItem';
+import { binarySearch } from '../utils/binarySearch';
 import { hasOverwrap } from '../../utils/hasOverwrap';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
 import { showToasty } from '../states/Toasty';
 import { useDispatch, useSelector } from '../states/store';
 import { useRect } from '../utils/useRect';
 import { useWheelEvent } from '../utils/useWheelEvent';
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import styled from 'styled-components';
 import type { StateChannelItem } from '../../types/StateChannelItem';
 
@@ -43,12 +44,27 @@ const Items = ( { channel, range, size }: {
   range: TimeValueRange;
   size: Resolution;
 } ): JSX.Element => {
-  const { items } = useSelector( ( state ) => ( {
-    items: state.automaton.channels[ channel ].items
+  const { sortedItems } = useSelector( ( state ) => ( {
+    sortedItems: state.automaton.channels[ channel ].sortedItems,
   } ) );
 
+  const itemsInRange = useMemo(
+    () => {
+      const i0 = binarySearch(
+        sortedItems,
+        ( item ) => dt2dx( ( item.time + item.length ) - range.t0, range, size.width ) < -20.0,
+      );
+      const i1 = binarySearch(
+        sortedItems,
+        ( item ) => dt2dx( item.time - range.t1, range, size.width ) < 20.0,
+      );
+      return sortedItems.slice( i0, i1 );
+    },
+    [ range, size.width, sortedItems ]
+  );
+
   return <>
-    { Object.entries( items ).map( ( [ id, item ] ) => (
+    { Object.entries( itemsInRange ).map( ( [ id, item ] ) => (
       <TimelineItem
         key={ id }
         channel={ channel }
