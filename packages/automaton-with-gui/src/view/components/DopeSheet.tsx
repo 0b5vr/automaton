@@ -5,7 +5,7 @@ import { registerMouseEvent } from '../utils/registerMouseEvent';
 import { useDispatch, useSelector } from '../states/store';
 import { useRect } from '../utils/useRect';
 import { useWheelEvent } from '../utils/useWheelEvent';
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
@@ -222,6 +222,19 @@ const DopeSheet = ( { className, intersectionRoot }: DopeSheetProps ): JSX.Eleme
 
   useWheelEvent( refRoot, handleWheel );
 
+  const entries = useMemo(
+    () => (
+      channelNames.map( ( channel ) => (
+        <StyledDopeSheetEntry
+          key={ channel }
+          channel={ channel }
+          intersectionRoot={ intersectionRoot }
+        />
+      ) )
+    ),
+    [ channelNames, intersectionRoot ]
+  );
+
   return (
     <Root
       className={ className }
@@ -229,13 +242,7 @@ const DopeSheet = ( { className, intersectionRoot }: DopeSheetProps ): JSX.Eleme
       onMouseDown={ handleMouseDown }
       onContextMenu={ handleContextMenu }
     >
-      { channelNames.map( ( channel ) => (
-        <StyledDopeSheetEntry
-          key={ channel }
-          channel={ channel }
-          intersectionRoot={ intersectionRoot }
-        />
-      ) ) }
+      { entries }
     </Root>
   );
 };

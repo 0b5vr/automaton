@@ -7,7 +7,7 @@ import { Scrollable } from './Scrollable';
 import { useDispatch, useSelector } from '../states/store';
 import { useElement } from '../utils/useElement';
 import { useRect } from '../utils/useRect';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
@@ -70,7 +70,7 @@ const ChannelListAndDopeSheet = ( props: {
   const refRoot = useRef<HTMLDivElement>( null );
   const root = useElement( refRoot );
   const rect = useRect( refRoot );
-  const [ scrollTop, setScrollTop ] = useState( 0.0 );
+  const refScrollTop = useRef( 0.0 );
 
   const shouldShowChannelList = mode === 'dope' || mode === 'channel';
 
@@ -135,7 +135,7 @@ const ChannelListAndDopeSheet = ( props: {
 
   const handleScroll = useCallback(
     ( scroll: number ): void => {
-      setScrollTop( scroll );
+      refScrollTop.current = scroll;
     },
     []
   );
@@ -169,7 +169,7 @@ const ChannelListAndDopeSheet = ( props: {
           style={ { minHeight: rect.height } }
         >
           { shouldShowChannelList && <StyledChannelList
-            scrollTop={ scrollTop }
+            refScrollTop={ refScrollTop }
           /> }
           { mode === 'dope' && (
             <StyledDopeSheet
