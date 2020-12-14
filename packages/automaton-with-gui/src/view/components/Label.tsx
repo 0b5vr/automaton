@@ -1,7 +1,7 @@
 import { Colors } from '../constants/Colors';
 import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
 import { Resolution } from '../utils/Resolution';
-import { TimeValueRange, dx2dt, snapTime, t2x } from '../utils/TimeValueRange';
+import { TimeRange, dx2dt, snapTime, t2x } from '../utils/TimeValueRange';
 import { arraySetHas } from '../utils/arraySet';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
 import { useDispatch, useSelector } from '../states/store';
@@ -33,7 +33,7 @@ const Text = styled.text`
 const Label = ( { name, time, range, size }: {
   name: string;
   time: number;
-  range: TimeValueRange;
+  range: TimeRange;
   size: Resolution;
 } ): JSX.Element => {
   const dispatch = useDispatch();

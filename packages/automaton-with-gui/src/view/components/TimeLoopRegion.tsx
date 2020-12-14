@@ -1,6 +1,6 @@
 import { Colors } from '../constants/Colors';
 import { Resolution } from '../utils/Resolution';
-import { TimeValueRange, t2x } from '../utils/TimeValueRange';
+import { TimeRange, t2x } from '../utils/TimeValueRange';
 import { useSelector } from '../states/store';
 import React from 'react';
 import styled from 'styled-components';
@@ -26,7 +26,7 @@ const Region = styled.rect`
 
 // == element ======================================================================================
 const TimeLoopRegion = ( props: {
-  range: TimeValueRange;
+  range: TimeRange;
   size: Resolution;
 } ): JSX.Element | null => {
   const { range, size } = props;
@@ -40,23 +40,21 @@ const TimeLoopRegion = ( props: {
   const xBegin = t2x( loopRegion.begin, range, size.width );
   const xEnd = t2x( loopRegion.end, range, size.width );
 
-  return (
-    <>
-      <Region
-        x={ xBegin }
-        width={ xEnd - xBegin }
-        height={ size.height }
-      />
-      <g transform={ `translate(${ xBegin },${ size.height })` }>
-        <Line y2={ -size.height } />
-        <Text x="2" y="-2">{ loopRegion.begin.toFixed( 3 ) }</Text>
-      </g>
-      <g transform={ `translate(${ xEnd },${ size.height })` }>
-        <Line y2={ -size.height } />
-        <Text x="2" y="-2">{ loopRegion.end.toFixed( 3 ) }</Text>
-      </g>
-    </>
-  );
+  return <>
+    <Region
+      x={ xBegin }
+      width={ xEnd - xBegin }
+      height={ size.height }
+    />
+    <g transform={ `translate(${ xBegin },${ size.height })` }>
+      <Line y2={ -size.height } />
+      <Text x="2" y="-2">{ loopRegion.begin.toFixed( 3 ) }</Text>
+    </g>
+    <g transform={ `translate(${ xEnd },${ size.height })` }>
+      <Line y2={ -size.height } />
+      <Text x="2" y="-2">{ loopRegion.end.toFixed( 3 ) }</Text>
+    </g>
+  </>;
 };
 
 export { TimeLoopRegion };

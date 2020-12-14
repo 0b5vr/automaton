@@ -6,7 +6,7 @@ import { Metrics } from '../constants/Metrics';
 import { Scrollable } from './Scrollable';
 import { useDispatch, useSelector } from '../states/store';
 import { useRect } from '../utils/useRect';
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 // == styles =======================================================================================
@@ -138,13 +138,27 @@ const ChannelListAndDopeSheet = ( props: {
     []
   );
 
+  const underlay = useMemo(
+    () => (
+      mode === 'dope' && <StyledDopeSheetUnderlay />
+    ),
+    [ mode ]
+  );
+
+  const overlay = useMemo(
+    () => (
+      mode === 'dope' && <StyledDopeSheetOverlay />
+    ),
+    [ mode ]
+  );
+
   return (
     <Root
       ref={ refRoot }
       className={ className }
       onContextMenu={ handleContextMenu }
     >
-      { mode === 'dope' && <StyledDopeSheetUnderlay /> }
+      { underlay }
       <ChannelListAndDopeSheetScrollable
         barPosition='left'
         onScroll={ handleScroll }
@@ -158,7 +172,7 @@ const ChannelListAndDopeSheet = ( props: {
           { mode === 'dope' && <StyledDopeSheet /> }
         </ChannelListAndDopeSheetContainer>
       </ChannelListAndDopeSheetScrollable>
-      { mode === 'dope' && <StyledDopeSheetOverlay /> }
+      { overlay }
     </Root>
   );
 };

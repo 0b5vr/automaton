@@ -1,11 +1,11 @@
 import { Label } from './Label';
 import { Resolution } from '../utils/Resolution';
-import { TimeValueRange } from '../utils/TimeValueRange';
+import { TimeRange } from '../utils/TimeValueRange';
 import { useSelector } from '../states/store';
 import React from 'react';
 
 const Labels = ( { range, size }: {
-  range: TimeValueRange;
+  range: TimeRange;
   size: Resolution;
 } ): JSX.Element => {
   const { labels } = useSelector( ( state ) => ( {

@@ -2,25 +2,35 @@ import { Labels } from './Labels';
 import { RangeBar } from './RangeBar';
 import { Resolution } from '../utils/Resolution';
 import { TimeLoopRegion } from './TimeLoopRegion';
+import { TimeRange } from '../utils/TimeValueRange';
 import { TimeValueLines } from './TimeValueLines';
-import { TimeValueRange } from '../utils/TimeValueRange';
 import { useRect } from '../utils/useRect';
 import { useSelector } from '../states/store';
-import React, { useRef } from 'react';
+import React, { useMemo, useRef } from 'react';
 import styled from 'styled-components';
 
 // == microcomponent ===============================================================================
 const Line = ( { range, size }: {
-  range: TimeValueRange;
+  range: TimeRange;
   size: Resolution;
 } ): JSX.Element => {
   const { time } = useSelector( ( state ) => ( {
     time: state.automaton.time
   } ) );
 
+  const timeValueRange = useMemo(
+    () => ( {
+      t0: range.t0,
+      t1: range.t1,
+      v0: 0.0,
+      v1: 1.0,
+    } ),
+    [ range.t0, range.t1 ]
+  );
+
   return (
     <TimeValueLines
-      range={ range }
+      range={ timeValueRange }
       size={ size }
       time={ time }
       isAbsolute
@@ -66,26 +76,34 @@ const DopeSheetOverlay = ( props: DopeSheetOverlayProps ): JSX.Element => {
     automatonLength: state.automaton.length
   } ) );
 
+  const timeRange = useMemo(
+    () => ( {
+      t0: range.t0,
+      t1: range.t1,
+    } ),
+    [ range.t0, range.t1 ]
+  );
+
   return (
     <Root className={ className }>
       <Body ref={ refBody }>
         <SVGRoot>
           <Labels
-            range={ range }
+            range={ timeRange }
             size={ rect }
           />
           <TimeLoopRegion
-            range={ range }
+            range={ timeRange }
             size={ rect }
           />
           <Line
-            range={ range }
+            range={ timeRange }
             size={ rect }
           />
         </SVGRoot>
       </Body>
       <StyledRangeBar
-        range={ range }
+        range={ timeRange }
         width={ rect.width }
         length={ automatonLength }
       />
