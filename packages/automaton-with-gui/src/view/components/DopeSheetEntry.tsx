@@ -7,6 +7,7 @@ import { hasOverwrap } from '../../utils/hasOverwrap';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
 import { showToasty } from '../states/Toasty';
 import { useDispatch, useSelector } from '../states/store';
+import { useIntersection } from '../utils/useIntersection';
 import { useRect } from '../utils/useRect';
 import React, { useCallback, useMemo, useRef } from 'react';
 import styled from 'styled-components';
@@ -44,10 +45,11 @@ const Root = styled.div`
 interface Props {
   className?: string;
   channel: string;
+  intersectionRoot: HTMLElement | null;
 }
 
 const DopeSheetEntry = ( props: Props ): JSX.Element => {
-  const { className } = props;
+  const { className, intersectionRoot } = props;
   const channelName = props.channel;
   const dispatch = useDispatch();
   const {
@@ -70,9 +72,12 @@ const DopeSheetEntry = ( props: Props ): JSX.Element => {
   const channel = automaton?.getChannel( channelName );
   const refRoot = useRef<HTMLDivElement>( null );
   const rect = useRect( refRoot );
+  const isIntersecting = useIntersection( refRoot, { root: intersectionRoot } );
 
   const itemsInRange = useMemo(
     () => {
+      if ( !isIntersecting ) { return []; }
+
       const i0 = binarySearch(
         sortedItems,
         ( item ) => dt2dx( ( item.time + item.length ) - range.t0, range, rect.width ) < -20.0,
@@ -83,7 +88,7 @@ const DopeSheetEntry = ( props: Props ): JSX.Element => {
       );
       return sortedItems.slice( i0, i1 );
     },
-    [ range, rect.width, sortedItems ]
+    [ isIntersecting, range, rect.width, sortedItems ]
   );
 
   const createConstant = useCallback(

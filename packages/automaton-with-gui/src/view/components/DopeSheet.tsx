@@ -19,10 +19,11 @@ const Root = styled.div`
 // == props ========================================================================================
 export interface DopeSheetProps {
   className?: string;
+  intersectionRoot: HTMLElement | null;
 }
 
 // == component ====================================================================================
-const DopeSheet = ( { className }: DopeSheetProps ): JSX.Element => {
+const DopeSheet = ( { className, intersectionRoot }: DopeSheetProps ): JSX.Element => {
   const dispatch = useDispatch();
   const refRoot = useRef<HTMLDivElement>( null );
   const rect = useRect( refRoot );
@@ -232,6 +233,7 @@ const DopeSheet = ( { className }: DopeSheetProps ): JSX.Element => {
         <StyledDopeSheetEntry
           key={ channel }
           channel={ channel }
+          intersectionRoot={ intersectionRoot }
         />
       ) ) }
     </Root>

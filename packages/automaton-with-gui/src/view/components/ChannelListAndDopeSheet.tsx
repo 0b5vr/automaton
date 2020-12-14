@@ -5,6 +5,7 @@ import { DopeSheetUnderlay } from './DopeSheetUnderlay';
 import { Metrics } from '../constants/Metrics';
 import { Scrollable } from './Scrollable';
 import { useDispatch, useSelector } from '../states/store';
+import { useElement } from '../utils/useElement';
 import { useRect } from '../utils/useRect';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
@@ -67,6 +68,7 @@ const ChannelListAndDopeSheet = ( props: {
     mode: state.workspace.mode
   } ) );
   const refRoot = useRef<HTMLDivElement>( null );
+  const root = useElement( refRoot );
   const rect = useRect( refRoot );
   const [ scrollTop, setScrollTop ] = useState( 0.0 );
 
@@ -169,7 +171,11 @@ const ChannelListAndDopeSheet = ( props: {
           { shouldShowChannelList && <StyledChannelList
             scrollTop={ scrollTop }
           /> }
-          { mode === 'dope' && <StyledDopeSheet /> }
+          { mode === 'dope' && (
+            <StyledDopeSheet
+              intersectionRoot={ root }
+            />
+          ) }
         </ChannelListAndDopeSheetContainer>
       </ChannelListAndDopeSheetScrollable>
       { overlay }
