@@ -13,4 +13,5 @@ export abstract class SerializableWithID<T> {
 
 export interface SerializableWithID<T> extends Serializable<T> {}
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface SerializableWithID<T> extends WithID {}
