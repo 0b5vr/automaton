@@ -23,6 +23,7 @@ export interface State {
             items: {
                 [id: string]: StateChannelItem;
             };
+            sortedItems: StateChannelItem[];
         };
     };
     curves: {
@@ -69,6 +70,7 @@ export declare type Action = {
 } | {
     type: 'Automaton/CreateChannel';
     channel: string;
+    index: number;
 } | {
     type: 'Automaton/RemoveChannel';
     channel: string;

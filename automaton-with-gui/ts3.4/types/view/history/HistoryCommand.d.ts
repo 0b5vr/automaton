@@ -6,15 +6,18 @@ import { StateChannelItem } from '../../types/StateChannelItem';
 export declare type HistoryCommand = {
     type: 'automaton/createChannel';
     channel: string;
+    index?: number;
     data?: SerializedChannel;
 } | {
     type: 'automaton/removeChannel';
     channel: string;
+    index: number;
     data: SerializedChannel;
 } | {
     type: 'automaton/renameChannel';
     name: string;
     newName: string;
+    index: number;
     data: SerializedChannel;
 } | {
     type: 'automaton/createCurve';

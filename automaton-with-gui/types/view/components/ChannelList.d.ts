@@ -1,7 +1,7 @@
-/// <reference types="react" />
+import React from 'react';
 export interface ChannelListProps {
     className?: string;
-    scrollTop: number;
+    refScrollTop: React.RefObject<number>;
 }
-declare const ChannelList: ({ className, scrollTop }: ChannelListProps) => JSX.Element;
+declare const ChannelList: ({ className, refScrollTop }: ChannelListProps) => JSX.Element;
 export { ChannelList };

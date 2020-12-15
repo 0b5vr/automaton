@@ -67,8 +67,9 @@ export declare class Channel {
     getValue(time: number): number;
     /**
      * This method is intended to be used by [[Automaton.update]].
+     * Consume and return items.
      * @param time The current time of the parent [[Automaton]]
-     * @returns whether the value has been changed or not
+     * @returns Array of tuples, [ timing of the event, a function that execute the event ]
      */
-    update(time: number): void;
+    consume(time: number): [time: number, update: () => void][];
 }

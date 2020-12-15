@@ -1,7 +1,9 @@
 /// <reference types="react" />
-interface Props {
+import { TimeRange } from '../utils/TimeValueRange';
+declare const DopeSheetEntry: (props: {
     className?: string;
     channel: string;
-}
-declare const DopeSheetEntry: (props: Props) => JSX.Element;
+    range: TimeRange;
+    intersectionRoot: HTMLElement | null;
+}) => JSX.Element;
 export { DopeSheetEntry };

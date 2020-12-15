@@ -110,6 +110,20 @@ export declare class CurveWithGUI extends Curve {
      */
     getNode(id: string): BezierNode & WithID;
     /**
+     * Dump data of a previous node from a specified node.
+     * It might return `null` when the specified node is the first node.
+     * @param id Id of the node you want to refer
+     * @returns Data of the previous node
+     */
+    getPreviousNode(id: string): (BezierNode & WithID) | null;
+    /**
+     * Dump data of a next node from a specified node.
+     * It might return `null` when the specified node is the last node.
+     * @param id Id of the node you want to refer
+     * @returns Data of the next node
+     */
+    getNextNode(id: string): (BezierNode & WithID) | null;
+    /**
      * Create a node.
      * @param time Time of new node
      * @param value Value of new node

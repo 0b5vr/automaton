@@ -1,8 +1,8 @@
 /// <reference types="react" />
 import { Resolution } from '../utils/Resolution';
-import { TimeValueRange } from '../utils/TimeValueRange';
+import { TimeRange } from '../utils/TimeValueRange';
 declare const TimeLoopRegion: (props: {
-    range: TimeValueRange;
+    range: TimeRange;
     size: Resolution;
 }) => JSX.Element | null;
 export { TimeLoopRegion };

@@ -1,10 +1,10 @@
 /// <reference types="react" />
 import { Resolution } from '../utils/Resolution';
-import { TimeValueRange } from '../utils/TimeValueRange';
+import { TimeRange } from '../utils/TimeValueRange';
 declare const Label: ({ name, time, range, size }: {
     name: string;
     time: number;
-    range: TimeValueRange;
+    range: TimeRange;
     size: Resolution;
 }) => JSX.Element;
 export { Label };

@@ -228,7 +228,7 @@ export declare class AutomatonWithGUI extends Automaton implements Serializable<
      * @param data Serialized data of the channel
      * @returns Created channel
      */
-    createChannel(name: string, data?: SerializedChannel): ChannelWithGUI;
+    createChannel(name: string, data?: SerializedChannel, index?: number): ChannelWithGUI;
     /**
      * Create a new channel, or overwrite the existing one.
      * Intended to be used by GUI.
@@ -236,7 +236,7 @@ export declare class AutomatonWithGUI extends Automaton implements Serializable<
      * @param data Serialized data of the channel
      * @returns Created channel
      */
-    createOrOverwriteChannel(name: string, data?: SerializedChannel): ChannelWithGUI;
+    createOrOverwriteChannel(name: string, data?: SerializedChannel, index?: number): ChannelWithGUI;
     /**
      * Remove a channel.
      * @param name Name of channel
@@ -428,6 +428,7 @@ export interface AutomatonWithGUIEvents {
     createChannel: {
         name: string;
         channel: ChannelWithGUI;
+        index: number;
     };
     removeChannel: {
         name: string;
