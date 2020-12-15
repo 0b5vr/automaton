@@ -28,9 +28,15 @@ const Underlay = styled.div`
   opacity: 0.08;
 `;
 
-const Root = styled.div`
-  display: block;
-  position: relative;
+const Proximity = styled.div`
+  position: absolute;
+  left: 0;
+  top: -100px;
+  width: 100%;
+  height: calc( 100% + 200px );
+`;
+
+const Container = styled.div`
   width: 100%;
   height: 18px;
   overflow: hidden;
@@ -38,6 +44,13 @@ const Root = styled.div`
   &:hover ${ Underlay } {
     background: ${ Colors.fore };
   }
+`;
+
+const Root = styled.div`
+  display: block;
+  position: relative;
+  width: 100%;
+  height: 18px;
 `;
 
 // == a content - if it isn't intersecting, return an empty div instead ============================
@@ -332,7 +345,7 @@ const Content = ( props: {
     [ channelName, itemsInRange, rect, timeValueRange ]
   );
 
-  return <>
+  return <Container>
     <Underlay
       onMouseDown={ handleMouseDown }
       onContextMenu={ handleContextMenu }
@@ -340,7 +353,7 @@ const Content = ( props: {
     <SVGRoot>
       { items }
     </SVGRoot>
-  </>;
+  </Container>;
 };
 
 // == component ====================================================================================
@@ -353,14 +366,20 @@ const DopeSheetEntry = ( props: {
   const { className, intersectionRoot } = props;
 
   const refRoot = useRef<HTMLDivElement>( null );
+  const refProximity = useRef<HTMLDivElement>( null );
 
-  const isIntersecting = useIntersection( refRoot, { root: intersectionRoot } );
+  const isIntersecting = useIntersection( refProximity, {
+    root: intersectionRoot,
+  } );
 
   return (
     <Root
       className={ className }
       ref={ refRoot }
     >
+      <Proximity
+        ref={ refProximity }
+      />
       { isIntersecting ? <Content
         channel={ props.channel }
         range={ props.range }
