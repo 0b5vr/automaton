@@ -15,8 +15,10 @@ import type { StateChannelItem } from '../../types/StateChannelItem';
 
 // == styles =======================================================================================
 const SVGRoot = styled.svg`
+  position: absolute;
   width: 100%;
   height: 100%;
+  pointer-events: none;
 `;
 
 const Underlay = styled.div`
@@ -34,9 +36,11 @@ const Proximity = styled.div`
   top: -100px;
   width: 100%;
   height: calc( 100% + 200px );
+  pointer-events: none;
 `;
 
 const Container = styled.div`
+  position: absolute;
   width: 100%;
   height: 18px;
   overflow: hidden;
