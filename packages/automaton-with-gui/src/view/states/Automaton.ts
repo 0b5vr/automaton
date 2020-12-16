@@ -231,35 +231,46 @@ export const reducer: Reducer<State, ContextAction> = ( state = initialState, ac
     } else if ( action.type === 'Automaton/UpdateChannelStatus' ) {
       newState.channels[ action.channel ].status = action.status;
     } else if ( action.type === 'Automaton/UpdateChannelItem' ) {
-      const prevTime = state.channels[ action.channel ].items[ action.id ]?.time;
-      newState.channels[ action.channel ].items[ action.id ] = action.item;
+      let shouldInsert = false;
+      const timeExisting = newState.channels[ action.channel ].items[ action.id ]?.time;
 
-      if ( prevTime !== action.item.time ) {
-        if ( prevTime != null ) {
-          const index = binarySearch(
-            state.channels[ action.channel ].sortedItems,
-            ( item ) => item.time < prevTime
-          );
-          newState.channels[ action.channel ].sortedItems.splice( index, 1 );
+      if ( timeExisting == null ) {
+        shouldInsert = true;
+      } else {
+        const indexExisting = binarySearch(
+          newState.channels[ action.channel ].sortedItems,
+          ( item ) => item.time < timeExisting
+        );
+
+        if ( timeExisting !== action.item.time ) {
+          newState.channels[ action.channel ].sortedItems.splice( indexExisting, 1 );
+          shouldInsert = true;
+        } else {
+          newState.channels[ action.channel ].sortedItems[ indexExisting ] = action.item;
         }
+      }
 
-        const index = binarySearch(
-          state.channels[ action.channel ].sortedItems,
+      if ( shouldInsert ) {
+        const indexToInsert = binarySearch(
+          newState.channels[ action.channel ].sortedItems,
           ( item ) => item.time < action.item.time
         );
-        newState.channels[ action.channel ].sortedItems.splice( index, 0, action.item );
+        newState.channels[ action.channel ].sortedItems.splice( indexToInsert, 0, action.item );
       }
-    } else if ( action.type === 'Automaton/RemoveChannelItem' ) {
-      const prevTime = state.channels[ action.channel ].items[ action.id ]?.time;
-      delete newState.channels[ action.channel ].items[ action.id ];
 
-      if ( prevTime != null ) {
-        const index = binarySearch(
-          state.channels[ action.channel ].sortedItems,
-          ( item ) => item.time < prevTime
+      newState.channels[ action.channel ].items[ action.id ] = action.item;
+    } else if ( action.type === 'Automaton/RemoveChannelItem' ) {
+      const timeExisting = newState.channels[ action.channel ].items[ action.id ]?.time;
+
+      if ( timeExisting != null ) {
+        const indexToRemove = binarySearch(
+          newState.channels[ action.channel ].sortedItems,
+          ( item ) => item.time < timeExisting
         );
-        newState.channels[ action.channel ].sortedItems.splice( index, 1 );
+        newState.channels[ action.channel ].sortedItems.splice( indexToRemove, 1 );
       }
+
+      delete newState.channels[ action.channel ].items[ action.id ];
     } else if ( action.type === 'Automaton/CreateCurve' ) {
       newState.curves[ action.curveId ] = {
         status: null,
