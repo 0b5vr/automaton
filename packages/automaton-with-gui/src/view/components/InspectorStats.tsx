@@ -12,6 +12,7 @@ const Value = styled.div`
   margin: 0.15rem;
   font-size: 0.7rem;
   line-height: 1em;
+  white-space: nowrap;
 `;
 
 const CalculateButton = styled.div`
