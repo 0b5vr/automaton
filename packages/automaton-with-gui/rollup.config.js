@@ -1,6 +1,5 @@
 /* eslint-env node */
 
-import banner from 'rollup-plugin-banner';
 import commonjs from '@rollup/plugin-commonjs';
 import packageJson from './package.json';
 import replace from '@rollup/plugin-replace';
@@ -15,52 +14,76 @@ const copyright = '(c) 2017-2020 FMS_Cat';
 const licenseName = 'MIT License';
 const licenseUri = 'https://github.com/FMS-Cat/automaton/blob/master/LICENSE';
 const globalName = 'AUTOMATON_WITH_GUI';
+const filename = 'automaton-with-gui';
 
 // == envs =========================================================================================
-const NODE_ENV = process.env.NODE_ENV;
-const DEV = NODE_ENV === 'development';
-const SERVE = process.env.SERVE === '1';
-const ESM = process.env.ESM === '1';
+const WATCH = process.env.ROLLUP_WATCH === 'true';
 
 // == banner =======================================================================================
-// uses `output.banner` in dev mode, since sourcemap matters
 const bannerTextDev = `/*!
-* ${ packageJson.name } v${ packageJson.version }
-* ${ packageJson.description }
-*
-* Copyright ${ copyright }
-* ${ packageJson.name } is distributed under ${ licenseName }
-* ${ licenseUri }
-*/`;
+ * ${ packageJson.name } v${ packageJson.version }
+ * ${ packageJson.description }
+ *
+ * Copyright ${ copyright }
+ * ${ packageJson.name } is distributed under ${ licenseName }
+ * ${ licenseUri }
+ */`;
 
-// uses `rollup-plugin-banner` in prod mode, since terser removes the `output.banner` one
-const bannerTextProd = `${ copyright } - ${ licenseUri }`;
+const bannerTextProd = `/*! ${ copyright } - ${ licenseUri } */`;
 
 // == serve ========================================================================================
 const serveOptions = {
-  contentBase: '../..',
+  contentBase: '.',
+};
+
+// == config =======================================================================================
+function createOutputOptions( { file, dev, esm } ) {
+  return {
+    file,
+    format: esm ? 'esm' : 'umd',
+    name: esm ? undefined : globalName,
+    banner: dev ? bannerTextDev : bannerTextProd,
+    sourcemap: dev ? 'inline' : false,
+    plugins: [
+      ...( dev ? [] : [
+        terser(),
+      ] ),
+      ...( WATCH ? [
+        serve( serveOptions )
+      ] : [] ),
+    ],
+  };
+}
+
+function createConfig( output ) {
+  return {
+    input: 'src/index.ts',
+    output,
+    plugins: [
+      typescript(),
+      replace( {
+        'process.env.VERSION': `'${ packageJson.version }'`,
+        // 'process.env.DEV': `'${ dev }'`,
+      } ),
+      resolve(),
+      commonjs(),
+      svgr(),
+    ],
+  };
 };
 
 // == output =======================================================================================
-export default {
-  input: 'src/index.ts',
-  output: {
-    format: ESM ? 'esm' : 'umd',
-    name: ESM ? undefined : globalName,
-    banner: DEV ? bannerTextDev : null,
-    sourcemap: DEV ? 'inline' : false,
-  },
-  plugins: [
-    typescript(),
-    replace( {
-      'process.env.VERSION': `'${ packageJson.version }'`,
-      'process.env.NODE_ENV': `'${ NODE_ENV }'`,
-    } ),
-    resolve(),
-    commonjs(),
-    svgr(),
-    ...( DEV ? [] : [ terser() ] ),
-    ...( SERVE ? [ serve( serveOptions ) ] : [] ),
-    ...( DEV ? [] : [ banner( bannerTextProd ) ] ),
-  ],
-};
+const buildConfig = [
+  createConfig( [
+    createOutputOptions( { file: `dist/${ filename }.js`, dev: true } ),
+    createOutputOptions( { file: `dist/${ filename }.module.js`, dev: true, esm: true } ),
+    createOutputOptions( { file: `dist/${ filename }.min.js` } ),
+    createOutputOptions( { file: `dist/${ filename }.module.min.js`, esm: true } ),
+  ] ),
+];
+
+const watchConfig = createConfig( [
+  createOutputOptions( { file: `dist/${ filename }.module.js`, dev: true, esm: true } ),
+] );
+
+export default WATCH ? watchConfig : buildConfig;
