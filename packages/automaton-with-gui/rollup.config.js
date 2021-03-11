@@ -55,7 +55,7 @@ function createOutputOptions( { file, dev, esm } ) {
   };
 }
 
-function createConfig( output, { dev } ) {
+function createConfig( output ) {
   return {
     input: 'src/index.ts',
     output,
@@ -63,7 +63,7 @@ function createConfig( output, { dev } ) {
       typescript(),
       replace( {
         'process.env.VERSION': `'${ packageJson.version }'`,
-        'process.env.DEV': `'${ dev }'`,
+        // 'process.env.DEV': `'${ dev }'`,
       } ),
       resolve(),
       commonjs(),
@@ -77,15 +77,13 @@ const buildConfig = [
   createConfig( [
     createOutputOptions( { file: `dist/${ filename }.js`, dev: true } ),
     createOutputOptions( { file: `dist/${ filename }.module.js`, dev: true, esm: true } ),
-  ], { dev: true } ),
-  createConfig( [
     createOutputOptions( { file: `dist/${ filename }.min.js` } ),
     createOutputOptions( { file: `dist/${ filename }.module.min.js`, esm: true } ),
-  ], { dev: false } ),
+  ] ),
 ];
 
 const watchConfig = createConfig( [
   createOutputOptions( { file: `dist/${ filename }.module.js`, dev: true, esm: true } ),
-], { dev: true } );
+] );
 
 export default WATCH ? watchConfig : buildConfig;
