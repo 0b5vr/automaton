@@ -99,7 +99,7 @@ export class Automaton {
       ...data.channels.map( ( [ name, data ] ) => {
         const channel = new Channel( this, data );
 
-        if ( process.env.DEV ) {
+        if ( process.env.NODE_ENV === 'development' ) {
           if ( this.mapNameToChannel.has( name ) ) {
             console.warn( `Duplicated channel: ${ name }` );
           }
@@ -118,7 +118,7 @@ export class Automaton {
   public addFxDefinitions( fxDefinitions: { [ id: string ]: FxDefinition } ): void {
     Object.entries( fxDefinitions ).forEach( ( [ id, fxDef ] ) => {
       if ( typeof fxDef.func === 'function' ) { // ignore unrelated entries
-        if ( process.env.DEV ) {
+        if ( process.env.NODE_ENV === 'development' ) {
           if ( this.__fxDefinitions[ id ] != null ) {
             console.warn( `Overwriting the existing fx definition: ${ id }` );
           }
@@ -191,7 +191,7 @@ export class Automaton {
   ): number {
     const channel = this.mapNameToChannel.get( name );
 
-    if ( process.env.DEV ) {
+    if ( process.env.NODE_ENV === 'development' ) {
       if ( !channel ) {
         throw new Error( `No such channel: ${ name }` );
       }

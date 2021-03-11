@@ -66,7 +66,7 @@ function createConfig( output ) {
       typescript(),
       replace( {
         'process.env.VERSION': `'${ packageJson.version }'`,
-        'process.env.DEV': `'${ DEV }'`,
+        'process.env.NODE_ENV': `'${ process.env.NODE_ENV }'`,
       } ),
     ],
   };
