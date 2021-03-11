@@ -29,13 +29,14 @@
   },
   "license": "MIT",
   "scripts": {
-    "dev": "rollup -w -c",
+    "dev": "rollup -w -c --environment NODE_ENV:development",
     "all": "yarn && yarn lint && yarn clean && yarn build",
     "version": "yarn all",
     "clean": "rimraf dist/ ts*/ types/",
     "lint": "eslint \"src/**/*.{ts,tsx}\"",
-    "build": "yarn build-dist && yarn build-types",
-    "build-dist": "rollup -c",
+    "build": "yarn build-dev && yarn build-prod && yarn build-types",
+    "build-dev": "cross-env NODE_ENV=development rollup -c",
+    "build-prod": "cross-env NODE_ENV=production rollup -c",
     "build-types": "tsc --declaration --declarationDir ./types --emitDeclarationOnly && downlevel-dts types ts3.4/types"
   },
   "files": [

@@ -14,9 +14,10 @@ const copyright = '(c) 2017-2020 FMS_Cat';
 const licenseName = 'MIT License';
 const licenseUri = 'https://github.com/FMS-Cat/automaton/blob/master/LICENSE';
 const globalName = 'AUTOMATON_WITH_GUI';
-const filename = 'automaton-with-gui';
+const filename = 'dist/automaton-with-gui';
 
 // == envs =========================================================================================
+const DEV = process.env.NODE_ENV === 'development';
 const WATCH = process.env.ROLLUP_WATCH === 'true';
 
 // == banner =======================================================================================
@@ -37,15 +38,20 @@ const serveOptions = {
 };
 
 // == config =======================================================================================
-function createOutputOptions( { file, dev, esm } ) {
+function createOutputOptions( { esm } ) {
+  let file = filename;
+  file += esm ? '.module' : '';
+  file += DEV ? '' : '.min';
+  file += '.js';
+
   return {
     file,
     format: esm ? 'esm' : 'umd',
     name: esm ? undefined : globalName,
-    banner: dev ? bannerTextDev : bannerTextProd,
-    sourcemap: dev ? 'inline' : false,
+    banner: DEV ? bannerTextDev : bannerTextProd,
+    sourcemap: DEV ? 'inline' : false,
     plugins: [
-      ...( dev ? [] : [
+      ...( DEV ? [] : [
         terser(),
       ] ),
       ...( WATCH ? [
@@ -63,7 +69,7 @@ function createConfig( output ) {
       typescript(),
       replace( {
         'process.env.VERSION': `'${ packageJson.version }'`,
-        // 'process.env.DEV': `'${ dev }'`,
+        'process.env.NODE_ENV': `'${ process.env.NODE_ENV }'`,
       } ),
       resolve(),
       commonjs(),
@@ -75,15 +81,13 @@ function createConfig( output ) {
 // == output =======================================================================================
 const buildConfig = [
   createConfig( [
-    createOutputOptions( { file: `dist/${ filename }.js`, dev: true } ),
-    createOutputOptions( { file: `dist/${ filename }.module.js`, dev: true, esm: true } ),
-    createOutputOptions( { file: `dist/${ filename }.min.js` } ),
-    createOutputOptions( { file: `dist/${ filename }.module.min.js`, esm: true } ),
+    createOutputOptions( {} ),
+    createOutputOptions( { esm: true } ),
   ] ),
 ];
 
 const watchConfig = createConfig( [
-  createOutputOptions( { file: `dist/${ filename }.module.js`, dev: true, esm: true } ),
+  createOutputOptions( { esm: true } ),
 ] );
 
 export default WATCH ? watchConfig : buildConfig;
