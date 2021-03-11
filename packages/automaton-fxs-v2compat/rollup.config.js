@@ -11,9 +11,10 @@ const copyright = '(c) 2017-2020 FMS_Cat';
 const licenseName = 'MIT License';
 const licenseUri = 'https://github.com/FMS-Cat/automaton/blob/master/LICENSE';
 const globalName = 'AUTOMATON_FXS_V2COMPAT';
-const filename = 'automaton-fxs-v2compat';
+const filename = 'dist/automaton-fxs-v2compat';
 
 // == envs =========================================================================================
+const DEV = process.env.NODE_ENV === 'development';
 const WATCH = process.env.ROLLUP_WATCH === 'true';
 
 // == banner =======================================================================================
@@ -34,15 +35,20 @@ const serveOptions = {
 };
 
 // == config =======================================================================================
-function createOutputOptions( { file, dev, esm } ) {
+function createOutputOptions( { esm } ) {
+  let file = filename;
+  file += esm ? '.module' : '';
+  file += DEV ? '' : '.min';
+  file += '.js';
+
   return {
     file,
     format: esm ? 'esm' : 'umd',
     name: esm ? undefined : globalName,
-    banner: dev ? bannerTextDev : bannerTextProd,
-    sourcemap: dev ? 'inline' : false,
+    banner: DEV ? bannerTextDev : bannerTextProd,
+    sourcemap: DEV ? 'inline' : false,
     plugins: [
-      ...( dev ? [] : [
+      ...( DEV ? [] : [
         terser(),
       ] ),
       ...( WATCH ? [
@@ -52,7 +58,7 @@ function createOutputOptions( { file, dev, esm } ) {
   };
 }
 
-function createConfig( output, { dev } ) {
+function createConfig( output ) {
   return {
     input: 'src/index.ts',
     output,
@@ -60,7 +66,7 @@ function createConfig( output, { dev } ) {
       typescript(),
       replace( {
         'process.env.VERSION': `'${ packageJson.version }'`,
-        'process.env.DEV': `'${ dev }'`,
+        'process.env.DEV': `'${ DEV }'`,
       } ),
     ],
   };
@@ -69,17 +75,13 @@ function createConfig( output, { dev } ) {
 // == output =======================================================================================
 const buildConfig = [
   createConfig( [
-    createOutputOptions( { file: `dist/${ filename }.js`, dev: true } ),
-    createOutputOptions( { file: `dist/${ filename }.module.js`, dev: true, esm: true } ),
-  ], { dev: true } ),
-  createConfig( [
-    createOutputOptions( { file: `dist/${ filename }.min.js` } ),
-    createOutputOptions( { file: `dist/${ filename }.module.min.js`, esm: true } ),
-  ], { dev: false } ),
+    createOutputOptions( {} ),
+    createOutputOptions( { esm: true } ),
+  ] ),
 ];
 
 const watchConfig = createConfig( [
-  createOutputOptions( { file: `dist/${ filename }.module.js`, dev: true, esm: true } ),
-], { dev: true } );
+  createOutputOptions( { esm: true } ),
+] );
 
 export default WATCH ? watchConfig : buildConfig;
