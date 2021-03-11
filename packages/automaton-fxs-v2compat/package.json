@@ -35,8 +35,8 @@
     "clean": "rimraf dist/ ts*/ types/",
     "lint": "eslint \"src/**/*.{ts,tsx}\"",
     "build": "yarn build-dev && yarn build-prod && yarn build-types",
-    "build-dev": "rollup -c --environment NODE_ENV:development",
-    "build-prod": "rollup -c --environment NODE_ENV:production",
+    "build-dev": "cross-env NODE_ENV=development rollup -c",
+    "build-prod": "cross-env NODE_ENV=production rollup -c",
     "build-types": "tsc --declaration --declarationDir ./types --emitDeclarationOnly && downlevel-dts types ts3.4/types"
   },
   "files": [
