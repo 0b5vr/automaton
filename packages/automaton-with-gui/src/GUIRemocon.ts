@@ -2,6 +2,7 @@ import { EventEmittable } from './mixins/EventEmittable';
 import { applyMixins } from './utils/applyMixins';
 import type { ToastyParams } from './types/ToastyParams';
 
+export interface GUIRemocon extends EventEmittable<GUIRemoconEvents> {}
 export class GUIRemocon {
   public undo(): void {
     this.__emit( 'undo' );
@@ -27,5 +28,4 @@ export interface GUIRemoconEvents {
   toasty: ToastyParams;
 }
 
-export interface GUIRemocon extends EventEmittable<GUIRemoconEvents> {}
 applyMixins( GUIRemocon, [ EventEmittable ] );

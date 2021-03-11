@@ -32,6 +32,9 @@ export enum CurveStatusCode {
  * @param automaton Parent automaton
  * @param data Data of the channel
  */
+export interface CurveWithGUI extends SerializableWithID<SerializedCurve> {}
+export interface CurveWithGUI extends EventEmittable<CurveWithGUIEvents> {}
+export interface CurveWithGUI extends WithStatus<CurveStatusCode> {}
 export class CurveWithGUI extends Curve {
   /**
    * Default data of a curve.
@@ -971,7 +974,4 @@ export interface CurveWithGUIEvents {
   changeLength: { length: number };
 }
 
-export interface CurveWithGUI extends SerializableWithID<SerializedCurve> {}
-export interface CurveWithGUI extends EventEmittable<CurveWithGUIEvents> {}
-export interface CurveWithGUI extends WithStatus<CurveStatusCode> {}
 applyMixins( CurveWithGUI, [ SerializableWithID, EventEmittable, WithStatus ] );

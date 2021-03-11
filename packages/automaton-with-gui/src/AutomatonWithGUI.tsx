@@ -59,6 +59,7 @@ export interface AutomatonWithGUIOptions extends AutomatonOptions {
 /**
  * IT'S AUTOMATON!
  */
+export interface AutomatonWithGUI extends EventEmittable<AutomatonWithGUIEvents> {}
 export class AutomatonWithGUI extends Automaton
   implements Serializable<SerializedAutomatonWithGUI> {
   /**
@@ -923,5 +924,4 @@ export interface AutomatonWithGUIEvents {
   setLoopRegion: { loopRegion: { begin: number; end: number } | null };
 }
 
-export interface AutomatonWithGUI extends EventEmittable<AutomatonWithGUIEvents> {}
 applyMixins( AutomatonWithGUI, [ EventEmittable ] );
