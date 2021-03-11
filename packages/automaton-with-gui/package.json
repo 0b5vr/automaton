@@ -24,6 +24,7 @@
       ]
     }
   },
+  "sideEffects": false,
   "license": "MIT",
   "scripts": {
     "dev": "cross-env NODE_ENV=development SERVE=1 rollup -w -c -o dist/automaton-with-gui.js",
