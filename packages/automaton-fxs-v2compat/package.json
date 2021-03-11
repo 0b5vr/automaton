@@ -29,7 +29,7 @@
   },
   "license": "MIT",
   "scripts": {
-    "dev": "rollup -w -c --environment NODE_ENV:development",
+    "dev": "cross-env NODE_ENV=development rollup -w -c",
     "all": "yarn && yarn lint && yarn clean && yarn build",
     "version": "yarn all",
     "clean": "rimraf dist/ ts*/ types/",
