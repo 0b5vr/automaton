@@ -5,6 +5,7 @@ import { SerializableWithID } from './types/SerializableWithID';
 import { applyMixins } from './utils/applyMixins';
 import type { StateChannelItem } from './types/StateChannelItem';
 
+export interface ChannelItemWithGUI extends SerializableWithID<SerializedChannelItem> {}
 export class ChannelItemWithGUI extends ChannelItem {
   protected __automaton!: AutomatonWithGUI;
 
@@ -76,5 +77,4 @@ export class ChannelItemWithGUI extends ChannelItem {
   }
 }
 
-export interface ChannelItemWithGUI extends SerializableWithID<SerializedChannelItem> {}
 applyMixins( ChannelItemWithGUI, [ SerializableWithID ] );
