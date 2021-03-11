@@ -34,7 +34,7 @@ const bannerTextProd = `/*! ${ copyright } - ${ licenseUri } */`;
 
 // == serve ========================================================================================
 const serveOptions = {
-  contentBase: '.',
+  contentBase: '../..',
 };
 
 // == config =======================================================================================
@@ -87,7 +87,7 @@ const buildConfig = [
 ];
 
 const watchConfig = createConfig( [
-  createOutputOptions( { esm: true } ),
+  createOutputOptions( {} ),
 ] );
 
 export default WATCH ? watchConfig : buildConfig;
