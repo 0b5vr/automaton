@@ -63,8 +63,12 @@ const reducer = combineReducers<State>( {
 } );
 
 // == store ========================================================================================
-const devtools = ( window as any ).__REDUX_DEVTOOLS_EXTENSION__;
 export function createStore(): Store<State, Action> {
+  let devtools: any;
+  if ( typeof window !== 'undefined' ) { // vs. node.js
+    devtools = window && ( window as any ).__REDUX_DEVTOOLS_EXTENSION__;
+  }
+
   return createReduxStore(
     reducer,
     devtools && devtools()
