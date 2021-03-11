@@ -9,12 +9,15 @@
   "exports": {
     "import": {
       "development": "./dist/automaton-fxs-v2compat.module.js",
-      "production": "./dist/automaton-fxs-v2compat.module.min.js"
+      "production": "./dist/automaton-fxs-v2compat.module.min.js",
+      "default": "./dist/automaton-fxs-v2compat.module.min.js"
     },
     "require": {
       "development": "./dist/automaton-fxs-v2compat.js",
-      "production": "./dist/automaton-fxs-v2compat.min.js"
-    }
+      "production": "./dist/automaton-fxs-v2compat.min.js",
+      "default": "./dist/automaton-fxs-v2compat.min.js"
+    },
+    "default": "./dist/automaton-fxs-v2compat.min.js"
   },
   "types": "types/index.d.ts",
   "typesVersions": {

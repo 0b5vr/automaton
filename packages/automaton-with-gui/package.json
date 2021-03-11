@@ -9,12 +9,15 @@
   "exports": {
     "import": {
       "development": "./dist/automaton-with-gui.module.js",
-      "production": "./dist/automaton-with-gui.module.min.js"
+      "production": "./dist/automaton-with-gui.module.min.js",
+      "default": "./dist/automaton-with-gui.module.min.js"
     },
     "require": {
       "development": "./dist/automaton-with-gui.js",
-      "production": "./dist/automaton-with-gui.min.js"
-    }
+      "production": "./dist/automaton-with-gui.min.js",
+      "default": "./dist/automaton-with-gui.min.js"
+    },
+    "default": "./dist/automaton-with-gui.min.js"
   },
   "types": "types/index.d.ts",
   "typesVersions": {
