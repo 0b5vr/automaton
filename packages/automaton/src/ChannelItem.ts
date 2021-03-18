@@ -21,6 +21,11 @@ export class ChannelItem {
   public length!: number;
 
   /**
+   * Repeat interval of the item.
+   */
+  public repeat?: number;
+
+  /**
    * Value of the item.
    */
   public value!: number;
@@ -77,7 +82,8 @@ export class ChannelItem {
     }
 
     if ( this.curve ) {
-      const t = this.offset! + time * this.speed!;
+      const t = ( this.offset + time * this.speed ) % ( this.repeat || Infinity );
+      //                                                            ^^ null and also blocking zero divisions!
       return this.value + this.amp * this.curve.getValue( t );
     } else {
       return this.value;
@@ -91,6 +97,7 @@ export class ChannelItem {
   public deserialize( data: SerializedChannelItem ): void {
     this.time = data.time ?? 0.0;
     this.length = data.length ?? 0.0;
+    this.repeat = data.repeat;
     this.value = data.value ?? 0.0;
     this.offset = data.offset ?? 0.0;
     this.speed = data.speed ?? 1.0;
