@@ -90,6 +90,11 @@ export class Channel {
    * @returns Result value
    */
   public getValue( time: number ): number {
+    // no items??? damn
+    if ( this.__items.length === 0 ) {
+      return 0.0;
+    }
+
     let next = this.__items.findIndex( ( item ) => ( time < item.time ) );
 
     // it's the first one!
