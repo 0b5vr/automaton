@@ -11,7 +11,7 @@ const copyright = '(c) 2017-2020 FMS_Cat';
 const licenseName = 'MIT License';
 const licenseUri = 'https://github.com/FMS-Cat/automaton/blob/master/LICENSE';
 const globalName = 'AUTOMATON_FXS';
-const filename = 'dev/automaton-fxs';
+const filename = 'dist/automaton-fxs';
 
 // == envs =========================================================================================
 const DEV = process.env.NODE_ENV === 'development';
