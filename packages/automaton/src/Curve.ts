@@ -88,10 +88,10 @@ export class Curve {
    * Precalculate value of samples.
    */
   public precalc(): void {
-    const length = Math.ceil( this.__automaton.resolution * this.length ) + 1;
+    const valuesLength = Math.ceil( this.__automaton.resolution * this.length ) + 1;
 
-    this.__values = new Float32Array( length );
-    this.__shouldNotInterpolate = new Uint8Array( length );
+    this.__values = new Float32Array( valuesLength );
+    this.__shouldNotInterpolate = new Uint8Array( valuesLength );
 
     this.__generateCurve();
     this.__applyFxs();

@@ -150,6 +150,7 @@ export class CurveWithGUI extends Curve {
     const valuesLength = Math.ceil( this.__automaton.resolution * this.length ) + 1;
     this.__values = new Float32Array( valuesLength );
     this.__valuesWithoutFxs = new Float32Array( valuesLength );
+    this.__shouldNotInterpolate = new Uint8Array( valuesLength );
 
     this.__generateCurve();
     this.__valuesWithoutFxs.set( this.__values );
