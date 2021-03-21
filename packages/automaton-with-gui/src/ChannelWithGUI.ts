@@ -115,6 +115,11 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
    * @returns Result value
    */
   public getValueFromGUI( time: number ): number {
+    // no items??? damn
+    if ( this.__items.length === 0 ) {
+      return 0.0;
+    }
+
     let next = this.__items.findIndex( ( item ) => ( time < item.time ) );
 
     // it's the first one!
