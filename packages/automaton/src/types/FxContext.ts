@@ -66,9 +66,14 @@ export interface FxContext {
   array: Float32Array;
 
   /**
-   * Array of "should not interpolate" flag, place a `1` where you do not want to interpolate.
+   * The "shouldNotInterpolate" flag.
    */
-  shouldNotInterpolate: Uint8Array;
+  shouldNotInterpolate: boolean;
+
+  /**
+   * Set the "shouldNotInterpolate" flag in the current sample.
+   */
+  setShouldNotInterpolate: ( shouldNotInterpolate: boolean ) => void;
 
   /**
    * {@link Channel#getValue} of the current channel.

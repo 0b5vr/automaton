@@ -207,7 +207,10 @@ export class Curve {
         length: fx.length,
         params: fx.params,
         array: this.__values,
-        shouldNotInterpolate: this.__shouldNotInterpolate,
+        shouldNotInterpolate: this.__shouldNotInterpolate[ i0 ] === 1,
+        setShouldNotInterpolate: ( shouldNotInterpolate: boolean ) => {
+          this.__shouldNotInterpolate[ context.index ] = shouldNotInterpolate ? 1 : 0;
+        },
         getValue: this.getValue.bind( this ),
         init: true,
         state: {},
@@ -219,6 +222,7 @@ export class Curve {
         context.value = this.__values[ i + i0 ];
         context.elapsed = context.time - fx.time;
         context.progress = context.elapsed / fx.length;
+        context.shouldNotInterpolate = this.__shouldNotInterpolate[ i + i0 ] === 1;
         tempValues[ i ] = fxDef.func( context );
 
         context.init = false;
