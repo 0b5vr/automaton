@@ -8,7 +8,7 @@ import { RangeBar } from './RangeBar';
 import { Resolution } from '../utils/Resolution';
 import { TimeValueGrid } from './TimeValueGrid';
 import { TimeValueLines } from './TimeValueLines';
-import { TimeValueRange, snapTime, snapValue, x2t, y2v } from '../utils/TimeValueRange';
+import { TimeValueRange, dx2dt, snapTime, snapValue, x2t, y2v } from '../utils/TimeValueRange';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
 import { showToasty } from '../states/Toasty';
 import { useDispatch, useSelector } from '../states/store';
@@ -24,8 +24,8 @@ const Lines = ( { curveId, range, size }: {
   size: Resolution;
 } ): JSX.Element => {
   const { time, value } = useSelector( ( state ) => ( {
-    time: state.automaton.curvesPreview[ curveId ].previewTime,
-    value: state.automaton.curvesPreview[ curveId ].previewValue
+    time: state.automaton.curvesPreview[ curveId ].time,
+    value: state.automaton.curvesPreview[ curveId ].value,
   } ) );
 
   return <TimeValueLines
@@ -133,15 +133,23 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
     selectedCurve,
     range,
     guiSettings,
-    automaton
+    automaton,
   } = useSelector( ( state ) => ( {
     selectedCurve: state.curveEditor.selectedCurve,
     range: state.curveEditor.range,
     guiSettings: state.automaton.guiSettings,
     automaton: state.automaton.instance
   } ) );
-  const { curveLength } = useSelector( ( state ) => ( {
-    curveLength: selectedCurve != null ? state.automaton.curves[ selectedCurve ].length : null
+  const {
+    curveLength,
+    previewItemTime,
+    previewItemSpeed,
+    previewItemOffset,
+  } = useSelector( ( state ) => ( {
+    curveLength: state.automaton.curves[ selectedCurve ?? -1 ]?.length ?? null,
+    previewItemTime: state.automaton.curvesPreview[ selectedCurve ?? -1 ]?.itemTime ?? null,
+    previewItemSpeed: state.automaton.curvesPreview[ selectedCurve ?? -1 ]?.itemSpeed ?? null,
+    previewItemOffset: state.automaton.curvesPreview[ selectedCurve ?? -1 ]?.itemOffset ?? null,
   } ) );
 
   const curve = selectedCurve != null && automaton?.getCurveById( selectedCurve ) || null;
@@ -238,6 +246,47 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
     [ range, rect, curve, guiSettings, dispatch, selectedCurve ]
   );
 
+  const startSeek = useCallback(
+    ( x: number ): void => {
+      if (
+        !automaton ||
+        previewItemTime == null ||
+        previewItemSpeed == null ||
+        previewItemOffset == null
+      ) { return; }
+
+      const isPlaying = automaton.isPlaying;
+      automaton.pause();
+
+      const t0 = x2t( x - rect.left, range, rect.width );
+      automaton.seek( previewItemTime + ( t0 - previewItemOffset ) / previewItemSpeed );
+
+      let dx = 0.0;
+      let t = t0;
+
+      registerMouseEvent(
+        ( event, movementSum ) => {
+          dx += movementSum.x;
+          t = t0 + dx2dt( dx, range, rect.width );
+          automaton.seek( previewItemTime + ( t  - previewItemOffset ) / previewItemSpeed );
+        },
+        () => {
+          automaton.seek( previewItemTime + ( t  - previewItemOffset ) / previewItemSpeed );
+          if ( isPlaying ) { automaton.play(); }
+        }
+      );
+    },
+    [
+      automaton,
+      previewItemOffset,
+      previewItemSpeed,
+      previewItemTime,
+      range,
+      rect.left,
+      rect.width,
+    ]
+  );
+
   const handleMouseDown = useCallback(
     ( event ) => mouseCombo( event, {
       [ MouseComboBit.LMB ]: ( event ) => {
@@ -249,9 +298,12 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
         registerMouseEvent(
           ( event, movementSum ) => move( movementSum.x, movementSum.y )
         );
-      }
+      },
+      [ MouseComboBit.LMB + MouseComboBit.Alt ]: ( event ) => {
+        startSeek( event.clientX );
+      },
     } ),
-    [ checkDoubleClick, createNodeAndGrab, rect.left, rect.top, move ]
+    [ checkDoubleClick, createNodeAndGrab, startSeek, rect.left, rect.top, move ]
   );
 
   const createNode = useCallback(

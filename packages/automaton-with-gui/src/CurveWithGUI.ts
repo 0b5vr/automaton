@@ -186,8 +186,8 @@ export class CurveWithGUI extends Curve {
    * @param time Time
    * @param value Value
    */
-  public setPreviewTime( time: number ): void {
-    this.__throttlePreviewTime.do( () => this.__emit( 'previewTime', { time } ) );
+  public emitPreviewTime( event: CurveWithGUIEvents[ 'previewTime' ] ): void {
+    this.__throttlePreviewTime.do( () => this.__emit( 'previewTime', event ) );
   }
 
   /**
@@ -977,7 +977,13 @@ export interface CurveWithGUIEvents {
   createFx: { id: string; fx: FxSection & WithBypass & WithID };
   updateFx: { id: string; fx: FxSection & WithBypass & WithID };
   removeFx: { id: string };
-  previewTime: { time: number };
+  previewTime: {
+    time: number;
+    value: number;
+    itemTime: number;
+    itemSpeed: number;
+    itemOffset: number;
+  };
   precalc: void;
   updateStatus: void;
   changeLength: { length: number };

@@ -40,8 +40,11 @@ export interface State {
   };
   curvesPreview: {
     [ name: string ]: {
-      previewTime: number | null;
-      previewValue: number | null;
+      time: number | null;
+      value: number | null;
+      itemTime: number | null;
+      itemSpeed: number | null;
+      itemOffset: number | null;
     };
   };
   labels: { [ name: string ]: number };
@@ -136,6 +139,9 @@ export type Action = {
   curveId: string;
   time: number;
   value: number;
+  itemTime: number;
+  itemSpeed: number;
+  itemOffset: number;
 } | {
   type: 'Automaton/UpdateCurveNode';
   curveId: string;
@@ -280,8 +286,11 @@ export const reducer: Reducer<State, ContextAction> = ( state = initialState, ac
         fxs: {}
       };
       newState.curvesPreview[ action.curveId ] = {
-        previewTime: null,
-        previewValue: null
+        time: null,
+        value: null,
+        itemTime: null,
+        itemSpeed: null,
+        itemOffset: null,
       };
     } else if ( action.type === 'Automaton/RemoveCurve' ) {
       delete newState.curves[ action.curveId ];
@@ -292,8 +301,11 @@ export const reducer: Reducer<State, ContextAction> = ( state = initialState, ac
     } else if ( action.type === 'Automaton/UpdateCurveStatus' ) {
       newState.curves[ action.curveId ].status = action.status;
     } else if ( action.type === 'Automaton/UpdateCurvePreviewTimeValue' ) {
-      newState.curvesPreview[ action.curveId ].previewTime = action.time;
-      newState.curvesPreview[ action.curveId ].previewValue = action.value;
+      newState.curvesPreview[ action.curveId ].time = action.time;
+      newState.curvesPreview[ action.curveId ].value = action.value;
+      newState.curvesPreview[ action.curveId ].itemTime = action.itemTime;
+      newState.curvesPreview[ action.curveId ].itemSpeed = action.itemSpeed;
+      newState.curvesPreview[ action.curveId ].itemOffset = action.itemOffset;
     } else if ( action.type === 'Automaton/UpdateCurveNode' ) {
       newState.curves[ action.curveId ].nodes[ action.id ] = jsonCopy( action.node );
     } else if ( action.type === 'Automaton/RemoveCurveNode' ) {
