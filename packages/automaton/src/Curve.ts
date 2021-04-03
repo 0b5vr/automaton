@@ -21,6 +21,12 @@ export class Curve {
   protected __values!: Float32Array;
 
   /**
+   * An array of bool where you do not want to interpolate the value.
+   * Its length is same as `curve.__automaton.resolution * curve.__automaton.length + 1`.
+   */
+  protected __shouldNotInterpolate!: Uint8Array;
+
+  /**
    * List of bezier node.
    */
   protected __nodes: BezierNode[] = [];
@@ -82,9 +88,10 @@ export class Curve {
    * Precalculate value of samples.
    */
   public precalc(): void {
-    this.__values = new Float32Array(
-      Math.ceil( this.__automaton.resolution * this.length ) + 1
-    );
+    const valuesLength = Math.ceil( this.__automaton.resolution * this.length ) + 1;
+
+    this.__values = new Float32Array( valuesLength );
+    this.__shouldNotInterpolate = new Uint8Array( valuesLength );
 
     this.__generateCurve();
     this.__applyFxs();
@@ -111,7 +118,13 @@ export class Curve {
       const indexf = index % 1.0;
 
       const v0 = this.__values[ indexi ];
-      const v1 = this.__values[ indexi + 1 ];
+      let v1 = this.__values[ indexi + 1 ];
+
+      if ( this.__shouldNotInterpolate[ indexi ] ) {
+        // continue  the previous delta
+        const vp = this.__values[ Math.max( indexi - 1, 0 ) ];
+        v1 = 2.0 * v0 - vp; // v0 + ( v0 - vp );
+      }
 
       const v = v0 + ( v1 - v0 ) * indexf;
 
@@ -133,10 +146,15 @@ export class Curve {
       iTail = Math.floor( nodeTail.time * this.__automaton.resolution );
 
       this.__values[ i0 ] = node0.value;
-      for ( let i = i0 + 1; i <= iTail; i ++ ) {
-        const time = i / this.__automaton.resolution;
-        const value = bezierEasing( node0, nodeTail, time );
-        this.__values[ i ] = value;
+
+      if ( i0 === iTail && iTail !== 0 ) {
+        this.__shouldNotInterpolate[ iTail - 1 ] = 1;
+      } else {
+        for ( let i = i0 + 1; i <= iTail; i ++ ) {
+          const time = i / this.__automaton.resolution;
+          const value = bezierEasing( node0, nodeTail, time );
+          this.__values[ i ] = value;
+        }
       }
     }
 
@@ -189,9 +207,13 @@ export class Curve {
         length: fx.length,
         params: fx.params,
         array: this.__values,
+        shouldNotInterpolate: this.__shouldNotInterpolate[ i0 ] === 1,
+        setShouldNotInterpolate: ( shouldNotInterpolate: boolean ) => {
+          this.__shouldNotInterpolate[ context.index ] = shouldNotInterpolate ? 1 : 0;
+        },
         getValue: this.getValue.bind( this ),
         init: true,
-        state: {}
+        state: {},
       };
 
       for ( let i = 0; i < tempLength; i ++ ) {
@@ -200,6 +222,7 @@ export class Curve {
         context.value = this.__values[ i + i0 ];
         context.elapsed = context.time - fx.time;
         context.progress = context.elapsed / fx.length;
+        context.shouldNotInterpolate = this.__shouldNotInterpolate[ i + i0 ] === 1;
         tempValues[ i ] = fxDef.func( context );
 
         context.init = false;

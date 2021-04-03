@@ -165,12 +165,15 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
         } );
       } );
 
-      curve.on( 'previewTime', ( { time } ) => {
+      curve.on( 'previewTime', ( { time, value, itemTime, itemSpeed, itemOffset } ) => {
         dispatch( {
           type: 'Automaton/UpdateCurvePreviewTimeValue',
           curveId,
           time,
-          value: curve.getValue( time )
+          value,
+          itemTime,
+          itemSpeed,
+          itemOffset,
         } );
       } );
 

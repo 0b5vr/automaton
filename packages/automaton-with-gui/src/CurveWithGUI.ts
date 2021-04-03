@@ -3,6 +3,7 @@ import { BezierNode, Curve, FxSection, SerializedBezierNode, SerializedCurve, Se
 import { EventEmittable } from './mixins/EventEmittable';
 import { SerializableWithID } from './types/SerializableWithID';
 import { StatusLevel, WithStatus } from './types/Status';
+import { Throttle } from './utils/Throttle';
 import { WithBypass } from './types/WithBypass';
 import { WithID } from './types/WithID';
 import { applyMixins } from './utils/applyMixins';
@@ -73,6 +74,11 @@ export class CurveWithGUI extends Curve {
   private __userCount: number = 0;
 
   /**
+   * Limiting the emit of previewTime because it's too much
+   */
+  private __throttlePreviewTime: Throttle;
+
+  /**
    * List of bezier nodes.
    */
   public get nodes(): Array<BezierNode & WithID> {
@@ -105,6 +111,8 @@ export class CurveWithGUI extends Curve {
         message: 'This curve has not been used yet'
       } );
     } );
+
+    this.__throttlePreviewTime = new Throttle( 16 );
   }
 
   /**
@@ -142,6 +150,7 @@ export class CurveWithGUI extends Curve {
     const valuesLength = Math.ceil( this.__automaton.resolution * this.length ) + 1;
     this.__values = new Float32Array( valuesLength );
     this.__valuesWithoutFxs = new Float32Array( valuesLength );
+    this.__shouldNotInterpolate = new Uint8Array( valuesLength );
 
     this.__generateCurve();
     this.__valuesWithoutFxs.set( this.__values );
@@ -177,8 +186,8 @@ export class CurveWithGUI extends Curve {
    * @param time Time
    * @param value Value
    */
-  public setPreviewTime( time: number ): void {
-    this.__emit( 'previewTime', { time } );
+  public emitPreviewTime( event: CurveWithGUIEvents[ 'previewTime' ] ): void {
+    this.__throttlePreviewTime.do( () => this.__emit( 'previewTime', event ) );
   }
 
   /**
@@ -968,7 +977,13 @@ export interface CurveWithGUIEvents {
   createFx: { id: string; fx: FxSection & WithBypass & WithID };
   updateFx: { id: string; fx: FxSection & WithBypass & WithID };
   removeFx: { id: string };
-  previewTime: { time: number };
+  previewTime: {
+    time: number;
+    value: number;
+    itemTime: number;
+    itemSpeed: number;
+    itemOffset: number;
+  };
   precalc: void;
   updateStatus: void;
   changeLength: { length: number };

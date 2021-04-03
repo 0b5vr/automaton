@@ -1,5 +1,5 @@
 import { AutomatonWithGUI } from './AutomatonWithGUI';
-import { Channel, SerializedChannel, SerializedChannelItem } from '@fms-cat/automaton';
+import { Channel, SerializedChannel, SerializedChannelItem, binarySearch } from '@fms-cat/automaton';
 import { ChannelItemWithGUI } from './ChannelItemWithGUI';
 import { EventEmittable } from './mixins/EventEmittable';
 import { Serializable } from './types/Serializable';
@@ -115,16 +115,16 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
    * @returns Result value
    */
   public getValueFromGUI( time: number ): number {
-    let next = this.__items.findIndex( ( item ) => ( time < item.time ) );
+    // no items??? damn
+    if ( this.__items.length === 0 ) {
+      return 0.0;
+    }
+
+    const next = binarySearch( this.__items, ( item ) => ( item.time < time ) );
 
     // it's the first one!
     if ( next === 0 ) {
       return 0.0;
-    }
-
-    // it's the last one!
-    if ( next === -1 ) {
-      next = this.__items.length;
     }
 
     const item = this.__items[ next - 1 ];

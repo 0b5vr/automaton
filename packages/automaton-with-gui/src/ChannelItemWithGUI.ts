@@ -18,9 +18,17 @@ export class ChannelItemWithGUI extends ChannelItem {
    */
   public getValue( time: number, isFromGUI?: boolean ): number {
     const value = super.getValue( time );
+
     if ( this.curve && !isFromGUI ) {
-      this.curve.setPreviewTime( this.offset + time * this.speed );
+      this.curve.emitPreviewTime( {
+        time: this.offset + time * this.speed,
+        value: this.curve.getValue( this.offset + time * this.speed ),
+        itemTime: this.time,
+        itemOffset: this.offset,
+        itemSpeed: this.speed,
+      } );
     }
+
     return value;
   }
 

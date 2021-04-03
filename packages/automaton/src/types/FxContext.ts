@@ -66,6 +66,20 @@ export interface FxContext {
   array: Float32Array;
 
   /**
+   * The "shouldNotInterpolate" flag.
+   *
+   * **The API is still under consideration, please use at your own risk.**
+   */
+  shouldNotInterpolate: boolean;
+
+  /**
+   * Set the "shouldNotInterpolate" flag in the current sample.
+   *
+   * **The API is still under consideration, please use at your own risk.**
+   */
+  setShouldNotInterpolate: ( shouldNotInterpolate: boolean ) => void;
+
+  /**
    * {@link Channel#getValue} of the current channel.
    */
   getValue: ( time: number ) => number;

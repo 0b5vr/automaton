@@ -1,5 +1,6 @@
 import { Automaton } from './Automaton';
 import { ChannelItem } from './ChannelItem';
+import { binarySearch } from './utils/binarySearch';
 import type { ChannelUpdateEvent } from './types/ChannelUpdateEvent';
 import type { SerializedChannel } from './types/SerializedChannel';
 
@@ -90,16 +91,16 @@ export class Channel {
    * @returns Result value
    */
   public getValue( time: number ): number {
-    let next = this.__items.findIndex( ( item ) => ( time < item.time ) );
+    // no items??? damn
+    if ( this.__items.length === 0 ) {
+      return 0.0;
+    }
+
+    const next = binarySearch( this.__items, ( item ) => ( item.time < time ) );
 
     // it's the first one!
     if ( next === 0 ) {
       return 0.0;
-    }
-
-    // it's the last one!
-    if ( next === -1 ) {
-      next = this.__items.length;
     }
 
     const item = this.__items[ next - 1 ];

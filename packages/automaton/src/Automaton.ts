@@ -19,7 +19,7 @@ export class Automaton {
    * @param listener A function that will be executed when the channel changes its value
    * @returns Current value of the channel
    */
-  public readonly auto = this.__auto.bind( this );
+  public readonly auto: Automaton[ '__auto' ] = this.__auto.bind( this );
 
   /**
    * Curves of the automaton.
