@@ -345,9 +345,14 @@ export class AutomatonWithGUI extends Automaton
     if ( !fxDef ) { throw new Error( `Fx definition called ${id} is not defined` ); }
 
     const ret: { [ key: string ]: any } = {};
-    Object.keys( fxDef.params ).forEach( ( key ) => {
-      ret[ key ] = fxDef.params[ key ].default;
-    } );
+
+    const params = fxDef.params;
+
+    if ( params != null ) {
+      Object.keys( params ).forEach( ( key ) => {
+        ret[ key ] = params[ key ].default;
+      } );
+    }
 
     return ret;
   }
