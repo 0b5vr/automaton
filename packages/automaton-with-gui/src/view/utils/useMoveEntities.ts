@@ -85,23 +85,31 @@ export function useMoveEntites( { width, height }: { width: number, height: numb
           dx += movementSum.x;
           dy += movementSum.y;
 
-          // -- calc leftmost / bottommost ---------------------------------------------------------
-          let t = originTime + dx2dt( dx, range, width );
-          let v = originValue + dy2dv( dy, range, height );
-
+          // -- keyboards --------------------------------------------------------------------------
+          const holdTime = event.ctrlKey || event.metaKey;
+          const holdValue = event.shiftKey;
           const ignoreSnap = event.altKey;
-          if ( !ignoreSnap ) {
-            if ( snapOriginTime != null ) {
+
+          // -- calc dt / dv -----------------------------------------------------------------------
+          if ( !holdTime ) {
+            let t = originTime + dx2dt( dx, range, width );
+
+            if ( !ignoreSnap && snapOriginTime != null ) {
               t = snapTime( t, range, width, guiSettings );
             }
 
-            if ( snapOriginValue != null ) {
-              v = snapValue( v, range, height, guiSettings );
-            }
+            dt = t - originTime;
           }
 
-          dt = t - originTime;
-          dv = moveValue ? v - originValue : 0.0;
+          if ( !holdValue && moveValue ) {
+            let v = originValue + dy2dv( dy, range, height );
+
+            if ( !ignoreSnap && snapOriginValue != null ) {
+              v = snapValue( v, range, height, guiSettings );
+            }
+
+            dv = v - originValue;
+          }
 
           // -- move items -------------------------------------------------------------------------
           ( movementSum.x > 0.0 ? selectedItemsDesc : selectedItemsAsc ).forEach( ( item ) => {

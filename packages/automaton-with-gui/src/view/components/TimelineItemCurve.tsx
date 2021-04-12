@@ -127,29 +127,46 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
 
   const grabBody = useCallback(
     (): void => {
-      if ( !channel ) { return; }
+      if ( !isSelected ) {
+        dispatch( {
+          type: 'Timeline/SelectItems',
+          items: [ {
+            id: item.$id,
+            channel: channelName
+          } ]
+        } );
 
-      dispatch( {
-        type: 'Timeline/SelectItems',
-        items: [ {
-          id: item.$id,
+        dispatch( {
+          type: 'Timeline/SelectChannel',
           channel: channelName
-        } ]
-      } );
-
-      dispatch( {
-        type: 'Timeline/SelectChannel',
-        channel: channelName
-      } );
+        } );
+      }
 
       moveEntities( {
         moveValue: !dopeSheetMode,
         snapOriginTime: item.time,
         snapOriginValue: item.value,
       } );
+
+      let isMoved = false;
+      registerMouseEvent(
+        () => {
+          isMoved = true;
+        },
+        () => {
+          if ( !isMoved ) {
+            dispatch( {
+              type: 'Timeline/SelectItems',
+              items: [ {
+                id: item.$id,
+                channel: channelName
+              } ]
+            } );
+          }
+        },
+      );
     },
     [
-      channel,
       dispatch,
       item.$id,
       item.time,
@@ -157,6 +174,7 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
       channelName,
       moveEntities,
       dopeSheetMode,
+      isSelected,
     ]
   );
 
@@ -193,7 +211,6 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
           }
         },
       );
-
     },
     [
       channelName,

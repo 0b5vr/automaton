@@ -67,16 +67,31 @@ const Label = ( { name, time, range, size }: {
 
   const grabLabel = useCallback(
     (): void => {
-      if ( !automaton ) { return; }
-
-      dispatch( {
-        type: 'Timeline/SelectLabels',
-        labels: [ name ],
-      } );
+      if ( !isSelected ) {
+        dispatch( {
+          type: 'Timeline/SelectLabels',
+          labels: [ name ],
+        } );
+      }
 
       moveEntities( { moveValue: false, snapOriginTime: time } );
+
+      let isMoved = false;
+      registerMouseEvent(
+        () => {
+          isMoved = true;
+        },
+        () => {
+          if ( !isMoved ) {
+            dispatch( {
+              type: 'Timeline/SelectLabels',
+              labels: [ name ],
+            } );
+          }
+        },
+      );
     },
-    [ automaton, dispatch, name, moveEntities, time ]
+    [ isSelected, moveEntities, time, dispatch, name ]
   );
 
   const grabLabelCtrl = useCallback(
