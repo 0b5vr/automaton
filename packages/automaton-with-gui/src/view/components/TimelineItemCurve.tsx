@@ -2,7 +2,7 @@ import { Colors } from '../constants/Colors';
 import { Icons } from '../icons/Icons';
 import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
 import { Resolution } from '../utils/Resolution';
-import { TimeValueRange, dt2dx, dx2dt, dy2dv, snapTime, snapValue, t2x, v2y, x2t, y2v } from '../utils/TimeValueRange';
+import { TimeValueRange, dt2dx, dx2dt, dy2dv, snapTime, snapValue, t2x, v2y } from '../utils/TimeValueRange';
 import { genID } from '@fms-cat/automaton-with-gui/src/utils/genID';
 import { jsonCopy } from '@fms-cat/automaton-with-gui/src/utils/jsonCopy';
 import { objectMapHas } from '../utils/objectMap';
@@ -10,6 +10,7 @@ import { registerMouseEvent } from '../utils/registerMouseEvent';
 import { useDispatch, useSelector } from '../states/store';
 import { useDoubleClick } from '../utils/useDoubleClick';
 import { useID } from '../utils/useID';
+import { useMoveEntites } from '../utils/useMoveEntities';
 import React, { useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 import type { StateChannelItem } from '../../types/StateChannelItem';
@@ -92,6 +93,8 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
     guiSettings: state.automaton.guiSettings
   } ) );
 
+  const { moveEntities } = useMoveEntites( size );
+
   const curve = curves[ item.curveId! ];
   const { path, length: curveLength } = curve;
 
@@ -126,65 +129,82 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
     (): void => {
       if ( !channel ) { return; }
 
-      const timePrev = item.time;
-      const valuePrev = item.value;
-      let x = t2x( timePrev, range, size.width );
-      let y = v2y( valuePrev, range, size.height );
-      let time = timePrev;
-      let value = valuePrev;
-      let hasMoved = false;
+      dispatch( {
+        type: 'Timeline/SelectItems',
+        items: [ {
+          id: item.$id,
+          channel: channelName
+        } ]
+      } );
 
+      dispatch( {
+        type: 'Timeline/SelectChannel',
+        channel: channelName
+      } );
+
+      moveEntities( {
+        moveValue: !dopeSheetMode,
+        snapOriginTime: item.time,
+        snapOriginValue: item.value,
+      } );
+    },
+    [
+      channel,
+      dispatch,
+      item.$id,
+      item.time,
+      item.value,
+      channelName,
+      moveEntities,
+      dopeSheetMode,
+    ]
+  );
+
+  const grabBodyCtrl = useCallback(
+    (): void => {
+      dispatch( {
+        type: 'Timeline/SelectItemsAdd',
+        items: [ {
+          id: item.$id,
+          channel: channelName,
+        } ],
+      } );
+
+      moveEntities( {
+        moveValue: !dopeSheetMode,
+        snapOriginTime: item.time,
+        snapOriginValue: item.value,
+      } );
+
+      let isMoved = false;
       registerMouseEvent(
-        ( event, movementSum ) => {
-          hasMoved = true;
-          x += movementSum.x;
-          y += movementSum.y;
-
-          const holdTime = event.ctrlKey || event.metaKey;
-          const holdValue = dopeSheetMode || event.shiftKey;
-          const ignoreSnap = event.altKey;
-
-          time = holdTime ? timePrev : x2t( x, range, size.width );
-          value = holdValue ? valuePrev : y2v( y, range, size.height );
-
-          if ( !ignoreSnap ) {
-            if ( !holdTime ) { time = snapTime( time, range, size.width, guiSettings ); }
-            if ( !holdValue ) { value = snapValue( value, range, size.height, guiSettings ); }
-          }
-
-          channel.moveItem( item.$id, time );
-          channel.changeItemValue( item.$id, value );
+        () => {
+          isMoved = true;
         },
         () => {
-          if ( !hasMoved ) { return; }
-
-          channel.moveItem( item.$id, time );
-          channel.changeItemValue( item.$id, value );
-
-          dispatch( {
-            type: 'History/Push',
-            description: 'Move Curve',
-            commands: [
-              {
-                type: 'channel/moveItem',
+          if ( !isMoved && isSelected ) {
+            dispatch( {
+              type: 'Timeline/SelectItemsSub',
+              items: [ {
+                id: item.$id,
                 channel: channelName,
-                item: item.$id,
-                time,
-                timePrev
-              },
-              {
-                type: 'channel/changeItemValue',
-                channel: channelName,
-                item: item.$id,
-                value,
-                valuePrev
-              }
-            ],
-          } );
-        }
+              } ],
+            } );
+          }
+        },
       );
+
     },
-    [ channel, item, range, size, guiSettings, dopeSheetMode, dispatch, channelName ]
+    [
+      channelName,
+      dispatch,
+      dopeSheetMode,
+      isSelected,
+      item.$id,
+      item.time,
+      item.value,
+      moveEntities,
+    ]
   );
 
   const grabTop = useCallback(
@@ -420,21 +440,11 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
         if ( checkDoubleClick() ) {
           removeItem();
         } else {
-          dispatch( {
-            type: 'Timeline/SelectItems',
-            items: [ {
-              id: item.$id,
-              channel: channelName
-            } ]
-          } );
-
-          dispatch( {
-            type: 'Timeline/SelectChannel',
-            channel: channelName
-          } );
-
           grabBody();
         }
+      },
+      [ MouseComboBit.LMB + MouseComboBit.Ctrl ]: () => {
+        grabBodyCtrl();
       },
       [ MouseComboBit.LMB + MouseComboBit.Shift ]: () => {
         if ( !channel ) { return; }
@@ -467,7 +477,16 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
       },
       [ MouseComboBit.LMB + MouseComboBit.Alt ]: false, // give a way to seek!
     } ),
-    [ checkDoubleClick, removeItem, dispatch, item.$id, channelName, grabBody, channel ]
+    [
+      checkDoubleClick,
+      removeItem,
+      grabBody,
+      grabBodyCtrl,
+      channel,
+      item.$id,
+      dispatch,
+      channelName,
+    ],
   );
 
   const handleClickLeft = useCallback(

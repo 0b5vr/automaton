@@ -58,7 +58,10 @@ export type Action = {
   }>;
 } | {
   type: 'Timeline/SelectItemsSub';
-  items: string[];
+  items: Array<{
+    id: string;
+    channel: string;
+  }>;
 } | {
   type: 'Timeline/SelectLabels';
   labels: string[];
@@ -120,7 +123,7 @@ export const reducer: Reducer<State, ContextAction> = ( state = initialState, ac
       } );
     } else if ( action.type === 'Timeline/SelectItemsSub' ) {
       action.items.forEach( ( item ) => {
-        delete newState.selected.items[ item ];
+        delete newState.selected.items[ item.id ];
       } );
     } else if ( action.type === 'Timeline/UnselectItemsOfOtherChannels' ) {
       newState.selected.items = jsonCopy( initialState.selected.items );
