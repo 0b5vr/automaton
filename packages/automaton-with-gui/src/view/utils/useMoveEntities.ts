@@ -86,7 +86,7 @@ export function useMoveEntites( { width, height }: { width: number, height: numb
           dy += movementSum.y;
 
           // -- keyboards --------------------------------------------------------------------------
-          const holdTime = event.ctrlKey || event.metaKey;
+          const holdTime = ( event.ctrlKey || event.metaKey ) && moveValue;
           const holdValue = event.shiftKey;
           const ignoreSnap = event.altKey;
 
