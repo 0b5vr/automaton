@@ -3,7 +3,7 @@ import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
 import { Resolution } from '../utils/Resolution';
 import { TimeRange, t2x } from '../utils/TimeValueRange';
 import { arraySetHas } from '../utils/arraySet';
-import { registerMouseEvent } from '../utils/registerMouseEvent';
+import { registerMouseNoDragEvent } from '../utils/registerMouseNoDragEvent';
 import { useDispatch, useSelector } from '../states/store';
 import { useDoubleClick } from '../utils/useDoubleClick';
 import { useMoveEntites } from '../utils/useMoveEntities';
@@ -76,20 +76,12 @@ const Label = ( { name, time, range, size }: {
 
       moveEntities( { moveValue: false, snapOriginTime: time } );
 
-      let isMoved = false;
-      registerMouseEvent(
-        () => {
-          isMoved = true;
-        },
-        () => {
-          if ( !isMoved ) {
-            dispatch( {
-              type: 'Timeline/SelectLabels',
-              labels: [ name ],
-            } );
-          }
-        },
-      );
+      registerMouseNoDragEvent( () => {
+        dispatch( {
+          type: 'Timeline/SelectLabels',
+          labels: [ name ],
+        } );
+      } );
     },
     [ isSelected, moveEntities, time, dispatch, name ]
   );
@@ -103,20 +95,14 @@ const Label = ( { name, time, range, size }: {
 
       moveEntities( { moveValue: false, snapOriginTime: time } );
 
-      let isMoved = false;
-      registerMouseEvent(
-        () => {
-          isMoved = true;
-        },
-        () => {
-          if ( !isMoved && isSelected ) {
-            dispatch( {
-              type: 'Timeline/SelectLabelsSub',
-              labels: [ name ],
-            } );
-          }
-        },
-      );
+      registerMouseNoDragEvent( () => {
+        if ( isSelected ) {
+          dispatch( {
+            type: 'Timeline/SelectLabelsSub',
+            labels: [ name ],
+          } );
+        }
+      } );
     },
     [ dispatch, isSelected, moveEntities, name, time ]
   );

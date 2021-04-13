@@ -5,6 +5,7 @@ import { Resolution } from '../utils/Resolution';
 import { TimeValueRange, dt2dx, dx2dt, snapTime, t2x, v2y } from '../utils/TimeValueRange';
 import { objectMapHas } from '../utils/objectMap';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
+import { registerMouseNoDragEvent } from '../utils/registerMouseNoDragEvent';
 import { useDispatch, useSelector } from '../states/store';
 import { useDoubleClick } from '../utils/useDoubleClick';
 import { useID } from '../utils/useID';
@@ -122,23 +123,15 @@ const TimelineItemConstant = ( props: TimelineItemConstantProps ): JSX.Element =
         snapOriginValue: item.value,
       } );
 
-      let isMoved = false;
-      registerMouseEvent(
-        () => {
-          isMoved = true;
-        },
-        () => {
-          if ( !isMoved ) {
-            dispatch( {
-              type: 'Timeline/SelectItems',
-              items: [ {
-                id: item.$id,
-                channel: channelName
-              } ]
-            } );
-          }
-        },
-      );
+      registerMouseNoDragEvent( () => {
+        dispatch( {
+          type: 'Timeline/SelectItems',
+          items: [ {
+            id: item.$id,
+            channel: channelName
+          } ]
+        } );
+      } );
     },
     [
       dispatch,
@@ -168,24 +161,17 @@ const TimelineItemConstant = ( props: TimelineItemConstantProps ): JSX.Element =
         snapOriginValue: item.value,
       } );
 
-      let isMoved = false;
-      registerMouseEvent(
-        () => {
-          isMoved = true;
-        },
-        () => {
-          if ( !isMoved && isSelected ) {
-            dispatch( {
-              type: 'Timeline/SelectItemsSub',
-              items: [ {
-                id: item.$id,
-                channel: channelName,
-              } ],
-            } );
-          }
-        },
-      );
-
+      registerMouseNoDragEvent( () => {
+        if ( isSelected ) {
+          dispatch( {
+            type: 'Timeline/SelectItemsSub',
+            items: [ {
+              id: item.$id,
+              channel: channelName,
+            } ],
+          } );
+        }
+      } );
     },
     [
       channelName,
