@@ -50,13 +50,15 @@ export function useRect<T extends HTMLElement | SVGElement>(
 
       handleResize();
 
-      const resizeObserver = new ResizeObserver( () => handleResize() );
+      const resizeObserver = new ResizeObserver( handleResize );
       resizeObserver.observe( element );
-      resizeObserver.observe( document.body );
+
+      window.addEventListener( 'resize', handleResize );
 
       return () => {
         if ( !resizeObserver ) { return; }
         resizeObserver.disconnect();
+        window.removeEventListener( 'resize', handleResize );
       };
     },
     [ element, handleResize ]
