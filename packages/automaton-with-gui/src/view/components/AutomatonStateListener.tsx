@@ -1,8 +1,10 @@
+import { Action, useDispatch } from '../states/store';
 import { AutomatonWithGUI } from '../../AutomatonWithGUI';
 import { ChannelWithGUI } from '../../ChannelWithGUI';
 import { CurveWithGUI } from '../../CurveWithGUI';
-import { useDispatch } from '../states/store';
-import React, { useCallback, useEffect } from 'react';
+import { batch } from 'react-redux';
+import { useAnimationFrame } from '../utils/useAnimationFrame';
+import React, { useCallback, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 
 // == utils ========================================================================================
@@ -36,28 +38,41 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
   const dispatch = useDispatch();
   const automaton = props.automaton;
 
+  const refAccumActions = useRef<Action[]>( [] );
+  useAnimationFrame(
+    () => {
+      if ( refAccumActions.current.length > 0 ) {
+        batch( () => {
+          refAccumActions.current.forEach( ( action ) => dispatch( action ) );
+        } );
+        refAccumActions.current = [];
+      }
+    },
+    [ dispatch ],
+  );
+
   const initChannelState = useCallback(
     ( name: string, channel: ChannelWithGUI, index: number ) => {
-      dispatch( {
+      refAccumActions.current.push( {
         type: 'Automaton/CreateChannel',
         channel: name,
         index,
       } );
 
-      dispatch( {
+      refAccumActions.current.push( {
         type: 'Automaton/UpdateChannelValue',
         channel: name,
         value: channel.currentValue
       } );
 
-      dispatch( {
+      refAccumActions.current.push( {
         type: 'Automaton/UpdateChannelStatus',
         channel: name,
         status: channel.status
       } );
 
       channel.items.forEach( ( item ) => {
-        dispatch( {
+        refAccumActions.current.push( {
           type: 'Automaton/UpdateChannelItem',
           channel: name,
           id: item.$id,
@@ -65,14 +80,14 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
         } );
       } );
 
-      dispatch( {
+      refAccumActions.current.push( {
         type: 'Automaton/UpdateChannelLength',
         channel: name,
         length: channel.length
       } );
 
       channel.on( 'changeValue', ( { value } ) => {
-        dispatch( {
+        refAccumActions.current.push( {
           type: 'Automaton/UpdateChannelValue',
           channel: name,
           value
@@ -80,7 +95,7 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
       } );
 
       channel.on( 'updateStatus', () => {
-        dispatch( {
+        refAccumActions.current.push( {
           type: 'Automaton/UpdateChannelStatus',
           channel: name,
           status: channel.status
@@ -88,7 +103,7 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
       } );
 
       channel.on( 'createItem', ( { id, item } ) => {
-        dispatch( {
+        refAccumActions.current.push( {
           type: 'Automaton/UpdateChannelItem',
           channel: name,
           id,
@@ -97,7 +112,7 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
       } );
 
       channel.on( 'updateItem', ( { id, item } ) => {
-        dispatch( {
+        refAccumActions.current.push( {
           type: 'Automaton/UpdateChannelItem',
           channel: name,
           id,
@@ -106,7 +121,7 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
       } );
 
       channel.on( 'removeItem', ( { id } ) => {
-        dispatch( {
+        refAccumActions.current.push( {
           type: 'Automaton/RemoveChannelItem',
           channel: name,
           id
@@ -114,33 +129,33 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
       } );
 
       channel.on( 'changeLength', ( { length } ) => {
-        dispatch( {
+        refAccumActions.current.push( {
           type: 'Automaton/UpdateChannelLength',
           channel: name,
           length,
         } );
       } );
     },
-    [ dispatch ]
+    []
   );
 
   const initCurveState = useCallback(
     ( curveId: string, curve: CurveWithGUI ) => {
-      dispatch( {
+      refAccumActions.current.push( {
         type: 'Automaton/CreateCurve',
         curveId,
         length: curve.length,
         path: genCurvePath( curve )
       } );
 
-      dispatch( {
+      refAccumActions.current.push( {
         type: 'Automaton/UpdateCurveStatus',
         curveId,
         status: curve.status
       } );
 
       curve.nodes.forEach( ( node ) => {
-        dispatch( {
+        refAccumActions.current.push( {
           type: 'Automaton/UpdateCurveNode',
           curveId,
           id: node.$id,
@@ -149,7 +164,7 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
       } );
 
       curve.fxs.forEach( ( fx ) => {
-        dispatch( {
+        refAccumActions.current.push( {
           type: 'Automaton/UpdateCurveFx',
           curveId,
           id: fx.$id,
@@ -158,7 +173,7 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
       } );
 
       curve.on( 'precalc', () => {
-        dispatch( {
+        refAccumActions.current.push( {
           type: 'Automaton/UpdateCurvePath',
           curveId,
           path: genCurvePath( curve )
@@ -166,7 +181,7 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
       } );
 
       curve.on( 'previewTime', ( { time, value, itemTime, itemSpeed, itemOffset } ) => {
-        dispatch( {
+        refAccumActions.current.push( {
           type: 'Automaton/UpdateCurvePreviewTimeValue',
           curveId,
           time,
@@ -178,7 +193,7 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
       } );
 
       curve.on( 'updateStatus', () => {
-        dispatch( {
+        refAccumActions.current.push( {
           type: 'Automaton/UpdateCurveStatus',
           curveId,
           status: curve.status
@@ -186,7 +201,7 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
       } );
 
       curve.on( 'createNode', ( { id, node } ) => {
-        dispatch( {
+        refAccumActions.current.push( {
           type: 'Automaton/UpdateCurveNode',
           curveId,
           id,
@@ -195,7 +210,7 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
       } );
 
       curve.on( 'updateNode', ( { id, node } ) => {
-        dispatch( {
+        refAccumActions.current.push( {
           type: 'Automaton/UpdateCurveNode',
           curveId,
           id,
@@ -204,7 +219,7 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
       } );
 
       curve.on( 'removeNode', ( { id } ) => {
-        dispatch( {
+        refAccumActions.current.push( {
           type: 'Automaton/RemoveCurveNode',
           curveId,
           id
@@ -212,7 +227,7 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
       } );
 
       curve.on( 'createFx', ( { id, fx } ) => {
-        dispatch( {
+        refAccumActions.current.push( {
           type: 'Automaton/UpdateCurveFx',
           curveId,
           id,
@@ -221,7 +236,7 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
       } );
 
       curve.on( 'updateFx', ( { id, fx } ) => {
-        dispatch( {
+        refAccumActions.current.push( {
           type: 'Automaton/UpdateCurveFx',
           curveId,
           id,
@@ -230,7 +245,7 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
       } );
 
       curve.on( 'removeFx', ( { id } ) => {
-        dispatch( {
+        refAccumActions.current.push( {
           type: 'Automaton/RemoveCurveFx',
           curveId,
           id
@@ -238,52 +253,52 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
       } );
 
       curve.on( 'changeLength', ( { length } ) => {
-        dispatch( {
+        refAccumActions.current.push( {
           type: 'Automaton/UpdateCurveLength',
           curveId,
           length,
         } );
       } );
     },
-    [ dispatch ]
+    []
   );
 
   const initAutomaton = useCallback(
     () => {
-      dispatch( {
+      refAccumActions.current.push( {
         type: 'History/Drop'
       } );
 
-      dispatch( {
+      refAccumActions.current.push( {
         type: 'ContextMenu/Close'
       } );
 
-      dispatch( {
+      refAccumActions.current.push( {
         type: 'Reset'
       } );
 
-      dispatch( {
+      refAccumActions.current.push( {
         type: 'Automaton/UpdateTime',
         time: automaton.time
       } );
 
-      dispatch( {
+      refAccumActions.current.push( {
         type: 'Automaton/ChangeLength',
         length: automaton.length
       } );
 
-      dispatch( {
+      refAccumActions.current.push( {
         type: 'Automaton/ChangeResolution',
         resolution: automaton.resolution
       } );
 
-      dispatch( {
+      refAccumActions.current.push( {
         type: 'Automaton/UpdateIsPlaying',
         isPlaying: automaton.isPlaying
       } );
 
       Object.entries( automaton.fxDefinitions ).forEach( ( [ name, fxDefinition ] ) => {
-        dispatch( {
+        refAccumActions.current.push( {
           type: 'Automaton/AddFxDefinition',
           name,
           fxDefinition
@@ -300,34 +315,34 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
       } );
 
       Object.entries( automaton.labels ).forEach( ( [ name, time ] ) => {
-        dispatch( {
+        refAccumActions.current.push( {
           type: 'Automaton/SetLabel',
           name,
           time
         } );
       } );
 
-      dispatch( {
+      refAccumActions.current.push( {
         type: 'Automaton/SetLoopRegion',
         loopRegion: automaton.loopRegion
       } );
 
-      dispatch( {
+      refAccumActions.current.push( {
         type: 'Automaton/SetShouldSave',
         shouldSave: automaton.shouldSave
       } );
 
-      dispatch( {
+      refAccumActions.current.push( {
         type: 'Automaton/UpdateGUISettings',
         settings: automaton.guiSettings
       } );
     },
-    [ automaton, dispatch, initChannelState, initCurveState ]
+    [ automaton, initChannelState, initCurveState ]
   );
 
   useEffect(
     () => {
-      dispatch( {
+      refAccumActions.current.push( {
         type: 'Automaton/SetInstance',
         automaton
       } );
@@ -339,35 +354,35 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
       } );
 
       const handleUpdate = automaton.on( 'update', ( { time } ): void => {
-        dispatch( {
+        refAccumActions.current.push( {
           type: 'Automaton/UpdateTime',
           time
         } );
       } );
 
       const handleChangeLength = automaton.on( 'changeLength', ( { length } ) => {
-        dispatch( {
+        refAccumActions.current.push( {
           type: 'Automaton/ChangeLength',
           length
         } );
       } );
 
       const handleChangeResolution = automaton.on( 'changeResolution', ( { resolution } ) => {
-        dispatch( {
+        refAccumActions.current.push( {
           type: 'Automaton/ChangeResolution',
           resolution
         } );
       } );
 
       const handlePlay = automaton.on( 'play', () => {
-        dispatch( {
+        refAccumActions.current.push( {
           type: 'Automaton/UpdateIsPlaying',
           isPlaying: true
         } );
       } );
 
       const handlePause = automaton.on( 'pause', () => {
-        dispatch( {
+        refAccumActions.current.push( {
           type: 'Automaton/UpdateIsPlaying',
           isPlaying: false
         } );
@@ -375,7 +390,7 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
 
       const handleAddFxDefinitions = automaton.on( 'addFxDefinitions', ( { fxDefinitions } ) => {
         Object.entries( fxDefinitions ).forEach( ( [ name, fxDefinition ] ) => {
-          dispatch( {
+          refAccumActions.current.push( {
             type: 'Automaton/AddFxDefinition',
             name,
             fxDefinition
@@ -384,7 +399,7 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
       } );
 
       const handleUpdateGUISettings = automaton.on( 'updateGUISettings', ( { settings } ) => {
-        dispatch( {
+        refAccumActions.current.push( {
           type: 'Automaton/UpdateGUISettings',
           settings
         } );
@@ -395,14 +410,14 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
       } );
 
       const handleRemoveChannel = automaton.on( 'removeChannel', ( event ) => {
-        dispatch( {
+        refAccumActions.current.push( {
           type: 'Automaton/RemoveChannel',
           channel: event.name
         } );
       } );
 
       const handleReorderChannels = automaton.on( 'reorderChannels', ( event ) => {
-        dispatch( {
+        refAccumActions.current.push( {
           type: 'Automaton/ReorderChannels',
           index: event.index,
           length: event.length,
@@ -415,21 +430,21 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
       } );
 
       const handleRemoveCurve = automaton.on( 'removeCurve', ( event ) => {
-        dispatch( {
+        refAccumActions.current.push( {
           type: 'Automaton/RemoveCurve',
           curveId: event.id
         } );
       } );
 
       const handleChangeShouldSave = automaton.on( 'changeShouldSave', ( event ) => {
-        dispatch( {
+        refAccumActions.current.push( {
           type: 'Automaton/SetShouldSave',
           shouldSave: event.shouldSave
         } );
       } );
 
       const handleSetLabel = automaton.on( 'setLabel', ( { name, time } ) => {
-        dispatch( {
+        refAccumActions.current.push( {
           type: 'Automaton/SetLabel',
           name,
           time
@@ -437,14 +452,14 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
       } );
 
       const handleDeleteLabel = automaton.on( 'deleteLabel', ( { name } ) => {
-        dispatch( {
+        refAccumActions.current.push( {
           type: 'Automaton/DeleteLabel',
           name
         } );
       } );
 
       const handleSetLoopRegion = automaton.on( 'setLoopRegion', ( { loopRegion } ) => {
-        dispatch( {
+        refAccumActions.current.push( {
           type: 'Automaton/SetLoopRegion',
           loopRegion
         } );
@@ -470,7 +485,7 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
         automaton.off( 'changeShouldSave', handleChangeShouldSave );
       };
     },
-    [ automaton, dispatch, initAutomaton, initChannelState, initCurveState ]
+    [ automaton, initAutomaton, initChannelState, initCurveState ]
   );
 
   return (
