@@ -2,6 +2,7 @@ export const Metrics = {
   rootFontSize: 16,
   headerHeight: 32,
   channelListWidth: 160,
+  channelListEntyHeight: 20,
   inspectorWidth: 192,
   curveListWidth: 160,
   modeSelectorWidth: 36,

@@ -46,7 +46,16 @@ const Label = ( { name, time, range, size }: {
     guiSettings: state.automaton.guiSettings,
     selectedLabels: state.timeline.selected.labels
   } ) );
-  const { moveEntities } = useMoveEntites( size );
+  const timeValueRange = useMemo(
+    () => ( {
+      t0: range.t0,
+      v0: 0.0,
+      t1: range.t1,
+      v1: 1.0,
+    } ),
+    [ range.t0, range.t1 ]
+  );
+  const { moveEntities } = useMoveEntites( timeValueRange, size );
   const checkDoubleClick = useDoubleClick();
   const [ width, setWidth ] = useState( 0.0 );
   const x = t2x( time, range, size.width );

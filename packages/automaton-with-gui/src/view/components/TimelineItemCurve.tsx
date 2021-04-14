@@ -7,11 +7,9 @@ import { genID } from '@fms-cat/automaton-with-gui/src/utils/genID';
 import { jsonCopy } from '@fms-cat/automaton-with-gui/src/utils/jsonCopy';
 import { objectMapHas } from '../utils/objectMap';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
-import { registerMouseNoDragEvent } from '../utils/registerMouseNoDragEvent';
 import { useDispatch, useSelector } from '../states/store';
 import { useDoubleClick } from '../utils/useDoubleClick';
 import { useID } from '../utils/useID';
-import { useMoveEntites } from '../utils/useMoveEntities';
 import React, { useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 import type { StateChannelItem } from '../../types/StateChannelItem';
@@ -70,12 +68,15 @@ export interface TimelineItemCurveProps {
   item: StateChannelItem;
   range: TimeValueRange;
   size: Resolution;
+  grabBody: () => void;
+  grabBodyCtrl: () => void;
+  removeItem: () => void;
   dopeSheetMode?: boolean;
 }
 
 // == component ====================================================================================
 const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
-  const { item, range, size, dopeSheetMode } = props;
+  const { item, range, size, grabBody, grabBodyCtrl, removeItem, dopeSheetMode } = props;
   const channelName = props.channel;
 
   const dispatch = useDispatch();
@@ -93,8 +94,6 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
     curves: state.automaton.curves,
     guiSettings: state.automaton.guiSettings
   } ) );
-
-  const { moveEntities } = useMoveEntites( size );
 
   const curve = curves[ item.curveId! ];
   const { path, length: curveLength } = curve;
@@ -125,91 +124,6 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
   const isSelected = objectMapHas( selectedItems, item.$id );
 
   const channel = automaton?.getChannel( channelName );
-
-  const grabBody = useCallback(
-    (): void => {
-      if ( !isSelected ) {
-        dispatch( {
-          type: 'Timeline/SelectItems',
-          items: [ {
-            id: item.$id,
-            channel: channelName
-          } ]
-        } );
-
-        dispatch( {
-          type: 'Timeline/SelectChannel',
-          channel: channelName
-        } );
-      }
-
-      moveEntities( {
-        moveValue: !dopeSheetMode,
-        snapOriginTime: item.time,
-        snapOriginValue: item.value,
-      } );
-
-      registerMouseNoDragEvent( () => {
-        dispatch( {
-          type: 'Timeline/SelectItems',
-          items: [ {
-            id: item.$id,
-            channel: channelName
-          } ]
-        } );
-      } );
-    },
-    [
-      dispatch,
-      item.$id,
-      item.time,
-      item.value,
-      channelName,
-      moveEntities,
-      dopeSheetMode,
-      isSelected,
-    ]
-  );
-
-  const grabBodyCtrl = useCallback(
-    (): void => {
-      dispatch( {
-        type: 'Timeline/SelectItemsAdd',
-        items: [ {
-          id: item.$id,
-          channel: channelName,
-        } ],
-      } );
-
-      moveEntities( {
-        moveValue: !dopeSheetMode,
-        snapOriginTime: item.time,
-        snapOriginValue: item.value,
-      } );
-
-      registerMouseNoDragEvent( () => {
-        if ( isSelected ) {
-          dispatch( {
-            type: 'Timeline/SelectItemsSub',
-            items: [ {
-              id: item.$id,
-              channel: channelName,
-            } ],
-          } );
-        }
-      } );
-    },
-    [
-      channelName,
-      dispatch,
-      dopeSheetMode,
-      isSelected,
-      item.$id,
-      item.time,
-      item.value,
-      moveEntities,
-    ]
-  );
 
   const grabTop = useCallback(
     (): void => {
@@ -415,27 +329,6 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
       );
     },
     [ channel, item, range, size, guiSettings, dispatch, channelName ]
-  );
-
-  const removeItem = useCallback(
-    (): void => {
-      if ( !channel ) { return; }
-
-      channel.removeItem( item.$id );
-
-      dispatch( {
-        type: 'History/Push',
-        description: 'Remove Curve',
-        commands: [
-          {
-            type: 'channel/removeItem',
-            channel: channelName,
-            data: item
-          }
-        ],
-      } );
-    },
-    [ item, channel, dispatch, channelName ]
   );
 
   const handleClickBody = useCallback(

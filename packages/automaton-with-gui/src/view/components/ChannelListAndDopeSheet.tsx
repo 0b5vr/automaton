@@ -173,6 +173,7 @@ const ChannelListAndDopeSheet = ( props: {
           /> }
           { mode === 'dope' && (
             <StyledDopeSheet
+              refScrollTop={ refScrollTop }
               intersectionRoot={ root }
             />
           ) }

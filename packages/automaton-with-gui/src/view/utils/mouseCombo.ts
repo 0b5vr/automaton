@@ -4,7 +4,8 @@ export enum MouseComboBit {
   MMB = 4,
   Shift = 8,
   Ctrl = 16,
-  Alt = 32
+  Alt = 32,
+  DoubleClick = 64,
 }
 
 /**
@@ -12,12 +13,13 @@ export enum MouseComboBit {
  * It will event.preventDefault + event.stopPropagation automatically.
  *
  * @param event The mouse event
- * @param callbacks A map of mouse button + key combination bits vs. callbacks. set `false` to bypass
+ * @param callbacks A map of mouse button + key combination bits vs. callbacks. set or return `false` to bypass
+ * @returns The return value of the callback it executed. If it couldn't execute any callbacks, returns `null` instead.
  */
-export function mouseCombo(
+export function mouseCombo<T>(
   event: React.MouseEvent,
-  callbacks: { [ combo: number ]: ( ( event: React.MouseEvent ) => void ) | false },
-): void {
+  callbacks: { [ combo: number ]: ( ( event: React.MouseEvent ) => T | false ) | false },
+): T | false | null {
   let bits = 0;
 
   // set bits
@@ -37,15 +39,19 @@ export function mouseCombo(
     const cbBits = parseInt( cbBitsStr );
     if ( ( cbBits & bits ) === cbBits ) {
       if ( cb ) {
-        event.preventDefault();
-        event.stopPropagation();
+        const ret = cb( event );
 
-        cb( event );
+        if ( ret !== false ) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+
+        return ret;
+      } else {
+        return null;
       }
-
-      return;
     }
   }
 
-  return;
+  return null;
 }

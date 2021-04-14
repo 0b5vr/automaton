@@ -1,12 +1,22 @@
 import { DopeSheetEntry } from './DopeSheetEntry';
+import { Metrics } from '../constants/Metrics';
 import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
-import { dx2dt, snapTime, x2t } from '../utils/TimeValueRange';
+import { RectSelectView } from './RectSelectView';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
 import { useDispatch, useSelector } from '../states/store';
 import { useRect } from '../utils/useRect';
+import { useTimeValueRangeFuncs } from '../utils/useTimeValueRange';
 import { useWheelEvent } from '../utils/useWheelEvent';
-import React, { useCallback, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
+
+// == rect select - interface ======================================================================
+export interface DopeSheetRectSelectState {
+  isSelecting: boolean;
+  channels: string[];
+  t0: number;
+  t1: number;
+}
 
 // == styles =======================================================================================
 const StyledDopeSheetEntry = styled( DopeSheetEntry )`
@@ -14,16 +24,21 @@ const StyledDopeSheetEntry = styled( DopeSheetEntry )`
 `;
 
 const Root = styled.div`
+  position: relative;
+  overflow: hidden;
 `;
 
 // == props ========================================================================================
 export interface DopeSheetProps {
   className?: string;
   intersectionRoot: HTMLElement | null;
+  refScrollTop: React.RefObject<number>;
 }
 
 // == component ====================================================================================
-const DopeSheet = ( { className, intersectionRoot }: DopeSheetProps ): JSX.Element => {
+const DopeSheet = (
+  { className, refScrollTop, intersectionRoot }: DopeSheetProps
+): JSX.Element => {
   const dispatch = useDispatch();
   const refRoot = useRef<HTMLDivElement>( null );
   const rect = useRect( refRoot );
@@ -31,13 +46,18 @@ const DopeSheet = ( { className, intersectionRoot }: DopeSheetProps ): JSX.Eleme
     automaton,
     channelNames,
     range,
-    guiSettings,
   } = useSelector( ( state ) => ( {
     automaton: state.automaton.instance,
     channelNames: state.automaton.channelNames,
     range: state.timeline.range,
-    guiSettings: state.automaton.guiSettings,
   } ) );
+
+  const {
+    x2t,
+    t2x,
+    dx2dt,
+    snapTime,
+  } = useTimeValueRangeFuncs( range, rect );
 
   const timeRange = useMemo(
     () => ( {
@@ -80,7 +100,7 @@ const DopeSheet = ( { className, intersectionRoot }: DopeSheetProps ): JSX.Eleme
       const isPlaying = automaton.isPlaying;
       automaton.pause();
 
-      const t0 = x2t( x - rect.left, timeRange, rect.width );
+      const t0 = x2t( x - rect.left );
       automaton.seek( t0 );
 
       let dx = 0.0;
@@ -89,7 +109,7 @@ const DopeSheet = ( { className, intersectionRoot }: DopeSheetProps ): JSX.Eleme
       registerMouseEvent(
         ( event, movementSum ) => {
           dx += movementSum.x;
-          t = t0 + dx2dt( dx, timeRange, rect.width );
+          t = t0 + dx2dt( dx );
           automaton.seek( t );
         },
         () => {
@@ -98,15 +118,15 @@ const DopeSheet = ( { className, intersectionRoot }: DopeSheetProps ): JSX.Eleme
         }
       );
     },
-    [ automaton, timeRange, rect ]
+    [ automaton, x2t, rect.left, dx2dt ]
   );
 
   const startSetLoopRegion = useCallback(
     ( x: number ): void => {
       if ( !automaton ) { return; }
 
-      const t0Raw = x2t( x - rect.left, timeRange, rect.width );
-      const t0 = snapTime( t0Raw, timeRange, rect.width, guiSettings );
+      const t0Raw = x2t( x - rect.left );
+      const t0 = snapTime( t0Raw );
 
       let dx = 0.0;
       let t = t0;
@@ -115,8 +135,8 @@ const DopeSheet = ( { className, intersectionRoot }: DopeSheetProps ): JSX.Eleme
         ( event, movementSum ) => {
           dx += movementSum.x;
 
-          const tRaw = t0 + dx2dt( dx, timeRange, rect.width );
-          t = snapTime( tRaw, timeRange, rect.width, guiSettings );
+          const tRaw = t0 + dx2dt( dx );
+          t = snapTime( tRaw );
 
           if ( t - t0 === 0.0 ) {
             automaton.setLoopRegion( null );
@@ -137,11 +157,92 @@ const DopeSheet = ( { className, intersectionRoot }: DopeSheetProps ): JSX.Eleme
         }
       );
     },
-    [ automaton, timeRange, rect, guiSettings ]
+    [ automaton, x2t, rect.left, snapTime, dx2dt ]
+  );
+
+  const refX2t = useRef( x2t );
+  useEffect( () => { refX2t.current = x2t; }, [ x2t ] );
+
+  const [ rectSelectState, setRectSelectState ] = useState<DopeSheetRectSelectState>( {
+    isSelecting: false,
+    channels: [],
+    t0: Infinity,
+    t1: -Infinity,
+  } );
+  const [ rectSelectYRange, setRectSelectYRange ] = useState<[ number, number ]>( [ 0.0, 0.0 ] );
+
+  const startRectSelect = useCallback(
+    ( x: number, y: number ) => {
+      const t0 = refX2t.current( x - rect.left );
+      const y0 = y - rect.top - ( refScrollTop.current ?? 0.0 );
+      let t1 = t0;
+      let y1 = y0;
+      let channels = channelNames.slice(
+        Math.max( 0, Math.floor( y0 / Metrics.channelListEntyHeight ) ),
+        Math.ceil( y1 / Metrics.channelListEntyHeight ),
+      );
+
+      setRectSelectState( {
+        isSelecting: true,
+        channels,
+        t0,
+        t1,
+      } );
+      setRectSelectYRange( [
+        Math.min( y0, y1 ),
+        Math.max( y0, y1 ),
+      ] );
+
+      registerMouseEvent(
+        ( event ) => {
+          t1 = refX2t.current( event.clientX - rect.left );
+          y1 = event.clientY - rect.top - ( refScrollTop.current ?? 0.0 );
+          channels = channelNames.slice(
+            Math.max( 0, Math.floor( Math.min( y0, y1 ) / Metrics.channelListEntyHeight ) ),
+            Math.ceil( Math.max( y0, y1 ) / Metrics.channelListEntyHeight ),
+          );
+
+          setRectSelectState( {
+            isSelecting: true,
+            channels,
+            t0: Math.min( t0, t1 ),
+            t1: Math.max( t0, t1 ),
+          } );
+          setRectSelectYRange( [
+            Math.min( y0, y1 ),
+            Math.max( y0, y1 ),
+          ] );
+        },
+        () => {
+          setRectSelectState( {
+            isSelecting: false,
+            channels: [],
+            t0: Infinity,
+            t1: -Infinity,
+          } );
+          setRectSelectYRange( [
+            Infinity,
+            -Infinity,
+          ] );
+        },
+      );
+    },
+    [ channelNames, rect.left, rect.top, refScrollTop ]
   );
 
   const handleMouseDown = useCallback(
     ( event ) => mouseCombo( event, {
+      [ MouseComboBit.LMB ]: ( event ) => {
+        dispatch( {
+          type: 'Timeline/SelectItems',
+          items: [],
+        } );
+
+        startRectSelect( event.clientX, event.clientY );
+      },
+      [ MouseComboBit.LMB + MouseComboBit.Ctrl ]: ( event ) => {
+        startRectSelect( event.clientX, event.clientY );
+      },
       [ MouseComboBit.LMB + MouseComboBit.Alt ]: ( event ) => {
         startSeek( event.clientX );
       },
@@ -154,14 +255,14 @@ const DopeSheet = ( { className, intersectionRoot }: DopeSheetProps ): JSX.Eleme
         );
       }
     } ),
-    [ move, startSeek, startSetLoopRegion ]
+    [ dispatch, move, startRectSelect, startSeek, startSetLoopRegion ]
   );
 
   const createLabel = useCallback(
     ( x: number, y: number ): void => {
       if ( !automaton ) { return; }
 
-      const time = x2t( x - rect.left, timeRange, rect.width );
+      const time = x2t( x - rect.left );
 
       dispatch( {
         type: 'TextPrompt/Open',
@@ -189,7 +290,7 @@ const DopeSheet = ( { className, intersectionRoot }: DopeSheetProps ): JSX.Eleme
         }
       } );
     },
-    [ automaton, timeRange, rect, dispatch ]
+    [ automaton, x2t, rect.left, dispatch ]
   );
 
   const handleContextMenu = useCallback(
@@ -237,11 +338,12 @@ const DopeSheet = ( { className, intersectionRoot }: DopeSheetProps ): JSX.Eleme
           key={ channel }
           channel={ channel }
           range={ timeRange }
+          rectSelectState={ rectSelectState }
           intersectionRoot={ intersectionRoot }
         />
       ) )
     ),
-    [ channelNames, intersectionRoot, timeRange ]
+    [ channelNames, intersectionRoot, rectSelectState, timeRange ]
   );
 
   return (
@@ -252,6 +354,14 @@ const DopeSheet = ( { className, intersectionRoot }: DopeSheetProps ): JSX.Eleme
       onContextMenu={ handleContextMenu }
     >
       { entries }
+      { rectSelectState.isSelecting && (
+        <RectSelectView
+          x0={ t2x( rectSelectState.t0 ) }
+          x1={ t2x( rectSelectState.t1 ) }
+          y0={ rectSelectYRange[ 0 ] }
+          y1={ rectSelectYRange[ 1 ] }
+        />
+      ) }
     </Root>
   );
 };

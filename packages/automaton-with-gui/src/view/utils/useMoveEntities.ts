@@ -1,10 +1,12 @@
 import { HistoryCommand } from '../history/HistoryCommand';
-import { dx2dt, dy2dv, snapTime, snapValue } from './TimeValueRange';
+import { Resolution } from './Resolution';
+import { TimeValueRange } from './TimeValueRange';
 import { registerMouseEvent } from './registerMouseEvent';
 import { useCallback } from 'react';
 import { useDispatch, useStore } from '../states/store';
+import { useTimeValueRangeFuncs } from './useTimeValueRange';
 
-export function useMoveEntites( { width, height }: { width: number, height: number } ): {
+export function useMoveEntites( range: TimeValueRange, size: Resolution ): {
   moveEntities: ( options: {
     moveValue: boolean;
     snapOriginTime?: number;
@@ -13,6 +15,7 @@ export function useMoveEntites( { width, height }: { width: number, height: numb
 } {
   const dispatch = useDispatch();
   const store = useStore();
+  const { dx2dt, dy2dv, snapTime, snapValue } = useTimeValueRangeFuncs( range, size );
 
   const moveEntities = useCallback(
     ( { moveValue, snapOriginTime, snapOriginValue }: {
@@ -68,9 +71,6 @@ export function useMoveEntites( { width, height }: { width: number, height: numb
       const labelsNewTimeMap = new Map<string, number>();
 
       // -- common stuff ---------------------------------------------------------------------------
-      const range = state.timeline.range;
-      const guiSettings = state.automaton.guiSettings;
-
       let dx = 0.0;
       let dt = 0.0;
       let dy = 0.0;
@@ -92,20 +92,20 @@ export function useMoveEntites( { width, height }: { width: number, height: numb
 
           // -- calc dt / dv -----------------------------------------------------------------------
           if ( !holdTime ) {
-            let t = originTime + dx2dt( dx, range, width );
+            let t = originTime + dx2dt( dx );
 
             if ( !ignoreSnap && snapOriginTime != null ) {
-              t = snapTime( t, range, width, guiSettings );
+              t = snapTime( t );
             }
 
             dt = t - originTime;
           }
 
           if ( !holdValue && moveValue ) {
-            let v = originValue + dy2dv( dy, range, height );
+            let v = originValue + dy2dv( dy );
 
             if ( !ignoreSnap && snapOriginValue != null ) {
-              v = snapValue( v, range, height, guiSettings );
+              v = snapValue( v );
             }
 
             dv = v - originValue;
@@ -176,7 +176,7 @@ export function useMoveEntites( { width, height }: { width: number, height: numb
         }
       );
     },
-    [ dispatch, height, store, width ]
+    [ dispatch, dx2dt, dy2dv, snapTime, snapValue, store ]
   );
 
   return { moveEntities };

@@ -1,15 +1,21 @@
+import { ChannelEditorRectSelectState } from './ChannelEditor';
 import { Colors } from '../constants/Colors';
+import { DopeSheetRectSelectState } from './DopeSheet';
+import { Metrics } from '../constants/Metrics';
 import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
-import { TimeRange, dt2dx, dx2dt, snapTime, x2t } from '../utils/TimeValueRange';
+import { TimeRange } from '../utils/TimeValueRange';
 import { TimelineItem } from './TimelineItem';
+import { arraySetHas } from '../utils/arraySet';
 import { binarySearch } from '../utils/binarySearch';
 import { hasOverwrap } from '../../utils/hasOverwrap';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
 import { showToasty } from '../states/Toasty';
 import { useDispatch, useSelector } from '../states/store';
+import { useDoubleClick } from '../utils/useDoubleClick';
 import { useIntersection } from '../utils/useIntersection';
 import { useRect } from '../utils/useRect';
-import React, { useCallback, useMemo, useRef } from 'react';
+import { useTimeValueRangeFuncs } from '../utils/useTimeValueRange';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import type { StateChannelItem } from '../../types/StateChannelItem';
 
@@ -42,7 +48,7 @@ const Proximity = styled.div`
 const Container = styled.div`
   position: absolute;
   width: 100%;
-  height: 18px;
+  height: ${ Metrics.channelListEntyHeight - 2 }px;
   overflow: hidden;
 
   &:hover ${ Underlay } {
@@ -54,16 +60,17 @@ const Root = styled.div`
   display: block;
   position: relative;
   width: 100%;
-  height: 18px;
+  height: ${ Metrics.channelListEntyHeight - 2 }px;
 `;
 
 // == a content - if it isn't intersecting, return an empty div instead ============================
 const Content = ( props: {
   channel: string;
   range: TimeRange;
+  rectSelectState: DopeSheetRectSelectState;
   refRoot: React.RefObject<HTMLDivElement>;
 } ): JSX.Element => {
-  const { range, refRoot } = props;
+  const { range, refRoot, rectSelectState } = props;
   const channelName = props.channel;
   const dispatch = useDispatch();
   const {
@@ -71,15 +78,14 @@ const Content = ( props: {
     lastSelectedItem,
     selectedCurve,
     sortedItems,
-    guiSettings
   } = useSelector( ( state ) => ( {
     automaton: state.automaton.instance,
     lastSelectedItem: state.timeline.lastSelectedItem,
     selectedCurve: state.curveEditor.selectedCurve,
     stateItems: state.automaton.channels[ channelName ].items,
     sortedItems: state.automaton.channels[ channelName ].sortedItems,
-    guiSettings: state.automaton.guiSettings
   } ) );
+  const checkDoubleClick = useDoubleClick();
 
   const channel = automaton?.getChannel( channelName );
   const rect = useRect( refRoot );
@@ -95,26 +101,51 @@ const Content = ( props: {
     [ range.t0, range.t1 ]
   );
 
+  const {
+    x2t,
+    dx2dt,
+    dt2dx,
+    snapTime,
+  } = useTimeValueRangeFuncs( timeValueRange, rect );
+
+  const channelIsRectSelected = useMemo(
+    () => arraySetHas( rectSelectState.channels, channelName ),
+    [ channelName, rectSelectState.channels ],
+  );
+
+  const rectSelectStateForItem: ChannelEditorRectSelectState = useMemo(
+    () => {
+      return {
+        isSelecting: rectSelectState.isSelecting,
+        t0: rectSelectState.t0,
+        t1: rectSelectState.t1,
+        v0: channelIsRectSelected ? -Infinity : Infinity,
+        v1: channelIsRectSelected ? Infinity : -Infinity,
+      };
+    },
+    [ channelIsRectSelected, rectSelectState.isSelecting, rectSelectState.t0, rectSelectState.t1 ],
+  );
+
   const itemsInRange = useMemo(
     () => {
       const i0 = binarySearch(
         sortedItems,
-        ( item ) => dt2dx( ( item.time + item.length ) - range.t0, range, rect.width ) < -20.0,
+        ( item ) => dt2dx( ( item.time + item.length ) - range.t0 ) < -20.0,
       );
       const i1 = binarySearch(
         sortedItems,
-        ( item ) => dt2dx( item.time - range.t1, range, rect.width ) < 20.0,
+        ( item ) => dt2dx( item.time - range.t1 ) < 20.0,
       );
       return sortedItems.slice( i0, i1 );
     },
-    [ range, rect.width, sortedItems ]
+    [ dt2dx, range.t0, range.t1, sortedItems ]
   );
 
   const createConstant = useCallback(
     ( x: number ): void => {
       if ( !channel ) { return; }
 
-      const t = x2t( x - rect.left, range, rect.width );
+      const t = x2t( x - rect.left );
 
       const thereAreNoOtherItemsHere = channel.items.every( ( item ) => (
         !hasOverwrap( item.time, item.length, t, 0.0 )
@@ -151,14 +182,14 @@ const Content = ( props: {
         ],
       } );
     },
-    [ range, rect, channelName, channel, dispatch ]
+    [ channel, x2t, rect.left, dispatch, channelName ]
   );
 
   const createNewCurve = useCallback(
     ( x: number ): void => {
       if ( !automaton || !channel ) { return; }
 
-      const t = x2t( x - rect.left, range, rect.width );
+      const t = x2t( x - rect.left );
 
       const thereAreNoOtherItemsHere = channel.items.every( ( item ) => (
         !hasOverwrap( item.time, item.length, t, 0.0 )
@@ -201,14 +232,14 @@ const Content = ( props: {
         ],
       } );
     },
-    [ automaton, range, rect, channelName, channel, dispatch ]
+    [ automaton, channel, x2t, rect.left, dispatch, channelName ]
   );
 
   const createItemAndGrab = useCallback(
     ( x: number ): void => {
       if ( !automaton || !channel ) { return; }
 
-      const t0 = x2t( x - rect.left, range, rect.width );
+      const t0 = x2t( x - rect.left );
 
       const thereAreNoOtherItemsHere = channel.items.every( ( item ) => (
         !hasOverwrap( item.time, item.length, t0, 0.0 )
@@ -258,10 +289,10 @@ const Content = ( props: {
 
           const ignoreSnap = event.altKey;
 
-          time = t0 + dx2dt( dx, range, rect.width );
+          time = t0 + dx2dt( dx );
 
           if ( !ignoreSnap ) {
-            time = snapTime( time, range, rect.width, guiSettings );
+            time = snapTime( time );
           }
 
           channel.moveItem( confirmedData.$id, time );
@@ -284,26 +315,32 @@ const Content = ( props: {
         }
       );
     },
-    [ automaton,
-      lastSelectedItem,
-      selectedCurve,
-      range,
-      rect,
-      guiSettings,
-      channelName,
+    [
+      automaton,
       channel,
-      dispatch
-    ]
+      x2t,
+      rect.left,
+      lastSelectedItem,
+      dispatch,
+      channelName,
+      selectedCurve,
+      dx2dt,
+      snapTime,
+    ],
   );
 
   const handleMouseDown = useCallback(
     ( event ) => mouseCombo( event, {
       [ MouseComboBit.LMB ]: ( event ) => {
-        createItemAndGrab( event.clientX );
+        if ( checkDoubleClick() ) {
+          createItemAndGrab( event.clientX );
+        } else {
+          return false;
+        }
       },
       [ MouseComboBit.LMB + MouseComboBit.Alt ]: false, // give a way to seek!
     } ),
-    [ createItemAndGrab ]
+    [ checkDoubleClick, createItemAndGrab ]
   );
 
   const handleContextMenu = useCallback(
@@ -342,11 +379,12 @@ const Content = ( props: {
           item={ item }
           range={ timeValueRange }
           size={ rect }
+          rectSelectState={ rectSelectStateForItem }
           dopeSheetMode
         />
       ) )
     ),
-    [ channelName, itemsInRange, rect, timeValueRange ]
+    [ channelName, itemsInRange, rect, rectSelectStateForItem, timeValueRange ]
   );
 
   return <Container>
@@ -365,16 +403,38 @@ const DopeSheetEntry = ( props: {
   className?: string;
   channel: string;
   range: TimeRange;
+  rectSelectState: DopeSheetRectSelectState;
   intersectionRoot: HTMLElement | null;
 } ): JSX.Element => {
-  const { className, intersectionRoot } = props;
+  const { range, className, intersectionRoot, rectSelectState } = props;
+  const channelName = props.channel;
 
   const refRoot = useRef<HTMLDivElement>( null );
   const refProximity = useRef<HTMLDivElement>( null );
 
+  // whether the channel is out of screen or not
   const isIntersecting = useIntersection( refProximity, {
     root: intersectionRoot,
   } );
+
+  // want to select out of screen channels properly
+  const channelIsRectSelected = useMemo(
+    () => arraySetHas( rectSelectState.channels, channelName ),
+    [ channelName, rectSelectState.channels ],
+  );
+
+  // a single update will be required to unselect out of screen channels properly
+  const [ prevChannelIsRectSelected, setPrevChannelIsRectSelected ] = useState( false );
+  useEffect(
+    () => {
+      setPrevChannelIsRectSelected( channelIsRectSelected );
+    },
+    [ channelIsRectSelected ],
+  );
+
+  const shouldShowContent = isIntersecting
+    || channelIsRectSelected
+    || prevChannelIsRectSelected;
 
   return (
     <Root
@@ -384,9 +444,10 @@ const DopeSheetEntry = ( props: {
       <Proximity
         ref={ refProximity }
       />
-      { isIntersecting ? <Content
-        channel={ props.channel }
-        range={ props.range }
+      { shouldShowContent ? <Content
+        channel={ channelName }
+        range={ range }
+        rectSelectState={ rectSelectState }
         refRoot={ refRoot }
       /> : null }
     </Root>
