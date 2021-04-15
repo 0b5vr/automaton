@@ -152,14 +152,6 @@ export const reducer: Reducer<State, ContextAction> = ( state = initialState, ac
       if ( length < newState.range.t1 ) {
         newState.range.t1 = length;
       }
-    } else if ( action.type === 'Automaton/RemoveCurve' ) {
-      if ( state.selectedCurve === action.curveId ) {
-        newState.selectedCurve = null;
-      }
-    } else if ( action.type === 'Automaton/RemoveCurveNode' ) {
-      newState.selected.nodes = arraySetDiff( newState.selected.nodes, [ action.id ] );
-    } else if ( action.type === 'Automaton/RemoveCurveFx' ) {
-      newState.selected.fxs = arraySetDiff( newState.selected.fxs, [ action.id ] );
     }
   } );
 };

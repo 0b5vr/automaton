@@ -121,6 +121,11 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
       } );
 
       channel.on( 'removeItem', ( { id } ) => {
+        dispatch( {
+          type: 'Timeline/SelectItemsSub',
+          items: [ { id } ],
+        } );
+
         refAccumActions.current.push( {
           type: 'Automaton/RemoveChannelItem',
           channel: name,
@@ -136,7 +141,7 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
         } );
       } );
     },
-    []
+    [ dispatch ]
   );
 
   const initCurveState = useCallback(
@@ -219,6 +224,11 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
       } );
 
       curve.on( 'removeNode', ( { id } ) => {
+        dispatch( {
+          type: 'CurveEditor/SelectItemsSub',
+          nodes: [ id ],
+        } );
+
         refAccumActions.current.push( {
           type: 'Automaton/RemoveCurveNode',
           curveId,
@@ -245,6 +255,11 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
       } );
 
       curve.on( 'removeFx', ( { id } ) => {
+        dispatch( {
+          type: 'CurveEditor/SelectItemsSub',
+          fxs: [ id ],
+        } );
+
         refAccumActions.current.push( {
           type: 'Automaton/RemoveCurveFx',
           curveId,
@@ -260,20 +275,20 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
         } );
       } );
     },
-    []
+    [ dispatch ]
   );
 
   const initAutomaton = useCallback(
     () => {
-      refAccumActions.current.push( {
+      dispatch( {
         type: 'History/Drop'
       } );
 
-      refAccumActions.current.push( {
+      dispatch( {
         type: 'ContextMenu/Close'
       } );
 
-      refAccumActions.current.push( {
+      dispatch( {
         type: 'Reset'
       } );
 
@@ -337,7 +352,7 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
         settings: automaton.guiSettings
       } );
     },
-    [ automaton, initChannelState, initCurveState ]
+    [ automaton, dispatch, initChannelState, initCurveState ],
   );
 
   useEffect(
@@ -410,6 +425,11 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
       } );
 
       const handleRemoveChannel = automaton.on( 'removeChannel', ( event ) => {
+        dispatch( {
+          type: 'Timeline/UnselectChannelIfSelected',
+          channel: event.name,
+        } );
+
         refAccumActions.current.push( {
           type: 'Automaton/RemoveChannel',
           channel: event.name
@@ -430,6 +450,11 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
       } );
 
       const handleRemoveCurve = automaton.on( 'removeCurve', ( event ) => {
+        dispatch( {
+          type: 'CurveEditor/SelectCurve',
+          curveId: null,
+        } );
+
         refAccumActions.current.push( {
           type: 'Automaton/RemoveCurve',
           curveId: event.id
@@ -452,6 +477,11 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
       } );
 
       const handleDeleteLabel = automaton.on( 'deleteLabel', ( { name } ) => {
+        dispatch( {
+          type: 'Timeline/SelectLabelsSub',
+          labels: [ name ],
+        } );
+
         refAccumActions.current.push( {
           type: 'Automaton/DeleteLabel',
           name
@@ -485,7 +515,7 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
         automaton.off( 'changeShouldSave', handleChangeShouldSave );
       };
     },
-    [ automaton, initAutomaton, initChannelState, initCurveState ]
+    [ automaton, dispatch, initAutomaton, initChannelState, initCurveState ]
   );
 
   return (

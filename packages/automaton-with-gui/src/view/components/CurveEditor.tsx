@@ -23,11 +23,13 @@ const Lines = ( { curveId, range, size }: {
   curveId: string;
   range: TimeValueRange;
   size: Resolution;
-} ): JSX.Element => {
+} ): JSX.Element | null => {
   const { time, value } = useSelector( ( state ) => ( {
-    time: state.automaton.curvesPreview[ curveId ].time,
-    value: state.automaton.curvesPreview[ curveId ].value,
+    time: state.automaton.curvesPreview[ curveId ]?.time,
+    value: state.automaton.curvesPreview[ curveId ]?.value,
   } ) );
+
+  if ( time == null || value == null ) { return null; }
 
   return <TimeValueLines
     range={ range }
@@ -41,15 +43,17 @@ const Nodes = ( { curveId, range, size }: {
   curveId: string;
   range: TimeValueRange;
   size: Resolution;
-} ): JSX.Element => {
+} ): JSX.Element | null => {
   const { nodes } = useSelector( ( state ) => ( {
-    nodes: state.automaton.curves[ curveId ].nodes
+    nodes: state.automaton.curves[ curveId ]?.nodes
   } ) );
+
+  if ( nodes == null ) { return null; }
 
   // 👾 See: https://github.com/yannickcr/eslint-plugin-react/issues/2584
   // eslint-disable-next-line react/jsx-no-useless-fragment
   return <>
-    { nodes && Object.values( nodes ).map( ( node ) => (
+    { Object.values( nodes ).map( ( node ) => (
       <CurveEditorNode
         key={ node.$id }
         curveId={ curveId }
@@ -65,13 +69,15 @@ const Fxs = ( { curveId, range, size }: {
   curveId: string;
   range: TimeValueRange;
   size: Resolution;
-} ): JSX.Element => {
+} ): JSX.Element | null => {
   const { fxs } = useSelector( ( state ) => ( {
-    fxs: state.automaton.curves[ curveId ].fxs
+    fxs: state.automaton.curves[ curveId ]?.fxs
   } ) );
 
+  if ( fxs == null ) { return null; }
+
   return <>
-    { fxs && Object.values( fxs ).map( ( fx ) => (
+    { Object.values( fxs ).map( ( fx ) => (
       <CurveEditorFxBg
         key={ fx.$id }
         fx={ fx }
@@ -79,7 +85,7 @@ const Fxs = ( { curveId, range, size }: {
         size={ size }
       />
     ) ) }
-    { fxs && Object.values( fxs ).map( ( fx ) => (
+    { Object.values( fxs ).map( ( fx ) => (
       <CurveEditorFx
         key={ fx.$id }
         curveId={ curveId }
@@ -153,7 +159,7 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
     previewItemOffset: state.automaton.curvesPreview[ selectedCurve ?? -1 ]?.itemOffset ?? null,
   } ) );
 
-  const curve = selectedCurve != null && automaton?.getCurveById( selectedCurve ) || null;
+  const curve = ( selectedCurve != null && automaton?.getCurveById( selectedCurve ) ) ?? null;
 
   const refBody = useRef<HTMLDivElement>( null );
   const rect = useRect( refBody );

@@ -131,13 +131,13 @@ const InspectorChannelItem = ( props: Props ): JSX.Element | null => {
   const dispatch = useDispatch();
   const { automaton, stateItem, useBeatInGUI } = useSelector( ( state ) => ( {
     automaton: state.automaton.instance,
-    stateItem: state.automaton.channels[ channelName ].items[ itemId ],
+    stateItem: state.automaton.channels[ channelName ]?.items[ itemId ], // TODO: noUncheckedIndexedAccess ???
     useBeatInGUI: state.automaton.guiSettings.useBeatInGUI,
   } ) );
   const channel = automaton?.getChannel( channelName ) ?? null;
   const { displayToTime, timeToDisplay } = useTimeUnit();
 
-  return ( automaton && channel && (
+  return ( automaton && channel && stateItem && (
     <Root className={ className }>
       <InspectorHeader text={ 'Curve' } />
 

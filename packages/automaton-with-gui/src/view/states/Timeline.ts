@@ -2,7 +2,7 @@ import { Action as ContextAction } from './store';
 import { Reducer } from 'redux';
 import { Resolution } from '../utils/Resolution';
 import { TimeValueRange, dx2dt, dy2dv, x2t, y2v } from '../utils/TimeValueRange';
-import { arraySetDelete, arraySetDiff, arraySetUnion } from '../utils/arraySet';
+import { arraySetDiff, arraySetUnion } from '../utils/arraySet';
 import { jsonCopy } from '../../utils/jsonCopy';
 import { produce } from 'immer';
 
@@ -60,7 +60,6 @@ export type Action = {
   type: 'Timeline/SelectItemsSub';
   items: Array<{
     id: string;
-    channel: string;
   }>;
 } | {
   type: 'Timeline/SelectLabels';
@@ -87,6 +86,9 @@ export type Action = {
   dx: number;
   dy: number;
   tmax?: number;
+} | {
+  type: 'Timeline/UnselectChannelIfSelected';
+  channel: string;
 };
 
 // == reducer ======================================================================================
@@ -194,7 +196,7 @@ export const reducer: Reducer<State, ContextAction> = ( state = initialState, ac
       if ( length < newState.range.t1 ) {
         newState.range.t1 = length;
       }
-    } else if ( action.type === 'Automaton/RemoveChannel' ) {
+    } else if ( action.type === 'Timeline/UnselectChannelIfSelected' ) {
       newState.selected.items = jsonCopy( initialState.selected.items );
 
       Object.entries( state.selected.items ).forEach( ( [ id, item ] ) => {
@@ -206,10 +208,6 @@ export const reducer: Reducer<State, ContextAction> = ( state = initialState, ac
       if ( state.selectedChannel === action.channel ) {
         newState.selectedChannel = null;
       }
-    } else if ( action.type === 'Automaton/RemoveChannelItem' ) {
-      delete newState.selected.items[ action.id ];
-    } else if ( action.type === 'Automaton/DeleteLabel' ) {
-      arraySetDelete( newState.selected.labels, action.name );
     } else if ( action.type === 'CurveEditor/SelectCurve' ) { // WHOA WHOA
       newState.lastSelectedItem = null;
     }

@@ -12,13 +12,12 @@ interface Props {
 
 const InspectorLabel = ( { name }: Props ): JSX.Element | null => {
   const dispatch = useDispatch();
-  const { automaton, stateLabels } = useSelector( ( state ) => ( {
+  const { automaton, time } = useSelector( ( state ) => ( {
     automaton: state.automaton.instance,
-    stateLabels: state.automaton.labels
+    time: state.automaton.labels[ name ],
   } ) );
-  const time = stateLabels[ name ];
 
-  if ( !automaton ) { return null; }
+  if ( automaton == null || time == null ) { return null; }
 
   return <>
     <InspectorHeader text={ `Label: ${ name }` } />
