@@ -6,7 +6,7 @@ import { arraySetHas } from '../utils/arraySet';
 import { registerMouseNoDragEvent } from '../utils/registerMouseNoDragEvent';
 import { useDispatch, useSelector } from '../states/store';
 import { useDoubleClick } from '../utils/useDoubleClick';
-import { useMoveEntites } from '../utils/useMoveEntities';
+import { useMoveEntites } from '../gui-operation-hooks/useMoveEntities';
 import { useRect } from '../utils/useRect';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
@@ -55,7 +55,7 @@ const Label = ( { name, time, range, size }: {
     } ),
     [ range.t0, range.t1 ]
   );
-  const { moveEntities } = useMoveEntites( timeValueRange, size );
+  const moveEntities = useMoveEntites( timeValueRange, size );
   const checkDoubleClick = useDoubleClick();
   const [ width, setWidth ] = useState( 0.0 );
   const x = t2x( time, range, size.width );

@@ -5,7 +5,8 @@ import { produce } from 'immer';
 export interface ContextMenuCommand {
   name: string;
   description?: string;
-  callback: () => void;
+  callback?: () => void;
+  more?: Array<ContextMenuCommand>;
 }
 
 export interface State {
@@ -17,12 +18,16 @@ export interface State {
 export const initialState: Readonly<State> = {
   isVisible: false,
   position: { x: 0, y: 0 },
-  commands: []
+  commands: [],
 };
 
 // == action =======================================================================================
 export type Action = {
   type: 'ContextMenu/Push';
+  position: { x: number; y: number };
+  commands: Array<ContextMenuCommand>;
+} | {
+  type: 'ContextMenu/More';
   position: { x: number; y: number };
   commands: Array<ContextMenuCommand>;
 } | {
@@ -40,6 +45,9 @@ export const reducer: Reducer<State, Action> = ( state = initialState, action ) 
         newState.commands.push( 'hr' );
       }
       newState.commands.push( ...action.commands );
+    } else if ( action.type === 'ContextMenu/More' ) {
+      newState.position = action.position;
+      newState.commands = action.commands;
     } else if ( action.type === 'ContextMenu/Close' ) {
       newState.isVisible = false;
       newState.commands = [];

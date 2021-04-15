@@ -5,6 +5,7 @@ import { RectSelectView } from './RectSelectView';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
 import { useDispatch, useSelector } from '../states/store';
 import { useRect } from '../utils/useRect';
+import { useSelectAllEntities } from '../gui-operation-hooks/useSelectAll';
 import { useTimeValueRangeFuncs } from '../utils/useTimeValueRange';
 import { useWheelEvent } from '../utils/useWheelEvent';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -51,6 +52,7 @@ const DopeSheet = (
     channelNames: state.automaton.channelNames,
     range: state.timeline.range,
   } ) );
+  const selectAllEntities = useSelectAllEntities();
 
   const {
     x2t,
@@ -308,11 +310,32 @@ const DopeSheet = (
             name: 'Create Label',
             description: 'Create a label.',
             callback: () => createLabel( x, y )
-          }
+          },
+          {
+            name: 'Select All...',
+            description: 'Select all items or labels.',
+            more: [
+              {
+                name: 'Select All Items',
+                description: 'Select all items.',
+                callback: () => selectAllEntities( { items: true } ),
+              },
+              {
+                name: 'Select All Labels',
+                description: 'Select all labels.',
+                callback: () => selectAllEntities( { labels: true } ),
+              },
+              {
+                name: 'Select Everything',
+                description: 'Select all items and labels.',
+                callback: () => selectAllEntities( { items: true, labels: true } ),
+              },
+            ],
+          },
         ]
       } );
     },
-    [ dispatch, createLabel ]
+    [ dispatch, createLabel, selectAllEntities ]
   );
 
   const handleWheel = useCallback(

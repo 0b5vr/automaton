@@ -6,7 +6,7 @@ import { objectMapHas } from '../utils/objectMap';
 import { registerMouseNoDragEvent } from '../utils/registerMouseNoDragEvent';
 import { testRectIntersection } from '../utils/testRectIntersection';
 import { useDispatch } from 'react-redux';
-import { useMoveEntites } from '../utils/useMoveEntities';
+import { useMoveEntites } from '../gui-operation-hooks/useMoveEntities';
 import { useSelector } from '../states/store';
 import React, { useCallback, useEffect, useRef } from 'react';
 import type { ChannelEditorRectSelectState } from './ChannelEditor';
@@ -27,7 +27,7 @@ const TimelineItem = ( props: TimelineItemProps ): JSX.Element => {
   const { item, range, size, rectSelectState: rectSelect, dopeSheetMode } = props;
   const channelName = props.channel;
   const dispatch = useDispatch();
-  const { moveEntities } = useMoveEntites( range, size );
+  const moveEntities = useMoveEntites( range, size );
 
   const isSelected = useSelector(
     ( state ) => objectMapHas( state.timeline.selected.items, item.$id )

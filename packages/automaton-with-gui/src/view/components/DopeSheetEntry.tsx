@@ -14,6 +14,7 @@ import { useDispatch, useSelector } from '../states/store';
 import { useDoubleClick } from '../utils/useDoubleClick';
 import { useIntersection } from '../utils/useIntersection';
 import { useRect } from '../utils/useRect';
+import { useSelectAllItemsInChannel } from '../gui-operation-hooks/useSelectAllItemsInChannel';
 import { useTimeValueRangeFuncs } from '../utils/useTimeValueRange';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
@@ -86,6 +87,7 @@ const Content = ( props: {
     sortedItems: state.automaton.channels[ channelName ].sortedItems,
   } ) );
   const checkDoubleClick = useDoubleClick();
+  const selectAllItemsInChannel = useSelectAllItemsInChannel();
 
   const channel = automaton?.getChannel( channelName );
   const rect = useRect( refRoot );
@@ -363,11 +365,16 @@ const Content = ( props: {
             name: 'Create New Curve',
             description: 'Create a new curve and an item.',
             callback: () => createNewCurve( x )
-          }
+          },
+          {
+            name: 'Select All Items In Channel',
+            description: 'Select all items in the channel.',
+            callback: () => selectAllItemsInChannel( channelName )
+          },
         ]
       } );
     },
-    [ dispatch, createConstant, createNewCurve ]
+    [ dispatch, createConstant, createNewCurve, selectAllItemsInChannel, channelName ]
   );
 
   const items = useMemo(

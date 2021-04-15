@@ -1,18 +1,21 @@
 import { HistoryCommand } from '../history/HistoryCommand';
-import { Resolution } from './Resolution';
-import { TimeValueRange } from './TimeValueRange';
-import { registerMouseEvent } from './registerMouseEvent';
+import { Resolution } from '../utils/Resolution';
+import { TimeValueRange } from '../utils/TimeValueRange';
+import { registerMouseEvent } from '../utils/registerMouseEvent';
 import { useCallback } from 'react';
 import { useDispatch, useStore } from '../states/store';
-import { useTimeValueRangeFuncs } from './useTimeValueRange';
+import { useTimeValueRangeFuncs } from '../utils/useTimeValueRange';
 
-export function useMoveEntites( range: TimeValueRange, size: Resolution ): {
-  moveEntities: ( options: {
-    moveValue: boolean;
-    snapOriginTime?: number;
-    snapOriginValue?: number;
-  } ) => void,
-} {
+interface Options {
+  moveValue: boolean;
+  snapOriginTime?: number;
+  snapOriginValue?: number;
+}
+
+export function useMoveEntites(
+  range: TimeValueRange,
+  size: Resolution,
+): ( options: Options ) => void {
   const dispatch = useDispatch();
   const store = useStore();
   const { dx2dt, dy2dv, snapTime, snapValue } = useTimeValueRangeFuncs( range, size );
@@ -179,5 +182,5 @@ export function useMoveEntites( range: TimeValueRange, size: Resolution ): {
     [ dispatch, dx2dt, dy2dv, snapTime, snapValue, store ]
   );
 
-  return { moveEntities };
+  return moveEntities;
 }

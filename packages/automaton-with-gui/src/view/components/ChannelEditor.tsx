@@ -16,6 +16,7 @@ import { showToasty } from '../states/Toasty';
 import { useDispatch, useSelector } from '../states/store';
 import { useDoubleClick } from '../utils/useDoubleClick';
 import { useRect } from '../utils/useRect';
+import { useSelectAllItemsInChannel } from '../gui-operation-hooks/useSelectAllItemsInChannel';
 import { useTimeValueRangeFuncs } from '../utils/useTimeValueRange';
 import { useWheelEvent } from '../utils/useWheelEvent';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -150,6 +151,7 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
   } ) );
   const channel = selectedChannel != null && automaton?.getChannel( selectedChannel );
   const checkDoubleClick = useDoubleClick();
+  const selectAllItemsInChannel = useSelectAllItemsInChannel();
 
   const refBody = useRef<HTMLDivElement>( null );
   const rect = useRect( refBody );
@@ -645,11 +647,23 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
             name: 'Create Label',
             description: 'Create a label.',
             callback: () => createLabel( x, y )
-          }
+          },
+          {
+            name: 'Select All Items',
+            description: 'Select all items in the channel.',
+            callback: () => selectAllItemsInChannel( selectedChannel! ), // TODO: separate the content of ChannelEditor from `selectedChannel &&`
+          },
         ]
       } );
     },
-    [ dispatch, createConstant, createNewCurve, createLabel ]
+    [
+      dispatch,
+      createConstant,
+      createNewCurve,
+      createLabel,
+      selectedChannel,
+      selectAllItemsInChannel,
+    ],
   );
 
   const handleWheel = useCallback(
