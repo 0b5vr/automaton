@@ -3,6 +3,7 @@ import { CurveEditorFx } from './CurveEditorFx';
 import { CurveEditorFxBg } from './CruveEditorFxBg';
 import { CurveEditorGraph } from './CurveEditorGraph';
 import { CurveEditorNode } from './CurveEditorNode';
+import { ErrorBoundary } from './ErrorBoundary';
 import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
 import { RangeBar } from './RangeBar';
 import { Resolution } from '../utils/Resolution';
@@ -437,46 +438,48 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
 
   return (
     <Root className={ className }>
-      <Body ref={ refBody }>
-        <SVGRoot
-          onMouseDown={ handleMouseDown }
-          onContextMenu={ handleContextMenu }
-        >
-          <TimeValueGrid
+      <ErrorBoundary>
+        <Body ref={ refBody }>
+          <SVGRoot
+            onMouseDown={ handleMouseDown }
+            onContextMenu={ handleContextMenu }
+          >
+            <TimeValueGrid
+              range={ range }
+              size={ rect }
+            />
+            { selectedCurve != null && <>
+              <Fxs
+                curveId={ selectedCurve }
+                range={ range }
+                size={ rect }
+              />
+              <CurveEditorGraph
+                curveId={ selectedCurve }
+                range={ range }
+                size={ rect }
+              />
+              <Nodes
+                curveId={ selectedCurve }
+                range={ range }
+                size={ rect }
+              />
+              <StyledLines
+                curveId={ selectedCurve }
+                range={ range }
+                size={ rect }
+              />
+            </> }
+          </SVGRoot>
+        </Body>
+        { curveLength != null && (
+          <StyledRangeBar
             range={ range }
-            size={ rect }
+            width={ rect.width }
+            length={ curveLength }
           />
-          { selectedCurve != null && <>
-            <Fxs
-              curveId={ selectedCurve }
-              range={ range }
-              size={ rect }
-            />
-            <CurveEditorGraph
-              curveId={ selectedCurve }
-              range={ range }
-              size={ rect }
-            />
-            <Nodes
-              curveId={ selectedCurve }
-              range={ range }
-              size={ rect }
-            />
-            <StyledLines
-              curveId={ selectedCurve }
-              range={ range }
-              size={ rect }
-            />
-          </> }
-        </SVGRoot>
-      </Body>
-      { curveLength != null && (
-        <StyledRangeBar
-          range={ range }
-          width={ rect.width }
-          length={ curveLength }
-        />
-      ) }
+        ) }
+      </ErrorBoundary>
     </Root>
   );
 };

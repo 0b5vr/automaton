@@ -7,6 +7,7 @@ import styled, { css, keyframes } from 'styled-components';
 
 // == styles =======================================================================================
 const Content = styled.div`
+  white-space: pre-wrap;
 `;
 
 const Icon = styled.img`

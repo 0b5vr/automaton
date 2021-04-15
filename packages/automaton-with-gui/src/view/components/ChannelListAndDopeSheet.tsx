@@ -2,6 +2,7 @@ import { ChannelList } from './ChannelList';
 import { DopeSheet } from './DopeSheet';
 import { DopeSheetOverlay } from './DopeSheetOverlay';
 import { DopeSheetUnderlay } from './DopeSheetUnderlay';
+import { ErrorBoundary } from './ErrorBoundary';
 import { Metrics } from '../constants/Metrics';
 import { Scrollable } from './Scrollable';
 import { useDispatch, useSelector } from '../states/store';
@@ -160,26 +161,28 @@ const ChannelListAndDopeSheet = ( props: {
       className={ className }
       onContextMenu={ handleContextMenu }
     >
-      { underlay }
-      <ChannelListAndDopeSheetScrollable
-        barPosition='left'
-        onScroll={ handleScroll }
-      >
-        <ChannelListAndDopeSheetContainer
-          style={ { minHeight: rect.height } }
+      <ErrorBoundary>
+        { underlay }
+        <ChannelListAndDopeSheetScrollable
+          barPosition='left'
+          onScroll={ handleScroll }
         >
-          { shouldShowChannelList && <StyledChannelList
-            refScrollTop={ refScrollTop }
-          /> }
-          { mode === 'dope' && (
-            <StyledDopeSheet
+          <ChannelListAndDopeSheetContainer
+            style={ { minHeight: rect.height } }
+          >
+            { shouldShowChannelList && <StyledChannelList
               refScrollTop={ refScrollTop }
-              intersectionRoot={ root }
-            />
-          ) }
-        </ChannelListAndDopeSheetContainer>
-      </ChannelListAndDopeSheetScrollable>
-      { overlay }
+            /> }
+            { mode === 'dope' && (
+              <StyledDopeSheet
+                refScrollTop={ refScrollTop }
+                intersectionRoot={ root }
+              />
+            ) }
+          </ChannelListAndDopeSheetContainer>
+        </ChannelListAndDopeSheetScrollable>
+        { overlay }
+      </ErrorBoundary>
     </Root>
   );
 };
