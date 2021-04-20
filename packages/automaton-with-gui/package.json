@@ -1,6 +1,6 @@
 {
   "name": "@fms-cat/automaton-with-gui",
-  "version": "4.2.0-beta.0",
+  "version": "4.2.0",
   "description": "Animation engine for creative coding, with GUI!",
   "repository": "https://github.com/FMS-Cat/automaton",
   "author": "FMS-Cat",
@@ -51,7 +51,7 @@
     "/README.md"
   ],
   "dependencies": {
-    "@fms-cat/automaton": "^4.2.0-beta.0"
+    "@fms-cat/automaton": "^4.2.0"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^16.0.0",
