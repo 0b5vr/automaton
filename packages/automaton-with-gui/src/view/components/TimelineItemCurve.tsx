@@ -2,7 +2,7 @@ import { Colors } from '../constants/Colors';
 import { Icons } from '../icons/Icons';
 import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
 import { Resolution } from '../utils/Resolution';
-import { TimeValueRange, dt2dx, dx2dt, dy2dv, snapTime, snapValue, t2x, v2y, x2t, y2v } from '../utils/TimeValueRange';
+import { TimeValueRange, dt2dx, dx2dt, dy2dv, snapTime, snapValue, t2x, v2y } from '../utils/TimeValueRange';
 import { genID } from '@fms-cat/automaton-with-gui/src/utils/genID';
 import { jsonCopy } from '@fms-cat/automaton-with-gui/src/utils/jsonCopy';
 import { objectMapHas } from '../utils/objectMap';
@@ -68,12 +68,15 @@ export interface TimelineItemCurveProps {
   item: StateChannelItem;
   range: TimeValueRange;
   size: Resolution;
+  grabBody: () => void;
+  grabBodyCtrl: () => void;
+  removeItem: () => void;
   dopeSheetMode?: boolean;
 }
 
 // == component ====================================================================================
 const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
-  const { item, range, size, dopeSheetMode } = props;
+  const { item, range, size, grabBody, grabBodyCtrl, removeItem, dopeSheetMode } = props;
   const channelName = props.channel;
 
   const dispatch = useDispatch();
@@ -121,71 +124,6 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
   const isSelected = objectMapHas( selectedItems, item.$id );
 
   const channel = automaton?.getChannel( channelName );
-
-  const grabBody = useCallback(
-    (): void => {
-      if ( !channel ) { return; }
-
-      const timePrev = item.time;
-      const valuePrev = item.value;
-      let x = t2x( timePrev, range, size.width );
-      let y = v2y( valuePrev, range, size.height );
-      let time = timePrev;
-      let value = valuePrev;
-      let hasMoved = false;
-
-      registerMouseEvent(
-        ( event, movementSum ) => {
-          hasMoved = true;
-          x += movementSum.x;
-          y += movementSum.y;
-
-          const holdTime = event.ctrlKey || event.metaKey;
-          const holdValue = dopeSheetMode || event.shiftKey;
-          const ignoreSnap = event.altKey;
-
-          time = holdTime ? timePrev : x2t( x, range, size.width );
-          value = holdValue ? valuePrev : y2v( y, range, size.height );
-
-          if ( !ignoreSnap ) {
-            if ( !holdTime ) { time = snapTime( time, range, size.width, guiSettings ); }
-            if ( !holdValue ) { value = snapValue( value, range, size.height, guiSettings ); }
-          }
-
-          channel.moveItem( item.$id, time );
-          channel.changeItemValue( item.$id, value );
-        },
-        () => {
-          if ( !hasMoved ) { return; }
-
-          channel.moveItem( item.$id, time );
-          channel.changeItemValue( item.$id, value );
-
-          dispatch( {
-            type: 'History/Push',
-            description: 'Move Curve',
-            commands: [
-              {
-                type: 'channel/moveItem',
-                channel: channelName,
-                item: item.$id,
-                time,
-                timePrev
-              },
-              {
-                type: 'channel/changeItemValue',
-                channel: channelName,
-                item: item.$id,
-                value,
-                valuePrev
-              }
-            ],
-          } );
-        }
-      );
-    },
-    [ channel, item, range, size, guiSettings, dopeSheetMode, dispatch, channelName ]
-  );
 
   const grabTop = useCallback(
     (): void => {
@@ -393,48 +331,17 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
     [ channel, item, range, size, guiSettings, dispatch, channelName ]
   );
 
-  const removeItem = useCallback(
-    (): void => {
-      if ( !channel ) { return; }
-
-      channel.removeItem( item.$id );
-
-      dispatch( {
-        type: 'History/Push',
-        description: 'Remove Curve',
-        commands: [
-          {
-            type: 'channel/removeItem',
-            channel: channelName,
-            data: item
-          }
-        ],
-      } );
-    },
-    [ item, channel, dispatch, channelName ]
-  );
-
   const handleClickBody = useCallback(
     ( event ) => mouseCombo( event, {
       [ MouseComboBit.LMB ]: () => {
         if ( checkDoubleClick() ) {
           removeItem();
         } else {
-          dispatch( {
-            type: 'Timeline/SelectItems',
-            items: [ {
-              id: item.$id,
-              channel: channelName
-            } ]
-          } );
-
-          dispatch( {
-            type: 'Timeline/SelectChannel',
-            channel: channelName
-          } );
-
           grabBody();
         }
+      },
+      [ MouseComboBit.LMB + MouseComboBit.Ctrl ]: () => {
+        grabBodyCtrl();
       },
       [ MouseComboBit.LMB + MouseComboBit.Shift ]: () => {
         if ( !channel ) { return; }
@@ -467,7 +374,16 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
       },
       [ MouseComboBit.LMB + MouseComboBit.Alt ]: false, // give a way to seek!
     } ),
-    [ checkDoubleClick, removeItem, dispatch, item.$id, channelName, grabBody, channel ]
+    [
+      checkDoubleClick,
+      removeItem,
+      grabBody,
+      grabBodyCtrl,
+      channel,
+      item.$id,
+      dispatch,
+      channelName,
+    ],
   );
 
   const handleClickLeft = useCallback(

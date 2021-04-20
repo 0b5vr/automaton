@@ -17,26 +17,25 @@ export interface InspectorCurveFxProps {
 
 const InspectorCurveFx = ( props: InspectorCurveFxProps ): JSX.Element | null => {
   const dispatch = useDispatch();
-  const { automaton, curves, useBeatInGUI } = useSelector( ( state ) => ( {
+  const { automaton, stateFx, useBeatInGUI } = useSelector( ( state ) => ( {
     automaton: state.automaton.instance,
-    curves: state.automaton.curves,
+    stateFx: state.automaton.curves[ props.curveId ]?.fxs[ props.fx ],
     useBeatInGUI: state.automaton.guiSettings.useBeatInGUI,
   } ) );
   const curve = automaton?.getCurveById( props.curveId ) || null;
-  const fx = curves[ props.curveId ].fxs[ props.fx ];
-  const fxDefParams = automaton?.getFxDefinitionParams( fx.def );
+  const fxDefParams = stateFx && automaton?.getFxDefinitionParams( stateFx.def );
   const { displayToTime, timeToDisplay } = useTimeUnit();
 
-  return ( automaton && curve && <>
-    <InspectorHeader text={ `Fx: ${ automaton.getFxDefinitionName( fx.def ) }` } />
+  return ( automaton && curve && stateFx && <>
+    <InspectorHeader text={ `Fx: ${ automaton.getFxDefinitionName( stateFx.def ) }` } />
 
     <InspectorHr />
 
     <InspectorItem name={ useBeatInGUI ? 'Beat' : 'Time' }>
       <NumberParam
         type="float"
-        value={ timeToDisplay( fx.time ) }
-        onChange={ ( value ) => { curve.moveFx( fx.$id, displayToTime( value ) ); } }
+        value={ timeToDisplay( stateFx.time ) }
+        onChange={ ( value ) => { curve.moveFx( stateFx.$id, displayToTime( value ) ); } }
         onSettle={ ( value, valuePrev ) => {
           dispatch( {
             type: 'History/Push',
@@ -45,7 +44,7 @@ const InspectorCurveFx = ( props: InspectorCurveFxProps ): JSX.Element | null =>
               {
                 type: 'curve/moveFx',
                 curveId: props.curveId,
-                fx: fx.$id,
+                fx: stateFx.$id,
                 time: displayToTime( value ),
                 timePrev: displayToTime( valuePrev ),
               }
@@ -57,8 +56,8 @@ const InspectorCurveFx = ( props: InspectorCurveFxProps ): JSX.Element | null =>
     <InspectorItem name="Length">
       <NumberParam
         type="float"
-        value={ timeToDisplay( fx.length ) }
-        onChange={ ( value ) => { curve.resizeFx( fx.$id, displayToTime( value ) ); } }
+        value={ timeToDisplay( stateFx.length ) }
+        onChange={ ( value ) => { curve.resizeFx( stateFx.$id, displayToTime( value ) ); } }
         onSettle={ ( value, valuePrev ) => {
           dispatch( {
             type: 'History/Push',
@@ -67,7 +66,7 @@ const InspectorCurveFx = ( props: InspectorCurveFxProps ): JSX.Element | null =>
               {
                 type: 'curve/resizeFx',
                 curveId: props.curveId,
-                fx: fx.$id,
+                fx: stateFx.$id,
                 length: displayToTime( value ),
                 lengthPrev: displayToTime( valuePrev ),
               }
@@ -79,10 +78,10 @@ const InspectorCurveFx = ( props: InspectorCurveFxProps ): JSX.Element | null =>
     <InspectorItem name="Row">
       <NumberParam
         type="int"
-        value={ fx.row }
+        value={ stateFx.row }
         onChange={ ( row ) => {
           curve.changeFxRow(
-            fx.$id,
+            stateFx.$id,
             clamp( row, 0.0, CURVE_FX_ROW_MAX - 1 )
           );
         } }
@@ -94,7 +93,7 @@ const InspectorCurveFx = ( props: InspectorCurveFxProps ): JSX.Element | null =>
               {
                 type: 'curve/changeFxRow',
                 curveId: props.curveId,
-                fx: fx.$id,
+                fx: stateFx.$id,
                 row: clamp( row, 0, CURVE_FX_ROW_MAX - 1 ),
                 rowPrev
               }
@@ -105,9 +104,9 @@ const InspectorCurveFx = ( props: InspectorCurveFxProps ): JSX.Element | null =>
     </InspectorItem>
     <InspectorItem name="Bypass">
       <BoolParam
-        value={ !!fx.bypass }
+        value={ !!stateFx.bypass }
         onChange={ ( value ) => {
-          curve.bypassFx( fx.$id, value );
+          curve.bypassFx( stateFx.$id, value );
         } }
         onSettle={ ( value ) => {
           dispatch( {
@@ -117,7 +116,7 @@ const InspectorCurveFx = ( props: InspectorCurveFxProps ): JSX.Element | null =>
               {
                 type: 'curve/bypassFx',
                 curveId: props.curveId,
-                fx: fx.$id,
+                fx: stateFx.$id,
                 bypass: value
               }
             ]
@@ -134,9 +133,9 @@ const InspectorCurveFx = ( props: InspectorCurveFxProps ): JSX.Element | null =>
           { ( fxParam.type === 'float' || fxParam.type === 'int' ) && (
             <NumberParam
               type={ fxParam.type }
-              value={ fx.params[ name ] }
+              value={ stateFx.params[ name ] }
               onChange={ ( value ) => {
-                curve.changeFxParam( fx.$id, name, value );
+                curve.changeFxParam( stateFx.$id, name, value );
               } }
               onSettle={ ( value, valuePrev ) => {
                 dispatch( {
@@ -146,7 +145,7 @@ const InspectorCurveFx = ( props: InspectorCurveFxProps ): JSX.Element | null =>
                     {
                       type: 'curve/changeFxParam',
                       curveId: props.curveId,
-                      fx: fx.$id,
+                      fx: stateFx.$id,
                       key: name,
                       value,
                       valuePrev
@@ -158,9 +157,9 @@ const InspectorCurveFx = ( props: InspectorCurveFxProps ): JSX.Element | null =>
           ) }
           { ( fxParam.type === 'boolean' ) && (
             <BoolParam
-              value={ fx.params[ name ] }
+              value={ stateFx.params[ name ] }
               onChange={ ( value ) => {
-                curve.changeFxParam( fx.$id, name, value );
+                curve.changeFxParam( stateFx.$id, name, value );
               } }
               onSettle={ ( value, valuePrev ) => {
                 dispatch( {
@@ -170,7 +169,7 @@ const InspectorCurveFx = ( props: InspectorCurveFxProps ): JSX.Element | null =>
                     {
                       type: 'curve/changeFxParam',
                       curveId: props.curveId,
-                      fx: fx.$id,
+                      fx: stateFx.$id,
                       key: name,
                       value,
                       valuePrev

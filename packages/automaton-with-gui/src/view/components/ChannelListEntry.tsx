@@ -1,4 +1,5 @@
 import { Colors } from '../constants/Colors';
+import { Metrics } from '../constants/Metrics';
 import { StatusIcon } from './StatusIcon';
 import { duplicateName } from '../utils/duplicateName';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
@@ -52,7 +53,7 @@ const StyledValue = styled( Value )`
 
 const Root = styled.div<{ isSelected: boolean }>`
   position: relative;
-  height: 18px;
+  height: ${ Metrics.channelListEntyHeight - 2 }px;
   background: ${ ( { isSelected } ) => ( isSelected ? Colors.back4 : Colors.back3 ) };
   box-shadow: ${ ( { isSelected } ) => ( isSelected ? `0 0 0 1px ${ Colors.accent }` : 'none' ) };
 `;
@@ -118,7 +119,7 @@ const ChannelListEntry = ( props: ChannelListEntryProps ): JSX.Element => {
       registerMouseEvent(
         ( event ) => {
           const currentY = event.clientY - ( refScrollTop.current ?? 0.0 );
-          deltaIndex = Math.round( ( currentY - initY ) / 20 ); // 🔥 hardcoded
+          deltaIndex = Math.round( ( currentY - initY ) / Metrics.channelListEntyHeight );
           reorder( deltaIndex );
         },
         () => {

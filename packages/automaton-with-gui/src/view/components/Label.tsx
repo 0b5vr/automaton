@@ -1,11 +1,12 @@
 import { Colors } from '../constants/Colors';
 import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
 import { Resolution } from '../utils/Resolution';
-import { TimeRange, dx2dt, snapTime, t2x } from '../utils/TimeValueRange';
+import { TimeRange, t2x } from '../utils/TimeValueRange';
 import { arraySetHas } from '../utils/arraySet';
-import { registerMouseEvent } from '../utils/registerMouseEvent';
+import { registerMouseNoDragEvent } from '../utils/registerMouseNoDragEvent';
 import { useDispatch, useSelector } from '../states/store';
 import { useDoubleClick } from '../utils/useDoubleClick';
+import { useMoveEntites } from '../gui-operation-hooks/useMoveEntities';
 import { useRect } from '../utils/useRect';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
@@ -39,13 +40,22 @@ const Label = ( { name, time, range, size }: {
   const dispatch = useDispatch();
   const {
     automaton,
-    guiSettings,
     selectedLabels
   } = useSelector( ( state ) => ( {
     automaton: state.automaton.instance,
     guiSettings: state.automaton.guiSettings,
     selectedLabels: state.timeline.selected.labels
   } ) );
+  const timeValueRange = useMemo(
+    () => ( {
+      t0: range.t0,
+      v0: 0.0,
+      t1: range.t1,
+      v1: 1.0,
+    } ),
+    [ range.t0, range.t1 ]
+  );
+  const moveEntities = useMoveEntites( timeValueRange, size );
   const checkDoubleClick = useDoubleClick();
   const [ width, setWidth ] = useState( 0.0 );
   const x = t2x( time, range, size.width );
@@ -66,53 +76,44 @@ const Label = ( { name, time, range, size }: {
 
   const grabLabel = useCallback(
     (): void => {
-      if ( !automaton ) { return; }
+      if ( !isSelected ) {
+        dispatch( {
+          type: 'Timeline/SelectLabels',
+          labels: [ name ],
+        } );
+      }
 
+      moveEntities( { moveValue: false, snapOriginTime: time } );
+
+      registerMouseNoDragEvent( () => {
+        dispatch( {
+          type: 'Timeline/SelectLabels',
+          labels: [ name ],
+        } );
+      } );
+    },
+    [ isSelected, moveEntities, time, dispatch, name ]
+  );
+
+  const grabLabelCtrl = useCallback(
+    (): void => {
       dispatch( {
-        type: 'Timeline/SelectLabels',
-        labels: [ name ]
+        type: 'Timeline/SelectLabelsAdd',
+        labels: [ name ],
       } );
 
-      const timePrev = time;
-      let newTime = time;
-      let x = 0.0;
-      let hasMoved = false;
+      moveEntities( { moveValue: false, snapOriginTime: time } );
 
-      registerMouseEvent(
-        ( event, movementSum ) => {
-          hasMoved = true;
-          x += movementSum.x;
-
-          const ignoreSnap = event.altKey;
-          newTime = timePrev + dx2dt( x, range, size.width );
-
-          if ( !ignoreSnap ) {
-            newTime = snapTime( newTime, range, size.width, guiSettings );
-          }
-
-          automaton.setLabel( name, newTime );
-        },
-        () => {
-          if ( !hasMoved ) { return; }
-
-          automaton.setLabel( name, newTime );
-
+      registerMouseNoDragEvent( () => {
+        if ( isSelected ) {
           dispatch( {
-            type: 'History/Push',
-            description: 'Move Label',
-            commands: [
-              {
-                type: 'automaton/moveLabel',
-                name,
-                time: newTime,
-                timePrev
-              }
-            ]
+            type: 'Timeline/SelectLabelsSub',
+            labels: [ name ],
           } );
         }
-      );
+      } );
     },
-    [ automaton, time, name, range, size, guiSettings, dispatch ]
+    [ dispatch, isSelected, moveEntities, name, time ]
   );
 
   const renameLabel = useCallback(
@@ -181,6 +182,9 @@ const Label = ( { name, time, range, size }: {
 
   const handleMouseDown = useCallback(
     ( event ) => mouseCombo( event, {
+      [ MouseComboBit.Ctrl + MouseComboBit.LMB ]: () => {
+        grabLabelCtrl();
+      },
       [ MouseComboBit.LMB ]: () => {
         if ( checkDoubleClick() ) {
           deleteLabel();
@@ -189,7 +193,7 @@ const Label = ( { name, time, range, size }: {
         }
       }
     } ),
-    [ checkDoubleClick, deleteLabel, grabLabel ]
+    [ checkDoubleClick, deleteLabel, grabLabel, grabLabelCtrl ]
   );
 
   const handleContextMenu = useCallback(

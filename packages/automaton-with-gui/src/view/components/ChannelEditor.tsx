@@ -2,22 +2,35 @@ import { Colors } from '../constants/Colors';
 import { Labels } from './Labels';
 import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
 import { RangeBar } from './RangeBar';
+import { RectSelectView } from './RectSelectView';
 import { Resolution } from '../utils/Resolution';
 import { TimeLoopRegion } from './TimeLoopRegion';
 import { TimeValueGrid } from './TimeValueGrid';
 import { TimeValueLines } from './TimeValueLines';
-import { TimeValueRange, dt2dx, dx2dt, dy2dv, snapTime, snapValue, x2t, y2v } from '../utils/TimeValueRange';
+import { TimeValueRange } from '../utils/TimeValueRange';
 import { TimelineItem } from './TimelineItem';
 import { binarySearch } from '../utils/binarySearch';
 import { hasOverwrap } from '../../utils/hasOverwrap';
 import { registerMouseEvent } from '../utils/registerMouseEvent';
 import { showToasty } from '../states/Toasty';
 import { useDispatch, useSelector } from '../states/store';
+import { useDoubleClick } from '../utils/useDoubleClick';
 import { useRect } from '../utils/useRect';
+import { useSelectAllItemsInChannel } from '../gui-operation-hooks/useSelectAllItemsInChannel';
+import { useTimeValueRangeFuncs } from '../utils/useTimeValueRange';
 import { useWheelEvent } from '../utils/useWheelEvent';
-import React, { useCallback, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import type { StateChannelItem } from '../../types/StateChannelItem';
+
+// == rect select - interface ======================================================================
+export interface ChannelEditorRectSelectState {
+  isSelecting: boolean;
+  t0: number;
+  v0: number;
+  t1: number;
+  v1: number;
+}
 
 // == microcomponent ===============================================================================
 const Lines = ( { channel, range, size }: {
@@ -39,28 +52,36 @@ const Lines = ( { channel, range, size }: {
   />;
 };
 
-const Items = ( { channel, range, size }: {
+const Items = ( { channel, range, size, rectSelect }: {
   channel: string;
   range: TimeValueRange;
   size: Resolution;
+  rectSelect: {
+    isSelecting: boolean;
+    t0: number;
+    t1: number;
+    v0: number;
+    v1: number;
+  };
 } ): JSX.Element => {
   const { sortedItems } = useSelector( ( state ) => ( {
     sortedItems: state.automaton.channels[ channel ].sortedItems,
   } ) );
+  const { dt2dx } = useTimeValueRangeFuncs( range, size );
 
   const itemsInRange = useMemo(
     () => {
       const i0 = binarySearch(
         sortedItems,
-        ( item ) => dt2dx( ( item.time + item.length ) - range.t0, range, size.width ) < -20.0,
+        ( item ) => dt2dx( ( item.time + item.length ) - range.t0 ) < -20.0,
       );
       const i1 = binarySearch(
         sortedItems,
-        ( item ) => dt2dx( item.time - range.t1, range, size.width ) < 20.0,
+        ( item ) => dt2dx( item.time - range.t1 ) < 20.0,
       );
       return sortedItems.slice( i0, i1 );
     },
-    [ range, size.width, sortedItems ]
+    [ dt2dx, range.t0, range.t1, sortedItems ]
   );
 
   return <>
@@ -71,6 +92,7 @@ const Items = ( { channel, range, size }: {
         item={ item }
         range={ range }
         size={ size }
+        rectSelectState={ rectSelect }
       />
     ) ) }
   </>;
@@ -100,6 +122,8 @@ const StyledRangeBar = styled( RangeBar )`
 `;
 
 const Root = styled.div`
+  position: relative;
+  overflow: hidden;
 `;
 
 // == props ========================================================================================
@@ -114,7 +138,6 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
     automaton,
     selectedChannel,
     range,
-    guiSettings,
     automatonLength,
     lastSelectedItem,
     selectedCurve
@@ -122,15 +145,26 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
     automaton: state.automaton.instance,
     selectedChannel: state.timeline.selectedChannel,
     range: state.timeline.range,
-    guiSettings: state.automaton.guiSettings,
     automatonLength: state.automaton.length,
     lastSelectedItem: state.timeline.lastSelectedItem,
     selectedCurve: state.curveEditor.selectedCurve
   } ) );
   const channel = selectedChannel != null && automaton?.getChannel( selectedChannel );
+  const checkDoubleClick = useDoubleClick();
+  const selectAllItemsInChannel = useSelectAllItemsInChannel();
 
   const refBody = useRef<HTMLDivElement>( null );
   const rect = useRect( refBody );
+  const {
+    x2t,
+    y2v,
+    dx2dt,
+    t2x,
+    v2y,
+    dy2dv,
+    snapTime,
+    snapValue,
+  } = useTimeValueRangeFuncs( range, rect );
 
   const move = useCallback(
     ( dx: number, dy: number ): void => {
@@ -169,8 +203,8 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
         return;
       }
 
-      const t = x2t( x - rect.left, range, rect.width );
-      const v = y2v( y - rect.top, range, rect.height );
+      const t = x2t( x - rect.left );
+      const v = y2v( y - rect.top );
 
       const thereAreNoOtherItemsHere = channel.items.every( ( item ) => (
         !hasOverwrap( item.time, item.length, t, 0.0 )
@@ -209,7 +243,7 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
         ],
       } );
     },
-    [ range, rect, selectedChannel, channel, dispatch ]
+    [ selectedChannel, channel, x2t, rect.left, rect.top, y2v, dispatch ]
   );
 
   const createNewCurve = useCallback(
@@ -224,7 +258,7 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
         return;
       }
 
-      const t = x2t( x - rect.left, range, rect.width );
+      const t = x2t( x - rect.left );
 
       const thereAreNoOtherItemsHere = channel.items.every( ( item ) => (
         !hasOverwrap( item.time, item.length, t, 0.0 )
@@ -267,14 +301,14 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
         ],
       } );
     },
-    [ automaton, range, rect, selectedChannel, channel, dispatch ]
+    [ automaton, selectedChannel, channel, x2t, rect.left, dispatch ]
   );
 
   const createLabel = useCallback(
     ( x: number, y: number ): void => {
       if ( !automaton ) { return; }
 
-      const time = x2t( x - rect.left, range, rect.width );
+      const time = x2t( x - rect.left );
 
       dispatch( {
         type: 'TextPrompt/Open',
@@ -307,14 +341,14 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
         }
       } );
     },
-    [ automaton, range, rect, dispatch ]
+    [ automaton, x2t, rect.left, dispatch ]
   );
 
   const createItemAndGrab = useCallback(
     ( x: number, y: number ): void => {
       if ( !automaton || !selectedChannel || !channel ) { return; }
 
-      const t0 = x2t( x - rect.left, range, rect.width );
+      const t0 = x2t( x - rect.left );
 
       const thereAreNoOtherItemsHere = channel.items.every( ( item ) => (
         !hasOverwrap( item.time, item.length, t0, 0.0 )
@@ -324,7 +358,7 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
 
       let data: StateChannelItem | null = null;
 
-      let v0 = y2v( y - rect.top, range, rect.height );
+      let v0 = y2v( y - rect.top );
 
       // try last selected item
       if ( lastSelectedItem ) {
@@ -374,12 +408,12 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
           const holdValue = event.shiftKey;
           const ignoreSnap = event.altKey;
 
-          time = holdTime ? t0 : ( t0 + dx2dt( dx, range, rect.width ) );
-          value = holdValue ? v0 : ( v0 + dy2dv( dy, range, rect.height ) );
+          time = holdTime ? t0 : ( t0 + dx2dt( dx ) );
+          value = holdValue ? v0 : ( v0 + dy2dv( dy ) );
 
           if ( !ignoreSnap ) {
-            if ( !holdTime ) { time = snapTime( time, range, rect.width, guiSettings ); }
-            if ( !holdValue ) { value = snapValue( value, range, rect.height, guiSettings ); }
+            if ( !holdTime ) { time = snapTime( time ); }
+            if ( !holdValue ) { value = snapValue( value ); }
           }
 
           channel.moveItem( confirmedData.$id, time );
@@ -407,14 +441,19 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
     },
     [
       automaton,
-      lastSelectedItem,
-      selectedCurve,
-      range,
-      rect,
-      guiSettings,
       selectedChannel,
       channel,
-      dispatch
+      x2t,
+      rect.left,
+      rect.top,
+      y2v,
+      lastSelectedItem,
+      dispatch,
+      selectedCurve,
+      dx2dt,
+      dy2dv,
+      snapTime,
+      snapValue,
     ]
   );
 
@@ -425,7 +464,7 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
       const isPlaying = automaton.isPlaying;
       automaton.pause();
 
-      const t0 = x2t( x - rect.left, range, rect.width );
+      const t0 = x2t( x - rect.left );
       automaton.seek( t0 );
 
       let dx = 0.0;
@@ -434,7 +473,7 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
       registerMouseEvent(
         ( event, movementSum ) => {
           dx += movementSum.x;
-          t = t0 + dx2dt( dx, range, rect.width );
+          t = t0 + dx2dt( dx );
           automaton.seek( t );
         },
         () => {
@@ -443,15 +482,15 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
         }
       );
     },
-    [ automaton, range, rect ]
+    [ automaton, dx2dt, rect.left, x2t ]
   );
 
   const startSetLoopRegion = useCallback(
     ( x: number ): void => {
       if ( !automaton ) { return; }
 
-      const t0Raw = x2t( x - rect.left, range, rect.width );
-      const t0 = snapTime( t0Raw, range, rect.width, guiSettings );
+      const t0Raw = x2t( x - rect.left );
+      const t0 = snapTime( t0Raw );
 
       let dx = 0.0;
       let t = t0;
@@ -460,8 +499,8 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
         ( event, movementSum ) => {
           dx += movementSum.x;
 
-          const tRaw = t0 + dx2dt( dx, range, rect.width );
-          t = snapTime( tRaw, range, rect.width, guiSettings );
+          const tRaw = t0 + dx2dt( dx );
+          t = snapTime( tRaw );
 
           if ( t - t0 === 0.0 ) {
             automaton.setLoopRegion( null );
@@ -482,16 +521,83 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
         }
       );
     },
-    [ automaton, range, rect, guiSettings ]
+    [ automaton, x2t, rect.left, snapTime, dx2dt ]
+  );
+
+  const refX2t = useRef( x2t );
+  const refY2v = useRef( y2v );
+  useEffect( () => { refX2t.current = x2t; }, [ x2t ] );
+  useEffect( () => { refY2v.current = y2v; }, [ y2v ] );
+
+  const [ rectSelectState, setRectSelectState ] = useState<ChannelEditorRectSelectState>( {
+    isSelecting: false,
+    t0: Infinity,
+    t1: -Infinity,
+    v0: Infinity,
+    v1: -Infinity,
+  } );
+
+  const startRectSelect = useCallback(
+    ( x: number, y: number ) => {
+      const t0 = refX2t.current( x - rect.left );
+      const v0 = refY2v.current( y - rect.top );
+      let t1 = t0;
+      let v1 = v0;
+
+      setRectSelectState( {
+        isSelecting: true,
+        t0,
+        t1,
+        v0,
+        v1,
+      } );
+
+      registerMouseEvent(
+        ( event ) => {
+          t1 = refX2t.current( event.clientX - rect.left );
+          v1 = refY2v.current( event.clientY - rect.top );
+
+          setRectSelectState( {
+            isSelecting: true,
+            t0: Math.min( t0, t1 ),
+            t1: Math.max( t0, t1 ),
+            v0: Math.min( v0, v1 ),
+            v1: Math.max( v0, v1 ),
+          } );
+        },
+        () => {
+          setRectSelectState( {
+            isSelecting: false,
+            t0: Infinity,
+            t1: -Infinity,
+            v0: Infinity,
+            v1: -Infinity,
+          } );
+        },
+      );
+    },
+    [ rect.left, rect.top ]
   );
 
   const handleMouseDown = useCallback(
     ( event ) => mouseCombo( event, {
       [ MouseComboBit.LMB ]: ( event ) => {
-        createItemAndGrab(
-          event.clientX,
-          event.clientY
-        );
+        if ( checkDoubleClick() ) {
+          createItemAndGrab(
+            event.clientX,
+            event.clientY
+          );
+        } else {
+          dispatch( {
+            type: 'Timeline/SelectItems',
+            items: [],
+          } );
+
+          startRectSelect( event.clientX, event.clientY );
+        }
+      },
+      [ MouseComboBit.LMB + MouseComboBit.Ctrl ]: ( event ) => {
+        startRectSelect( event.clientX, event.clientY );
       },
       [ MouseComboBit.LMB + MouseComboBit.Alt ]: ( event ) => {
         startSeek( event.clientX );
@@ -505,7 +611,15 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
         );
       }
     } ),
-    [ createItemAndGrab, startSeek, move, startSetLoopRegion ]
+    [
+      checkDoubleClick,
+      createItemAndGrab,
+      dispatch,
+      startRectSelect,
+      startSeek,
+      startSetLoopRegion,
+      move,
+    ]
   );
 
   const handleContextMenu = useCallback(
@@ -533,11 +647,23 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
             name: 'Create Label',
             description: 'Create a label.',
             callback: () => createLabel( x, y )
-          }
+          },
+          {
+            name: 'Select All Items',
+            description: 'Select all items in the channel.',
+            callback: () => selectAllItemsInChannel( selectedChannel! ), // TODO: separate the content of ChannelEditor from `selectedChannel &&`
+          },
         ]
       } );
     },
-    [ dispatch, createConstant, createNewCurve, createLabel ]
+    [
+      dispatch,
+      createConstant,
+      createNewCurve,
+      createLabel,
+      selectedChannel,
+      selectAllItemsInChannel,
+    ],
   );
 
   const handleWheel = useCallback(
@@ -579,6 +705,7 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
             channel={ selectedChannel }
             range={ range }
             size={ rect }
+            rectSelect={ rectSelectState }
           /> }
           <Labels
             range={ range }
@@ -600,6 +727,14 @@ const ChannelEditor = ( { className }: Props ): JSX.Element => {
         width={ rect.width }
         length={ automatonLength }
       />
+      { rectSelectState.isSelecting && (
+        <RectSelectView
+          x0={ t2x( rectSelectState.t0 ) }
+          x1={ t2x( rectSelectState.t1 ) }
+          y0={ v2y( rectSelectState.v1 ) }
+          y1={ v2y( rectSelectState.v0 ) }
+        />
+      ) }
     </Root>
   );
 };

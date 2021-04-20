@@ -8,6 +8,7 @@ import { Colors } from '../constants/Colors';
 import { ContextMenu } from './ContextMenu';
 import { CurveEditor } from './CurveEditor';
 import { CurveList } from './CurveList';
+import { ErrorBoundary } from './ErrorBoundary';
 import { FxSpawner } from './FxSpawner';
 import { GUIRemocon } from '../../GUIRemocon';
 import { GUIRemoconListener } from './GUIRemoconListener';
@@ -145,24 +146,31 @@ const Fuck = ( { className, automaton, guiRemocon }: AppProps ): JSX.Element => 
       className={ className }
       onContextMenu={ handleContextMenu }
     >
-      <AutomatonStateListener automaton={ automaton } />
-      <GUIRemoconListener guiRemocon={ guiRemocon } />
-      <StyledHeader />
-      <StyledModeSelector />
-      <StyledChannelListAndDopeSheet />
-      { mode === 'channel' && <StyledChannelEditor /> }
-      { mode === 'curve' && <>
-        <StyledCurveList />
-        <StyledCurveEditor />
-      </> }
-      <StyledInspector />
-      { isFxSpawnerVisible && <StyledFxSpawner /> }
-      { isAboutVisible && <StyledAbout /> }
-      { isContextMenuVisible && <ContextMenu /> }
-      { isTextPromptVisible && <TextPrompt /> }
+      <ErrorBoundary>
+        <AutomatonStateListener automaton={ automaton } />
+        <GUIRemoconListener guiRemocon={ guiRemocon } />
 
-      <Toasty />
-      <Stalker />
+        <ErrorBoundary>
+          <StyledHeader />
+          <StyledModeSelector />
+          <StyledChannelListAndDopeSheet />
+          { mode === 'channel' && <StyledChannelEditor /> }
+          { mode === 'curve' && <>
+            <StyledCurveList />
+            <StyledCurveEditor />
+          </> }
+          <StyledInspector />
+          { isFxSpawnerVisible && <StyledFxSpawner /> }
+          { isAboutVisible && <StyledAbout /> }
+          { isContextMenuVisible && <ContextMenu /> }
+          { isTextPromptVisible && <TextPrompt /> }
+        </ErrorBoundary>
+
+        <ErrorBoundary>
+          <Toasty />
+          <Stalker />
+        </ErrorBoundary>
+      </ErrorBoundary>
     </Root>
   );
 };

@@ -11,7 +11,7 @@ import * as Timeline from './Timeline';
 import * as Toasty from './Toasty';
 import * as Workspace from './Workspace';
 import { Dispatch, Store, combineReducers, createStore as createReduxStore } from 'redux';
-import { shallowEqual, useDispatch as useReduxDispatch, useSelector as useReduxSelector } from 'react-redux';
+import { shallowEqual, useDispatch as useReduxDispatch, useSelector as useReduxSelector, useStore as useReduxStore } from 'react-redux';
 
 // == state ========================================================================================
 export interface State {
@@ -82,4 +82,8 @@ export function useSelector<T>( selector: ( state: State ) => T ): T {
 
 export function useDispatch(): Dispatch<Action> {
   return useReduxDispatch<Dispatch<Action>>();
+}
+
+export function useStore(): Store<State, Action> {
+  return useReduxStore();
 }

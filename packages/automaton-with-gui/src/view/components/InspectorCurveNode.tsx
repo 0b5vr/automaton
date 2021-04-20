@@ -14,16 +14,15 @@ interface Props {
 
 const InspectorCurveNode = ( props: Props ): JSX.Element | null => {
   const dispatch = useDispatch();
-  const { automaton, curves, useBeatInGUI } = useSelector( ( state ) => ( {
+  const { automaton, stateNode, useBeatInGUI } = useSelector( ( state ) => ( {
     automaton: state.automaton.instance,
-    curves: state.automaton.curves,
+    stateNode: state.automaton.curves[ props.curveId ]?.nodes[ props.node ],
     useBeatInGUI: state.automaton.guiSettings.useBeatInGUI,
   } ) );
   const curve = automaton?.getCurveById( props.curveId ) || null;
-  const node = curves[ props.curveId ].nodes[ props.node ];
   const { displayToTime, timeToDisplay } = useTimeUnit();
 
-  return ( curve && <>
+  return ( curve && stateNode && <>
     <InspectorHeader text="Node" />
 
     <InspectorHr />
@@ -31,8 +30,8 @@ const InspectorCurveNode = ( props: Props ): JSX.Element | null => {
     <InspectorItem name={ useBeatInGUI ? 'Beat' : 'Time' }>
       <NumberParam
         type="float"
-        value={ timeToDisplay( node.time ) }
-        onChange={ ( time ) => { curve.moveNodeTime( node.$id, displayToTime( time ) ); } }
+        value={ timeToDisplay( stateNode.time ) }
+        onChange={ ( time ) => { curve.moveNodeTime( stateNode.$id, displayToTime( time ) ); } }
         onSettle={ ( value, valuePrev ) => {
           dispatch( {
             type: 'History/Push',
@@ -41,7 +40,7 @@ const InspectorCurveNode = ( props: Props ): JSX.Element | null => {
               {
                 type: 'curve/moveNodeTime',
                 curveId: props.curveId,
-                node: node.$id,
+                node: stateNode.$id,
                 time: displayToTime( value ),
                 timePrev: displayToTime( valuePrev ),
               }
@@ -53,8 +52,8 @@ const InspectorCurveNode = ( props: Props ): JSX.Element | null => {
     <InspectorItem name="Value">
       <NumberParam
         type="float"
-        value={ node.value }
-        onChange={ ( value ) => { curve.moveNodeValue( node.$id, value ); } }
+        value={ stateNode.value }
+        onChange={ ( value ) => { curve.moveNodeValue( stateNode.$id, value ); } }
         onSettle={ ( value, valuePrev ) => {
           dispatch( {
             type: 'History/Push',
@@ -63,7 +62,7 @@ const InspectorCurveNode = ( props: Props ): JSX.Element | null => {
               {
                 type: 'curve/moveNodeValue',
                 curveId: props.curveId,
-                node: node.$id,
+                node: stateNode.$id,
                 value,
                 valuePrev,
               }
@@ -78,8 +77,8 @@ const InspectorCurveNode = ( props: Props ): JSX.Element | null => {
     <InspectorItem name={ useBeatInGUI ? 'In Beat' : 'In Time' }>
       <NumberParam
         type="float"
-        value={ timeToDisplay( node.inTime ) }
-        onChange={ ( value ) => { curve.moveHandleTime( node.$id, 'in', displayToTime( value ) ); } }
+        value={ timeToDisplay( stateNode.inTime ) }
+        onChange={ ( value ) => { curve.moveHandleTime( stateNode.$id, 'in', displayToTime( value ) ); } }
         onSettle={ ( value, valuePrev ) => {
           dispatch( {
             type: 'History/Push',
@@ -88,7 +87,7 @@ const InspectorCurveNode = ( props: Props ): JSX.Element | null => {
               {
                 type: 'curve/moveHandleTime',
                 curveId: props.curveId,
-                node: node.$id,
+                node: stateNode.$id,
                 dir: 'in',
                 time: displayToTime( value ),
                 timePrev: displayToTime( valuePrev ),
@@ -101,8 +100,8 @@ const InspectorCurveNode = ( props: Props ): JSX.Element | null => {
     <InspectorItem name="In Value">
       <NumberParam
         type="float"
-        value={ node.inValue }
-        onChange={ ( value ) => { curve.moveHandleValue( node.$id, 'in', value ); } }
+        value={ stateNode.inValue }
+        onChange={ ( value ) => { curve.moveHandleValue( stateNode.$id, 'in', value ); } }
         onSettle={ ( value, valuePrev ) => {
           dispatch( {
             type: 'History/Push',
@@ -111,7 +110,7 @@ const InspectorCurveNode = ( props: Props ): JSX.Element | null => {
               {
                 type: 'curve/moveHandleValue',
                 curveId: props.curveId,
-                node: node.$id,
+                node: stateNode.$id,
                 dir: 'in',
                 value,
                 valuePrev,
@@ -127,8 +126,8 @@ const InspectorCurveNode = ( props: Props ): JSX.Element | null => {
     <InspectorItem name={ useBeatInGUI ? 'Out Beat' : 'Out Time' }>
       <NumberParam
         type="float"
-        value={ timeToDisplay( node.outTime ) }
-        onChange={ ( value ) => { curve.moveHandleTime( node.$id, 'out', displayToTime( value ) ); } }
+        value={ timeToDisplay( stateNode.outTime ) }
+        onChange={ ( value ) => { curve.moveHandleTime( stateNode.$id, 'out', displayToTime( value ) ); } }
         onSettle={ ( value, valuePrev ) => {
           dispatch( {
             type: 'History/Push',
@@ -137,7 +136,7 @@ const InspectorCurveNode = ( props: Props ): JSX.Element | null => {
               {
                 type: 'curve/moveHandleTime',
                 curveId: props.curveId,
-                node: node.$id,
+                node: stateNode.$id,
                 dir: 'out',
                 time: displayToTime( value ),
                 timePrev: displayToTime( valuePrev ),
@@ -150,8 +149,8 @@ const InspectorCurveNode = ( props: Props ): JSX.Element | null => {
     <InspectorItem name="Out Value">
       <NumberParam
         type="float"
-        value={ node.outValue }
-        onChange={ ( value ) => { curve.moveHandleValue( node.$id, 'out', value ); } }
+        value={ stateNode.outValue }
+        onChange={ ( value ) => { curve.moveHandleValue( stateNode.$id, 'out', value ); } }
         onSettle={ ( value, valuePrev ) => {
           dispatch( {
             type: 'History/Push',
@@ -160,7 +159,7 @@ const InspectorCurveNode = ( props: Props ): JSX.Element | null => {
               {
                 type: 'curve/moveHandleValue',
                 curveId: props.curveId,
-                node: node.$id,
+                node: stateNode.$id,
                 dir: 'out',
                 value,
                 valuePrev,

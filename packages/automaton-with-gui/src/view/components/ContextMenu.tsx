@@ -96,9 +96,17 @@ const ContextMenu = ( { className }: ContextMenuProps ): JSX.Element => {
               key={ iCommand }
               name={ command.name }
               description={ command.description }
-              onClick={ () => {
-                command.callback();
-                dispatch( { type: 'ContextMenu/Close' } );
+              onClick={ ( event ) => {
+                command.callback?.();
+                if ( command.more != null ) {
+                  dispatch( {
+                    type: 'ContextMenu/More',
+                    position: { x: event.clientX, y: event.clientY },
+                    commands: command.more,
+                  } );
+                } else {
+                  dispatch( { type: 'ContextMenu/Close' } );
+                }
               } }
             />
           )

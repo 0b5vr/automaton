@@ -1,12 +1,11 @@
 import { Colors } from '../constants/Colors';
+import { ErrorBoundary } from './ErrorBoundary';
 import { HeaderSeekbar } from './HeaderSeekbar';
 import { Icons } from '../icons/Icons';
 import { Metrics } from '../constants/Metrics';
-import { minimizeData } from '../../minimizeData';
 import { performRedo, performUndo } from '../history/HistoryCommand';
-import { showToasty } from '../states/Toasty';
 import { useDispatch, useSelector } from '../states/store';
-import { writeClipboard } from '../utils/clipboard';
+import { useSave } from '../gui-operation-hooks/useSave';
 import React, { useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 
@@ -113,23 +112,7 @@ const Header = ( { className }: HeaderProps ): JSX.Element => {
     cantUndoThis: state.history.cantUndoThis
   } ) );
 
-  const save = useCallback(
-    ( data: string ): void => {
-      if ( !automaton ) { return; }
-
-      writeClipboard( data );
-
-      automaton.shouldSave = false;
-
-      showToasty( {
-        dispatch,
-        kind: 'info',
-        message: 'Copied to clipboard!',
-        timeout: 2.0
-      } );
-    },
-    [ automaton, dispatch ]
-  );
+  const save = useSave();
 
   const handlePlay = useCallback(
     (): void => {
@@ -181,17 +164,8 @@ const Header = ( { className }: HeaderProps ): JSX.Element => {
   );
 
   const handleSave = useCallback(
-    () => {
-      if ( !automaton ) { return; }
-
-      if ( automaton.overrideSave ) {
-        automaton.overrideSave();
-      } else {
-        const data = automaton.serialize();
-        save( JSON.stringify( data ) );
-      }
-    },
-    [ automaton, save ]
+    () => save(),
+    [ save ]
   );
 
   const handleSaveContextMenu = useCallback(
@@ -215,25 +189,14 @@ const Header = ( { className }: HeaderProps ): JSX.Element => {
             {
               name: 'Save',
               description: 'Copy its serialized data to clipboard.',
-              callback: () => {
-                const data = automaton.serialize();
-                save( JSON.stringify( data ) );
-              }
+              callback: () => save(),
             },
             {
               name: 'Minimal Export',
               description: 'Same as Save, but way more minimized data.',
-              callback: () => {
-                const data = automaton.serialize();
-                const options = {
-                  precisionTime: automaton.guiSettings.minimizedPrecisionTime,
-                  precisionValue: automaton.guiSettings.minimizedPrecisionValue
-                };
-                const minimized = minimizeData( data, options );
-                save( JSON.stringify( minimized ) );
-              }
-            }
-          ]
+              callback: () => save( { minimize: true } ),
+            },
+          ],
         } );
       }
     },
@@ -260,84 +223,86 @@ const Header = ( { className }: HeaderProps ): JSX.Element => {
 
   return (
     <Root className={ className }>
-      <Section>
-        <PlayPause
-          as={ isPlaying ? Icons.Pause : Icons.Play }
-          onClick={ handlePlay }
-          data-stalker="Play / Pause"
-        />
-        <StyledHeaderSeekbar />
-      </Section>
-      <Section>
-        <Logo as={ Icons.Automaton }
-          onClick={ () => dispatch( { type: 'About/Open' } ) }
-          data-stalker={ `Automaton v${ process.env.VERSION! }` }
-        />
-        <StyledShouldSaveIndicator />
-      </Section>
-      <Section>
-        <Button
-          as={ Icons.Undo }
-          onClick={ handleUndo }
-          disabled={ historyIndex === 0 }
-          data-stalker={ undoText }
-        />
-        <Button
-          as={ Icons.Redo }
-          onClick={ handleRedo }
-          disabled={ historyIndex === historyEntries.length }
-          data-stalker={ redoText }
-        />
-        <Button
-          as={ Icons.Snap }
-          onClick={ () => {
-            dispatch( {
-              type: 'Settings/ChangeMode',
-              mode: settingsMode === 'snapping' ? 'none' : 'snapping'
-            } );
-          } }
-          active={ ( settingsMode === 'snapping' ? 1 : 0 ) as any as boolean } // fuck
-          data-stalker="Snapping"
-        />
-        <Button
-          as={ Icons.Beat }
-          onClick={ () => {
-            dispatch( {
-              type: 'Settings/ChangeMode',
-              mode: settingsMode === 'beat' ? 'none' : 'beat'
-            } );
-          } }
-          active={ ( settingsMode === 'beat' ? 1 : 0 ) as any as boolean } // fuck
-          data-stalker="Beat"
-        />
-        <Button
-          as={ Icons.Cog }
-          onClick={ () => {
-            dispatch( {
-              type: 'Settings/ChangeMode',
-              mode: settingsMode === 'general' ? 'none' : 'general'
-            } );
-          } }
-          active={ ( settingsMode === 'general' ? 1 : 0 ) as any as boolean } // fuck
-          data-stalker="General Settings"
-        />
-        <Button
-          as={ Icons.Scale }
-          onClick={ () => {
-            dispatch( {
-              type: 'Settings/ChangeMode',
-              mode: settingsMode === 'stats' ? 'none' : 'stats'
-            } );
-          } }
-          active={ ( settingsMode === 'stats' ? 1 : 0 ) as any as boolean } // fuck
-          data-stalker="Project Stats"
-        />
-        <Button as={ Icons.Save }
-          onClick={ handleSave }
-          onContextMenu={ handleSaveContextMenu }
-          data-stalker={ 'Save' }
-        />
-      </Section>
+      <ErrorBoundary>
+        <Section>
+          <PlayPause
+            as={ isPlaying ? Icons.Pause : Icons.Play }
+            onClick={ handlePlay }
+            data-stalker="Play / Pause"
+          />
+          <StyledHeaderSeekbar />
+        </Section>
+        <Section>
+          <Logo as={ Icons.Automaton }
+            onClick={ () => dispatch( { type: 'About/Open' } ) }
+            data-stalker={ `Automaton v${ process.env.VERSION! }` }
+          />
+          <StyledShouldSaveIndicator />
+        </Section>
+        <Section>
+          <Button
+            as={ Icons.Undo }
+            onClick={ handleUndo }
+            disabled={ historyIndex === 0 }
+            data-stalker={ undoText }
+          />
+          <Button
+            as={ Icons.Redo }
+            onClick={ handleRedo }
+            disabled={ historyIndex === historyEntries.length }
+            data-stalker={ redoText }
+          />
+          <Button
+            as={ Icons.Snap }
+            onClick={ () => {
+              dispatch( {
+                type: 'Settings/ChangeMode',
+                mode: settingsMode === 'snapping' ? 'none' : 'snapping'
+              } );
+            } }
+            active={ ( settingsMode === 'snapping' ? 1 : 0 ) as any as boolean } // fuck
+            data-stalker="Snapping"
+          />
+          <Button
+            as={ Icons.Beat }
+            onClick={ () => {
+              dispatch( {
+                type: 'Settings/ChangeMode',
+                mode: settingsMode === 'beat' ? 'none' : 'beat'
+              } );
+            } }
+            active={ ( settingsMode === 'beat' ? 1 : 0 ) as any as boolean } // fuck
+            data-stalker="Beat"
+          />
+          <Button
+            as={ Icons.Cog }
+            onClick={ () => {
+              dispatch( {
+                type: 'Settings/ChangeMode',
+                mode: settingsMode === 'general' ? 'none' : 'general'
+              } );
+            } }
+            active={ ( settingsMode === 'general' ? 1 : 0 ) as any as boolean } // fuck
+            data-stalker="General Settings"
+          />
+          <Button
+            as={ Icons.Scale }
+            onClick={ () => {
+              dispatch( {
+                type: 'Settings/ChangeMode',
+                mode: settingsMode === 'stats' ? 'none' : 'stats'
+              } );
+            } }
+            active={ ( settingsMode === 'stats' ? 1 : 0 ) as any as boolean } // fuck
+            data-stalker="Project Stats"
+          />
+          <Button as={ Icons.Save }
+            onClick={ handleSave }
+            onContextMenu={ handleSaveContextMenu }
+            data-stalker={ 'Save' }
+          />
+        </Section>
+      </ErrorBoundary>
     </Root>
   );
 };

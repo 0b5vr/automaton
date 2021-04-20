@@ -13,6 +13,7 @@ import Play from './play.svg';
 import Plus from './plus.svg';
 import Power from './power.svg';
 import Redo from './redo.svg';
+import Retry from './retry.svg';
 import Save from './save.svg';
 import Scale from './scale.svg';
 import Snap from './snap.svg';
@@ -35,6 +36,7 @@ export const Icons = {
   Plus,
   Power,
   Redo,
+  Retry,
   Save,
   Scale,
   Snap,

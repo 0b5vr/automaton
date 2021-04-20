@@ -18,6 +18,7 @@ export const Colors = {
   accent: '#00aaff',
   accentdark: '#0080c0',
   fx: '#0fd895',
+  errorDark: '#a30a4a',
   error: '#ff0066',
   errorBright: '#ec5fa3',
   warning: '#fc9821',

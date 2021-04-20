@@ -1,4 +1,5 @@
 import { Colors } from '../constants/Colors';
+import { ErrorBoundary } from './ErrorBoundary';
 import { Icons } from '../icons/Icons';
 import { InspectorBeat } from './InspectorBeat';
 import { InspectorChannelItem } from './InspectorChannelItem';
@@ -97,12 +98,14 @@ const Inspector = ( { className }: {
   }
 
   return <Root className={ className }>
-    <StyledScrollable>
-      <Container>
-        { content }
-      </Container>
-    </StyledScrollable>
-    { content == null && <Logo as={ Icons.AutomatonA } /> };
+    <ErrorBoundary>
+      <StyledScrollable>
+        <Container>
+          { content }
+        </Container>
+      </StyledScrollable>
+      { content == null && <Logo as={ Icons.AutomatonA } /> };
+    </ErrorBoundary>
   </Root>;
 };
 

@@ -3,6 +3,7 @@ import { CurveEditorFx } from './CurveEditorFx';
 import { CurveEditorFxBg } from './CruveEditorFxBg';
 import { CurveEditorGraph } from './CurveEditorGraph';
 import { CurveEditorNode } from './CurveEditorNode';
+import { ErrorBoundary } from './ErrorBoundary';
 import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
 import { RangeBar } from './RangeBar';
 import { Resolution } from '../utils/Resolution';
@@ -22,11 +23,13 @@ const Lines = ( { curveId, range, size }: {
   curveId: string;
   range: TimeValueRange;
   size: Resolution;
-} ): JSX.Element => {
+} ): JSX.Element | null => {
   const { time, value } = useSelector( ( state ) => ( {
-    time: state.automaton.curvesPreview[ curveId ].time,
-    value: state.automaton.curvesPreview[ curveId ].value,
+    time: state.automaton.curvesPreview[ curveId ]?.time,
+    value: state.automaton.curvesPreview[ curveId ]?.value,
   } ) );
+
+  if ( time == null || value == null ) { return null; }
 
   return <TimeValueLines
     range={ range }
@@ -40,15 +43,17 @@ const Nodes = ( { curveId, range, size }: {
   curveId: string;
   range: TimeValueRange;
   size: Resolution;
-} ): JSX.Element => {
+} ): JSX.Element | null => {
   const { nodes } = useSelector( ( state ) => ( {
-    nodes: state.automaton.curves[ curveId ].nodes
+    nodes: state.automaton.curves[ curveId ]?.nodes
   } ) );
+
+  if ( nodes == null ) { return null; }
 
   // 👾 See: https://github.com/yannickcr/eslint-plugin-react/issues/2584
   // eslint-disable-next-line react/jsx-no-useless-fragment
   return <>
-    { nodes && Object.values( nodes ).map( ( node ) => (
+    { Object.values( nodes ).map( ( node ) => (
       <CurveEditorNode
         key={ node.$id }
         curveId={ curveId }
@@ -64,13 +69,15 @@ const Fxs = ( { curveId, range, size }: {
   curveId: string;
   range: TimeValueRange;
   size: Resolution;
-} ): JSX.Element => {
+} ): JSX.Element | null => {
   const { fxs } = useSelector( ( state ) => ( {
-    fxs: state.automaton.curves[ curveId ].fxs
+    fxs: state.automaton.curves[ curveId ]?.fxs
   } ) );
 
+  if ( fxs == null ) { return null; }
+
   return <>
-    { fxs && Object.values( fxs ).map( ( fx ) => (
+    { Object.values( fxs ).map( ( fx ) => (
       <CurveEditorFxBg
         key={ fx.$id }
         fx={ fx }
@@ -78,7 +85,7 @@ const Fxs = ( { curveId, range, size }: {
         size={ size }
       />
     ) ) }
-    { fxs && Object.values( fxs ).map( ( fx ) => (
+    { Object.values( fxs ).map( ( fx ) => (
       <CurveEditorFx
         key={ fx.$id }
         curveId={ curveId }
@@ -152,7 +159,7 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
     previewItemOffset: state.automaton.curvesPreview[ selectedCurve ?? -1 ]?.itemOffset ?? null,
   } ) );
 
-  const curve = selectedCurve != null && automaton?.getCurveById( selectedCurve ) || null;
+  const curve = ( selectedCurve != null && automaton?.getCurveById( selectedCurve ) ) ?? null;
 
   const refBody = useRef<HTMLDivElement>( null );
   const rect = useRect( refBody );
@@ -437,46 +444,48 @@ const CurveEditor = ( { className }: CurveEditorProps ): JSX.Element => {
 
   return (
     <Root className={ className }>
-      <Body ref={ refBody }>
-        <SVGRoot
-          onMouseDown={ handleMouseDown }
-          onContextMenu={ handleContextMenu }
-        >
-          <TimeValueGrid
+      <ErrorBoundary>
+        <Body ref={ refBody }>
+          <SVGRoot
+            onMouseDown={ handleMouseDown }
+            onContextMenu={ handleContextMenu }
+          >
+            <TimeValueGrid
+              range={ range }
+              size={ rect }
+            />
+            { selectedCurve != null && <>
+              <Fxs
+                curveId={ selectedCurve }
+                range={ range }
+                size={ rect }
+              />
+              <CurveEditorGraph
+                curveId={ selectedCurve }
+                range={ range }
+                size={ rect }
+              />
+              <Nodes
+                curveId={ selectedCurve }
+                range={ range }
+                size={ rect }
+              />
+              <StyledLines
+                curveId={ selectedCurve }
+                range={ range }
+                size={ rect }
+              />
+            </> }
+          </SVGRoot>
+        </Body>
+        { curveLength != null && (
+          <StyledRangeBar
             range={ range }
-            size={ rect }
+            width={ rect.width }
+            length={ curveLength }
           />
-          { selectedCurve != null && <>
-            <Fxs
-              curveId={ selectedCurve }
-              range={ range }
-              size={ rect }
-            />
-            <CurveEditorGraph
-              curveId={ selectedCurve }
-              range={ range }
-              size={ rect }
-            />
-            <Nodes
-              curveId={ selectedCurve }
-              range={ range }
-              size={ rect }
-            />
-            <StyledLines
-              curveId={ selectedCurve }
-              range={ range }
-              size={ rect }
-            />
-          </> }
-        </SVGRoot>
-      </Body>
-      { curveLength != null && (
-        <StyledRangeBar
-          range={ range }
-          width={ rect.width }
-          length={ curveLength }
-        />
-      ) }
+        ) }
+      </ErrorBoundary>
     </Root>
   );
 };
