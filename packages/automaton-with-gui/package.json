@@ -63,7 +63,7 @@
     "@types/styled-components": "5.1.4",
     "eslint-plugin-react": "^7.20.6",
     "eslint-plugin-react-hooks": "^4.1.2",
-    "immer": "^7.0.8",
+    "immer": "^8.0.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-error-boundary": "^3.1.1",
