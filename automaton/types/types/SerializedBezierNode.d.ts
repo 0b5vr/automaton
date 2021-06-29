@@ -33,4 +33,4 @@ export declare type SerializedBezierNode = [
      * `0.0` by default.
      */
     outValue?: number
-];
+] | number[];

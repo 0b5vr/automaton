@@ -3,6 +3,8 @@ import { ChannelItem, SerializedChannelItem } from '@fms-cat/automaton';
 import { CurveWithGUI } from './CurveWithGUI';
 import { SerializableWithID } from './types/SerializableWithID';
 import type { StateChannelItem } from './types/StateChannelItem';
+export interface ChannelItemWithGUI extends SerializableWithID<SerializedChannelItem> {
+}
 export declare class ChannelItemWithGUI extends ChannelItem {
     protected __automaton: AutomatonWithGUI;
     curve?: CurveWithGUI;
@@ -23,6 +25,4 @@ export declare class ChannelItemWithGUI extends ChannelItem {
      * @returns Serialized state
      */
     serializeGUI(): StateChannelItem;
-}
-export interface ChannelItemWithGUI extends SerializableWithID<SerializedChannelItem> {
 }

@@ -11,6 +11,8 @@ export { SerializedChannel } from './types/SerializedChannel';
 export { SerializedChannelItem } from './types/SerializedChannelItem';
 export { SerializedCurve } from './types/SerializedCurve';
 export { SerializedFxSection } from './types/SerializedFxSection';
+export { bezierEasing } from './utils/bezierEasing';
+export { binarySearch } from './utils/binarySearch';
 export { Automaton } from './Automaton';
 export { Channel } from './Channel';
 export { ChannelItem } from './ChannelItem';

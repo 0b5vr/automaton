@@ -37,7 +37,9 @@ export declare type Action = {
     }>;
 } | {
     type: 'Timeline/SelectItemsSub';
-    items: string[];
+    items: Array<{
+        id: string;
+    }>;
 } | {
     type: 'Timeline/SelectLabels';
     labels: string[];
@@ -63,5 +65,8 @@ export declare type Action = {
     dx: number;
     dy: number;
     tmax?: number;
+} | {
+    type: 'Timeline/UnselectChannelIfSelected';
+    channel: string;
 };
 export declare const reducer: Reducer<State, ContextAction>;

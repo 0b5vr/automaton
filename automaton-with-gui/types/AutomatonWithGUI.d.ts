@@ -41,6 +41,8 @@ export interface AutomatonWithGUIOptions extends AutomatonOptions {
 /**
  * IT'S AUTOMATON!
  */
+export interface AutomatonWithGUI extends EventEmittable<AutomatonWithGUIEvents> {
+}
 export declare class AutomatonWithGUI extends Automaton implements Serializable<SerializedAutomatonWithGUI> {
     /**
      * Minimize serialized data for prod use.
@@ -475,6 +477,4 @@ export interface AutomatonWithGUIEvents {
             end: number;
         } | null;
     };
-}
-export interface AutomatonWithGUI extends EventEmittable<AutomatonWithGUIEvents> {
 }

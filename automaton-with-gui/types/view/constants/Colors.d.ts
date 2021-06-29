@@ -14,6 +14,7 @@ export declare const Colors: {
     accent: string;
     accentdark: string;
     fx: string;
+    errorDark: string;
     error: string;
     errorBright: string;
     warning: string;

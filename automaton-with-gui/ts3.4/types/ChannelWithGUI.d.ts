@@ -18,6 +18,10 @@ export declare enum ChannelStatusCode {
  * @param automaton Parent automaton
  * @param data Data of the channel
  */
+export interface ChannelWithGUI extends EventEmittable<ChannelWithGUIEvents> {
+}
+export interface ChannelWithGUI extends WithStatus<ChannelStatusCode> {
+}
 export declare class ChannelWithGUI extends Channel implements Serializable<SerializedChannel> {
     /**
      * The parent automaton.
@@ -247,8 +251,4 @@ export interface ChannelWithGUIEvents {
     changeLength: {
         length: number;
     };
-}
-export interface ChannelWithGUI extends EventEmittable<ChannelWithGUIEvents> {
-}
-export interface ChannelWithGUI extends WithStatus<ChannelStatusCode> {
 }

@@ -18,7 +18,7 @@ export declare class Automaton {
      * @param listener A function that will be executed when the channel changes its value
      * @returns Current value of the channel
      */
-    readonly auto: (name: string, listener?: ((event: ChannelUpdateEvent) => void) | undefined) => number;
+    readonly auto: Automaton['__auto'];
     /**
      * Curves of the automaton.
      */

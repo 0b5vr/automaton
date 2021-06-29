@@ -31,3 +31,4 @@ export declare type Action = (About.Action | Automaton.Action | ContextMenu.Acti
 export declare function createStore(): Store<State, Action>;
 export declare function useSelector<T>(selector: (state: State) => T): T;
 export declare function useDispatch(): Dispatch<Action>;
+export declare function useStore(): Store<State, Action>;

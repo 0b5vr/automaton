@@ -68,10 +68,10 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="tsd-signature-type">ChannelItem</span>
+						<a href="serializablewithid.html" class="tsd-signature-type">SerializableWithID</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">SerializedChannelItem</span><span class="tsd-signature-symbol">&gt;</span>
 					</li>
 					<li>
-						<a href="serializablewithid.html" class="tsd-signature-type">SerializableWithID</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">SerializedChannelItem</span><span class="tsd-signature-symbol">&gt;</span>
+						<span class="tsd-signature-type">ChannelItem</span>
 						<ul class="tsd-hierarchy">
 							<li>
 								<span class="target">ChannelItemWithGUI</span>
@@ -97,9 +97,11 @@
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-protected"><a href="channelitemwithgui.html#__automaton" class="tsd-kind-icon">__automaton</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="channelitemwithgui.html#amp" class="tsd-kind-icon">amp</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite"><a href="channelitemwithgui.html#curve" class="tsd-kind-icon">curve</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited"><a href="channelitemwithgui.html#deserialize" class="tsd-kind-icon">deserialize</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="channelitemwithgui.html#length" class="tsd-kind-icon">length</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="channelitemwithgui.html#offset" class="tsd-kind-icon">offset</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="channelitemwithgui.html#reset" class="tsd-kind-icon">reset</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="channelitemwithgui.html#serialize" class="tsd-kind-icon">serialize</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="channelitemwithgui.html#speed" class="tsd-kind-icon">speed</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="channelitemwithgui.html#time" class="tsd-kind-icon">time</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="channelitemwithgui.html#value" class="tsd-kind-icon">value</a></li>
@@ -114,9 +116,7 @@
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="channelitemwithgui.html#deserialize" class="tsd-kind-icon">deserialize</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="channelitemwithgui.html#getvalue" class="tsd-kind-icon">get<wbr>Value</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="channelitemwithgui.html#serialize" class="tsd-kind-icon">serialize</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="channelitemwithgui.html#serializegui" class="tsd-kind-icon">serializeGUI</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="channelitemwithgui.html#serializewithid" class="tsd-kind-icon">serialize<wbr>WithID</a></li>
 							</ul>
@@ -178,7 +178,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="../interfaces/withid.html">WithID</a>.<a href="../interfaces/withid.html#_id">$id</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/9bdcc41/packages/automaton-with-gui/src/types/WithID.ts#L2">packages/automaton-with-gui/src/types/WithID.ts:2</a></li>
+							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/a9b8239/packages/automaton-with-gui/src/types/WithID.ts#L2">packages/automaton-with-gui/src/types/WithID.ts:2</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -189,7 +189,7 @@
 					<aside class="tsd-sources">
 						<p>Overrides ChannelItem.__automaton</p>
 						<ul>
-							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/9bdcc41/packages/automaton-with-gui/src/ChannelItemWithGUI.ts#L9">packages/automaton-with-gui/src/ChannelItemWithGUI.ts:9</a></li>
+							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/a9b8239/packages/automaton-with-gui/src/ChannelItemWithGUI.ts#L10">packages/automaton-with-gui/src/ChannelItemWithGUI.ts:10</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -217,9 +217,34 @@
 					<aside class="tsd-sources">
 						<p>Overrides ChannelItem.curve</p>
 						<ul>
-							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/9bdcc41/packages/automaton-with-gui/src/ChannelItemWithGUI.ts#L11">packages/automaton-with-gui/src/ChannelItemWithGUI.ts:11</a></li>
+							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/a9b8239/packages/automaton-with-gui/src/ChannelItemWithGUI.ts#L12">packages/automaton-with-gui/src/ChannelItemWithGUI.ts:12</a></li>
 						</ul>
 					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited">
+					<a name="deserialize" class="tsd-anchor"></a>
+					<h3>deserialize</h3>
+					<ul class="tsd-signatures tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">deserialize<span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">SerializedChannelItem</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/statechannelitem.html" class="tsd-signature-type">StateChannelItem</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from <a href="../interfaces/serializable.html">Serializable</a>.<a href="../interfaces/serializable.html#deserialize">deserialize</a></p>
+								<p>Overrides ChannelItem.deserialize</p>
+								<ul>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/a9b8239/packages/automaton-with-gui/src/ChannelItemWithGUI.ts#L35">packages/automaton-with-gui/src/ChannelItemWithGUI.ts:35</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>data: <span class="tsd-signature-type">SerializedChannelItem</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/statechannelitem.html" class="tsd-signature-type">StateChannelItem</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
 					<a name="length" class="tsd-anchor"></a>
@@ -269,6 +294,30 @@
 							<p>Whether reset channels value to zero at the end of this item or not.</p>
 						</div>
 					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
+					<a name="serialize" class="tsd-anchor"></a>
+					<h3>serialize</h3>
+					<ul class="tsd-signatures tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">serialize<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">SerializedChannelItem</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from <a href="../interfaces/serializable.html">Serializable</a>.<a href="../interfaces/serializable.html#serialize">serialize</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/a9b8239/packages/automaton-with-gui/src/ChannelItemWithGUI.ts#L50">packages/automaton-with-gui/src/ChannelItemWithGUI.ts:50</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Serialize its current state.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">SerializedChannelItem</span></h4>
+							<p>Serialized state</p>
+						</li>
+					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
 					<a name="speed" class="tsd-anchor"></a>
@@ -349,30 +398,6 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
-					<a name="deserialize" class="tsd-anchor"></a>
-					<h3>deserialize</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
-						<li class="tsd-signature tsd-kind-icon">deserialize<span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">SerializedChannelItem</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/statechannelitem.html" class="tsd-signature-type">StateChannelItem</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<p>Overrides ChannelItem.deserialize</p>
-								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/9bdcc41/packages/automaton-with-gui/src/ChannelItemWithGUI.ts#L26">packages/automaton-with-gui/src/ChannelItemWithGUI.ts:26</a></li>
-								</ul>
-							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>data: <span class="tsd-signature-type">SerializedChannelItem</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/statechannelitem.html" class="tsd-signature-type">StateChannelItem</a></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
 					<a name="getvalue" class="tsd-anchor"></a>
 					<h3>get<wbr>Value</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
@@ -383,7 +408,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides ChannelItem.getValue</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/9bdcc41/packages/automaton-with-gui/src/ChannelItemWithGUI.ts#L18">packages/automaton-with-gui/src/ChannelItemWithGUI.ts:18</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/a9b8239/packages/automaton-with-gui/src/ChannelItemWithGUI.ts#L19">packages/automaton-with-gui/src/ChannelItemWithGUI.ts:19</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -410,30 +435,6 @@
 						</li>
 					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
-					<a name="serialize" class="tsd-anchor"></a>
-					<h3>serialize</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
-						<li class="tsd-signature tsd-kind-icon">serialize<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">SerializedChannelItem</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<p>Overrides <a href="../interfaces/serializable.html">Serializable</a>.<a href="../interfaces/serializable.html#serialize">serialize</a></p>
-								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/9bdcc41/packages/automaton-with-gui/src/ChannelItemWithGUI.ts#L41">packages/automaton-with-gui/src/ChannelItemWithGUI.ts:41</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Serialize its current state.</p>
-								</div>
-							</div>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">SerializedChannelItem</span></h4>
-							<p>Serialized state</p>
-						</li>
-					</ul>
-				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="serializegui" class="tsd-anchor"></a>
 					<h3>serializeGUI</h3>
@@ -444,7 +445,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/9bdcc41/packages/automaton-with-gui/src/ChannelItemWithGUI.ts#L62">packages/automaton-with-gui/src/ChannelItemWithGUI.ts:62</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/a9b8239/packages/automaton-with-gui/src/ChannelItemWithGUI.ts#L71">packages/automaton-with-gui/src/ChannelItemWithGUI.ts:71</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -468,7 +469,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="serializablewithid.html">SerializableWithID</a>.<a href="serializablewithid.html#serializewithid">serializeWithID</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/9bdcc41/packages/automaton-with-gui/src/types/SerializableWithID.ts#L5">packages/automaton-with-gui/src/types/SerializableWithID.ts:5</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/a9b8239/packages/automaton-with-gui/src/types/SerializableWithID.ts#L5">packages/automaton-with-gui/src/types/SerializableWithID.ts:5</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">SerializedChannelItem</span><span class="tsd-signature-symbol"> &amp; </span><a href="../interfaces/withid.html" class="tsd-signature-type">WithID</a></h4>
@@ -507,6 +508,9 @@
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-overwrite">
 								<a href="channelitemwithgui.html#curve" class="tsd-kind-icon">curve</a>
 							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited">
+								<a href="channelitemwithgui.html#deserialize" class="tsd-kind-icon">deserialize</a>
+							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
 								<a href="channelitemwithgui.html#length" class="tsd-kind-icon">length</a>
 							</li>
@@ -515,6 +519,9 @@
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
 								<a href="channelitemwithgui.html#reset" class="tsd-kind-icon">reset</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
+								<a href="channelitemwithgui.html#serialize" class="tsd-kind-icon">serialize</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
 								<a href="channelitemwithgui.html#speed" class="tsd-kind-icon">speed</a>
@@ -529,13 +536,7 @@
 								<a href="channelitemwithgui.html#end" class="tsd-kind-icon">end</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
-								<a href="channelitemwithgui.html#deserialize" class="tsd-kind-icon">deserialize</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
 								<a href="channelitemwithgui.html#getvalue" class="tsd-kind-icon">get<wbr>Value</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
-								<a href="channelitemwithgui.html#serialize" class="tsd-kind-icon">serialize</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="channelitemwithgui.html#serializegui" class="tsd-kind-icon">serializeGUI</a>

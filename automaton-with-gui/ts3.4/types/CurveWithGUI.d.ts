@@ -23,6 +23,12 @@ export declare enum CurveStatusCode {
  * @param automaton Parent automaton
  * @param data Data of the channel
  */
+export interface CurveWithGUI extends SerializableWithID<SerializedCurve> {
+}
+export interface CurveWithGUI extends EventEmittable<CurveWithGUIEvents> {
+}
+export interface CurveWithGUI extends WithStatus<CurveStatusCode> {
+}
 export declare class CurveWithGUI extends Curve {
     /**
      * Default data of a curve.
@@ -48,6 +54,10 @@ export declare class CurveWithGUI extends Curve {
      * I'm crying
      */
     private __userCount;
+    /**
+     * Limiting the emit of previewTime because it's too much
+     */
+    private __throttlePreviewTime;
     /*
     * List of bezier nodes.
     */
@@ -76,7 +86,7 @@ export declare class CurveWithGUI extends Curve {
      * @param time Time
      * @param value Value
      */
-    setPreviewTime(time: number): void;
+    emitPreviewTime(event: CurveWithGUIEvents['previewTime']): void;
     /**
      * I'm crying
      * Intended to be used in {@link ChannelWithGUI} via {@link ChannelItemWithGUI#curve}.
@@ -342,16 +352,14 @@ export interface CurveWithGUIEvents {
     };
     previewTime: {
         time: number;
+        value: number;
+        itemTime: number;
+        itemSpeed: number;
+        itemOffset: number;
     };
     precalc: void;
     updateStatus: void;
     changeLength: {
         length: number;
     };
-}
-export interface CurveWithGUI extends SerializableWithID<SerializedCurve> {
-}
-export interface CurveWithGUI extends EventEmittable<CurveWithGUIEvents> {
-}
-export interface CurveWithGUI extends WithStatus<CurveStatusCode> {
 }

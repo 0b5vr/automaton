@@ -16,6 +16,11 @@ export declare class Curve {
     */
     protected __values: Float32Array;
     /**
+     * An array of bool where you do not want to interpolate the value.
+     * Its length is same as `curve.__automaton.resolution * curve.__automaton.length + 1`.
+     */
+    protected __shouldNotInterpolate: Uint8Array;
+    /**
      * List of bezier node.
      */
     protected __nodes: BezierNode[];

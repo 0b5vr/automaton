@@ -1,5 +1,7 @@
 import { EventEmittable } from './mixins/EventEmittable';
 import { ToastyParams } from './types/ToastyParams';
+export interface GUIRemocon extends EventEmittable<GUIRemoconEvents> {
+}
 export declare class GUIRemocon {
     undo(): void;
     redo(): void;
@@ -11,6 +13,4 @@ export interface GUIRemoconEvents {
     redo: void;
     openAbout: void;
     toasty: ToastyParams;
-}
-export interface GUIRemocon extends EventEmittable<GUIRemoconEvents> {
 }

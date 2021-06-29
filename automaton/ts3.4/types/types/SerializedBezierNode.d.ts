@@ -9,4 +9,4 @@ export declare type SerializedBezierNode = [
     /*inValue*/ number,
     /*outTime*/ number,
     /*outValue*/ number
-];
+] | number[];

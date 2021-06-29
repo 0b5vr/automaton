@@ -95,6 +95,7 @@
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="curve.html#__automaton" class="tsd-kind-icon">__automaton</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="curve.html#__fxs" class="tsd-kind-icon">__fxs</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="curve.html#__nodes" class="tsd-kind-icon">__nodes</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="curve.html#__shouldnotinterpolate" class="tsd-kind-icon">__should<wbr>Not<wbr>Interpolate</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="curve.html#__values" class="tsd-kind-icon">__values</a></li>
 							</ul>
 						</section>
@@ -129,7 +130,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/9bdcc41/packages/automaton/src/Curve.ts#L38">Curve.ts:38</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/a9b8239/packages/automaton/src/Curve.ts#L44">Curve.ts:44</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -169,7 +170,7 @@
 					<div class="tsd-signature tsd-kind-icon">__automaton<span class="tsd-signature-symbol">:</span> <a href="automaton.html" class="tsd-signature-type">Automaton</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/9bdcc41/packages/automaton/src/Curve.ts#L15">Curve.ts:15</a></li>
+							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/a9b8239/packages/automaton/src/Curve.ts#L15">Curve.ts:15</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -184,7 +185,7 @@
 					<div class="tsd-signature tsd-kind-icon">__fxs<span class="tsd-signature-symbol">:</span> <a href="../interfaces/fxsection.html" class="tsd-signature-type">FxSection</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = []</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/9bdcc41/packages/automaton/src/Curve.ts#L31">Curve.ts:31</a></li>
+							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/a9b8239/packages/automaton/src/Curve.ts#L37">Curve.ts:37</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -199,7 +200,7 @@
 					<div class="tsd-signature tsd-kind-icon">__nodes<span class="tsd-signature-symbol">:</span> <a href="../interfaces/beziernode.html" class="tsd-signature-type">BezierNode</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = []</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/9bdcc41/packages/automaton/src/Curve.ts#L26">Curve.ts:26</a></li>
+							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/a9b8239/packages/automaton/src/Curve.ts#L32">Curve.ts:32</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -209,12 +210,28 @@
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="__shouldnotinterpolate" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> __should<wbr>Not<wbr>Interpolate</h3>
+					<div class="tsd-signature tsd-kind-icon">__should<wbr>Not<wbr>Interpolate<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Uint8Array</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/a9b8239/packages/automaton/src/Curve.ts#L27">Curve.ts:27</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>An array of bool where you do not want to interpolate the value.
+							Its length is same as <code>curve.__automaton.resolution * curve.__automaton.length + 1</code>.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
 					<a name="__values" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagProtected">Protected</span> __values</h3>
 					<div class="tsd-signature tsd-kind-icon">__values<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Float32Array</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/9bdcc41/packages/automaton/src/Curve.ts#L21">Curve.ts:21</a></li>
+							<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/a9b8239/packages/automaton/src/Curve.ts#L21">Curve.ts:21</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -237,7 +254,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/9bdcc41/packages/automaton/src/Curve.ts#L36">Curve.ts:36</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/a9b8239/packages/automaton/src/Curve.ts#L42">Curve.ts:42</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -262,7 +279,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/9bdcc41/packages/automaton/src/Curve.ts#L151">Curve.ts:151</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/a9b8239/packages/automaton/src/Curve.ts#L169">Curve.ts:169</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -284,7 +301,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/9bdcc41/packages/automaton/src/Curve.ts#L126">Curve.ts:126</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/a9b8239/packages/automaton/src/Curve.ts#L139">Curve.ts:139</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -306,7 +323,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/9bdcc41/packages/automaton/src/Curve.ts#L56">Curve.ts:56</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/a9b8239/packages/automaton/src/Curve.ts#L62">Curve.ts:62</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -337,7 +354,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/9bdcc41/packages/automaton/src/Curve.ts#L98">Curve.ts:98</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/a9b8239/packages/automaton/src/Curve.ts#L105">Curve.ts:105</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -369,7 +386,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/9bdcc41/packages/automaton/src/Curve.ts#L84">Curve.ts:84</a></li>
+									<li>Defined in <a href="https://github.com/FMS-Cat/automaton/blob/a9b8239/packages/automaton/src/Curve.ts#L90">Curve.ts:90</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -418,6 +435,9 @@
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
 								<a href="curve.html#__nodes" class="tsd-kind-icon">__nodes</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="curve.html#__shouldnotinterpolate" class="tsd-kind-icon">__should<wbr>Not<wbr>Interpolate</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
 								<a href="curve.html#__values" class="tsd-kind-icon">__values</a>
@@ -515,6 +535,9 @@
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="../globals.html#beziereasing" class="tsd-kind-icon">bezier<wbr>Easing</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="../globals.html#binarysearch" class="tsd-kind-icon">binary<wbr>Search</a>
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="../globals.html#clamp" class="tsd-kind-icon">clamp</a>

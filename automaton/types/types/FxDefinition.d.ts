@@ -3,7 +3,7 @@ import { FxParam } from './FxParam';
 export interface FxDefinition {
     name?: string;
     description?: string;
-    params: {
+    params?: {
         [key: string]: FxParam;
     };
     func: (context: FxContext) => number;

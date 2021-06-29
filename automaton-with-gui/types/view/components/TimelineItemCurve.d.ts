@@ -7,6 +7,9 @@ export interface TimelineItemCurveProps {
     item: StateChannelItem;
     range: TimeValueRange;
     size: Resolution;
+    grabBody: () => void;
+    grabBodyCtrl: () => void;
+    removeItem: () => void;
     dopeSheetMode?: boolean;
 }
 declare const TimelineItemCurve: (props: TimelineItemCurveProps) => JSX.Element;

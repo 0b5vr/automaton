@@ -14,6 +14,7 @@ export declare const Icons: {
     Plus: "svg";
     Power: "svg";
     Redo: "svg";
+    Retry: "svg";
     Save: "svg";
     Scale: "svg";
     Snap: "svg";

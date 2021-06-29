@@ -7,6 +7,9 @@ export interface TimelineItemConstantProps {
     item: StateChannelItem;
     range: TimeValueRange;
     size: Resolution;
+    grabBody: () => void;
+    grabBodyCtrl: () => void;
+    removeItem: () => void;
     dopeSheetMode?: boolean;
 }
 declare const TimelineItemConstant: (props: TimelineItemConstantProps) => JSX.Element;

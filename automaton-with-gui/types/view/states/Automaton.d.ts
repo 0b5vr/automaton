@@ -41,8 +41,11 @@ export interface State {
     };
     curvesPreview: {
         [name: string]: {
-            previewTime: number | null;
-            previewValue: number | null;
+            time: number | null;
+            value: number | null;
+            itemTime: number | null;
+            itemSpeed: number | null;
+            itemOffset: number | null;
         };
     };
     labels: {
@@ -125,6 +128,9 @@ export declare type Action = {
     curveId: string;
     time: number;
     value: number;
+    itemTime: number;
+    itemSpeed: number;
+    itemOffset: number;
 } | {
     type: 'Automaton/UpdateCurveNode';
     curveId: string;

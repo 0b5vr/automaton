@@ -2,7 +2,8 @@ import { Reducer } from 'redux';
 export interface ContextMenuCommand {
     name: string;
     description?: string;
-    callback: () => void;
+    callback?: () => void;
+    more?: Array<ContextMenuCommand>;
 }
 export interface State {
     isVisible: boolean;
@@ -15,6 +16,13 @@ export interface State {
 export declare const initialState: Readonly<State>;
 export declare type Action = {
     type: 'ContextMenu/Push';
+    position: {
+        x: number;
+        y: number;
+    };
+    commands: Array<ContextMenuCommand>;
+} | {
+    type: 'ContextMenu/More';
     position: {
         x: number;
         y: number;
