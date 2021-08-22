@@ -1,9 +1,9 @@
 /* eslint-env jest */
 
-import { Automaton } from '@fms-cat/automaton';
+import { Automaton } from '@0b5vr/automaton';
 import { jsonCopy } from './utils/jsonCopy';
 import { repeat } from '../repeat';
-import type { SerializedAutomaton } from '@fms-cat/automaton';
+import type { SerializedAutomaton } from '@0b5vr/automaton';
 
 const defaultData: SerializedAutomaton = {
   resolution: 100.0,

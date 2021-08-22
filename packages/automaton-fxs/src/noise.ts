@@ -1,6 +1,6 @@
 import { smoothstep } from './utils/smoothstep';
 import Xorshift from './utils/xorshift';
-import type { FxDefinition } from '@fms-cat/automaton';
+import type { FxDefinition } from '@0b5vr/automaton';
 
 const xorshift = new Xorshift();
 

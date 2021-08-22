@@ -1,5 +1,5 @@
 import { Colors } from '../constants/Colors';
-import { FxSection } from '@fms-cat/automaton';
+import { FxSection } from '@0b5vr/automaton';
 import { Resolution } from '../utils/Resolution';
 import { TimeValueRange, dt2dx, t2x } from '../utils/TimeValueRange';
 import { WithBypass } from '../../types/WithBypass';

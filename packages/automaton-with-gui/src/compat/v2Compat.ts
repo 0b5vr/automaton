@@ -1,6 +1,6 @@
 import { defaultGUISettings } from '../types/GUISettings';
 import { jsonCopy } from '../utils/jsonCopy';
-import type { FxSection } from '@fms-cat/automaton';
+import type { FxSection } from '@0b5vr/automaton';
 import type { V2FxSection } from './v2types/V2FxSection';
 import type { V2SerializedData } from './v2types/V2SerializedData';
 import type { V3SerializedAutomatonWithGUI } from './v3types/V3SerializedAutomatonWithGUI';

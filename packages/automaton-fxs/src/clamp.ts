@@ -1,6 +1,6 @@
 import { clamp as rawClamp } from './utils/clamp';
 import { smin } from './utils/smin';
-import type { FxDefinition } from '@fms-cat/automaton';
+import type { FxDefinition } from '@0b5vr/automaton';
 
 export const clamp: FxDefinition = {
   name: 'Clamp',

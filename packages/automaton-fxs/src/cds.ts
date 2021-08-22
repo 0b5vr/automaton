@@ -1,4 +1,4 @@
-import type { FxDefinition } from '@fms-cat/automaton';
+import type { FxDefinition } from '@0b5vr/automaton';
 
 export const cds: FxDefinition = {
   name: 'Critically Damped Spring',

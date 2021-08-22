@@ -1,5 +1,5 @@
 import { AutomatonWithGUI } from './AutomatonWithGUI';
-import { Channel, SerializedChannel, SerializedChannelItem, binarySearch } from '@fms-cat/automaton';
+import { Channel, SerializedChannel, SerializedChannelItem, binarySearch } from '@0b5vr/automaton';
 import { ChannelItemWithGUI } from './ChannelItemWithGUI';
 import { EventEmittable } from './mixins/EventEmittable';
 import { Serializable } from './types/Serializable';

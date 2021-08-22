@@ -1,6 +1,6 @@
 import { CURVE_FX_ROW_MAX } from '../../CurveWithGUI';
 import { Colors } from '../constants/Colors';
-import { FxSection } from '@fms-cat/automaton';
+import { FxSection } from '@0b5vr/automaton';
 import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
 import { Resolution } from '../utils/Resolution';
 import { TimeValueRange, dt2dx, dx2dt, snapTime, t2x } from '../utils/TimeValueRange';

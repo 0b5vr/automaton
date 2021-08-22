@@ -1,9 +1,9 @@
 {
-  "name": "@fms-cat/automaton-fxs-v2compat",
+  "name": "@0b5vr/automaton-fxs-v2compat",
   "version": "4.2.0",
   "description": "Bunch of automaton fxs",
-  "repository": "https://github.com/FMS-Cat/automaton",
-  "author": "FMS-Cat",
+  "repository": "https://github.com/0b5vr/automaton",
+  "author": "0b5vr",
   "main": "./dist/automaton-fxs-v2compat.min.js",
   "module": "./dist/automaton-fxs-v2compat.module.min.js",
   "exports": {
@@ -48,6 +48,6 @@
     "/README.md"
   ],
   "dependencies": {
-    "@fms-cat/automaton": "^4.2.0"
+    "@0b5vr/automaton": "^4.2.0"
   }
 }

@@ -1,4 +1,4 @@
-import type { SerializedFxSection } from '@fms-cat/automaton';
+import type { SerializedFxSection } from '@0b5vr/automaton';
 import type { V3SerializedBezierNode } from './V3SerializedBezierNode';
 
 /**

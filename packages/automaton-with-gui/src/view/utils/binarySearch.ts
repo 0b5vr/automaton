@@ -1,4 +1,4 @@
-// yoinked from https://github.com/FMS-Cat/experimental-npm/blob/f3564cef096ecc7f48879f066862e212308245b5/src/algorithm/binarySearch.ts
+// yoinked from https://github.com/0b5vr/experimental-npm/blob/f3564cef096ecc7f48879f066862e212308245b5/src/algorithm/binarySearch.ts
 
 /**
  * Look for an index from a sorted list using the binary search.

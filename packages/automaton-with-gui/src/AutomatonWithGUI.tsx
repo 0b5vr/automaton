@@ -1,5 +1,5 @@
 import { App } from './view/components/App';
-import { Automaton, AutomatonOptions, ChannelUpdateEvent, FxDefinition, FxParam, SerializedAutomaton, SerializedChannel, SerializedCurve } from '@fms-cat/automaton';
+import { Automaton, AutomatonOptions, ChannelUpdateEvent, FxDefinition, FxParam, SerializedAutomaton, SerializedChannel, SerializedCurve } from '@0b5vr/automaton';
 import { BiMap } from './utils/BiMap';
 import { ChannelWithGUI } from './ChannelWithGUI';
 import { ContextMenuCommand } from './view/states/ContextMenu'; // 🔥🔥🔥🔥🔥🔥

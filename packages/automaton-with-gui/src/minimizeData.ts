@@ -1,5 +1,5 @@
 import { MinimizeOptions } from './types/MinimizeOptions';
-import { SerializedAutomaton, SerializedBezierNode, SerializedChannel, SerializedChannelItem, SerializedCurve, SerializedFxSection } from '@fms-cat/automaton';
+import { SerializedAutomaton, SerializedBezierNode, SerializedChannel, SerializedChannelItem, SerializedCurve, SerializedFxSection } from '@0b5vr/automaton';
 import { SerializedAutomatonWithGUI } from './types/SerializedAutomatonWithGUI';
 
 function prec( value: number, precision: number ): number {

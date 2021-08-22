@@ -1,6 +1,6 @@
 import { defaultGUISettings } from '../types/GUISettings';
 import type { SerializedAutomatonWithGUI } from '../types/SerializedAutomatonWithGUI';
-import type { SerializedBezierNode, SerializedChannel, SerializedCurve } from '@fms-cat/automaton';
+import type { SerializedBezierNode, SerializedChannel, SerializedCurve } from '@0b5vr/automaton';
 import type { V3SerializedAutomatonWithGUI } from './v3types/V3SerializedAutomatonWithGUI';
 
 export function v3Compat( data: V3SerializedAutomatonWithGUI ): SerializedAutomatonWithGUI {

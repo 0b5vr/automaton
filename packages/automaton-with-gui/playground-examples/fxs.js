@@ -9,7 +9,7 @@
 // and right click at anywhere of the timeline then choose "Add Fx".
 // To change parameters of the fx, select the fx and see the inspector pane (right of the GUI).
 
-// All of fxs used in this example are provided by the package called `@fms-cat/automaton-fxs`.
+// All of fxs used in this example are provided by the package called `@0b5vr/automaton-fxs`.
 // Just pass fxs you want to use into the constructor option `fxDefinitions`.
 
 // == initialize an automaton instance =============================================================
@@ -20,7 +20,7 @@ const automaton = new AUTOMATON_WITH_GUI.AutomatonWithGUI(
   {
     gui: divAutomatonContainer,
     isPlaying: true,
-    fxDefinitions: AUTOMATON_FXS, // here installing bunch of fxs. `AUTOMATON_FXS` is provided from `@fms-cat/automaton-fxs`
+    fxDefinitions: AUTOMATON_FXS, // here installing bunch of fxs. `AUTOMATON_FXS` is provided from `@0b5vr/automaton-fxs`
   }
 );
 const auto = automaton.auto;

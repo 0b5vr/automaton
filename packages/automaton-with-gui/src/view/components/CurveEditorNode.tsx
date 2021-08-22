@@ -1,4 +1,4 @@
-import { BezierNode } from '@fms-cat/automaton';
+import { BezierNode } from '@0b5vr/automaton';
 import { Colors } from '../constants/Colors';
 import { MouseComboBit, mouseCombo } from '../utils/mouseCombo';
 import { Resolution } from '../utils/Resolution';

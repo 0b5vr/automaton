@@ -1,5 +1,5 @@
 import { AutomatonWithGUI } from '../../AutomatonWithGUI';
-import { BezierNode, FxDefinition, FxSection } from '@fms-cat/automaton';
+import { BezierNode, FxDefinition, FxSection } from '@0b5vr/automaton';
 import { ChannelStatusCode } from '../../ChannelWithGUI';
 import { Action as ContextAction } from './store';
 import { CurveStatusCode } from '../../CurveWithGUI';

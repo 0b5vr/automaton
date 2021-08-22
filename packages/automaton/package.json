@@ -1,9 +1,9 @@
 {
-  "name": "@fms-cat/automaton",
+  "name": "@0b5vr/automaton",
   "version": "4.2.0",
   "description": "Animation engine for creative coding",
-  "repository": "https://github.com/FMS-Cat/automaton",
-  "author": "FMS-Cat",
+  "repository": "https://github.com/0b5vr/automaton",
+  "author": "0b5vr",
   "main": "./dist/automaton.min.js",
   "module": "./dist/automaton.module.min.js",
   "exports": {

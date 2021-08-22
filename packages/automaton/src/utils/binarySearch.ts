@@ -1,4 +1,4 @@
-// https://github.com/FMS-Cat/experimental-npm/blob/cf685846488ed3765e0abf68c8f6cd4916049cfa/src/algorithm/binarySearch.ts
+// https://github.com/0b5vr/experimental-npm/blob/cf685846488ed3765e0abf68c8f6cd4916049cfa/src/algorithm/binarySearch.ts
 
 /**
  * Look for an index from a sorted list using binary search.

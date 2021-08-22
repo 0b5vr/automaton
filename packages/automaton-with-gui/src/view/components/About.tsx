@@ -113,8 +113,8 @@ const About = ( { className }: AboutProps ): JSX.Element => {
         </LogoAndVersion>
         <Description>Animation engine for creative coding</Description>
         <Hr />
-        Author: <Anchor href="https://github.com/FMS-Cat">FMS_Cat</Anchor><br />
-        Repository: <Anchor href="https://github.com/FMS-Cat/automaton/">https://github.com/fms-cat/automaton/</Anchor><br />
+        Author: <Anchor href="https://github.com/0b5vr">0b5vr</Anchor><br />
+        Repository: <Anchor href="https://github.com/0b5vr/automaton/">https://github.com/0b5vr/automaton/</Anchor><br />
         Automaton is distributed under permissive <Anchor href="https://opensource.org/licenses/MIT">MIT License</Anchor><br />
         Shoutouts to <Anchor href="https://www.image-line.com/flstudio/">Image Line Software</Anchor> &lt;3
       </SubRoot>

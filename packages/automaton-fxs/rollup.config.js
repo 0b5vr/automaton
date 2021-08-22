@@ -7,9 +7,9 @@ import { terser } from 'rollup-plugin-terser';
 import typescript from '@rollup/plugin-typescript';
 
 // == constants ====================================================================================
-const copyright = '(c) 2017-2020 FMS_Cat';
+const copyright = '(c) 2017-2020 0b5vr';
 const licenseName = 'MIT License';
-const licenseUri = 'https://github.com/FMS-Cat/automaton/blob/master/LICENSE';
+const licenseUri = 'https://github.com/0b5vr/automaton/blob/master/LICENSE';
 const globalName = 'AUTOMATON_FXS';
 const filename = 'dist/automaton-fxs';
 
