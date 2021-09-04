@@ -256,13 +256,15 @@ export class AutomatonWithGUI extends Automaton
       this.mountGUI( options.gui );
     }
 
-    window.addEventListener( 'beforeunload', ( event ) => {
-      if ( this.shouldSave ) {
-        const confirmationMessage = 'Automaton: Did you saved your progress?';
-        event.returnValue = confirmationMessage;
-        return confirmationMessage;
-      }
-    } );
+    if ( typeof window !== 'undefined' ) {
+      window.addEventListener( 'beforeunload', ( event ) => {
+        if ( this.shouldSave ) {
+          const confirmationMessage = 'Automaton: Did you saved your progress?';
+          event.returnValue = confirmationMessage;
+          return confirmationMessage;
+        }
+      } );
+    }
   }
 
   /**
