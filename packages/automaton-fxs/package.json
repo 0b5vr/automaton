@@ -1,6 +1,6 @@
 {
   "name": "@0b5vr/automaton-fxs",
-  "version": "4.2.0",
+  "version": "4.2.1",
   "description": "Bunch of automaton fxs",
   "repository": "https://github.com/0b5vr/automaton",
   "author": "0b5vr",
@@ -49,6 +49,6 @@
     "/README.md"
   ],
   "dependencies": {
-    "@0b5vr/automaton": "^4.2.0"
+    "@0b5vr/automaton": "4.2.1"
   }
 }
