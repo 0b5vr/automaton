@@ -1,5 +1,5 @@
 import { GUISettings } from './GUISettings';
-import { SerializedAutomaton } from '@fms-cat/automaton';
+import { SerializedAutomaton } from '@0b5vr/automaton';
 /**
  * Interface of serialized automaton data.
  * It's a [[AutomatonWithGUI]] variant.

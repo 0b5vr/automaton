@@ -1,5 +1,5 @@
 /// <reference types="react" />
-import { BezierNode } from '@fms-cat/automaton';
+import { BezierNode } from '@0b5vr/automaton';
 import { Resolution } from '../utils/Resolution';
 import { TimeValueRange } from '../utils/TimeValueRange';
 import { WithID } from '../../types/WithID';

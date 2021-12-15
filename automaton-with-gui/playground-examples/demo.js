@@ -3,8 +3,8 @@
 
 // This script is evaluated using 🔥🔥🔥 eval 🔥🔥🔥
 
-// `AUTOMATON_FXS` is the module `@fms-cat/automaton-fxs`
-// `AUTOMATON_WITH_GUI` is the module `@fms-cat/automaton-with-gui`
+// `AUTOMATON_FXS` is the module `@0b5vr/automaton-fxs`
+// `AUTOMATON_WITH_GUI` is the module `@0b5vr/automaton-with-gui`
 
 // `playground.update` will be executed every frame
 // `playground.unload` will be executed when it gets unloaded

@@ -1,5 +1,5 @@
 /// <reference types="react" />
-import { FxSection } from '@fms-cat/automaton';
+import { FxSection } from '@0b5vr/automaton';
 import { Resolution } from '../utils/Resolution';
 import { TimeValueRange } from '../utils/TimeValueRange';
 import { WithBypass } from '../../types/WithBypass';

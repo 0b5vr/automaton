@@ -1,5 +1,5 @@
 import { AutomatonWithGUI } from './AutomatonWithGUI';
-import { BezierNode, Curve, FxSection, SerializedCurve } from '@fms-cat/automaton';
+import { BezierNode, Curve, FxSection, SerializedCurve } from '@0b5vr/automaton';
 import { EventEmittable } from './mixins/EventEmittable';
 import { SerializableWithID } from './types/SerializableWithID';
 import { WithStatus } from './types/Status';

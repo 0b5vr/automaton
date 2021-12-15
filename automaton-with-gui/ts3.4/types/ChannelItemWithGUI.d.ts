@@ -1,5 +1,5 @@
 import { AutomatonWithGUI } from './AutomatonWithGUI';
-import { ChannelItem, SerializedChannelItem } from '@fms-cat/automaton';
+import { ChannelItem, SerializedChannelItem } from '@0b5vr/automaton';
 import { CurveWithGUI } from './CurveWithGUI';
 import { SerializableWithID } from './types/SerializableWithID';
 import { StateChannelItem } from './types/StateChannelItem';

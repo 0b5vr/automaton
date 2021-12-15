@@ -1,8 +1,8 @@
 // You can define your own fx definitions.
 // This is an example that defines several fx definitions.
 
-// You may want to see the source code of `@fms-cat/automaton-fxs` for more examples.
-// https://github.com/FMS-Cat/automaton-fxs
+// You may want to see the source code of `@0b5vr/automaton-fxs` for more examples.
+// https://github.com/0b5vr/automaton-fxs
 
 // == fx examples ==================================================================================
 const myFxDefinitions = {

@@ -1,4 +1,4 @@
-import { SerializedFxSection } from '@fms-cat/automaton';
+import { SerializedFxSection } from '@0b5vr/automaton';
 import { V3SerializedBezierNode } from './V3SerializedBezierNode';
 /**
  * Interface of a serialized curve.

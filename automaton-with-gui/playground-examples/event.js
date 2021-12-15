@@ -11,7 +11,7 @@ const automaton = new AUTOMATON_WITH_GUI.AutomatonWithGUI(
   {
     gui: divAutomatonContainer,
     isPlaying: true,
-    fxDefinitions: AUTOMATON_FXS, // here installing bunch of fxs. `AUTOMATON_FXS` is provided from `@fms-cat/automaton-fxs`
+    fxDefinitions: AUTOMATON_FXS, // here installing bunch of fxs. `AUTOMATON_FXS` is provided from `@0b5vr/automaton-fxs`
   }
 );
 const auto = automaton.auto;

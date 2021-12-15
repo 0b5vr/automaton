@@ -6,9 +6,9 @@
   Animation engine for creative coding
 </p>
 
-[![Inspect](https://github.com/FMS-Cat/automaton/workflows/Inspect/badge.svg)](https://github.com/FMS-Cat/automaton/actions)
+[![Inspect](https://github.com/0b5vr/automaton/workflows/Inspect/badge.svg)](https://github.com/0b5vr/automaton/actions)
 
-Originally made for [Shift](https://GitHub.com/fms-cat/shift), my WebGL demo
+Originally made for [Shift](https://GitHub.com/0b5vr/shift), my WebGL demo
 
 ## Playground! (Tutorial)
 
@@ -17,9 +17,9 @@ Originally made for [Shift](https://GitHub.com/fms-cat/shift), my WebGL demo
 Try our playground!
 It comes with bunch of examples.
 
-[https://fms-cat.github.io/automaton/automaton-with-gui](https://fms-cat.github.io/automaton/automaton-with-gui)
+[https://0b5vr.github.io/automaton/automaton-with-gui](https://0b5vr.github.io/automaton/automaton-with-gui)
 
-You might want to also check examples of [the core package](https://github.com/FMS-Cat/automaton/tree/dev/packages/automaton).
+You might want to also check examples of [the core package](https://github.com/0b5vr/automaton/tree/dev/packages/automaton).
 
 ## What is this
 
@@ -33,26 +33,26 @@ The package [`automaton-with-gui`](./packages/automaton-with-gui) intended to be
 
 ## Packages
 
-- [`@fms-cat/automaton`](./packages/automaton) [![Latest NPM release](https://img.shields.io/npm/v/@fms-cat/automaton.svg)](https://www.npmjs.com/package/@fms-cat/automaton)
+- [`@0b5vr/automaton`](./packages/automaton) [![Latest NPM release](https://img.shields.io/npm/v/@0b5vr/automaton.svg)](https://www.npmjs.com/package/@0b5vr/automaton)
   - Core package of the automaton
-- [`@fms-cat/automaton-fxs`](./packages/automaton-fxs) [![Latest NPM release](https://img.shields.io/npm/v/@fms-cat/automaton-fxs.svg)](https://www.npmjs.com/package/@fms-cat/automaton-fxs)
+- [`@0b5vr/automaton-fxs`](./packages/automaton-fxs) [![Latest NPM release](https://img.shields.io/npm/v/@0b5vr/automaton-fxs.svg)](https://www.npmjs.com/package/@0b5vr/automaton-fxs)
   - A package that contains bunch of automaton fxs
-- [`@fms-cat/automaton-fxs-v2compat`](./packages/automaton-fxs-v2compat) [![Latest NPM release](https://img.shields.io/npm/v/@fms-cat/automaton-fxs-v2compat.svg)](https://www.npmjs.com/package/@fms-cat/automaton-fxs-v2compat)
+- [`@0b5vr/automaton-fxs-v2compat`](./packages/automaton-fxs-v2compat) [![Latest NPM release](https://img.shields.io/npm/v/@0b5vr/automaton-fxs-v2compat.svg)](https://www.npmjs.com/package/@0b5vr/automaton-fxs-v2compat)
   - A package that contains Automaton v2 compatibility fxs
-- [`@fms-cat/automaton-with-gui`](./packages/automaton-with-gui) [![Latest NPM release](https://img.shields.io/npm/v/@fms-cat/automaton-with-gui.svg)](https://www.npmjs.com/package/@fms-cat/automaton-with-gui)
+- [`@0b5vr/automaton-with-gui`](./packages/automaton-with-gui) [![Latest NPM release](https://img.shields.io/npm/v/@0b5vr/automaton-with-gui.svg)](https://www.npmjs.com/package/@0b5vr/automaton-with-gui)
   - A variant of automaton that comes with GUI!
 
 ## Friend projects
 
-- [automaton-electron](https://github.com/FMS-Cat/automaton-electron)
+- [automaton-electron](https://github.com/0b5vr/automaton-electron)
   - Electron client of automaton
-- [automaton-lua](https://github.com/FMS-Cat/automaton-lua)
+- [automaton-lua](https://github.com/0b5vr/automaton-lua)
   - Lua binding of automaton
 
 ## Have a problem?
 
 There are pretty much no users other than me so lacks documents if you want to use.
-Please feel free to ask questions on [Twitter](https://twitter.com/FMS_Cat) ❤
+Please feel free to ask questions on [Twitter](https://twitter.com/0b5vr) ❤
 
 ## License
 

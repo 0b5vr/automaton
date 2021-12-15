@@ -1,4 +1,4 @@
-import { SerializedChannelItem } from '@fms-cat/automaton';
+import { SerializedChannelItem } from '@0b5vr/automaton';
 /**
  * Interface of a serialized channel.
  */

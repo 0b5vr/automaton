@@ -1,5 +1,5 @@
 import { AutomatonWithGUI } from '../../AutomatonWithGUI';
-import { BezierNode, FxSection, SerializedChannel, SerializedCurve } from '@fms-cat/automaton';
+import { BezierNode, FxSection, SerializedChannel, SerializedCurve } from '@0b5vr/automaton';
 import { WithBypass } from '../../types/WithBypass';
 import { WithID } from '../../types/WithID';
 import { StateChannelItem } from '../../types/StateChannelItem';
