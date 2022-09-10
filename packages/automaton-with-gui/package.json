@@ -1,6 +1,6 @@
 {
   "name": "@0b5vr/automaton-with-gui",
-  "version": "4.2.1",
+  "version": "4.3.0-alpha.0",
   "description": "Animation engine for creative coding, with GUI!",
   "repository": "https://github.com/0b5vr/automaton",
   "author": "0b5vr",
