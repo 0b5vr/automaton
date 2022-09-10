@@ -838,7 +838,7 @@ export class AutomatonWithGUI extends Automaton
    *
    * It also saves the "isPlaying" and the loop region. How generous!
    *
-   * Make sure you call this after you subscribe to `play` / `pause` / `seek`,
+   * Make sure you subscribe to `play`, `pause`, and `seek` events before you call `resume()`.
    * otherwise it won't work properly.
    *
    * @param key A key that will be used for the local storage.
