@@ -110,6 +110,8 @@ automaton.on( 'seek', ( event ) => {
   automaton.reset();
 } );
 
+automaton.resume( 'fxDefinitionResume' );
+
 // == canvas =======================================================================================
 const width = canvas.width = 320;
 const height = canvas.height = 320;

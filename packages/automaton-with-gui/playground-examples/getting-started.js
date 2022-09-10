@@ -72,6 +72,11 @@ automaton.on( 'seek', ( event ) => {
   automaton.reset(); // we should call this when we modify the time backwards
 } );
 
+// This is optional but, by using the method `resume`,
+// you can resume from the last time it closed, using Local Storage.
+
+automaton.resume( 'gettingStartedResume' ); // specifies the local storage key
+
 // == canvas =======================================================================================
 
 // We are going to create a program that simply shows a rect using canvas API.

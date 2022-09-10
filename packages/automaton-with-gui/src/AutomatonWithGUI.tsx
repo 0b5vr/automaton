@@ -8,8 +8,10 @@ import { EventEmittable } from './mixins/EventEmittable';
 import { GUIRemocon } from './GUIRemocon';
 import { GUISettings, defaultGUISettings } from './types/GUISettings';
 import { MinimizeOptions } from './types/MinimizeOptions';
+import { ResumeStorage } from './ResumeStorage';
 import { Serializable } from './types/Serializable';
 import { SerializedAutomatonWithGUI, defaultDataWithGUI } from './types/SerializedAutomatonWithGUI';
+import { ThrottledJSONStorage } from './ThrottledJSONStorage';
 import { WithID } from './types/WithID';
 import { applyMixins } from './utils/applyMixins';
 import { compat } from './compat/compat';
@@ -33,7 +35,9 @@ export interface AutomatonWithGUIOptions extends AutomatonOptions {
   gui?: HTMLElement;
 
   /**
-   * Initial state of play / pause. `false` by default.
+   * Initial state of play / pause.
+   *
+   * @default false
    */
   isPlaying?: boolean;
 
@@ -125,6 +129,13 @@ export class AutomatonWithGUI extends Automaton
    * It's currently playing or not.
    */
   protected __isPlaying: boolean;
+
+  /**
+   * A storage stores {@link resume} related values.
+   *
+   * If the resume feature is not used, it won't be set.
+   */
+  private __resumeStorage?: ThrottledJSONStorage<ResumeStorage>;
 
   /**
    * Whether it disables not used warning for channels or not.
@@ -239,11 +250,11 @@ export class AutomatonWithGUI extends Automaton
     super( compat( data ), options );
     this.mapNameToChannel = new BiMap<string, ChannelWithGUI>( this.mapNameToChannel );
 
-    this.__isPlaying = options.isPlaying || false;
+    this.__isPlaying = options.isPlaying ?? false;
 
     this.overrideSave = options.overrideSave;
     this.saveContextMenuCommands = options.saveContextMenuCommands;
-    this.__isDisabledChannelNotUsedWarning = options.disableChannelNotUsedWarning || false;
+    this.__isDisabledChannelNotUsedWarning = options.disableChannelNotUsedWarning ?? false;
 
     // if `options.disableChannelNotUsedWarning` is true, mark every channels as used
     if ( this.__isDisabledChannelNotUsedWarning ) {
@@ -259,7 +270,7 @@ export class AutomatonWithGUI extends Automaton
     if ( typeof window !== 'undefined' ) {
       window.addEventListener( 'beforeunload', ( event ) => {
         if ( this.shouldSave ) {
-          const confirmationMessage = 'Automaton: Did you saved your progress?';
+          const confirmationMessage = 'Automaton: Did you save your progress?';
           event.returnValue = confirmationMessage;
           return confirmationMessage;
         }
@@ -283,6 +294,7 @@ export class AutomatonWithGUI extends Automaton
    * Can be performed via GUI.
    */
   public play(): void {
+    this.__resumeStorage?.set( 'isPlaying', true );
     this.__emit( 'play' );
     this.__isPlaying = true;
   }
@@ -293,6 +305,7 @@ export class AutomatonWithGUI extends Automaton
    * Can be performed via GUI.
    */
   public pause(): void {
+    this.__resumeStorage?.set( 'isPlaying', false );
     this.__emit( 'pause' );
     this.__isPlaying = false;
   }
@@ -325,6 +338,7 @@ export class AutomatonWithGUI extends Automaton
   public update( time: number ): void {
     super.update( time );
 
+    this.__resumeStorage?.set( 'time', this.time );
     this.__emit( 'update', { time: this.time } );
 
     if ( this.__loopRegion ) {
@@ -814,7 +828,45 @@ export class AutomatonWithGUI extends Automaton
    */
   public setLoopRegion( loopRegion: { begin: number; end: number } | null ): void {
     this.__loopRegion = loopRegion;
+    this.__resumeStorage?.set( 'loopRegion', loopRegion );
     this.__emit( 'setLoopRegion', { loopRegion } );
+  }
+
+  /**
+   * Try to resume a playback position from the last time it closed, using [Local Storage](https://developer.mozilla.org/ja/docs/Web/API/Window/localStorage).
+   * Once the function is called, it starts to record the current playback position on the local storage.
+   *
+   * It also saves the "isPlaying" and the loop region. How generous!
+   *
+   * Make sure you subscribe to `play`, `pause`, and `seek` events before you call `resume()`.
+   * otherwise it won't work properly.
+   *
+   * @param key A key that will be used for the local storage.
+   * Set a unique value between projects, especially if you are constantly using `localhost:3000` for every project.
+   * Uses `"automatonResume"` by default.
+   */
+  public resume( key?: string ): void {
+    const storage = this.__resumeStorage = new ThrottledJSONStorage<ResumeStorage>(
+      key ?? 'automatonResume',
+      500,
+    );
+
+    const resumeIsPlaying = storage.get( 'isPlaying' );
+    if ( resumeIsPlaying != null ) {
+      if ( this.__isPlaying !== resumeIsPlaying ) {
+        this.togglePlay();
+      }
+    }
+
+    const resumeTime = storage.get( 'time' );
+    if ( resumeTime != null ) {
+      this.seek( resumeTime );
+    }
+
+    const resumeLoopRegion = storage.get( 'loopRegion' );
+    if ( resumeLoopRegion != null ) {
+      this.setLoopRegion( resumeLoopRegion );
+    }
   }
 
   /**

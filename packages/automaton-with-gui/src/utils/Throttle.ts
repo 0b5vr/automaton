@@ -1,3 +1,13 @@
+/**
+ * @example
+ * ```ts
+ * const throttle = new Throttle();
+ *
+ * throttle.do( () => doExpensivePut() );
+ * throttle.do( () => doExpensivePut() );
+ * throttle.do( () => doExpensivePut() );
+ * ```
+ */
 export class Throttle<T = void> {
   /**
    * Rate, in ms.
@@ -9,6 +19,9 @@ export class Throttle<T = void> {
 
   private __lastTime = 0;
 
+  /**
+   * @param rate Rate, in ms.
+   */
   public constructor( rate?: number ) {
     this.rate = rate ?? 100;
   }

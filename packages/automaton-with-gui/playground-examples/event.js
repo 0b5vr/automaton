@@ -49,6 +49,8 @@ automaton.on( 'seek', ( event ) => {
   automaton.reset();
 } );
 
+automaton.resume( 'eventResume' );
+
 // == particle system ==============================================================================
 const N_PARTICLES = 100;
 let particleHead = 0;
