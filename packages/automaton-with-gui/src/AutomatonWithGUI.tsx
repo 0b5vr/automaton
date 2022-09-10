@@ -259,7 +259,7 @@ export class AutomatonWithGUI extends Automaton
     if ( typeof window !== 'undefined' ) {
       window.addEventListener( 'beforeunload', ( event ) => {
         if ( this.shouldSave ) {
-          const confirmationMessage = 'Automaton: Did you saved your progress?';
+          const confirmationMessage = 'Automaton: Did you save your progress?';
           event.returnValue = confirmationMessage;
           return confirmationMessage;
         }
