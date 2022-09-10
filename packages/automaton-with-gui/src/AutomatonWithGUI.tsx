@@ -841,10 +841,15 @@ export class AutomatonWithGUI extends Automaton
    * Make sure you call this after you subscribe to `play` / `pause` / `seek`,
    * otherwise it won't work properly.
    *
-   * @param key A key which will be used for the local storage. Set a unique value.
+   * @param key A key that will be used for the local storage.
+   * Set a unique value between projects, especially if you are constantly using `localhost:3000` for every project.
+   * Uses `"automatonResume"` by default.
    */
-  public resume( key: string ): void {
-    const storage = this.__resumeStorage = new ThrottledJSONStorage<ResumeStorage>( key, 500 );
+  public resume( key?: string ): void {
+    const storage = this.__resumeStorage = new ThrottledJSONStorage<ResumeStorage>(
+      key ?? 'automatonResume',
+      500,
+    );
 
     const resumeIsPlaying = storage.get( 'isPlaying' );
     if ( resumeIsPlaying != null ) {
