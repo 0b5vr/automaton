@@ -58,6 +58,16 @@ const Stroke = styled.rect`
   ry: 4px;
 `;
 
+const RepeatStroke = styled( Stroke )`
+  stroke-dasharray: 2 2;
+`;
+
+const RepeatLine = styled.line`
+  stroke: ${ Colors.accent };
+  stroke-width: 2px;
+  stroke-dasharray: 2 2;
+`;
+
 const Root = styled.g`
   pointer-events: none;
 `;
@@ -103,15 +113,33 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
     () => dopeSheetMode ? size.height : v2y( item.value, range, size.height ),
     [ dopeSheetMode, item, range, size ]
   );
-  const w = useMemo( () => dt2dx( item.length, range, size.width ), [ item, range, size ] );
-  const y1 = useMemo(
+  const wRep = useMemo( () => dt2dx(
+    item.repeat || item.length,
+    range,
+    size.width,
+  ), [ item, range, size ] );
+  const wLen = useMemo( () => dt2dx( item.length, range, size.width ), [ item, range, size ] );
+  const y1l = useMemo(
     () => dopeSheetMode ? 0.0 : v2y( item.value + item.amp, range, size.height ),
     [ dopeSheetMode, item, range, size ]
   );
 
-  const y = Math.min( y0, y1 );
-  const h = Math.abs( y0 - y1 );
-  const isFlipped = y0 < y1;
+  const dxRepLines = useMemo( () => {
+    // prevent crazy case
+    if ( 1000.0 * item.repeat < item.length ) {
+      return [];
+    }
+
+    const lines = [];
+    for ( let t = 2.0 * item.repeat; t < item.length; t += item.repeat ) {
+      lines.push( dt2dx( t, range, size.width ) );
+    }
+    return lines;
+  }, [ item.length, item.repeat, range, size.width ] );
+
+  const y = Math.min( y0, y1l );
+  const h = Math.abs( y0 - y1l );
+  const isFlipped = y0 < y1l;
 
   const curveX = useMemo(
     () => dt2dx( -item.offset / item.speed, range, size.width ),
@@ -232,7 +260,7 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
   );
 
   const grabLeft = useCallback(
-    ( stretch: boolean ): void => {
+    ( mode: 'default' | 'stretch' | 'repeat' ): void => {
       if ( !channel ) { return; }
 
       const timePrev = item.time;
@@ -254,12 +282,12 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
             time = snapTime( time, range, size.width, guiSettings );
           }
 
-          channel.resizeItemByLeft( item.$id, timeEnd - time, stretch );
+          channel.resizeItemByLeft( item.$id, timeEnd - time, mode );
         },
         () => {
           if ( !hasMoved ) { return; }
 
-          channel.resizeItemByLeft( item.$id, timeEnd - time, stretch );
+          channel.resizeItemByLeft( item.$id, timeEnd - time, mode );
 
           dispatch( {
             type: 'History/Push',
@@ -271,7 +299,7 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
                 item: item.$id,
                 length: timeEnd - time,
                 lengthPrev: timeEnd - timePrev,
-                stretch
+                mode,
               }
             ],
           } );
@@ -282,7 +310,7 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
   );
 
   const grabRight = useCallback(
-    ( stretch: boolean ): void => {
+    ( mode: 'default' | 'stretch' | 'repeat' ): void => {
       if ( !channel ) { return; }
 
       const timePrev = item.time + item.length;
@@ -304,12 +332,12 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
             time = snapTime( time, range, size.width, guiSettings );
           }
 
-          channel.resizeItem( item.$id, time - timeBegin, stretch );
+          channel.resizeItem( item.$id, time - timeBegin, mode );
         },
         () => {
           if ( !hasMoved ) { return; }
 
-          channel.resizeItem( item.$id, time - timeBegin, stretch );
+          channel.resizeItem( item.$id, time - timeBegin, mode );
 
           dispatch( {
             type: 'History/Push',
@@ -321,7 +349,7 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
                 item: item.$id,
                 length: time - timeBegin,
                 lengthPrev: timePrev - timeBegin,
-                stretch
+                mode,
               }
             ],
           } );
@@ -389,10 +417,13 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
   const handleClickLeft = useCallback(
     ( event ) => mouseCombo( event, {
       [ MouseComboBit.LMB ]: () => {
-        grabLeft( false );
+        grabLeft( 'default' );
       },
       [ MouseComboBit.LMB + MouseComboBit.Shift ]: () => {
-        grabLeft( true );
+        grabLeft( 'stretch' );
+      },
+      [ MouseComboBit.LMB + MouseComboBit.Ctrl ]: () => {
+        grabLeft( 'repeat' );
       },
       [ MouseComboBit.LMB + MouseComboBit.Alt ]: false, // give a way to seek!
     } ),
@@ -402,10 +433,13 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
   const handleClickRight = useCallback(
     ( event ) => mouseCombo( event, {
       [ MouseComboBit.LMB ]: () => {
-        grabRight( false );
+        grabRight( 'default' );
       },
       [ MouseComboBit.LMB + MouseComboBit.Shift ]: () => {
-        grabRight( true );
+        grabRight( 'stretch' );
+      },
+      [ MouseComboBit.LMB + MouseComboBit.Ctrl ]: () => {
+        grabRight( 'repeat' );
       },
       [ MouseComboBit.LMB + MouseComboBit.Alt ]: false, // give a way to seek!
     } ),
@@ -537,12 +571,12 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
           style={ {
             transform: `translate( 0, ${ -y }px )`
           } }
-          width={ w }
+          width={ wRep }
           height={ size.height }
         />
       </clipPath>
       <Body
-        width={ w }
+        width={ wLen }
         height={ h }
         isSelected={ isSelected }
         onMouseDown={ handleClickBody }
@@ -564,7 +598,18 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
         />
       </g>
       <Stroke
-        width={ w }
+        width={ wRep }
+        height={ h }
+      />
+      { dxRepLines.map( ( x, i ) => <RepeatLine
+        key={ i }
+        x1={ x }
+        y1="0"
+        x2={ x }
+        y2={ h }
+      /> ) }
+      <RepeatStroke
+        width={ wLen }
         height={ h }
       />
       { !dopeSheetMode && <>
@@ -572,7 +617,7 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
           style={ {
             transform: 'translate( 0, -1px )'
           } }
-          width={ w }
+          width={ wLen }
           height="4"
           onMouseDown={ handleClickTop }
         />
@@ -580,7 +625,7 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
           style={ {
             transform: `translate( 0, ${ h - 3 }px )`
           } }
-          width={ w }
+          width={ wLen }
           height="4"
           onMouseDown={ handleClickBottom }
         />
@@ -595,7 +640,7 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
       />
       <Side
         style={ {
-          transform: `translate( ${ w - 3 }px, 0 )`
+          transform: `translate( ${ wLen - 3 }px, 0 )`
         } }
         width="4"
         height={ h }
@@ -604,7 +649,7 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
       { item.reset &&
         <g
           style={ {
-            transform: `translate( ${ w + 5 }px, ${ h - 10 }px )`
+            transform: `translate( ${ wLen + 5 }px, ${ h - 10 }px )`
           } }
         >
           <ResetIcon

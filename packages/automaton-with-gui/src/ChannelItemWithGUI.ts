@@ -53,6 +53,9 @@ export class ChannelItemWithGUI extends ChannelItem {
     if ( this.time !== 0.0 ) { data.time = this.time; }
     if ( this.length !== 0.0 ) { data.length = this.length; }
     if ( this.value !== 0.0 ) { data.value = this.value; }
+    if ( this.repeat != null && this.repeat !== this.length ) {
+      data.repeat = this.repeat;
+    }
     if ( this.reset ) { data.reset = true; }
     if ( this.curve ) {
       data.curve = this.__automaton.getCurveIndex( this.curve );
@@ -74,6 +77,7 @@ export class ChannelItemWithGUI extends ChannelItem {
       time: this.time,
       length: this.length,
       value: this.value,
+      repeat: this.repeat || this.length,
       reset: this.reset ?? false,
       offset: this.offset,
       speed: this.speed,
