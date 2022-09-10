@@ -23,7 +23,7 @@ export class ChannelItem {
   /**
    * Repeat interval of the item.
    */
-  public repeat?: number;
+  public repeat!: number;
 
   /**
    * Value of the item.
@@ -97,7 +97,7 @@ export class ChannelItem {
   public deserialize( data: SerializedChannelItem ): void {
     this.time = data.time ?? 0.0;
     this.length = data.length ?? 0.0;
-    this.repeat = data.repeat;
+    this.repeat = data.repeat ?? this.length;
     this.value = data.value ?? 0.0;
     this.offset = data.offset ?? 0.0;
     this.speed = data.speed ?? 1.0;
