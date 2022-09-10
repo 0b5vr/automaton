@@ -64,6 +64,9 @@ automaton.on( 'seek', ( event ) => {
   automaton.reset(); // we should call this when we modify the time
 } );
 
+// resume from the last time it closed, using Local Storage
+automaton.resume( 'demoResume' ); // specifies the local storage key
+
 // == components ===================================================================================
 function drawBackground() {
   context.save();
