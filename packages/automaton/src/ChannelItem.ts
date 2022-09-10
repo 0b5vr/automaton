@@ -82,8 +82,8 @@ export class ChannelItem {
     }
 
     if ( this.curve ) {
-      const t = ( this.offset + time * this.speed ) % ( this.repeat || Infinity );
-      //                                                            ^^ null and also blocking zero divisions!
+      const t = this.offset + ( time % ( this.repeat || Infinity ) ) * this.speed;
+      //                                             ^^ blocking null and also zero divisions!
       return this.value + this.amp * this.curve.getValue( t );
     } else {
       return this.value;
