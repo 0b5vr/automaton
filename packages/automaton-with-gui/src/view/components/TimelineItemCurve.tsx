@@ -114,7 +114,7 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
     [ dopeSheetMode, item, range, size ]
   );
   const wRep = useMemo( () => dt2dx(
-    item.repeat || item.length,
+    item.repeat ? Math.min( item.repeat, item.length ) : item.length,
     range,
     size.width,
   ), [ item, range, size ] );
@@ -268,6 +268,7 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
       let dx = 0.0;
       let time = timePrev;
       let hasMoved = false;
+      const repeatPrev = item.repeat;
 
       registerMouseEvent(
         ( event, movementSum ) => {
@@ -299,6 +300,8 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
                 item: item.$id,
                 length: timeEnd - time,
                 lengthPrev: timeEnd - timePrev,
+                repeat: channel.getItem( item.$id ).repeat,
+                repeatPrev,
                 mode,
               }
             ],
@@ -318,6 +321,7 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
       let dx = 0.0;
       let time = timePrev;
       let hasMoved = false;
+      const repeatPrev = item.repeat;
 
       registerMouseEvent(
         ( event, movementSum ) => {
@@ -349,6 +353,8 @@ const TimelineItemCurve = ( props: TimelineItemCurveProps ): JSX.Element => {
                 item: item.$id,
                 length: time - timeBegin,
                 lengthPrev: timePrev - timeBegin,
+                repeat: channel.getItem( item.$id ).repeat,
+                repeatPrev,
                 mode,
               }
             ],

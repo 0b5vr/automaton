@@ -508,7 +508,7 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
       item.repeat *= item.length / prevLength;
       item.speed *= prevLength / item.length;
     } else if ( mode === 'repeat' ) {
-      item.repeat = Math.min( item.repeat, item.length );
+      // do nothing
     } else {
       item.repeat = item.length;
     }
@@ -562,7 +562,7 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
     if ( mode === 'stretch' ) {
       item.speed *= prevLength / item.length;
     } else if ( mode === 'repeat' ) {
-      item.repeat = Math.min( item.repeat, item.length );
+      // do nothing
     } else {
       item.offset = endOffset - item.length * item.speed;
       item.repeat = item.length;
@@ -623,7 +623,7 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
 
     const item = this.__items[ index ];
 
-    item.repeat = Math.min( Math.max( repeat, 0.0 ), item.length );
+    item.repeat = Math.max( repeat, 0.0 );
 
     this.reset();
 

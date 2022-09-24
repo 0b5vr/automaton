@@ -195,7 +195,9 @@ const InspectorChannelItem = ( props: Props ): JSX.Element | null => {
         <NumberParam
           type="float"
           value={ timeToDisplay( stateItem.length ) }
-          onChange={ ( value ) => { channel.resizeItem( itemId, displayToTime( value ) ); } }
+          onChange={ ( value ) => {
+            channel.resizeItem( itemId, displayToTime( value ), 'repeat' );
+          } }
           onSettle={ ( value, valuePrev ) => {
             dispatch( {
               type: 'History/Push',
@@ -207,7 +209,7 @@ const InspectorChannelItem = ( props: Props ): JSX.Element | null => {
                   item: itemId,
                   length: displayToTime( value ),
                   lengthPrev: displayToTime( valuePrev ),
-                  mode: 'default',
+                  mode: 'repeat',
                 }
               ]
             } );

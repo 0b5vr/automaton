@@ -76,6 +76,8 @@ export type HistoryCommand = {
   item: string;
   length: number;
   lengthPrev: number;
+  repeat?: number;
+  repeatPrev?: number;
   mode: 'default' | 'stretch' | 'repeat';
 } | {
   type: 'channel/resizeItemByLeft';
@@ -83,6 +85,8 @@ export type HistoryCommand = {
   item: string;
   length: number;
   lengthPrev: number;
+  repeat?: number;
+  repeatPrev?: number;
   mode: 'default' | 'stretch' | 'repeat';
 } | {
   type: 'channel/changeCurveRepeat';
@@ -287,17 +291,37 @@ export function parseHistoryCommand( command: HistoryCommand ): {
     };
   } else if ( command.type === 'channel/resizeItem' ) {
     return {
-      undo: ( automaton ) => automaton.getChannel( command.channel )!
-        .resizeItem( command.item, command.lengthPrev, command.mode ),
-      redo: ( automaton ) => automaton.getChannel( command.channel )!
-        .resizeItem( command.item, command.length, command.mode )
+      undo: ( automaton ) => {
+        const channel = automaton.getChannel( command.channel )!;
+        channel.resizeItem( command.item, command.lengthPrev, command.mode );
+        if ( command.repeatPrev != null ) {
+          channel.changeCurveRepeat( command.item, command.repeatPrev );
+        }
+      },
+      redo: ( automaton ) => {
+        const channel = automaton.getChannel( command.channel )!;
+        channel.resizeItem( command.item, command.length, command.mode );
+        if ( command.repeat != null ) {
+          channel.changeCurveRepeat( command.item, command.repeat );
+        }
+      },
     };
   } else if ( command.type === 'channel/resizeItemByLeft' ) {
     return {
-      undo: ( automaton ) => automaton.getChannel( command.channel )!
-        .resizeItemByLeft( command.item, command.lengthPrev, command.mode ),
-      redo: ( automaton ) => automaton.getChannel( command.channel )!
-        .resizeItemByLeft( command.item, command.length, command.mode )
+      undo: ( automaton ) => {
+        const channel = automaton.getChannel( command.channel )!;
+        channel.resizeItemByLeft( command.item, command.lengthPrev, command.mode );
+        if ( command.repeatPrev != null ) {
+          channel.changeCurveRepeat( command.item, command.repeatPrev );
+        }
+      },
+      redo: ( automaton ) => {
+        const channel = automaton.getChannel( command.channel )!;
+        channel.resizeItemByLeft( command.item, command.length, command.mode );
+        if ( command.repeat != null ) {
+          channel.changeCurveRepeat( command.item, command.repeat );
+        }
+      },
     };
   } else if ( command.type === 'channel/changeCurveRepeat' ) {
     return {
