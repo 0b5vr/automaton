@@ -164,7 +164,7 @@ const InspectorChannelItem = ( props: Props ): JSX.Element | null => {
 
   return ( automaton && channel && stateItem && (
     <Root className={ className }>
-      <InspectorHeader text={ 'Curve' } />
+      <InspectorHeader text={ `Item: ${ stateItem.curveId != null ? 'Curve' : 'Constant' }` } />
 
       <InspectorHr />
 
