@@ -1,6 +1,6 @@
 {
   "name": "@0b5vr/automaton",
-  "version": "4.2.1",
+  "version": "4.3.0-alpha.1",
   "description": "Animation engine for creative coding",
   "repository": "https://github.com/0b5vr/automaton",
   "author": "0b5vr",
