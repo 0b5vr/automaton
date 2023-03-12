@@ -111,11 +111,9 @@ export class Channel {
     }
 
     const item = this.__items[ next - 1 ];
-    if ( item.end < time ) {
-      return item.getValue( item.length );
-    } else {
-      return item.getValue( time - item.time );
-    }
+    return ( item.reset && item.end <= time )
+      ? this.__init
+      : item.getValue( time - item.time );
   }
 
   /**
@@ -131,7 +129,7 @@ export class Channel {
 
     for ( let i = this.__head; i < this.__items.length; i ++ ) {
       const item = this.__items[ i ];
-      const { time: begin, end, length } = item;
+      const { time: begin, end, length, reset } = item;
       let elapsed = time - begin;
 
       if ( elapsed < 0.0 ) {
@@ -160,7 +158,9 @@ export class Channel {
         }
 
         ret.push( [ begin + elapsed, () => {
-          this.__value = item.getValue( elapsed );
+          this.__value = ( reset && end <= time )
+            ? this.__init
+            : item.getValue( elapsed );
 
           this.__listeners.forEach( ( listener ) => listener( {
             time,

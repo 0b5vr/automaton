@@ -12,7 +12,8 @@ export class ChannelItemWithGUI extends ChannelItem {
   public curve?: CurveWithGUI;
 
   /**
-   * TODO
+   * Return a value of the item at the given timepoint.
+   *
    * @param time The timepoint you want to grab the value
    * @param isFromGUI If you're poking the method from Automaton GUI, set this to true otherwise you are going to suffer in redux hell
    */

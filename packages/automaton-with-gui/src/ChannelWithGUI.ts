@@ -136,11 +136,9 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
     }
 
     const item = this.__items[ next - 1 ];
-    if ( item.end < time ) {
-      return item.getValue( item.length, true );
-    } else {
-      return item.getValue( time - item.time, true );
-    }
+    return ( item.reset && item.end <= time )
+      ? this.__init
+      : item.getValue( time - item.time, true );
   }
 
   /**
