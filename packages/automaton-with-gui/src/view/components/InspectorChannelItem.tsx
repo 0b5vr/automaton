@@ -30,6 +30,31 @@ const InspectorChannelItemCurveParams = ( props: {
   return <>
     <InspectorHr />
 
+    <InspectorItem name="Repeat">
+      <NumberParam
+        type="float"
+        value={ stateItem.repeat }
+        onChange={ ( value ) => {
+          channel.changeCurveRepeat( itemId, value );
+        } }
+        onSettle={ ( repeat, repeatPrev ) => {
+          dispatch( {
+            type: 'History/Push',
+            description: 'Change Item Repeat',
+            commands: [
+              {
+                type: 'channel/changeCurveRepeat',
+                channel: channelName,
+                item: itemId,
+                repeat,
+                repeatPrev,
+              }
+            ]
+          } );
+        } }
+      />
+    </InspectorItem>
+
     <InspectorItem name="Speed">
       <NumberParam
         type="float"
@@ -170,7 +195,9 @@ const InspectorChannelItem = ( props: Props ): JSX.Element | null => {
         <NumberParam
           type="float"
           value={ timeToDisplay( stateItem.length ) }
-          onChange={ ( value ) => { channel.resizeItem( itemId, displayToTime( value ) ); } }
+          onChange={ ( value ) => {
+            channel.resizeItem( itemId, displayToTime( value ), 'repeat' );
+          } }
           onSettle={ ( value, valuePrev ) => {
             dispatch( {
               type: 'History/Push',
@@ -182,7 +209,7 @@ const InspectorChannelItem = ( props: Props ): JSX.Element | null => {
                   item: itemId,
                   length: displayToTime( value ),
                   lengthPrev: displayToTime( valuePrev ),
-                  stretch: false
+                  mode: 'repeat',
                 }
               ]
             } );

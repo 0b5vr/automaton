@@ -76,14 +76,24 @@ export type HistoryCommand = {
   item: string;
   length: number;
   lengthPrev: number;
-  stretch: boolean;
+  repeat?: number;
+  repeatPrev?: number;
+  mode: 'default' | 'stretch' | 'repeat';
 } | {
   type: 'channel/resizeItemByLeft';
   channel: string;
   item: string;
   length: number;
   lengthPrev: number;
-  stretch: boolean;
+  repeat?: number;
+  repeatPrev?: number;
+  mode: 'default' | 'stretch' | 'repeat';
+} | {
+  type: 'channel/changeCurveRepeat';
+  channel: string;
+  item: string;
+  repeat: number;
+  repeatPrev: number;
 } | {
   type: 'channel/changeCurveSpeedAndOffset';
   channel: string;
@@ -281,17 +291,44 @@ export function parseHistoryCommand( command: HistoryCommand ): {
     };
   } else if ( command.type === 'channel/resizeItem' ) {
     return {
-      undo: ( automaton ) => automaton.getChannel( command.channel )!
-        .resizeItem( command.item, command.lengthPrev, command.stretch ),
-      redo: ( automaton ) => automaton.getChannel( command.channel )!
-        .resizeItem( command.item, command.length, command.stretch )
+      undo: ( automaton ) => {
+        const channel = automaton.getChannel( command.channel )!;
+        channel.resizeItem( command.item, command.lengthPrev, command.mode );
+        if ( command.repeatPrev != null ) {
+          channel.changeCurveRepeat( command.item, command.repeatPrev );
+        }
+      },
+      redo: ( automaton ) => {
+        const channel = automaton.getChannel( command.channel )!;
+        channel.resizeItem( command.item, command.length, command.mode );
+        if ( command.repeat != null ) {
+          channel.changeCurveRepeat( command.item, command.repeat );
+        }
+      },
     };
   } else if ( command.type === 'channel/resizeItemByLeft' ) {
     return {
+      undo: ( automaton ) => {
+        const channel = automaton.getChannel( command.channel )!;
+        channel.resizeItemByLeft( command.item, command.lengthPrev, command.mode );
+        if ( command.repeatPrev != null ) {
+          channel.changeCurveRepeat( command.item, command.repeatPrev );
+        }
+      },
+      redo: ( automaton ) => {
+        const channel = automaton.getChannel( command.channel )!;
+        channel.resizeItemByLeft( command.item, command.length, command.mode );
+        if ( command.repeat != null ) {
+          channel.changeCurveRepeat( command.item, command.repeat );
+        }
+      },
+    };
+  } else if ( command.type === 'channel/changeCurveRepeat' ) {
+    return {
       undo: ( automaton ) => automaton.getChannel( command.channel )!
-        .resizeItemByLeft( command.item, command.lengthPrev, command.stretch ),
+        .changeCurveRepeat( command.item, command.repeatPrev ),
       redo: ( automaton ) => automaton.getChannel( command.channel )!
-        .resizeItemByLeft( command.item, command.length, command.stretch )
+        .changeCurveRepeat( command.item, command.repeat )
     };
   } else if ( command.type === 'channel/changeCurveSpeedAndOffset' ) {
     return {

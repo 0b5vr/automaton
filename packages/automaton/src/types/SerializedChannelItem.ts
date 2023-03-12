@@ -10,6 +10,12 @@ export interface SerializedChannelItem {
   length?: number;
 
   /**
+   * Repeat interval of the item.
+   * If it is not defined, the item won't repeat.
+   */
+  repeat?: number;
+
+  /**
    * `0.0` by default
    */
   value?: number;

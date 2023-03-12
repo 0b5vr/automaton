@@ -63,5 +63,32 @@ describe( 'Channel', () => {
       expect( channel.getValue( 0.4 ) ).toBeCloseTo( 0.5 );
       expect( channel.getValue( 0.9 ) ).toBeCloseTo( 0.0 );
     } );
+
+    it( 'must handle an item of a linear curve with repeat properly', () => {
+      const channel = new Channel( automaton, {
+        items: [ { curve: 0, time: 0.1, length: 2.0, repeat: 1.0 } ],
+      } );
+      expect( channel.getValue( 0.05 ) ).toBeCloseTo( 0.0 );
+      expect( channel.getValue( 0.4 ) ).toBeCloseTo( 0.5 );
+      expect( channel.getValue( 0.9 ) ).toBeCloseTo( 1.0 );
+      expect( channel.getValue( 1.1 ) ).toBeCloseTo( 0.0 );
+      expect( channel.getValue( 1.4 ) ).toBeCloseTo( 0.5 );
+      expect( channel.getValue( 1.7 ) ).toBeCloseTo( 1.0 );
+    } );
+
+    it( 'must handle an item of a linear curve with repeat and offset properly', () => {
+      const channel = new Channel( automaton, {
+        items: [ { curve: 0, time: 0.1, length: 1.8, repeat: 1.0, offset: -0.3 } ],
+      } );
+      expect( channel.getValue( 0.0 ) ).toBeCloseTo( 0.0 );
+      expect( channel.getValue( 0.1 ) ).toBeCloseTo( 0.0 );
+      expect( channel.getValue( 0.4 ) ).toBeCloseTo( 0.0 );
+      expect( channel.getValue( 0.7 ) ).toBeCloseTo( 0.5 );
+      expect( channel.getValue( 1.0 ) ).toBeCloseTo( 1.0 );
+      expect( channel.getValue( 1.05 ) ).toBeCloseTo( 1.0 );
+      expect( channel.getValue( 1.1 ) ).toBeCloseTo( 0.0 );
+      expect( channel.getValue( 1.7 ) ).toBeCloseTo( 0.5 );
+      expect( channel.getValue( 1.95 ) ).toBeCloseTo( 0.833 );
+    } );
   } );
 } );

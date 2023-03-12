@@ -482,9 +482,19 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
    * Resize an item.
    * @param id Index of the item you want to resize
    * @param length Length
-   * @param stretch Wheter it should stretch the item or not
+   * @param mode 'default', 'stretch', or 'repeat'.
    */
-  public resizeItem( id: string, length: number, stretch?: boolean ): void {
+  public resizeItem(
+    id: string,
+    length: number,
+    mode?: 'default' | 'stretch' | 'repeat' | boolean,
+  ): void {
+    // Delet this in v5.0.0
+    if ( typeof mode === 'boolean' ) {
+      mode = mode ? 'repeat' : 'default';
+      console.warn( `Giving boolean to the third argument of resizeItem is deprecated! Please replace with "${ mode }".` );
+    }
+
     const index = this.__getItemIndexById( id );
 
     const item = this.__items[ index ];
@@ -494,8 +504,13 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
     const prevLength = item.length;
     item.length = clamp( length, 0.0, right - item.time );
 
-    if ( stretch ) {
+    if ( mode === 'stretch' ) {
+      item.repeat *= item.length / prevLength;
       item.speed *= prevLength / item.length;
+    } else if ( mode === 'repeat' ) {
+      // do nothing
+    } else {
+      item.repeat = item.length;
     }
 
     this.reset();
@@ -515,9 +530,19 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
    * It's very GUI dev friendly method. yeah.
    * @param id Index of the item you want to resize
    * @param length Length
-   * @param stretch Wheter it should stretch the item or not
+   * @param mode 'default', 'stretch', or 'repeat'.
    */
-  public resizeItemByLeft( id: string, length: number, stretch?: boolean ): void {
+  public resizeItemByLeft(
+    id: string,
+    length: number,
+    mode?: 'default' | 'stretch' | 'repeat' | boolean,
+  ): void {
+    // Delet this in v5.0.0
+    if ( typeof mode === 'boolean' ) {
+      mode = mode ? 'repeat' : 'default';
+      console.warn( `Giving boolean to the third argument of resizeItem is deprecated! Please replace with "${ mode }".` );
+    }
+
     const index = this.__getItemIndexById( id );
 
     const item = this.__items[ index ];
@@ -534,10 +559,13 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
     item.length = Math.min( Math.max( length, 0.0 ), lengthMax );
     item.time = end - item.length;
 
-    if ( stretch ) {
+    if ( mode === 'stretch' ) {
       item.speed *= prevLength / item.length;
+    } else if ( mode === 'repeat' ) {
+      // do nothing
     } else {
       item.offset = endOffset - item.length * item.speed;
+      item.repeat = item.length;
     }
 
     this.reset();
@@ -577,6 +605,25 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
     const item = this.__items[ index ];
 
     item.reset = reset;
+
+    this.reset();
+
+    this.__emit( 'updateItem', { id, item: item.serializeGUI() } );
+
+    this.__automaton.shouldSave = true;
+  }
+
+  /**
+   * Change the repeat of a curve item.
+   * @param id Id of the item you want to change
+   * @param repeat Your desired repeat time
+   */
+  public changeCurveRepeat( id: string, repeat: number ): void {
+    const index = this.__getItemIndexById( id );
+
+    const item = this.__items[ index ];
+
+    item.repeat = Math.max( repeat, 0.0 );
 
     this.reset();
 

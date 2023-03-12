@@ -139,7 +139,7 @@ const TimelineItemConstant = ( props: TimelineItemConstantProps ): JSX.Element =
                 item: item.$id,
                 length: timeEnd - time,
                 lengthPrev: timeEnd - timePrev,
-                stretch: false
+                mode: 'default',
               }
             ],
           } );
@@ -189,7 +189,7 @@ const TimelineItemConstant = ( props: TimelineItemConstantProps ): JSX.Element =
                 item: item.$id,
                 length: time - timeBegin,
                 lengthPrev: timePrev - timeBegin,
-                stretch: false
+                mode: 'default',
               }
             ],
           } );

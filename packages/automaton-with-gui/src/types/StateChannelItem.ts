@@ -4,6 +4,7 @@ export interface StateChannelItem {
   time: number;
   length: number;
   value: number;
+  repeat: number;
   reset: boolean;
   curveId: string | null;
   speed: number;
