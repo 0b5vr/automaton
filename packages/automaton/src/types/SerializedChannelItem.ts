@@ -21,7 +21,7 @@ export interface SerializedChannelItem {
   value?: number;
 
   /**
-   * Whether reset channels value to zero at the end of this item or not.
+   * Whether reset channels value to init at the end of this item or not.
    * `false` by default.
    */
   reset?: boolean;

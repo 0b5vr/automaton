@@ -101,5 +101,18 @@ describe( 'Channel', () => {
       expect( channel.getValue( 0.5 ) ).toBeCloseTo( 2.0 );
       expect( channel.getValue( 0.6 ) ).toBeCloseTo( 2.0 );
     } );
+
+    it( 'handles an initial value + an item with reset properly', () => {
+      const channel = new Channel( automaton, {
+        items: [ { time: 0.5, value: 2.0, length: 0.5, reset: true } ],
+        init: 1.0,
+      } );
+      expect( channel.getValue( 0.0 ) ).toBeCloseTo( 1.0 );
+      expect( channel.getValue( 0.1 ) ).toBeCloseTo( 1.0 );
+      expect( channel.getValue( 0.5 ) ).toBeCloseTo( 2.0 );
+      expect( channel.getValue( 0.6 ) ).toBeCloseTo( 2.0 );
+      expect( channel.getValue( 1.0 ) ).toBeCloseTo( 1.0 );
+      expect( channel.getValue( 1.1 ) ).toBeCloseTo( 1.0 );
+    } );
   } );
 } );
