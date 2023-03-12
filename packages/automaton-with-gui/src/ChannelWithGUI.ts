@@ -203,7 +203,8 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
    */
   public serialize(): SerializedChannel {
     return {
-      items: this.__serializeItems()
+      items: this.__serializeItems(),
+      init: this.__init,
     };
   }
 

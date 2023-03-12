@@ -46,7 +46,8 @@ function minimizeChannel(
   const items = data.items?.map( ( item ) => minimizeChannelItem( item, options ) );
 
   return {
-    items
+    items,
+    init: precOrUndefined( data.init, options.precisionValue ),
   };
 }
 
