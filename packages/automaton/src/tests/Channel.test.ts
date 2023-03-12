@@ -20,7 +20,7 @@ describe( 'Channel', () => {
     automaton = new Automaton( data );
   } );
 
-  it( 'must be instantiated correctly', () => {
+  it( 'instantiates correctly', () => {
     const channel = new Channel( automaton, {
       items: [ { curve: 0, time: 0.1 } ],
     } );
@@ -28,7 +28,7 @@ describe( 'Channel', () => {
   } );
 
   describe( 'getValue', () => {
-    it( 'must handle an item of a linear curve properly', () => {
+    it( 'handles an item of a linear curve properly', () => {
       const channel = new Channel( automaton, {
         items: [ { curve: 0, time: 0.1 } ],
       } );
@@ -37,7 +37,7 @@ describe( 'Channel', () => {
       expect( channel.getValue( 0.9 ) ).toBeCloseTo( 1.0 );
     } );
 
-    it( 'must handle an item of a constant curve properly', () => {
+    it( 'handles an item of a constant curve properly', () => {
       const channel = new Channel( automaton, {
         items: [ { curve: 1, time: 0.1 } ],
       } );
@@ -46,16 +46,16 @@ describe( 'Channel', () => {
       expect( channel.getValue( 0.9 ) ).toBeCloseTo( 2.0 );
     } );
 
-    it( 'must handle a constant item with reset properly', () => {
+    it( 'handles a constant item with reset properly', () => {
       const channel = new Channel( automaton, {
         items: [ { time: 0.5, length: 0.5, value: 1.0, reset: true } ],
       } );
-      expect( channel.getValue( 0.3 ) ).toBeCloseTo( 0.0 );
-      expect( channel.getValue( 0.6 ) ).toBeCloseTo( 1.0 );
-      expect( channel.getValue( 1.2 ) ).toBeCloseTo( 0.0 );
+      expect( channel.getValue( 0.0 ) ).toBeCloseTo( 0.0 );
+      expect( channel.getValue( 0.5 ) ).toBeCloseTo( 1.0 );
+      expect( channel.getValue( 1.0 ) ).toBeCloseTo( 0.0 );
     } );
 
-    it( 'must handle an item of a linear curve with reset properly', () => {
+    it( 'handles an item of a linear curve with reset properly', () => {
       const channel = new Channel( automaton, {
         items: [ { curve: 0, time: 0.1, reset: true } ],
       } );
@@ -64,7 +64,7 @@ describe( 'Channel', () => {
       expect( channel.getValue( 0.9 ) ).toBeCloseTo( 0.0 );
     } );
 
-    it( 'must handle an item of a linear curve with repeat properly', () => {
+    it( 'handles an item of a linear curve with repeat properly', () => {
       const channel = new Channel( automaton, {
         items: [ { curve: 0, time: 0.1, length: 2.0, repeat: 1.0 } ],
       } );
@@ -76,7 +76,7 @@ describe( 'Channel', () => {
       expect( channel.getValue( 1.7 ) ).toBeCloseTo( 1.0 );
     } );
 
-    it( 'must handle an item of a linear curve with repeat and offset properly', () => {
+    it( 'handles an item of a linear curve with repeat and offset properly', () => {
       const channel = new Channel( automaton, {
         items: [ { curve: 0, time: 0.1, length: 1.8, repeat: 1.0, offset: -0.3 } ],
       } );
@@ -89,6 +89,17 @@ describe( 'Channel', () => {
       expect( channel.getValue( 1.1 ) ).toBeCloseTo( 0.0 );
       expect( channel.getValue( 1.7 ) ).toBeCloseTo( 0.5 );
       expect( channel.getValue( 1.95 ) ).toBeCloseTo( 0.833 );
+    } );
+
+    it( 'handles an initial value properly', () => {
+      const channel = new Channel( automaton, {
+        items: [ { time: 0.5, value: 2.0 } ],
+        init: 1.0,
+      } );
+      expect( channel.getValue( 0.0 ) ).toBeCloseTo( 1.0 );
+      expect( channel.getValue( 0.1 ) ).toBeCloseTo( 1.0 );
+      expect( channel.getValue( 0.5 ) ).toBeCloseTo( 2.0 );
+      expect( channel.getValue( 0.6 ) ).toBeCloseTo( 2.0 );
     } );
   } );
 } );

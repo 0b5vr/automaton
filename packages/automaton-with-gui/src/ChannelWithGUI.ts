@@ -81,6 +81,7 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
       item.curve?.incrementUserCount();
       return item;
     } ) ?? [];
+    this.__init = data.init ?? 0.0;
   }
 
   /**
@@ -117,14 +118,14 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
   public getValueFromGUI( time: number ): number {
     // no items??? damn
     if ( this.__items.length === 0 ) {
-      return 0.0;
+      return this.__init;
     }
 
     const next = binarySearch( this.__items, ( item ) => ( item.time <= time ) );
 
     // it's the first one!
     if ( next === 0 ) {
-      return 0.0;
+      return this.__init;
     }
 
     const item = this.__items[ next - 1 ];
