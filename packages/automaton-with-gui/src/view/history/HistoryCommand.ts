@@ -109,6 +109,11 @@ export type HistoryCommand = {
   amp: number;
   ampPrev: number;
 } | {
+  type: 'channel/changeInit';
+  channel: string;
+  init: number;
+  initPrev: number;
+} | {
   type: 'curve/createNodeFromData';
   curveId: string;
   data: BezierNode & WithID;
@@ -343,6 +348,13 @@ export function parseHistoryCommand( command: HistoryCommand ): {
         .changeCurveAmp( command.item, command.ampPrev ),
       redo: ( automaton ) => automaton.getChannel( command.channel )!
         .changeCurveAmp( command.item, command.amp )
+    };
+  } else if ( command.type === 'channel/changeInit' ) {
+    return {
+      undo: ( automaton ) => automaton.getChannel( command.channel )!
+        .changeInit( command.initPrev ),
+      redo: ( automaton ) => automaton.getChannel( command.channel )!
+        .changeInit( command.init ),
     };
   } else if ( command.type === 'curve/createNodeFromData' ) {
     return {

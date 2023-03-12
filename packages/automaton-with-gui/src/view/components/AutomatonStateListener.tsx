@@ -81,6 +81,12 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
       } );
 
       refAccumActions.current.push( {
+        type: 'Automaton/ChangeChannelInit',
+        channel: name,
+        init: channel.init,
+      } );
+
+      refAccumActions.current.push( {
         type: 'Automaton/UpdateChannelLength',
         channel: name,
         length: channel.length
@@ -130,6 +136,14 @@ const AutomatonStateListener = ( props: AutomatonStateListenerProps ): JSX.Eleme
           type: 'Automaton/RemoveChannelItem',
           channel: name,
           id
+        } );
+      } );
+
+      channel.on( 'changeInit', ( { init } ) => {
+        refAccumActions.current.push( {
+          type: 'Automaton/ChangeChannelInit',
+          channel: name,
+          init,
         } );
       } );
 

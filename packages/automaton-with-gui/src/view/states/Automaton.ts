@@ -26,6 +26,7 @@ export interface State {
       length: number;
       status: Status<ChannelStatusCode> | null;
       items: { [ id: string ]: StateChannelItem };
+      init: number;
       sortedItems: StateChannelItem[];
     };
   };
@@ -114,6 +115,10 @@ export type Action = {
   type: 'Automaton/RemoveChannelItem';
   channel: string;
   id: string;
+} | {
+  type: 'Automaton/ChangeChannelInit';
+  channel: string;
+  init: number;
 } | {
   type: 'Automaton/CreateCurve';
   curveId: string;
@@ -223,6 +228,7 @@ export const reducer: Reducer<State, ContextAction> = ( state = initialState, ac
         length: 1.0,
         status: null,
         items: {},
+        init: 0.0,
         sortedItems: [],
       };
     } else if ( action.type === 'Automaton/RemoveChannel' ) {
@@ -277,6 +283,8 @@ export const reducer: Reducer<State, ContextAction> = ( state = initialState, ac
       }
 
       delete newState.channels[ action.channel ].items[ action.id ];
+    } else if ( action.type === 'Automaton/ChangeChannelInit' ) {
+      newState.channels[ action.channel ].init = action.init;
     } else if ( action.type === 'Automaton/CreateCurve' ) {
       newState.curves[ action.curveId ] = {
         status: null,

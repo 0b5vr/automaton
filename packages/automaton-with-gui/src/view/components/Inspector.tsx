@@ -2,6 +2,7 @@ import { Colors } from '../constants/Colors';
 import { ErrorBoundary } from './ErrorBoundary';
 import { Icons } from '../icons/Icons';
 import { InspectorBeat } from './InspectorBeat';
+import { InspectorChannel } from './InspectorChannel';
 import { InspectorChannelItem } from './InspectorChannelItem';
 import { InspectorCurveFx } from './InspectorCurveFx';
 import { InspectorCurveNode } from './InspectorCurveNode';
@@ -48,6 +49,7 @@ const Inspector = ( { className }: {
     selectedCurve,
     stateSelectedNodes,
     stateSelectedFxs,
+    stateSelectedChannel,
     stateSelectedTimelineItems,
     stateSelectedTimelineLabels,
     settingsMode,
@@ -56,6 +58,7 @@ const Inspector = ( { className }: {
     selectedCurve: state.curveEditor.selectedCurve,
     stateSelectedNodes: state.curveEditor.selected.nodes,
     stateSelectedFxs: state.curveEditor.selected.fxs,
+    stateSelectedChannel: state.timeline.selectedChannel,
     stateSelectedTimelineItems: state.timeline.selected.items,
     stateSelectedTimelineLabels: state.timeline.selected.labels,
     settingsMode: state.settings.mode,
@@ -93,6 +96,10 @@ const Inspector = ( { className }: {
     } else if ( stateSelectedTimelineLabels.length === 1 ) {
       content = <InspectorLabel
         name={ stateSelectedTimelineLabels[ 0 ] }
+      />;
+    } else if ( stateSelectedChannel != null ) {
+      content = <InspectorChannel
+        channelName={ stateSelectedChannel }
       />;
     }
   }
