@@ -120,7 +120,7 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
       return 0.0;
     }
 
-    const next = binarySearch( this.__items, ( item ) => ( item.time < time ) );
+    const next = binarySearch( this.__items, ( item ) => ( item.time <= time ) );
 
     // it's the first one!
     if ( next === 0 ) {
