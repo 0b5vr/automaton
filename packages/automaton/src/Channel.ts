@@ -16,12 +16,17 @@ export class Channel {
   /**
    * List of channel items.
    */
-  protected __items: ChannelItem[] = [];
+  protected __items!: ChannelItem[];
 
   /**
    * A cache of last calculated value.
    */
-  protected __value: number = 0.0;
+  protected __value: number;
+
+  /**
+   * The initial value of the channel.
+   */
+  protected __init!: number;
 
   /**
    * The time that was used for the calculation of [[__lastValue]].
@@ -47,6 +52,7 @@ export class Channel {
     this.__automaton = automaton;
 
     this.deserialize( data );
+    this.__value = this.__init;
   }
 
   /**
@@ -65,6 +71,7 @@ export class Channel {
    */
   public deserialize( data: SerializedChannel ): void {
     this.__items = data.items?.map( ( item ) => new ChannelItem( this.__automaton, item ) ) ?? [];
+    this.__init = data.init ?? 0.0;
   }
 
   /**
@@ -73,7 +80,7 @@ export class Channel {
    */
   public reset(): void {
     this.__time = -Infinity;
-    this.__value = 0;
+    this.__value = this.__init;
     this.__head = 0;
   }
 
@@ -93,14 +100,14 @@ export class Channel {
   public getValue( time: number ): number {
     // no items??? damn
     if ( this.__items.length === 0 ) {
-      return 0.0;
+      return this.__init;
     }
 
     const next = binarySearch( this.__items, ( item ) => ( item.time <= time ) );
 
     // it's the first one!
     if ( next === 0 ) {
-      return 0.0;
+      return this.__init;
     }
 
     const item = this.__items[ next - 1 ];
