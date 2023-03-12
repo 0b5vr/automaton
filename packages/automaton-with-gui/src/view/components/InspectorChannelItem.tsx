@@ -22,6 +22,8 @@ const InspectorChannelItemCurveParams = ( props: {
 } ): JSX.Element | null => {
   const dispatch = useDispatch();
 
+  const { displayToTime, timeToDisplay } = useTimeUnit();
+
   if ( props.stateItem.curveId == null ) { return null; }
 
   const { channel, channelName, itemId } = props;
@@ -33,9 +35,9 @@ const InspectorChannelItemCurveParams = ( props: {
     <InspectorItem name="Repeat">
       <NumberParam
         type="float"
-        value={ stateItem.repeat }
+        value={ timeToDisplay( stateItem.repeat ) }
         onChange={ ( value ) => {
-          channel.changeCurveRepeat( itemId, value );
+          channel.changeCurveRepeat( itemId, displayToTime( value ) );
         } }
         onSettle={ ( repeat, repeatPrev ) => {
           dispatch( {
@@ -46,8 +48,8 @@ const InspectorChannelItemCurveParams = ( props: {
                 type: 'channel/changeCurveRepeat',
                 channel: channelName,
                 item: itemId,
-                repeat,
-                repeatPrev,
+                repeat: displayToTime( repeat ),
+                repeatPrev: displayToTime( repeatPrev ),
               }
             ]
           } );
