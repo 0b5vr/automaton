@@ -8,8 +8,6 @@
 
 [![Inspect](https://github.com/0b5vr/automaton/workflows/Inspect/badge.svg)](https://github.com/0b5vr/automaton/actions)
 
-Originally made for [Shift](https://GitHub.com/0b5vr/shift), my WebGL demo
-
 ## Playground! (Tutorial)
 
 ![Playground](./packages/automaton-with-gui/readme-images/playground.gif)
