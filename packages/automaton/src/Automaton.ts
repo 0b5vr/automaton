@@ -175,7 +175,7 @@ export class Automaton {
     this.__time = t;
 
     // update channels
-    const array = this.channels.map( ( channel ) => channel.consume( this.__time ) ).flat( 1 );
+    const array = this.channels.flatMap( ( channel ) => channel.consume( this.__time ) );
     array.sort( ( [ a ], [ b ] ) => a - b ).forEach( ( [ _, func ] ) => func() );
   }
 

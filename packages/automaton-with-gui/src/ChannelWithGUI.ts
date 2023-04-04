@@ -46,6 +46,13 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
   }
 
   /**
+   * The initial value of the channel.
+   */
+  public get init(): number {
+    return this.__init;
+  }
+
+  /**
    * Whether it should reset itself in next update call or not.
    */
   private __shouldReset = false;
@@ -81,6 +88,7 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
       item.curve?.incrementUserCount();
       return item;
     } ) ?? [];
+    this.__init = data.init ?? 0.0;
   }
 
   /**
@@ -117,22 +125,20 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
   public getValueFromGUI( time: number ): number {
     // no items??? damn
     if ( this.__items.length === 0 ) {
-      return 0.0;
+      return this.__init;
     }
 
-    const next = binarySearch( this.__items, ( item ) => ( item.time < time ) );
+    const next = binarySearch( this.__items, ( item ) => ( item.time <= time ) );
 
     // it's the first one!
     if ( next === 0 ) {
-      return 0.0;
+      return this.__init;
     }
 
     const item = this.__items[ next - 1 ];
-    if ( item.end < time ) {
-      return item.getValue( item.length, true );
-    } else {
-      return item.getValue( time - item.time, true );
-    }
+    return ( item.reset && item.end <= time )
+      ? this.__init
+      : item.getValue( time - item.time, true );
   }
 
   /**
@@ -197,7 +203,8 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
    */
   public serialize(): SerializedChannel {
     return {
-      items: this.__serializeItems()
+      items: this.__serializeItems(),
+      init: this.__init,
     };
   }
 
@@ -673,6 +680,20 @@ export class ChannelWithGUI extends Channel implements Serializable<SerializedCh
   }
 
   /**
+   * Change the init of the channel.
+   * @param init The initial value
+   */
+  public changeInit( init: number ): void {
+    this.__init = init;
+
+    this.reset();
+
+    this.__emit( 'changeInit', { init } );
+
+    this.__automaton.shouldSave = true;
+  }
+
+  /**
    * Serialize its items.
    * @returns Serialized items
    */
@@ -730,6 +751,7 @@ export interface ChannelWithGUIEvents {
   changeValue: { value: number };
   reset: void;
   updateStatus: void;
+  changeInit: { init: number };
   changeLength: { length: number };
 }
 

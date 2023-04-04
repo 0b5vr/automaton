@@ -31,7 +31,9 @@ export class ChannelItem {
   public value!: number;
 
   /**
-   * Whether reset channels value to zero at the end of this item or not.
+   * Whether reset channels value to init at the end of this item or not.
+   *
+   * Impl note: `reset` will be considered by the Channel side, not the ChannelItem side.
    */
   public reset?: boolean;
 
@@ -76,14 +78,15 @@ export class ChannelItem {
     this.deserialize( data );
   }
 
+  /**
+   * Return a value of the item at the given timepoint.
+   *
+   * @param time The timepoint you want to grab the value
+   */
   public getValue( time: number ): number {
-    if ( this.reset && this.length <= time ) {
-      return 0.0;
-    }
-
     if ( this.curve ) {
       const repeat = ( 0.0 < this.repeat && this.repeat < this.length ) ? this.repeat : Infinity;
-      const t = this.offset + ( time % repeat ) * this.speed;
+      const t = this.offset + ( Math.min( time, this.length ) % repeat ) * this.speed;
       return this.value + this.amp * this.curve.getValue( t );
     } else {
       return this.value;
